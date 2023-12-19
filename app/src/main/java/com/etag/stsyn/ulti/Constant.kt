@@ -1,3 +1,5 @@
 package com.etag.stsyn.ulti
 
-object Constant
+object Constant {
+    const val READER_POWER = 100
+}
