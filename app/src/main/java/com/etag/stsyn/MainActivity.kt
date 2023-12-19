@@ -20,40 +20,14 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val baseApiInterface = ApiClient.createApiInterface(RetrofitConstant.BASE_URL)
-
-
-        lifecycleScope.launch {
-            try {
-                val response = baseApiInterface.getHealthCheck()
-            } catch (e: Exception) {
-                Log.e("Error", e.message.toString())
-            }
-        }
 
         setContent {
             STSYNTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Greeting("Android")
+
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    STSYNTheme {
-        Greeting("Android")
     }
 }
