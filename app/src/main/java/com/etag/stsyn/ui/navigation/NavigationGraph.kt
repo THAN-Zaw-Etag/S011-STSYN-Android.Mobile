@@ -41,9 +41,6 @@ fun NavigationGraph(
             HomeContent(
                 onLogOutClick = {},
                 onSettingsClick = {},
-                onBottomNavigationItemSelected = {
-
-                }
             )
         }
 
