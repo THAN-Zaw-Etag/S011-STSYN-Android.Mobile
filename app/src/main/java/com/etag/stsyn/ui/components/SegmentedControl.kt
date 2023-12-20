@@ -16,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.theme.Purple80
 
@@ -28,6 +27,7 @@ enum class ControlType {
 
 @Composable
 fun SegmentedControl(
+    onTabSelected: (ControlType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selected by remember { mutableStateOf(ControlType.All) }
@@ -52,15 +52,10 @@ fun SegmentedControl(
                     .padding(vertical = 8.dp)
                     .clickable {
                         selected = it
+                        onTabSelected(it)
                     },
                 textAlign = TextAlign.Center
             )
         }
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun SegmentedControlPreview() {
-    SegmentedControl()
 }
