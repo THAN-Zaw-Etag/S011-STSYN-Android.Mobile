@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.etag.stsyn.ui.screen.HomeScreen
+import com.etag.stsyn.ui.screen.HomeContent
 import com.etag.stsyn.ui.screen.LoginScreen
 import com.etag.stsyn.ui.screen.MainScreen
 import com.etag.stsyn.ui.screen.SplashScreen
@@ -23,7 +23,7 @@ fun NavigationGraph(
 
         composable(route = Routes.SplashScreen.name) {
             SplashScreen(onTimeOut = {
-                navController.navigate(Routes.MainScreen.name)
+                navController.navigate(Routes.HomeContentScreen.name)
             })
         }
 
@@ -37,10 +37,13 @@ fun NavigationGraph(
             )
         }
 
-        composable(route = Routes.HomeScreen.name) {
-            HomeScreen(
+        composable(route = Routes.HomeContentScreen.name) {
+            HomeContent(
                 onLogOutClick = {},
-                onSettingsClick = {}
+                onSettingsClick = {},
+                onBottomNavigationItemSelected = {
+
+                }
             )
         }
 

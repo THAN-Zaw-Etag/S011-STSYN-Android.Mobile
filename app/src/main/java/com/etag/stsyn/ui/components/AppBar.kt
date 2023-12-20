@@ -26,7 +26,7 @@ fun AppBar(
     onDrawerIconClick: () -> Unit,
 ) {
     TopAppBar(
-        title = { Text(text = title, modifier = Modifier.padding(horizontal = 16.dp)) },
+        title = { Text(text = title, modifier = Modifier.padding(horizontal = 8.dp)) },
         navigationIcon = {
             IconButton(onClick = onDrawerIconClick) {
                 Icon(imageVector = Icons.Filled.Menu, contentDescription = null)

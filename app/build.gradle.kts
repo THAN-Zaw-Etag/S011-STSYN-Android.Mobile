@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -47,9 +49,14 @@ android {
 }
 
 dependencies {
+    val hilt_version = "2.44"
+    implementation("com.google.dagger:hilt-android:$hilt_version")
+    kapt("com.google.dagger:hilt-android-compiler:$hilt_version")
+
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     // jetpack compose navigation
-    val nav_version = "2.7.6"
+    val nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
@@ -72,4 +79,8 @@ dependencies {
 
 
     implementation(project(":retrofit_module"))
+}
+
+kapt {
+    correctErrorTypes = true
 }
