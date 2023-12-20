@@ -13,6 +13,8 @@ sealed class Routes(val name: String, val title: String = "") {
     object BookInCalibrationScreen :
         Routes(name = "/book_in_calibration_screen", title = "Book In (Calibration)")
 
+    object DetailScreen : Routes(name = "/detail_screen")
+
     object AcctCheckScreen : Routes(name = "/act_check_screen", title = "Act Check")
     object OtherOperationsScreen :
         Routes(name = "/other_operations_screen", title = "Other Operations")

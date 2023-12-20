@@ -4,11 +4,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.Save
 import com.etag.stsyn.R
 import com.etag.stsyn.domain.model.BottomNavigationItem
 import com.etag.stsyn.domain.model.OptionButtonModel
+import com.etag.stsyn.domain.model.TabOption
 import com.etag.stsyn.ui.navigation.Routes
 
 object DataSource {
@@ -26,7 +30,7 @@ object DataSource {
         OptionButtonModel(
             title = "Accountability Check",
             icon = R.drawable.accountability_check_icon,
-            route = Routes.AcctCheckScreen.name
+            route = Routes.DetailScreen.name
         ),
         OptionButtonModel(
             title = "Other Operations",
@@ -39,7 +43,7 @@ object DataSource {
         BottomNavigationItem("Home", Icons.Filled.Home, Routes.HomeScreen.name),
         BottomNavigationItem("Book Out", Icons.Filled.ArrowCircleUp, Routes.BookOutScreen.name),
         BottomNavigationItem("Book In", Icons.Filled.ArrowCircleDown, Routes.BookInScreen.name),
-        BottomNavigationItem("Acct Check", Icons.Filled.Assignment, Routes.AcctCheckScreen.name),
+        BottomNavigationItem("Acct Check", Icons.Filled.Assignment, Routes.DetailScreen.name),
         BottomNavigationItem(
             "Other Operations",
             Icons.Filled.MoreHoriz,
@@ -97,5 +101,12 @@ object DataSource {
             title = "Det/T-Loan (Box)",
             route = OptionType.OtherDetPLoanBox.toString()
         )
+    )
+
+    val tabOptions = listOf(
+        TabOption(title = "ACCT CHECK", icon = Icons.Default.Assignment),
+        TabOption(title = "COUNT", icon = Icons.Default.Calculate),
+        TabOption(title = "SAVE", icon = Icons.Default.Save),
+        TabOption(title = "EXIT", icon = Icons.Default.ExitToApp),
     )
 }

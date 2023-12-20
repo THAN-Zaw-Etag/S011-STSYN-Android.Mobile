@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.etag.stsyn.ui.screen.detail.DetailScreen
 import com.etag.stsyn.ui.screen.main.BookInScreen
 import com.etag.stsyn.ui.screen.main.BookOutScreen
 import com.etag.stsyn.ui.screen.main.HomeScreen
@@ -26,6 +27,7 @@ fun HomeNavigationGraph(
         composable(route = Routes.HomeScreen.name) {
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.HomeScreen.title)
+                updateTopAppBarStatus(true)
                 updateBottomNavigationBarStatus(false)
             }
             HomeScreen(onCategoryItemClick = {
@@ -41,6 +43,7 @@ fun HomeNavigationGraph(
         composable(route = Routes.BookOutScreen.name) {
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.BookOutScreen.title)
+                updateTopAppBarStatus(true)
                 updateBottomNavigationBarStatus(true)
             }
             BookOutScreen(
@@ -51,6 +54,7 @@ fun HomeNavigationGraph(
         composable(route = Routes.BookInScreen.name) {
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.BookInScreen.title)
+                updateTopAppBarStatus(true)
                 updateBottomNavigationBarStatus(true)
             }
             BookInScreen(onOptionButtonClick = { optionType ->
@@ -61,11 +65,22 @@ fun HomeNavigationGraph(
         composable(route = Routes.OtherOperationsScreen.name) {
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)
+                updateTopAppBarStatus(true)
                 updateBottomNavigationBarStatus(true)
             }
             OtherOperationsScreen(onOptionButtonClick = { optionType ->
 
             })
+        }
+
+        composable(route = Routes.DetailScreen.name) {
+            sharedUiViewModel.apply {
+                updateTopBarTitle(Routes.OtherOperationsScreen.title)
+                updateTopAppBarStatus(false)
+                updateBottomNavigationBarStatus(false)
+            }
+
+            DetailScreen()
         }
     }
 }

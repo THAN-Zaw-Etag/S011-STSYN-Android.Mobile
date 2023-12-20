@@ -78,12 +78,14 @@ fun HomeContent(
                     onBottomNavigationItemSelected = { navController.navigate(it) })
             },
             topBar = {
-                AppBar(
-                    title = sharedUiState.title,
-                    onDrawerIconClick = {
-                        coroutineScope.launch { drawerState.open() }
-                    }
-                )
+                if (sharedUiState.showTopAppBar) {
+                    AppBar(
+                        title = sharedUiState.title,
+                        onDrawerIconClick = {
+                            coroutineScope.launch { drawerState.open() }
+                        }
+                    )
+                }
             },
         ) {
             HomeNavigationGraph(

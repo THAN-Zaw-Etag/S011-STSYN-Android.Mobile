@@ -14,6 +14,12 @@ class SharedUiViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(SharedUiState())
     val uiState: StateFlow<SharedUiState> = _uiState.asStateFlow()
 
+    fun updateTopAppBarStatus(show: Boolean) {
+        _uiState.update {
+            it.copy(showTopAppBar = show)
+        }
+    }
+
     fun updateBottomNavigationSelectedItem(title: String) {
         _uiState.update {
             it.copy(selectedBottomNavigationItem = title)
@@ -37,6 +43,7 @@ class SharedUiViewModel @Inject constructor() : ViewModel() {
 
 data class SharedUiState(
     val title: String = Routes.HomeScreen.title,
+    val showTopAppBar: Boolean = true,
     val selectedBottomNavigationItem: String = Routes.HomeScreen.title,
     val showBottomNavigationBar: Boolean = false
 )
