@@ -5,10 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.etag.stsyn.ui.screen.BookInScreen
-import com.etag.stsyn.ui.screen.BookOutScreen
-import com.etag.stsyn.ui.screen.HomeScreen
-import com.etag.stsyn.ui.screen.OtherOperationsScreen
+import com.etag.stsyn.ui.screen.main.BookInScreen
+import com.etag.stsyn.ui.screen.main.BookOutScreen
+import com.etag.stsyn.ui.screen.main.HomeScreen
+import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 
 @Composable

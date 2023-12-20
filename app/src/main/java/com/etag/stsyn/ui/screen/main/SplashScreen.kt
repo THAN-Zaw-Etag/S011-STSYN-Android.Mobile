@@ -1,4 +1,4 @@
-package com.etag.stsyn.ui.screen
+package com.etag.stsyn.ui.screen.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

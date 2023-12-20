@@ -5,10 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.etag.stsyn.ui.screen.HomeContent
-import com.etag.stsyn.ui.screen.LoginScreen
-import com.etag.stsyn.ui.screen.MainScreen
-import com.etag.stsyn.ui.screen.SplashScreen
+import com.etag.stsyn.ui.screen.main.HomeContent
+import com.etag.stsyn.ui.screen.main.LoginScreen
+import com.etag.stsyn.ui.screen.main.MainScreen
+import com.etag.stsyn.ui.screen.main.SplashScreen
 
 @Composable
 fun NavigationGraph(
