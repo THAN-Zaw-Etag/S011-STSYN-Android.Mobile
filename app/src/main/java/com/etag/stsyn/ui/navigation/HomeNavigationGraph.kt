@@ -14,6 +14,7 @@ import com.etag.stsyn.ui.screen.main.BookOutScreen
 import com.etag.stsyn.ui.screen.main.HomeScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
+import com.etag.stsyn.util.OptionType
 
 @Composable
 fun HomeNavigationGraph(
@@ -60,7 +61,9 @@ fun HomeNavigationGraph(
                 updateBottomNavigationBarStatus(true)
             }
             BookOutScreen(
-                onOptionButtonClick = {}
+                onOptionButtonClick = {
+                    navController.navigate(Routes.DetailScreen.name + "/$it")
+                }
             )
         }
 
@@ -74,7 +77,7 @@ fun HomeNavigationGraph(
                 updateBottomNavigationBarStatus(true)
             }
             BookInScreen(onOptionButtonClick = { optionType ->
-                // handle action according option type
+                navController.navigate(Routes.DetailScreen.name + "/$optionType")
             })
         }
 
@@ -88,18 +91,27 @@ fun HomeNavigationGraph(
                 updateBottomNavigationBarStatus(true)
             }
             OtherOperationsScreen(onOptionButtonClick = { optionType ->
-
+                navController.navigate(Routes.DetailScreen.name + "/$optionType")
             })
         }
 
-        composable(route = Routes.DetailScreen.name) {
+        composable(route = Routes.DetailScreen.name + "/{type}") {
+            val optionType = OptionType.valueOf(
+                it.arguments?.getString("type") ?: OptionType.BookOut.toString()
+            )
+
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)
                 updateTopAppBarStatus(false)
                 updateBottomNavigationBarStatus(false)
             }
 
-            DetailScreen()
+            DetailScreen(
+                optionType = optionType,
+                navigateToHomeScreen = {
+                    navController.navigate(Routes.HomeScreen.name)
+                }
+            )
         }
     }
 }

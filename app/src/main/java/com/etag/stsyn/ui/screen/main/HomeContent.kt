@@ -158,17 +158,20 @@ fun DrawerContent(
                 }
             }
         }
-
+        Spacer(modifier = Modifier.height(16.dp))
         ProfileTextButton(
             text = "Settings",
             onOptionClick = onSettingsClick,
-            modifier = Modifier.padding(horizontal = 24.dp)
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(12.dp))
         ProfileTextButton(
             text = "Logout",
             onOptionClick = onLogOutClick,
-            modifier = Modifier.padding(horizontal = 24.dp)
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.weight(1f))

@@ -9,10 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.OptionButtonLayout
 import com.etag.stsyn.util.DataSource
+import com.etag.stsyn.util.OptionType
 
 @Composable
 fun BookOutScreen(
-    onOptionButtonClick: (String) -> Unit,
+    onOptionButtonClick: (OptionType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -22,7 +23,9 @@ fun BookOutScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         DataSource.bookOutOptions.forEach {
-            OptionButtonLayout(optionButtonModel = it, onOptionButtonClick = onOptionButtonClick)
+            OptionButtonLayout(optionButtonModel = it, onOptionButtonClick = {
+                onOptionButtonClick((OptionType.valueOf(it)))
+            })
         }
     }
 }

@@ -30,7 +30,7 @@ object DataSource {
         OptionButtonModel(
             title = "Accountability Check",
             icon = R.drawable.accountability_check_icon,
-            route = Routes.DetailScreen.name
+            route = Routes.DetailScreen.name + "/${OptionType.AccountCheck}"
         ),
         OptionButtonModel(
             title = "Other Operations",
@@ -43,7 +43,11 @@ object DataSource {
         BottomNavigationItem("Home", Icons.Filled.Home, Routes.HomeScreen.name),
         BottomNavigationItem("Book Out", Icons.Filled.ArrowCircleUp, Routes.BookOutScreen.name),
         BottomNavigationItem("Book In", Icons.Filled.ArrowCircleDown, Routes.BookInScreen.name),
-        BottomNavigationItem("Acct Check", Icons.Filled.Assignment, Routes.DetailScreen.name),
+        BottomNavigationItem(
+            "Acct Check",
+            Icons.Filled.Assignment,
+            Routes.DetailScreen.name + "/${OptionType.AccountCheck}"
+        ),
         BottomNavigationItem(
             "Other Operations",
             Icons.Filled.MoreHoriz,
@@ -71,9 +75,9 @@ object DataSource {
     )
 
     val bookInDetPLoanOptions = listOf(
-        OptionButtonModel(title = "Det/T-Loan", route = OptionType.BookInDetPLoan.toString()),
+        OptionButtonModel(title = "Det/P-Loan", route = OptionType.BookInDetPLoan.toString()),
         OptionButtonModel(
-            title = "Det/T-Loan (Box)",
+            title = "Det/P-Loan (Box)",
             route = OptionType.BookInDetPLoanBox.toString()
         )
     )
@@ -96,15 +100,14 @@ object DataSource {
     )
 
     val otherDetPLoanOptions = listOf(
-        OptionButtonModel(title = "Det/T-Loan", route = OptionType.OtherDetPLoan.toString()),
+        OptionButtonModel(title = "Det/P-Loan", route = OptionType.OtherDetPLoan.toString()),
         OptionButtonModel(
-            title = "Det/T-Loan (Box)",
+            title = "Det/P-Loan (Box)",
             route = OptionType.OtherDetPLoanBox.toString()
         )
     )
 
     val tabOptions = listOf(
-        TabOption(title = "ACCT CHECK", icon = Icons.Default.Assignment),
         TabOption(title = "COUNT", icon = Icons.Default.Calculate),
         TabOption(title = "SAVE", icon = Icons.Default.Save),
         TabOption(title = "EXIT", icon = Icons.Default.ExitToApp),
