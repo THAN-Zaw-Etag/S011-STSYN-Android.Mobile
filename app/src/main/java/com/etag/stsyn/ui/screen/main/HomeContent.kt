@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.screen.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -44,6 +45,7 @@ import com.etag.stsyn.ui.components.ProfileTextButton
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.navigation.HomeNavigationGraph
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
+import com.etag.stsyn.util.TransitionUtil
 import kotlinx.coroutines.launch
 
 @Composable
@@ -78,7 +80,11 @@ fun HomeContent(
                     onBottomNavigationItemSelected = { navController.navigate(it) })
             },
             topBar = {
-                if (sharedUiState.showTopAppBar) {
+                AnimatedVisibility(
+                    visible = sharedUiState.showTopAppBar,
+                    enter = TransitionUtil.slideInVerticallyFromTop,
+                    exit = TransitionUtil.slideOutVerticallyToTop
+                ) {
                     AppBar(
                         title = sharedUiState.title,
                         onDrawerIconClick = {

@@ -11,4 +11,9 @@ object TransitionUtil {
         initialOffsetY = { 100 })
     val slideOutVertically = fadeOut() + slideOutVertically(animationSpec = tween(200),
         targetOffsetY = { 100 })
+
+    val slideInVerticallyFromTop = fadeIn() + slideInVertically(animationSpec = tween(200),
+        initialOffsetY = { -100 })
+    val slideOutVerticallyToTop = fadeOut() + slideOutVertically(animationSpec = tween(200),
+        targetOffsetY = { -100 })
 }

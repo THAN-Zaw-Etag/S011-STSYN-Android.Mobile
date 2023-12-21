@@ -51,6 +51,9 @@ fun HomeNavigationGraph(
         }
 
         composable(route = Routes.BookOutScreen.name) {
+            BackHandler(true) {
+                navController.navigate(Routes.HomeScreen.name)
+            }
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.BookOutScreen.title)
                 updateTopAppBarStatus(true)
@@ -62,6 +65,9 @@ fun HomeNavigationGraph(
         }
 
         composable(route = Routes.BookInScreen.name) {
+            BackHandler(true) {
+                navController.navigate(Routes.HomeScreen.name)
+            }
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.BookInScreen.title)
                 updateTopAppBarStatus(true)
