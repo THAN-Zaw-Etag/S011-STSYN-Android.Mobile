@@ -1,10 +1,13 @@
 package com.etag.stsyn.ui.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.etag.stsyn.ui.components.ExitAppOnBackPress
 import com.etag.stsyn.ui.screen.detail.DetailScreen
 import com.etag.stsyn.ui.screen.main.BookInScreen
 import com.etag.stsyn.ui.screen.main.BookOutScreen
@@ -25,11 +28,18 @@ fun HomeNavigationGraph(
         modifier = modifier
     ) {
         composable(route = Routes.HomeScreen.name) {
+            val context = LocalContext.current
+
+            BackHandler(enabled = true) {
+                ExitAppOnBackPress(context)
+            }
+
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.HomeScreen.title)
                 updateTopAppBarStatus(true)
                 updateBottomNavigationBarStatus(false)
             }
+
             HomeScreen(onCategoryItemClick = {
                 // save current selected bottom navigtion route
 
@@ -63,6 +73,9 @@ fun HomeNavigationGraph(
         }
 
         composable(route = Routes.OtherOperationsScreen.name) {
+            BackHandler(true) {
+                navController.navigate(Routes.HomeScreen.name)
+            }
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)
                 updateTopAppBarStatus(true)
