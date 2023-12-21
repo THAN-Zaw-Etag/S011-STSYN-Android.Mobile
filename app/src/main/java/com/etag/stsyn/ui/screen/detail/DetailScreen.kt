@@ -2,24 +2,20 @@ package com.etag.stsyn.ui.screen.detail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.etag.stsyn.domain.model.TabOption
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.DisableBackPress
 import com.etag.stsyn.ui.components.TabBarLayout
-import com.etag.stsyn.util.DataSource
+import com.etag.stsyn.util.DetailConfigurationGraph
 import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
@@ -32,12 +28,12 @@ fun DetailScreen(
     modifier: Modifier = Modifier
 ) {
     var showTabBar by remember { mutableStateOf(false) }
-    var options by remember { mutableStateOf(listOf<TabOption>()) }
+    var options = TabUtil.getTabDetails(optionType)
 
     LaunchedEffect(Unit) {
         delay(300)
         showTabBar = true
-        options = TabUtil.getTabDetails(optionType)
+
     }
 
     DisableBackPress()
@@ -46,7 +42,7 @@ fun DetailScreen(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        var tabTitle by remember { mutableStateOf("") }
+        var tabTitle by remember { mutableStateOf(options.get(0).title) }
         var showConfirmationDialog by remember { mutableStateOf(false) }
         var canBeSelected by remember { mutableStateOf(false) }
 
@@ -71,19 +67,20 @@ fun DetailScreen(
                     navigateToHomeScreen()
                 })
 
-            TabBarLayout(options = options, selected = canBeSelected, onTabSelected = {
+            TabBarLayout(
+                options = options,
+                selected = canBeSelected,
+                onTabSelected = {
 
-                tabTitle = "${optionType}\t $it"
+                    tabTitle = it
 
-                // check whether current tab item is exit tab
-                if (it.equals(DataSource.tabOptions.get(DataSource.tabOptions.size - 1).title)) {
-                    showConfirmationDialog = true
-                }
-            })
+                    // check whether current tab item is exit tab
+                    if (it.equals(options.get(options.size - 1).title)) {
+                        showConfirmationDialog = true
+                    }
+                })
         }
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = tabTitle)
-        }
+        DetailConfigurationGraph(options = options, tabTitle = tabTitle)
     }
 }

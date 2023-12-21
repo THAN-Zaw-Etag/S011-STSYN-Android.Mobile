@@ -2,7 +2,6 @@
 
 package com.etag.stsyn.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -33,7 +32,6 @@ fun TabBarLayout(
 
     LaunchedEffect(selected) {
         canBeSelected = selected
-        Log.d("TAG", "CanBeSelected: $canBeSelected")
     }
 
     TabRow(selectedTabIndex = selectedIndex) {

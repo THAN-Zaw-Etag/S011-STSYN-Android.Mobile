@@ -17,28 +17,28 @@ object TabUtil {
 
         return when (optionType) {
             OptionType.OtherDetPLoan -> {
-                options.removeAt(1)
+                options.removeAt(0)
                 options.add(0, TabOption(optionType.title, Icons.Filled.ArrowCircleUp))
 
                 options
             }
 
             OptionType.OtherTLoan -> {
-                options.removeAt(1)
+                options.removeAt(0)
                 options.add(0, TabOption(optionType.title, Icons.Filled.ArrowCircleUp))
 
                 options
             }
 
             OptionType.OnsiteCheckInOut -> {
-                options.removeAt(1)
+                options.removeAt(0)
                 options.add(0, TabOption(optionType.title, Icons.Filled.ArrowCircleUp))
 
                 options
             }
 
             OptionType.BookOut -> {
-                options.removeAt(1)
+                options.removeAt(0)
                 options.add(0, TabOption(optionType.title, Icons.Filled.ArrowCircleUp))
 
                 options
