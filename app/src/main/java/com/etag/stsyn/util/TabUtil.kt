@@ -4,7 +4,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import com.etag.stsyn.domain.model.TabOption
 
+
 object TabUtil {
+
+    /**
+     * Used this method to filter 3 tabs options
+     * OtherDetPLoan,OtherTLoan,OnSiteCheckInOut,BookOut has only 3 tabs and others have 4 tabs
+     * */
     fun getTabDetails(optionType: OptionType): List<TabOption> {
 
         val options = DataSource.tabOptions.toMutableList()

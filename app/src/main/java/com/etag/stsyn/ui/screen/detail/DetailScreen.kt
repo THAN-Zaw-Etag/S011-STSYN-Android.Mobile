@@ -48,6 +48,7 @@ fun DetailScreen(
     ) {
         var tabTitle by remember { mutableStateOf("") }
         var showConfirmationDialog by remember { mutableStateOf(false) }
+        var canBeSelected by remember { mutableStateOf(false) }
 
         AnimatedVisibility(
             visible = showTabBar,
@@ -60,13 +61,20 @@ fun DetailScreen(
                 title = "Are you sure you want to exit?",
                 cancelTitle = "No",
                 confirmTitle = "Exit",
-                onCancelClick = { showConfirmationDialog = false },
+                onCancelClick = {
+                    showConfirmationDialog = false
+                    canBeSelected = false
+                },
                 onConfirmClick = {
                     showConfirmationDialog = false
+                    canBeSelected = true
                     navigateToHomeScreen()
                 })
 
-            TabBarLayout(options = options, selected = showConfirmationDialog, onTabSelected = {
+            TabBarLayout(options = options, selected = canBeSelected, onTabSelected = {
+
+                tabTitle = "${optionType}\t $it"
+
                 // check whether current tab item is exit tab
                 if (it.equals(DataSource.tabOptions.get(DataSource.tabOptions.size - 1).title)) {
                     showConfirmationDialog = true

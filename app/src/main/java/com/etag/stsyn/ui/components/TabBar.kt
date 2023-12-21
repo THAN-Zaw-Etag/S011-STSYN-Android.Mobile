@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -9,6 +10,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,16 +24,22 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun TabBarLayout(
-    selected: Boolean = true,
+    selected: Boolean,
     onTabSelected: (String) -> Unit,
     options: List<TabOption>
 ) {
     var selectedIndex by remember { mutableStateOf(0) }
+    var canBeSelected by remember { mutableStateOf(true) }
+
+    LaunchedEffect(selected) {
+        canBeSelected = selected
+        Log.d("TAG", "CanBeSelected: $canBeSelected")
+    }
 
     TabRow(selectedTabIndex = selectedIndex) {
         options.forEachIndexed { index, tabOption ->
             Tab(
-                selected = (selectedIndex == index) && selected,
+                selected = (selectedIndex == index) && false,
                 selectedContentColor = Purple80,
                 icon = {
                     Icon(
@@ -50,6 +58,7 @@ fun TabBarLayout(
                     )
                 },
                 onClick = {
+
                     selectedIndex = index
                     onTabSelected(tabOption.title)
                 })
