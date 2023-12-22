@@ -3,6 +3,8 @@ package com.etag.stsyn.util
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import com.etag.stsyn.ui.screen.CountScreen
+import com.etag.stsyn.ui.screen.ScannedItemListScreen
+import com.etag.stsyn.ui.screen.book_in.BookInSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutScreen
 import com.etag.stsyn.ui.screen.book_out.book_out_box.BookOutBoxScreen
@@ -55,6 +57,45 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
             ), onControlTypeChange = {})
 
         "${OptionType.BookOutBox}-${tabOptions.get(2).title}" -> BookOutSaveScreen()
+        "${OptionType.BookIn}-${tabOptions.get(0).title}" -> ScannedItemListScreen(
+            listOf(
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+            )
+        )
+
+        "${OptionType.BookIn}-${tabOptions.get(1).title}" -> CountScreen(
+            onControlTypeChange = {},
+            items = listOf(
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+            )
+        )
+
+        "${OptionType.BookIn}-${tabOptions.get(2).title}" -> BookInSaveScreen(
+            showSaveButton = true,
+            onSave = {})
+
         else -> Column {}
     }
 }
