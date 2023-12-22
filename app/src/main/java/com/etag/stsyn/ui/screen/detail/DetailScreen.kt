@@ -33,7 +33,6 @@ fun DetailScreen(
     LaunchedEffect(Unit) {
         delay(300)
         showTabBar = true
-
     }
 
     DisableBackPress()
@@ -65,22 +64,26 @@ fun DetailScreen(
                     showConfirmationDialog = false
                     canBeSelected = true
                     navigateToHomeScreen()
-                })
+                }
+            )
 
-            TabBarLayout(
-                options = options,
-                selected = canBeSelected,
-                onTabSelected = {
+            Column {
+                TabBarLayout(
+                    options = options,
+                    selected = canBeSelected,
+                    onTabSelected = {
+                        tabTitle = it
 
-                    tabTitle = it
-
-                    // check whether current tab item is exit tab
-                    if (it.equals(options.get(options.size - 1).title)) {
-                        showConfirmationDialog = true
+                        // check whether current tab item is exit tab
+                        if (it.equals(options.get(options.size - 1).title)) {
+                            showConfirmationDialog = true
+                        }
                     }
-                })
-        }
+                )
 
-        DetailConfigurationGraph(options = options, tabTitle = tabTitle)
+                // To show when tab bar is visible
+                DetailConfigurationGraph(optionType = optionType, tabTitle = tabTitle)
+            }
+        }
     }
 }

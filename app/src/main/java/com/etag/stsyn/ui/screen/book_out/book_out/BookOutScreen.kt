@@ -1,4 +1,4 @@
-package com.etag.stsyn.ui.screen.book_out
+package com.etag.stsyn.ui.screen.book_out.book_out
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

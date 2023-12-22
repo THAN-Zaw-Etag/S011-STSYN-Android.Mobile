@@ -23,29 +23,28 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
-fun UserItemLayout(
-    profile: ImageVector,
-    profileType: String,
+fun SaveItemLayout(
+    icon: ImageVector,
+    itemTitle: String,
     showRefreshIcon: Boolean = false,
-    userName: String,
-    userId: String,
     onRefresh: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
 ) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(16.dp),
         ) {
-            Icon(imageVector = profile, contentDescription = null, tint = Purple80)
+            Icon(imageVector = icon, contentDescription = null, tint = Purple80)
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 Text(
-                    text = profileType
+                    text = itemTitle
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "$userName - $userId")
+                Spacer(modifier = Modifier.height(12.dp))
+                content()
             }
             Spacer(modifier = Modifier.weight(1f))
             if (showRefreshIcon) {
@@ -62,7 +61,7 @@ fun UserItemLayout(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(Color.Gray)
+                .background(Color.LightGray)
         )
     }
 }
@@ -70,12 +69,12 @@ fun UserItemLayout(
 @Composable
 @Preview(showBackground = true)
 fun UserItemLayoutPreview() {
-    UserItemLayout(
+    SaveItemLayout(
         showRefreshIcon = true,
-        profile = Icons.Default.PersonPinCircle,
-        profileType = "User",
-        userName = "Admin",
-        userId = "123s",
+        icon = Icons.Default.PersonPinCircle,
+        itemTitle = "User",
         onRefresh = { }
-    )
+    ) {
+
+    }
 }
