@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.book_out.book_out_box
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,6 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,9 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -40,8 +45,10 @@ import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
-fun BookOutBoxScreen(
+fun BoxScreen(
     scannedItems: List<String>,
+    onReset: () -> Unit,
+    showBoxBookOutButton: Boolean = false,
     modifier: Modifier = Modifier
 ) {
 
@@ -71,6 +78,10 @@ fun BookOutBoxScreen(
                 }
         ) {
             item {
+                if (showBoxBookOutButton) {
+                    BoxBookOutButton(count = 2) {}
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
                 BoxScanSection(
                     boxId = "C123456",
                     boxDescription = "ADAPTER SET AIRCRAFT MAINTENANCE (BOX)(R01) C123456"
@@ -78,7 +89,7 @@ fun BookOutBoxScreen(
             }
             item {
                 Spacer(modifier = Modifier.height(12.dp))
-                ScannedItemsOptionLayout(items.size, isScanned = false, onReset = {})
+                ScannedItemsOptionLayout(items.size, isScanned = false, onReset = onReset)
             }
             itemsIndexed(scannedItems) { index, item ->
                 ScannedItem(
@@ -99,6 +110,30 @@ fun BookOutBoxScreen(
         ) {
 
         }
+    }
+}
+
+@Composable
+fun BoxBookOutButton(count: Int, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(5.dp))
+            .clickable { onClick() }
+            .background(Purple80.copy(alpha = 0.1f)),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "Box booked out ($count)",
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(8.dp)
+        )
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowRight,
+            tint = Color.Gray,
+            modifier = Modifier.padding(8.dp),
+            contentDescription = null
+        )
     }
 }
 
@@ -204,10 +239,4 @@ private fun BoxScanSection(
                 .weight(0.7f)
         )
     }
-}
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun BookOutBoxScreenPreview() {
-    BookOutBoxScreen(listOf("Hello", "World", "You"))
 }

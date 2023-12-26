@@ -7,7 +7,7 @@ import com.etag.stsyn.ui.screen.ScannedItemListScreen
 import com.etag.stsyn.ui.screen.book_in.BookInSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutScreen
-import com.etag.stsyn.ui.screen.book_out.book_out_box.BookOutBoxScreen
+import com.etag.stsyn.ui.screen.book_out.book_out_box.BoxScreen
 
 /**
  * This composable function returns content to show according to tab.
@@ -18,6 +18,8 @@ import com.etag.stsyn.ui.screen.book_out.book_out_box.BookOutBoxScreen
 
 @Composable
 fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
+    // Declare viewmodel here
+
     val tabOptions = TabUtil.getTabDetails(optionType)
 
     return when ("$optionType-$tabTitle") {
@@ -26,7 +28,7 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
             onClear = {})
 
         "${OptionType.BookOut}-${tabOptions.get(1).title}" -> BookOutSaveScreen()
-        "${OptionType.BookOutBox}-${tabOptions.get(0).title}" -> BookOutBoxScreen(
+        "${OptionType.BookOutBox}-${tabOptions.get(0).title}" -> BoxScreen(
             listOf(
                 "Hello",
                 "World",
@@ -37,7 +39,8 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
                 "To",
                 "Meet",
                 "You"
-            )
+            ),
+            onReset = {}
         )
 
         "${OptionType.BookOutBox}-${tabOptions.get(1).title}" -> CountScreen(
@@ -96,6 +99,30 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
             showSaveButton = true,
             onSave = {})
 
+        "${OptionType.BookInBox}-${tabOptions.get(0).title}" -> BoxScreen(
+            listOf("1", "2", "3"),
+            showBoxBookOutButton = true,
+            onReset = {})
+
+        "${OptionType.BookInBox}-${tabOptions.get(1).title}" -> CountScreen(
+            onControlTypeChange = {},
+            items = listOf(
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+                "Hello",
+            )
+        )
+
+        "${OptionType.BookInBox}-${tabOptions.get(2).title}" -> BookOutSaveScreen()
         else -> Column {}
     }
 }
