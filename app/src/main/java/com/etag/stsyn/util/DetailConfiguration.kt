@@ -266,6 +266,15 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
         }
 
         "${OptionType.AccountCheck}-${tabOptions.get(0).title}" -> AcctCheckScreen()
+        "${OptionType.AccountCheck}-${tabOptions.get(1).title}" -> CountScreen(
+            emptyList(),
+            onControlTypeChange = {})
+
+        "${OptionType.AccountCheck}-${tabOptions.get(2).title}" -> BookInSaveScreen(
+            showSaveButton = true,
+            content = { }) {
+
+        }
 
         else -> Column {}
     }
