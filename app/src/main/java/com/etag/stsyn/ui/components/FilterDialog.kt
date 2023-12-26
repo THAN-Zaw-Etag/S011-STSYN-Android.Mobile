@@ -2,16 +2,16 @@
 
 package com.etag.stsyn.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -32,40 +32,56 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.etag.stsyn.util.DataSource
 
 @Composable
 fun FilterDialog(
-    show: Boolean, onDismiss: () -> Unit
+    show: Boolean, onDismiss: () -> Unit,
+    onDone: (HashMap<Int, String>) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(show) {
         showDialog = show
-        Log.d("TAG", "FilterDialog: $show")
     }
 
     if (showDialog) {
-        Dialog(onDismissRequest = {
-            showDialog = false
-            onDismiss()
-        }) {
-            FilterDialogContent(onDismiss = {
+        Dialog(
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+            onDismissRequest = {
                 showDialog = false
                 onDismiss()
-            })
+            }) {
+            FilterDialogContent(
+                onDismiss = {
+                    showDialog = false
+                    onDismiss()
+                },
+                onDone = {
+                    onDone(it)
+                    showDialog = false
+                    onDismiss()
+                }
+            )
         }
     }
 }
 
 @Composable
-private fun FilterDialogContent(onDismiss: () -> Unit) {
+private fun FilterDialogContent(onDismiss: () -> Unit, onDone: (HashMap<Int, String>) -> Unit) {
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        var selectedItems = hashMapOf<Int, String>()
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+        ) {
             IconButton(onClick = onDismiss) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
             }
@@ -74,20 +90,27 @@ private fun FilterDialogContent(onDismiss: () -> Unit) {
             Text(text = "Filter")
         }
 
-        LazyColumn {
-            items(DataSource.filters) {
-                FilterItem(title = it, onSelected = { option ->
-
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            itemsIndexed(DataSource.filters) { index, item ->
+                FilterItem(title = item, onSelected = { option ->
+                    selectedItems.put(index, option)
                 })
             }
-            item {
-                OutlinedButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = null)
-                    Text(text = "Delete Filter")
-                }
-                FilledTonalButton(onClick = { /*TODO*/ }, modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Save")
-                }
+        }
+
+        Column {
+            OutlinedButton(
+                onClick = { selectedItems.clear() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                Text(text = "Delete Filter")
+            }
+            FilledTonalButton(
+                onClick = { onDone(selectedItems) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Save")
             }
         }
     }

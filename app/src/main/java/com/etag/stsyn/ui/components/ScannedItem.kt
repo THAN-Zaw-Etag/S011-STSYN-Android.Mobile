@@ -115,8 +115,8 @@ fun ScannedItemContent(
                 modifier = modifier
                     .padding(16.dp)
             ) {
-                Text(text = id)
-                Text(text = name)
+                Text(text = id.toUpperCase())
+                Text(text = name.toUpperCase())
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -140,6 +140,9 @@ fun ScannedItemContent(
                     tint = Color.Gray
                 )
             }
+
+            //Text(text = "101100101", modifier = Modifier.align(Alignment.End))
+
         }
     }
 }

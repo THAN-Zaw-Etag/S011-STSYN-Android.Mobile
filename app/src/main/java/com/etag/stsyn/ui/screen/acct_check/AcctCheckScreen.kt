@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.acct_check
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ fun AcctCheckScreen(
 ) {
     var filterCount by remember { mutableStateOf(0) }
     var isScanned by remember { mutableStateOf(false) }
+    var selectedFilters = remember { mutableStateOf(mutableMapOf<Int, String>()) }
     var showFilterDialog by remember { mutableStateOf(false) }
 
     ConstraintLayout(
@@ -58,10 +60,14 @@ fun AcctCheckScreen(
                 }
                 .padding(16.dp)
         ) {
-            FilterDialog(showFilterDialog, onDismiss = { showFilterDialog = false })
+            FilterDialog(showFilterDialog, onDismiss = { showFilterDialog = false }, onDone = {
+                selectedFilters.value = it
+                Log.d("TAG", "AcctCheckScreen: ${selectedFilters.value}")
+            })
             AcctCheckContent(
                 onFilterButtonClick = { showFilterDialog = true },
-                filterCount = filterCount,
+                selectedFilters = selectedFilters.value,
+                filterCount = selectedFilters.value.size,
                 isScanned = isScanned
             )
         }
@@ -78,11 +84,19 @@ fun AcctCheckScreen(
 }
 
 @Composable
-fun AcctCheckContent(filterCount: Int, onFilterButtonClick: () -> Unit, isScanned: Boolean) {
+fun AcctCheckContent(
+    filterCount: Int,
+    onFilterButtonClick: () -> Unit,
+    selectedFilters: MutableMap<Int, String>,
+    isScanned: Boolean
+) {
     FilterButton(filterCount, onClick = onFilterButtonClick)
     Spacer(modifier = Modifier.height(16.dp))
-    DataSource.filters.forEach {
-        DetailItem(title = it, value = "-")
+    DataSource.filters.forEachIndexed { index, title ->
+        DetailItem(
+            title = title,
+            value = if (index in selectedFilters.keys) selectedFilters.getValue(index) else "-"
+        )
     }
     ScanBoxSection("", "")
     Row(modifier = Modifier.fillMaxWidth()) {

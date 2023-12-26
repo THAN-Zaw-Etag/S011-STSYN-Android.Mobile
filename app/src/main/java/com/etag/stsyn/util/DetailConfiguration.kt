@@ -12,6 +12,10 @@ import com.etag.stsyn.ui.screen.book_in_cal.BookInCalSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutScreen
 import com.etag.stsyn.ui.screen.book_out.book_out_box.BoxScreen
+import com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out.CheckInOutSaveScreen
+import com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out.CheckInOutScreen
+import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerifyScreen
+import com.etag.stsyn.ui.screen.other_operations.t_loan_out.TLoanOutSaveScreen
 
 /**
  * This composable function returns content to show according to tab.
@@ -275,6 +279,39 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
             content = { }) {
 
         }
+
+        "${OptionType.OnsiteCheckInOut}-${tabOptions.get(0).title}" -> CheckInOutScreen()
+        "${OptionType.OnsiteCheckInOut}-${tabOptions.get(1).title}" -> CheckInOutSaveScreen()
+        "${OptionType.OnsiteVerification}-${tabOptions.get(0).title}" -> OnsiteVerifyScreen()
+        "${OptionType.OnsiteVerification}-${tabOptions.get(1).title}" -> CountScreen(
+            listOf(),
+            onControlTypeChange = {})
+
+        "${OptionType.OnsiteVerification}-${tabOptions.get(2).title}" -> BookInSaveScreen(
+            showSaveButton = true,
+            onSave = {},
+            content = {})
+
+        "${OptionType.OtherTLoan}-${tabOptions.get(0).title}" -> ScannedItemListScreen(
+            items = listOf(
+                "1",
+                "2",
+                "3"
+            )
+        )
+
+        "${OptionType.OtherTLoan}-${tabOptions.get(1).title}" -> TLoanOutSaveScreen()
+        "${OptionType.OtherTLoanBox}-${tabOptions.get(0).title}" -> BoxScreen(
+            scannedItems = listOf("1", "2", "3"),
+            onReset = { /*TODO*/ })
+
+        "${OptionType.OtherTLoanBox}-${tabOptions.get(1).title}" -> CountScreen(
+            items = listOf("1", "2", "3"),
+            onControlTypeChange = {}
+        )
+
+        "${OptionType.OtherTLoanBox}-${tabOptions.get(2).title}" -> TLoanOutSaveScreen()
+        "${OptionType.OtherDetPLoan}-${tabOptions.get(0).title}" -> TLoanOutSaveScreen()
 
         else -> Column {}
     }
