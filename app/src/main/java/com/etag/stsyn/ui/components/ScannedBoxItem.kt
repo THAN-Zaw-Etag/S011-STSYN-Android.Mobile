@@ -51,7 +51,7 @@ fun ScannedBoxItem(
 
         Spacer(modifier = Modifier.weight(1f))
         if (showRefreshIcon) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = onRefresh) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     tint = Color.Gray,

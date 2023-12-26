@@ -88,8 +88,10 @@ fun BoxScreen(
                 )
             }
             item {
-                Spacer(modifier = Modifier.height(12.dp))
-                ScannedItemsOptionLayout(items.size, isScanned = false, onReset = onReset)
+                if (items.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    ScannedItemsOptionLayout(items.size, isScanned = false, onReset = onReset)
+                }
             }
             itemsIndexed(scannedItems) { index, item ->
                 ScannedItem(

@@ -23,14 +23,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.etag.stsyn.ui.components.DropDown
 import com.etag.stsyn.ui.components.ErrorText
-import com.etag.stsyn.ui.components.PurposeDropdown
 import com.etag.stsyn.ui.components.SaveButton
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.Purpose
 
 @Composable
 fun BookOutSaveScreen(
+    errorMessage: String,
     modifier: Modifier = Modifier
 ) {
     var location by remember { mutableStateOf("") }
@@ -45,7 +47,13 @@ fun BookOutSaveScreen(
         ) { Text(text = "Admin - 123S") }
 
         SaveItemLayout(icon = Icons.Outlined.TrackChanges, itemTitle = "Purpose") {
-            PurposeDropdown()
+            DropDown(
+                items = Purpose.values().toList().map { it.toString() },
+                defaultValue = "Choose a purpose",
+                onSelected = { item ->
+
+                }
+            )
         }
 
         SaveItemLayout(icon = Icons.Default.AddLocation, itemTitle = "Location") {
@@ -76,7 +84,7 @@ fun BookOutSaveScreen(
             ) {}
         } else {
             ErrorText(
-                text = "Please read an item first.",
+                text = errorMessage,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(16.dp)
@@ -88,5 +96,5 @@ fun BookOutSaveScreen(
 @Composable
 @Preview(showSystemUi = true, showBackground = true)
 fun BookOutSaveScreenPreview() {
-    BookOutSaveScreen()
+    BookOutSaveScreen("Hello")
 }

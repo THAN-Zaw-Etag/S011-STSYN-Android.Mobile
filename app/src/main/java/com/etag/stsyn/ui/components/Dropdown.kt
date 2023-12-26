@@ -19,17 +19,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.theme.Purple80
-import com.etag.stsyn.util.Purpose
 
 @Composable
-fun PurposeDropdown(
+fun DropDown(
+    items: List<String>,
+    defaultValue: String,
+    onSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("Choose a purpose") }
+    var selectedText by remember { mutableStateOf(defaultValue) }
 
     Box(
         modifier = modifier
@@ -65,10 +66,11 @@ fun PurposeDropdown(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                Purpose.values().forEach { item ->
+                items.forEach { item ->
                     DropdownMenuItem(
                         text = { Text(text = item.toString()) },
                         onClick = {
+                            onSelected(item)
                             selectedText = item.toString()
                             expanded = false
                         }
@@ -77,10 +79,4 @@ fun PurposeDropdown(
             }
         }
     }
-}
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun PurposeDropdownPreview() {
-    PurposeDropdown()
 }

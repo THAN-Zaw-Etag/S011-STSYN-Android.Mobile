@@ -103,10 +103,12 @@ fun CountScreenContent(
             }
         }
 
-        Text(text = "Total ${items.size}", modifier = Modifier.constrainAs(text) {
-            bottom.linkTo(parent.bottom)
-            end.linkTo(parent.end)
-        })
+        if (items.size > 0) {
+            Text(text = "Total ${items.size}", modifier = Modifier.constrainAs(text) {
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+            })
+        }
     }
 }
 

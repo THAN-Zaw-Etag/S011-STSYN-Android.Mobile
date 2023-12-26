@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +27,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun BookInSaveScreen(
     showSaveButton: Boolean,
+    isUSCase: Boolean = false,
+    content: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     onSave: () -> Unit
 ) {
@@ -45,6 +48,16 @@ fun BookInSaveScreen(
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User") {
             Text(text = "Admin - 123S")
         }
+        content()
+        if (isUSCase) {
+            SaveItemLayout(
+                icon = Icons.Default.People,
+                itemTitle = "Buddy",
+                showRefreshIcon = true
+            ) {
+                Text(text = "-")
+            }
+        }
         Spacer(modifier = Modifier.weight(1f))
 
         if (showSaveButton) {
@@ -54,6 +67,7 @@ fun BookInSaveScreen(
                     .padding(16.dp)
             ) {
                 showConfirmationDialog = true
+                onSave()
             }
         } else {
             ErrorText(
@@ -71,6 +85,8 @@ fun BookInSaveScreen(
 fun BookInSaveScreenPreview() {
     BookInSaveScreen(
         showSaveButton = true,
-        onSave = {}
+        isUSCase = true,
+        onSave = {},
+        content = {}
     )
 }

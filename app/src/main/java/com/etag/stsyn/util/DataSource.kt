@@ -112,4 +112,15 @@ object DataSource {
         TabOption(title = "SAVE", icon = Icons.Default.Save),
         TabOption(title = "EXIT", icon = Icons.Default.ExitToApp),
     )
+
+    val filters = listOf(
+        "Store Type",
+        "CS Number",
+        "Unit/SQN",
+        "Flight",
+        "Item Type",
+        "Location",
+        "Box",
+        "Remarks"
+    )
 }
