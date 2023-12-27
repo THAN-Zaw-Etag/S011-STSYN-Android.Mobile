@@ -22,7 +22,6 @@ import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
@@ -48,33 +47,24 @@ fun ScannedItem(
     modifier: Modifier = Modifier
 ) {
 
-    val state = rememberDismissState(
-        confirmValueChange = {
-            if (isSwipeable && it == DismissValue.DismissedToStart) {
-                onSwipeToDismiss()
-            }
-            true
+    val state = rememberDismissState(confirmValueChange = {
+        if (isSwipeable && it == DismissValue.DismissedToStart) {
+            onSwipeToDismiss()
         }
-    )
+        true
+    })
 
     if (isSwipeable && !isScanned) {
-        SwipeToDismiss(
-            state = state,
-            modifier = modifier,
-            background = {
-                ScannedItemDismissBackground()
-            },
-            dismissContent = {
-                ScannedItemContent(
-                    id = id,
-                    name = name,
-                    showError = showError,
-                    showTrailingIcon = showTrailingIcon,
-                    onItemClick = onItemClick,
-                    isScanned = isScanned
-                )
-            }
-        )
+        SwipeableItem(state = state, modifier = modifier, content = {
+            ScannedItemContent(
+                id = id,
+                name = name,
+                showError = showError,
+                showTrailingIcon = showTrailingIcon,
+                onItemClick = onItemClick,
+                isScanned = isScanned
+            )
+        })
     } else ScannedItemContent(
         isScanned = isScanned,
         id = id,
@@ -112,8 +102,7 @@ fun ScannedItemContent(
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
-                modifier = modifier
-                    .padding(16.dp)
+                modifier = modifier.padding(16.dp)
             ) {
                 Text(text = id.toUpperCase())
                 Text(text = name.toUpperCase())
@@ -148,7 +137,7 @@ fun ScannedItemContent(
 }
 
 @Composable
-private fun ScannedItemDismissBackground(
+fun ScannedItemDismissBackground(
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -172,6 +161,7 @@ private fun ScannedItemDismissBackground(
 fun ScannedItemPreview() {
     ScannedItem(
         onSwipeToDismiss = {},
+        isSwipeable = true,
         id = "SN000001 - DLJC11111",
         name = "DATA LINK JUMPER CABLE",
         showTrailingIcon = true

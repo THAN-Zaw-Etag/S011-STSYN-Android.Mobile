@@ -61,8 +61,7 @@ fun CountScreen(
             if (scaffoldState.bottomSheetState.isVisible) {
                 coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
             } else coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-        }
-        )
+        })
     }
 }
 
@@ -77,14 +76,16 @@ fun CountScreenContent(
 
         val (control, scannedItems, text) = createRefs()
 
-        SegmentedControl(onTabSelected = onControlTypeChange,
+        SegmentedControl(
+            onTabSelected = onControlTypeChange,
             modifier = Modifier.constrainAs(control) {
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             })
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp),
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .padding(vertical = 42.dp)
                 .constrainAs(scannedItems) {

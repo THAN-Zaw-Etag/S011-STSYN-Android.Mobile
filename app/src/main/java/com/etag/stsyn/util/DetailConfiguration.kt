@@ -12,6 +12,7 @@ import com.etag.stsyn.ui.screen.book_in_cal.BookInCalSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutScreen
 import com.etag.stsyn.ui.screen.book_out.book_out_box.BoxScreen
+import com.etag.stsyn.ui.screen.other_operations.det_p_loan.DetPLoanScreen
 import com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out.CheckInOutSaveScreen
 import com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out.CheckInOutScreen
 import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerifyScreen
@@ -311,7 +312,18 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
         )
 
         "${OptionType.OtherTLoanBox}-${tabOptions.get(2).title}" -> TLoanOutSaveScreen()
-        "${OptionType.OtherDetPLoan}-${tabOptions.get(0).title}" -> TLoanOutSaveScreen()
+        "${OptionType.OtherDetPLoan}-${tabOptions.get(0).title}" -> DetPLoanScreen()
+        "${OptionType.OtherDetPLoan}-${tabOptions.get(1).title}" -> TLoanOutSaveScreen()
+        "${OptionType.OtherDetPLoanBox}-${tabOptions.get(0).title}" -> BoxScreen(
+            scannedItems = listOf(),
+            onReset = { /*TODO*/ })
+
+        "${OptionType.OtherDetPLoanBox}-${tabOptions.get(1).title}" -> CountScreen(
+            items = listOf(),
+            onControlTypeChange = {}
+        )
+
+        "${OptionType.OtherDetPLoanBox}-${tabOptions.get(2).title}" -> TLoanOutSaveScreen()
 
         else -> Column {}
     }
