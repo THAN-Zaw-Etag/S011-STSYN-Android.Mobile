@@ -5,10 +5,12 @@ import androidx.compose.runtime.Composable
 import com.etag.stsyn.ui.screen.CountScreen
 import com.etag.stsyn.ui.screen.ScannedItemListScreen
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckScreen
+import com.etag.stsyn.ui.screen.book_in.BookInCountScreen
 import com.etag.stsyn.ui.screen.book_in.BookInSaveScreen
 import com.etag.stsyn.ui.screen.book_in.book_in_box.BookInBoxSaveScreen
 import com.etag.stsyn.ui.screen.book_in.t_loan.TLoanCountScreen
 import com.etag.stsyn.ui.screen.book_in_cal.BookInCalSaveScreen
+import com.etag.stsyn.ui.screen.book_in_cal.BookInCalScanScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutSaveScreen
 import com.etag.stsyn.ui.screen.book_out.book_out.BookOutScreen
 import com.etag.stsyn.ui.screen.book_out.book_out_box.BoxScreen
@@ -27,7 +29,6 @@ import com.etag.stsyn.ui.screen.other_operations.t_loan_out.TLoanOutSaveScreen
 
 @Composable
 fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
-    // Declare viewModel here
 
     val tabOptions = TabUtil.getTabDetails(optionType)
 
@@ -86,8 +87,7 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
             )
         )
 
-        "${OptionType.BookIn}-${tabOptions.get(1).title}" -> CountScreen(
-            onControlTypeChange = {},
+        "${OptionType.BookIn}-${tabOptions.get(1).title}" -> BookInCountScreen(
             items = listOf(
                 "Hello",
                 "Hello",
@@ -135,22 +135,7 @@ fun DetailConfigurationGraph(optionType: OptionType, tabTitle: String) {
             onRefresh = { /*TODO*/ },
             onSave = {})
 
-        "${OptionType.BookInCalibration}-${tabOptions.get(0).title}" -> ScannedItemListScreen(
-            listOf(
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-                "Hello",
-            )
-        )
+        "${OptionType.BookInCalibration}-${tabOptions.get(0).title}" -> BookInCalScanScreen()
 
         "${OptionType.BookInCalibration}-${tabOptions.get(1).title}" -> CountScreen(
             items = listOf(),

@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,23 +50,27 @@ fun ScannedItem(
 ) {
 
     val state = rememberDismissState(confirmValueChange = {
-        if (isSwipeable && it == DismissValue.DismissedToStart) {
+        if (it == DismissValue.DismissedToStart) {
             onSwipeToDismiss()
         }
         true
     })
 
+    val isDismissed = state.isDismissed(DismissDirection.EndToStart)
+
     if (isSwipeable && !isScanned) {
-        SwipeableItem(state = state, modifier = modifier, content = {
-            ScannedItemContent(
-                id = id,
-                name = name,
-                showError = showError,
-                showTrailingIcon = showTrailingIcon,
-                onItemClick = onItemClick,
-                isScanned = isScanned
-            )
-        })
+        AnimatedVisibility(visible = !isDismissed) {
+            SwipeableItem(state = state, modifier = modifier, content = {
+                ScannedItemContent(
+                    id = id,
+                    name = name,
+                    showError = showError,
+                    showTrailingIcon = showTrailingIcon,
+                    onItemClick = onItemClick,
+                    isScanned = isScanned
+                )
+            })
+        }
     } else ScannedItemContent(
         isScanned = isScanned,
         id = id,
@@ -129,8 +135,6 @@ fun ScannedItemContent(
                     tint = Color.Gray
                 )
             }
-
-            //Text(text = "101100101", modifier = Modifier.align(Alignment.End))
 
         }
     }

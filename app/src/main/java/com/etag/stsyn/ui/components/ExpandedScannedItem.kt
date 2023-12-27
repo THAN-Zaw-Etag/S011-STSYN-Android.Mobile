@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun TLoanScannedItem() {
+fun ExpandedScannedItem() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -28,10 +28,10 @@ fun TLoanScannedItem() {
             .padding(16.dp)
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "SN000001 - DLJC11111")
-            Text(text = "000010001001")
+            Text(text = "SN000001 - DLJC11111".uppercase())
+            Text(text = "000010001001".uppercase())
         }
-        Text(text = "DATA LINK JUMPER CABLE")
+        Text(text = "DATA LINK JUMPER CABLE".uppercase())
         Spacer(modifier = Modifier.height(16.dp))
         Spacer(
             modifier = Modifier
@@ -55,12 +55,12 @@ private fun DetailItem(
 ) {
     Column {
         Text(text = title, color = Color.Gray)
-        Text(text = value.toUpperCase())
+        Text(text = value.uppercase())
     }
 }
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun TLoanScannedItemPreview() {
-    TLoanScannedItem()
+    ExpandedScannedItem()
 }

@@ -149,7 +149,7 @@ fun DetailItem(
     value: String,
     modifier: Modifier = Modifier.padding(vertical = 4.dp)
 ) {
-    Row(modifier = modifier.fillMaxWidth()) {
+    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = title, modifier = Modifier.weight(0.3f))
         Text(text = value, modifier = Modifier.weight(0.7f))
     }

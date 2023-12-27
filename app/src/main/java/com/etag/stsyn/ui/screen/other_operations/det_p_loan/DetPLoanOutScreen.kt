@@ -45,9 +45,7 @@ fun DetPLoanScreen() {
     }
 
     DetailBottomSheetScaffold(
-        showBottomSheet = showDetailBottomSheet,
         state = scaffoldState,
-        onDismiss = { showDetailBottomSheet = false },
         sheetContent = {
             Column(
                 modifier = Modifier

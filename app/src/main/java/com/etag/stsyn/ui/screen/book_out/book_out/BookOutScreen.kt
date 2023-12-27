@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,22 +31,20 @@ fun BookOutScreen(
 ) {
     var showClearDialog by remember { mutableStateOf(false) }
 
-    if (showClearDialog) {
-        ConfirmationDialog(
-            showDialog = showClearDialog,
-            title = "Clear?",
-            cancelTitle = "Cancel",
-            confirmTitle = "Clear",
-            onCancelClick = { showClearDialog = false },
-            onConfirmClick = {
-                showClearDialog = false
-                onClear()
-            })
-    }
+    ConfirmationDialog(
+        showDialog = showClearDialog,
+        title = "Clear?",
+        cancelTitle = "Cancel",
+        confirmTitle = "Clear",
+        onCancelClick = { showClearDialog = false },
+        onConfirmClick = {
+            showClearDialog = false
+            onClear()
+        })
 
     Column {
         LazyColumn(
-            modifier = modifier.wrapContentSize(),
+            modifier = modifier.weight(1f),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -60,24 +57,23 @@ fun BookOutScreen(
                     isSwipeable = true,
                     onSwipeToDismiss = {})
             }
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = "Clear",
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable {
-                            showClearDialog = true
-                        })
-                    ScanIconButton(onScan = { /*TODO*/ })
-                    Text(text = "Total :${scannedItems.size}")
-                }
-            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text(
+                text = "Clear",
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.clickable {
+                    showClearDialog = true
+                })
+            ScanIconButton(onScan = { /*TODO*/ })
+            Text(text = "Total :${scannedItems.size}")
         }
     }
 
