@@ -5,7 +5,7 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.etag.stsyn.ui.components.SaveItemLayout
-import com.etag.stsyn.ui.screen.book_in.BookInSaveScreen
+import com.etag.stsyn.ui.screen.book_in.book_in.BookInSaveScreen
 
 @Composable
 fun BookInBoxSaveScreen(

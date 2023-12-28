@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.domain.model.DetPLoanItem
 import com.etag.stsyn.ui.components.DetPLoanSwipeableItem
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
-import com.etag.stsyn.ui.screen.base.ParentScanScreen
+import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -75,7 +75,7 @@ fun DetPLoanOutContent(
     onSwipeToDismiss: (DetPLoanItem) -> Unit,
     onClear: () -> Unit,
 ) {
-    ParentScanScreen(
+    BaseScanScreen(
         scannedItemCount = items.size,
         onScan = { },
         onClear = onClear

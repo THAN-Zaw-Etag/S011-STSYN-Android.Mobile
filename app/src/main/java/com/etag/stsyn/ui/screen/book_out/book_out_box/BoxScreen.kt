@@ -59,6 +59,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BoxScreen(
     scannedItems: List<String>,
+    boxOutTitle: String = "",
     onReset: () -> Unit,
     showBoxBookOutButton: Boolean = false,
     modifier: Modifier = Modifier
@@ -66,9 +67,11 @@ fun BoxScreen(
     var items by remember { mutableStateOf(listOf<String>()) }
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
+    var show by remember { mutableStateOf(false) }
 
-    LaunchedEffect(scannedItems) {
+    LaunchedEffect(scannedItems, showBoxBookOutButton) {
         items = scannedItems
+        show = showBoxBookOutButton
     }
 
     DetailBottomSheetScaffold(state = scaffoldState, sheetContent = {
@@ -94,8 +97,8 @@ fun BoxScreen(
                         end.linkTo(parent.end)
                     }) {
                 item {
-                    if (showBoxBookOutButton) {
-                        BoxBookOutButton(count = 2) {
+                    if (show) {
+                        BoxBookOutButton(boxOutTitle) {
                             if (scaffoldState.bottomSheetState.isVisible) {
                                 coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
                             } else coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
@@ -142,17 +145,6 @@ private fun BottomSheetContent(
 }
 
 @Composable
-private fun BoxDetailsLayout(
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Text(text = "c123456".uppercase())
-    }
-}
-
-@Composable
 fun BookOutBoxItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -184,7 +176,7 @@ fun BookOutBoxItem(
 }
 
 @Composable
-fun BoxBookOutButton(count: Int, onClick: () -> Unit) {
+fun BoxBookOutButton(title: String, onClick: () -> Unit) {
     Row(modifier = Modifier
         .fillMaxWidth()
         .clip(RoundedCornerShape(5.dp))
@@ -192,7 +184,7 @@ fun BoxBookOutButton(count: Int, onClick: () -> Unit) {
         .background(Purple80.copy(alpha = 0.1f)),
         horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = "Box booked out ($count)",
+            text = title,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(8.dp)
         )

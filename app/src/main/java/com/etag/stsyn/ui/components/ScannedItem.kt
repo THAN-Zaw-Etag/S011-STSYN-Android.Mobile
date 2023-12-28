@@ -135,7 +135,6 @@ fun ScannedItemContent(
                     tint = Color.Gray
                 )
             }
-
         }
     }
 }

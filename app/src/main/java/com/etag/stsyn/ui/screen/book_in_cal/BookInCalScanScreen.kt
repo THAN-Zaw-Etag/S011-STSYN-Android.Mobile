@@ -11,11 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.etag.stsyn.domain.model.ItemDetail
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
+import com.etag.stsyn.ui.components.DetailRow
 import com.etag.stsyn.ui.components.InfoBottomSheetContent
 import com.etag.stsyn.ui.components.ScannedItem
-import com.etag.stsyn.ui.screen.acct_check.DetailItem
-import com.etag.stsyn.ui.screen.base.ParentScanScreen
+import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -26,7 +27,7 @@ fun BookInCalScanScreen() {
     DetailBottomSheetScaffold(
         state = scaffoldState,
         sheetContent = { BookInCalScanBottomSheetContent("Title") }) {
-        ParentScanScreen(scannedItemCount = 5, onScan = { /*TODO*/ }, onClear = { /*TODO*/ }) {
+        BaseScanScreen(scannedItemCount = 5, onScan = { /*TODO*/ }, onClear = { /*TODO*/ }) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(16.dp)
@@ -52,9 +53,9 @@ private fun BookInCalScanBottomSheetContent(
     modifier: Modifier = Modifier
 ) {
     InfoBottomSheetContent(title = title) {
-        LazyColumn {
+        LazyColumn(contentPadding = PaddingValues(16.dp)) {
             items(10) {
-                DetailItem(title = "Hello", value = "World")
+                DetailRow(itemDetail = ItemDetail("Hello", "World"))
             }
         }
     }

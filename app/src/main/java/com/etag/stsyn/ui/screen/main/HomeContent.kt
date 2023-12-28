@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +20,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -66,10 +66,12 @@ fun HomeContent(
         modifier = modifier,
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
-            DrawerContent(
-                onSettingsClick = onSettingsClick,
-                onLogOutClick = onLogOutClick
-            )
+            ModalDrawerSheet {
+                DrawerContent(
+                    onSettingsClick = onSettingsClick,
+                    onLogOutClick = onLogOutClick
+                )
+            }
         }
     ) {
         Scaffold(
@@ -112,8 +114,6 @@ fun DrawerContent(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(0.7f)
             .background(MaterialTheme.colorScheme.background)
     ) {
         Box(modifier = modifier.fillMaxWidth()) {

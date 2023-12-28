@@ -24,10 +24,11 @@ import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
-fun ParentScanScreen(
+fun BaseScanScreen(
     scannedItemCount: Int,
     onScan: () -> Unit,
     onClear: () -> Unit,
+    modifier: Modifier = Modifier,
     scanContent: @Composable () -> Unit
 ) {
     Column {
@@ -84,7 +85,7 @@ private fun BottomScanButtonLayout(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun ParentScanScreenPreview() {
-    ParentScanScreen(scannedItemCount = 5, onScan = { /*TODO*/ }, onClear = { /*TODO*/ }) {
+    BaseScanScreen(scannedItemCount = 5, onScan = { /*TODO*/ }, onClear = { /*TODO*/ }) {
         Text(text = "Hello")
     }
 }

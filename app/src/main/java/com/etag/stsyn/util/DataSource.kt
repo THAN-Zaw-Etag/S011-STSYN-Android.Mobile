@@ -123,4 +123,6 @@ object DataSource {
         "Box",
         "Remarks"
     )
+
+    val dummyDataList = listOf("One", "Two", "Three", "Four", "Five")
 }

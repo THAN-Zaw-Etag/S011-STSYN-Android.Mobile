@@ -1,4 +1,4 @@
-package com.etag.stsyn.ui.screen.book_in
+package com.etag.stsyn.ui.screen.book_in.book_in
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

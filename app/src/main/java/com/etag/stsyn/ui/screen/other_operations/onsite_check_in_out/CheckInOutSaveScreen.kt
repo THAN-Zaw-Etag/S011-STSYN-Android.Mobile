@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import com.etag.stsyn.ui.components.SaveItemLayout
-import com.etag.stsyn.ui.screen.book_in.BookInSaveScreen
+import com.etag.stsyn.ui.screen.book_in.book_in.BookInSaveScreen
 
 @Composable
 fun CheckInOutSaveScreen() {
