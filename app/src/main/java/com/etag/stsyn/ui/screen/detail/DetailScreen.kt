@@ -12,10 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.etag.stsyn.ui.DetailScreenConfigurationGraphBuilder
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.DisableBackPress
 import com.etag.stsyn.ui.components.TabBarLayout
-import com.etag.stsyn.util.DetailConfigurationGraph
 import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
@@ -82,7 +82,10 @@ fun DetailScreen(
                 )
 
                 // To show when tab bar is visible
-                DetailConfigurationGraph(optionType = optionType, tabTitle = tabTitle)
+                DetailScreenConfigurationGraphBuilder.build(
+                    optionType = optionType,
+                    tabTitle = tabTitle
+                )
             }
         }
     }

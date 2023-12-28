@@ -15,5 +15,10 @@ fun TLoanBoxScanScreen() {
         DataSource.dummyDataList.forEach { items.add(it) }
     }
 
-    BoxScreen(scannedItems = items, onReset = { /*TODO*/ }, showBoxBookOutButton = true)
+    BoxScreen(
+        scannedItems = items,
+        onReset = { /*TODO*/ },
+        showBoxBookOutButton = true,
+        boxOutTitle = "Box T-Loan out (${items.size})"
+    )
 }

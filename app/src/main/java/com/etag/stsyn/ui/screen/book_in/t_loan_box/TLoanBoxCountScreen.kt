@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -18,6 +19,7 @@ import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.BottomSheetContent
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
+import com.etag.stsyn.util.DataSource
 import kotlinx.coroutines.launch
 
 @Composable
@@ -27,6 +29,12 @@ fun TLoanBoxCountScreen(
     val items = remember { mutableStateListOf<String>() }
     val scaffoldState = rememberBottomSheetScaffoldState()
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        DataSource.dummyDataList.forEach {
+            items.add(it)
+        }
+    }
 
     DetailBottomSheetScaffold(
         state = scaffoldState,

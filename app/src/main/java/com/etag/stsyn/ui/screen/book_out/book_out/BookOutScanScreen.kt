@@ -32,7 +32,7 @@ fun BookOutScanScreen(
         onScan = { /*TODO*/ },
         onClear = { scannedItems.clear() }) {
         LazyColumn(
-            contentPadding = PaddingValues(vertical = 16.dp),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(scannedItems) {
