@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.etag.stsyn.ui.screen.other_operations.det_p_loan
+package com.etag.stsyn.ui.screen.other_operations.det_p_loan_box
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +29,7 @@ import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import kotlinx.coroutines.launch
 
 @Composable
-fun DetPLoanScreen() {
+fun OtherDetPLoanOutBoxScanScreen() {
     var showDetailBottomSheet by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()

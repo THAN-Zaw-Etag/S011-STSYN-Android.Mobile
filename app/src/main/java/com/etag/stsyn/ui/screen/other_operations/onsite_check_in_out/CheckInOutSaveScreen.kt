@@ -9,12 +9,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import com.etag.stsyn.ui.components.SaveItemLayout
-import com.etag.stsyn.ui.screen.book_in.book_in.BookInSaveScreen
+import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 
 @Composable
 fun CheckInOutSaveScreen() {
     val hasScannedItems by remember { mutableStateOf(false) }
-    BookInSaveScreen(showSaveButton = hasScannedItems, content = {
+
+    BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {
+        SaveItemLayout(
+            icon = Icons.Default.Person,
+            itemTitle = "Issuer",
+        ) {
+            Text(text = "Admin-123S")
+        }
         SaveItemLayout(
             icon = Icons.Default.Person,
             itemTitle = "Receiver",
@@ -22,8 +29,6 @@ fun CheckInOutSaveScreen() {
         ) {
             Text(text = "-")
         }
-    }) {
-
     }
 }
 
