@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.etag.stsyn.ui.DetailScreenConfigurationGraphBuilder.LocalSharedUiViewModel
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import com.etag.stsyn.util.DataSource
@@ -19,6 +20,7 @@ fun BookOutScanScreen(
     modifier: Modifier = Modifier
 ) {
     val scannedItems = remember { mutableStateListOf(String()) }
+    val sharedUiViewModel = LocalSharedUiViewModel.current
 
     LaunchedEffect(Unit) {
         DataSource.dummyDataList.forEach {
@@ -29,7 +31,7 @@ fun BookOutScanScreen(
     BaseScanScreen(
         scannedItemCount = scannedItems.count(),
         modifier = modifier,
-        onScan = { /*TODO*/ },
+        onScan = { sharedUiViewModel.startScan() },
         onClear = { scannedItems.clear() }) {
         LazyColumn(
             contentPadding = PaddingValues(16.dp),

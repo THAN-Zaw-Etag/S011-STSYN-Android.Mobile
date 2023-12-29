@@ -27,7 +27,7 @@ fun HomeNavigationGraph(
 ) {
     val rfidUiState by sharedUiViewModel.rfidUiState.collectAsState()
 
-    Log.d("TAG", "HomeNavigationGraph: ${rfidUiState.isConnected}")
+    Log.d("TAG", "Scanning_State: ${rfidUiState.isStartScanning}")
 
     NavHost(
         navController = navController,
@@ -117,6 +117,7 @@ fun HomeNavigationGraph(
 
             DetailScreen(
                 optionType = optionType,
+                sharedUiViewModel = sharedUiViewModel,
                 navigateToHomeScreen = {
                     navController.navigate(Routes.HomeScreen.name)
                 }

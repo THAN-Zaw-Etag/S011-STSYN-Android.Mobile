@@ -18,29 +18,6 @@ class SharedUiViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SharedUiState())
     val uiState: StateFlow<SharedUiState> = _uiState.asStateFlow()
 
-    private val _isReaderConnected = MutableStateFlow(false)
-    val isReaderConnected: StateFlow<Boolean> = _isReaderConnected.asStateFlow()
-
-    /*private var reconnectingJob: Job? = null
-    fun connectReader() {
-        if (reconnectingJob?.isActive == true) {
-            return
-        }
-        viewModelScope.launch {
-            reconnectingJob?.cancel()
-            if (!rfidHandler.isReaderConnected) {
-                reconnectingJob = rfidHandler.onCreate()
-            }
-            reconnectingJob?.invokeOnCompletion {
-                if (!rfidHandler.isReaderConnected) {
-                    viewModelScope.launch {
-                        rfidHandler.onCreate()
-                    }
-                }
-            }
-        }
-    }*/
-
     fun updateTopAppBarStatus(show: Boolean) {
         _uiState.update {
             it.copy(showTopAppBar = show)
@@ -68,11 +45,11 @@ class SharedUiViewModel @Inject constructor(
     }
 
     override fun handleTagData(tagData: Array<TagData>) {
-        TODO("Not yet implemented")
+
     }
 
     override fun handleTriggerPress(pressed: Boolean) {
-        TODO("Not yet implemented")
+        toggleScan()
     }
 
     override fun handleReaderConnected(isConnected: Boolean) {

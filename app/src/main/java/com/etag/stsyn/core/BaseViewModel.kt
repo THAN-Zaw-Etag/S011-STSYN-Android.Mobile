@@ -37,6 +37,17 @@ abstract class BaseViewModel(
         }
     }
 
+    fun updateScanningStatus(isScanning: Boolean) {
+        _rfidUiState.update {
+            it.copy(isStartScanning = isScanning)
+        }
+    }
+
+    fun toggleScan() {
+        if (_rfidUiState.value.isStartScanning) stopScan()
+        else startScan()
+    }
+
     fun connectReader() {
         if (reconnectingJob?.isActive == true) {
             return
@@ -77,23 +88,17 @@ abstract class BaseViewModel(
         rfidHandler.removeResponseHandLerInterface()
     }
 
-    private fun startScan() {
-        if (!isStartScanning) {
-            viewModelScope.launch {
-                val message = rfidHandler.performInventory()
-                if (message == "Start Scan") {
-                    isStartScanning = true
-                }
-            }
+    fun startScan() {
+        viewModelScope.launch {
+            rfidHandler.performInventory()
+            updateScanningStatus(true)
         }
     }
 
-    protected fun stopScan() {
-        if (isStartScanning) {
-            viewModelScope.launch {
-                rfidHandler.stopInventory()
-                isStartScanning = false
-            }
+    fun stopScan() {
+        viewModelScope.launch {
+            rfidHandler.stopInventory()
+            updateScanningStatus(false)
         }
     }
 }

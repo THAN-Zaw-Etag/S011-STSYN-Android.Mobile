@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -54,6 +55,10 @@ fun HomeContent(
     sharedUiViewModel: SharedUiViewModel,
     modifier: Modifier = Modifier
 ) {
+
+    val LocalSharedViewModel =
+        compositionLocalOf<SharedUiViewModel> { error("No viewmodel found!") }
+
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 

@@ -2,6 +2,8 @@ package com.etag.stsyn.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckCountScreen
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckSaveScreen
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckScreen
@@ -45,6 +47,7 @@ import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutSaveScr
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutScanScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out_box.OtherTLoanOutBoxCountScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out_box.OtherTLoanOutBoxScanScreen
+import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
 
@@ -56,82 +59,152 @@ import com.etag.stsyn.util.TabUtil
  * */
 
 object DetailScreenConfigurationGraphBuilder {
+    val LocalSharedUiViewModel =
+        staticCompositionLocalOf<SharedUiViewModel> { error("No viewmodel found!") }
+
     @Composable
-    fun build(optionType: OptionType, tabTitle: String) {
+    fun build(optionType: OptionType, tabTitle: String, sharedUiViewModel: SharedUiViewModel) {
+
 
         val tabOptions = TabUtil.getTabDetails(optionType)
 
-        return when ("$optionType-$tabTitle") {
-            "${OptionType.BookOut}-${tabOptions.get(0).title}" -> BookOutScanScreen()
-            "${OptionType.BookOut}-${tabOptions.get(1).title}" -> BookOutSaveScreen()
+        var screen = Column {}
 
-            "${OptionType.BookOutBox}-${tabOptions.get(0).title}" -> BookOutBoxScanScreen()
-            "${OptionType.BookOutBox}-${tabOptions.get(1).title}" -> BookOutBoxCountScreen()
-            "${OptionType.BookOutBox}-${tabOptions.get(2).title}" -> BookOutBoxSaveScreen()
+        CompositionLocalProvider(LocalSharedUiViewModel provides sharedUiViewModel) {
+            when ("$optionType-$tabTitle") {
+                "${OptionType.BookOut}-${tabOptions.get(0).title}" -> screen = BookOutScanScreen()
+                "${OptionType.BookOut}-${tabOptions.get(1).title}" -> screen = BookOutSaveScreen()
 
-            "${OptionType.BookIn}-${tabOptions.get(0).title}" -> BookInScanScreen()
-            "${OptionType.BookIn}-${tabOptions.get(1).title}" -> BookInCountScreen()
-            "${OptionType.BookIn}-${tabOptions.get(2).title}" -> BookInSaveScreen(
-                showSaveButton = true,
-                onSave = {},
-                content = {})
+                "${OptionType.BookOutBox}-${tabOptions.get(0).title}" -> screen =
+                    BookOutBoxScanScreen()
 
-            "${OptionType.BookInBox}-${tabOptions.get(0).title}" -> BookInBoxScanScreen()
-            "${OptionType.BookInBox}-${tabOptions.get(1).title}" -> BookInBoxCountScreen()
-            "${OptionType.BookInBox}-${tabOptions.get(2).title}" -> BookInBoxSaveScreen(
-                onRefresh = { /*TODO*/ },
-                onSave = {})
+                "${OptionType.BookOutBox}-${tabOptions.get(1).title}" -> screen =
+                    BookOutBoxCountScreen()
 
-            "${OptionType.BookInCalibration}-${tabOptions.get(0).title}" -> BookInCalScanScreen()
-            "${OptionType.BookInCalibration}-${tabOptions.get(1).title}" -> BookInCalCountScreen(
-                items = listOf()
-            )
+                "${OptionType.BookOutBox}-${tabOptions.get(2).title}" -> screen =
+                    BookOutBoxSaveScreen()
 
-            "${OptionType.BookInCalibration}-${tabOptions.get(2).title}" -> BookInCalSaveScreen()
+                "${OptionType.BookIn}-${tabOptions.get(0).title}" -> screen = BookInScanScreen()
+                "${OptionType.BookIn}-${tabOptions.get(1).title}" -> screen = BookInCountScreen()
+                "${OptionType.BookIn}-${tabOptions.get(2).title}" -> screen = BookInSaveScreen(
+                    showSaveButton = true,
+                    onSave = {},
+                    content = {})
 
-            "${OptionType.BookInTLoan}-${tabOptions.get(0).title}" -> TLoanScanScreen()
-            "${OptionType.BookInTLoan}-${tabOptions.get(1).title}" -> TLoanCountScreen()
-            "${OptionType.BookInTLoan}-${tabOptions.get(2).title}" -> TLoanSaveScreen()
+                "${OptionType.BookInBox}-${tabOptions.get(0).title}" -> screen =
+                    BookInBoxScanScreen()
 
-            "${OptionType.BookInTLoanBox}-${tabOptions.get(0).title}" -> TLoanBoxScanScreen()
-            "${OptionType.BookInTLoanBox}-${tabOptions.get(1).title}" -> TLoanBoxCountScreen()
-            "${OptionType.BookInTLoanBox}-${tabOptions.get(2).title}" -> TLoanBoxSaveScreen()
+                "${OptionType.BookInBox}-${tabOptions.get(1).title}" -> screen =
+                    BookInBoxCountScreen()
 
-            "${OptionType.BookInDetPLoan}-${tabOptions.get(0).title}" -> DetPLoanScanScreen()
-            "${OptionType.BookInDetPLoan}-${tabOptions.get(1).title}" -> DetPLoanCountScreen()
-            "${OptionType.BookInDetPLoan}-${tabOptions.get(2).title}" -> DetPLoanSaveScreen()
+                "${OptionType.BookInBox}-${tabOptions.get(2).title}" -> screen =
+                    BookInBoxSaveScreen(
+                        onRefresh = { /*TODO*/ },
+                        onSave = {})
 
-            "${OptionType.BookInDetPLoanBox}-${tabOptions.get(0).title}" -> DetPLoanBoxScanScreen()
-            "${OptionType.BookInDetPLoanBox}-${tabOptions.get(1).title}" -> DetPLoanBoxCountScreen()
-            "${OptionType.BookInDetPLoanBox}-${tabOptions.get(2).title}" -> DetPLoanBoxSaveScreen()
+                "${OptionType.BookInCalibration}-${tabOptions.get(0).title}" -> screen =
+                    BookInCalScanScreen()
 
-            "${OptionType.AccountCheck}-${tabOptions.get(0).title}" -> AcctCheckScreen()
-            "${OptionType.AccountCheck}-${tabOptions.get(1).title}" -> AcctCheckCountScreen()
-            "${OptionType.AccountCheck}-${tabOptions.get(2).title}" -> AcctCheckSaveScreen()
+                "${OptionType.BookInCalibration}-${tabOptions.get(1).title}" -> screen =
+                    BookInCalCountScreen(
+                        items = listOf()
+                    )
 
-            "${OptionType.OnsiteCheckInOut}-${tabOptions.get(0).title}" -> CheckInOutScreen()
-            "${OptionType.OnsiteCheckInOut}-${tabOptions.get(1).title}" -> CheckInOutSaveScreen()
+                "${OptionType.BookInCalibration}-${tabOptions.get(2).title}" -> screen =
+                    BookInCalSaveScreen()
 
-            "${OptionType.OnsiteVerification}-${tabOptions.get(0).title}" -> OnsiteVerifyScreen()
-            "${OptionType.OnsiteVerification}-${tabOptions.get(1).title}" -> OnsiteVerificationCountScreen()
-            "${OptionType.OnsiteVerification}-${tabOptions.get(2).title}" -> OnsiteVerificationSaveScreen()
+                "${OptionType.BookInTLoan}-${tabOptions.get(0).title}" -> screen = TLoanScanScreen()
+                "${OptionType.BookInTLoan}-${tabOptions.get(1).title}" -> screen =
+                    TLoanCountScreen()
 
-            "${OptionType.OtherTLoan}-${tabOptions.get(0).title}" -> OtherTLoanOutScanScreen()
-            "${OptionType.OtherTLoan}-${tabOptions.get(1).title}" -> OtherTLoanOutSaveScreen()
+                "${OptionType.BookInTLoan}-${tabOptions.get(2).title}" -> screen = TLoanSaveScreen()
 
-            "${OptionType.OtherTLoanBox}-${tabOptions.get(0).title}" -> OtherTLoanOutBoxScanScreen()
-            "${OptionType.OtherTLoanBox}-${tabOptions.get(1).title}" -> OtherTLoanOutBoxCountScreen()
-            "${OptionType.OtherTLoanBox}-${tabOptions.get(2).title}" -> OtherDetPLoanOutBoxSaveScreen()
+                "${OptionType.BookInTLoanBox}-${tabOptions.get(0).title}" -> screen =
+                    TLoanBoxScanScreen()
 
-            "${OptionType.OtherDetPLoan}-${tabOptions.get(0).title}" -> OtherDetPLoanScanScreen()
-            "${OptionType.OtherDetPLoan}-${tabOptions.get(1).title}" -> OtherDetPLoanOutSaveScreen()
+                "${OptionType.BookInTLoanBox}-${tabOptions.get(1).title}" -> screen =
+                    TLoanBoxCountScreen()
 
-            "${OptionType.OtherDetPLoanBox}-${tabOptions.get(0).title}" -> OtherDetPLoanOutBoxScanScreen()
-            "${OptionType.OtherDetPLoanBox}-${tabOptions.get(1).title}" -> OtherDetPLoanOutBoxCountScreen()
-            "${OptionType.OtherDetPLoanBox}-${tabOptions.get(2).title}" -> OtherTLoanOutSaveScreen()
+                "${OptionType.BookInTLoanBox}-${tabOptions.get(2).title}" -> screen =
+                    TLoanBoxSaveScreen()
 
-            else -> Column {}
+                "${OptionType.BookInDetPLoan}-${tabOptions.get(0).title}" -> screen =
+                    DetPLoanScanScreen()
+
+                "${OptionType.BookInDetPLoan}-${tabOptions.get(1).title}" -> screen =
+                    DetPLoanCountScreen()
+
+                "${OptionType.BookInDetPLoan}-${tabOptions.get(2).title}" -> screen =
+                    DetPLoanSaveScreen()
+
+                "${OptionType.BookInDetPLoanBox}-${tabOptions.get(0).title}" -> screen =
+                    DetPLoanBoxScanScreen()
+
+                "${OptionType.BookInDetPLoanBox}-${tabOptions.get(1).title}" -> screen =
+                    DetPLoanBoxCountScreen()
+
+                "${OptionType.BookInDetPLoanBox}-${tabOptions.get(2).title}" -> screen =
+                    DetPLoanBoxSaveScreen()
+
+                "${OptionType.AccountCheck}-${tabOptions.get(0).title}" -> screen =
+                    AcctCheckScreen()
+
+                "${OptionType.AccountCheck}-${tabOptions.get(1).title}" -> screen =
+                    AcctCheckCountScreen()
+
+                "${OptionType.AccountCheck}-${tabOptions.get(2).title}" -> screen =
+                    AcctCheckSaveScreen()
+
+                "${OptionType.OnsiteCheckInOut}-${tabOptions.get(0).title}" -> screen =
+                    CheckInOutScreen()
+
+                "${OptionType.OnsiteCheckInOut}-${tabOptions.get(1).title}" -> screen =
+                    CheckInOutSaveScreen()
+
+                "${OptionType.OnsiteVerification}-${tabOptions.get(0).title}" -> screen =
+                    OnsiteVerifyScreen()
+
+                "${OptionType.OnsiteVerification}-${tabOptions.get(1).title}" -> screen =
+                    OnsiteVerificationCountScreen()
+
+                "${OptionType.OnsiteVerification}-${tabOptions.get(2).title}" -> screen =
+                    OnsiteVerificationSaveScreen()
+
+                "${OptionType.OtherTLoan}-${tabOptions.get(0).title}" -> screen =
+                    OtherTLoanOutScanScreen()
+
+                "${OptionType.OtherTLoan}-${tabOptions.get(1).title}" -> screen =
+                    OtherTLoanOutSaveScreen()
+
+                "${OptionType.OtherTLoanBox}-${tabOptions.get(0).title}" -> screen =
+                    OtherTLoanOutBoxScanScreen()
+
+                "${OptionType.OtherTLoanBox}-${tabOptions.get(1).title}" -> screen =
+                    OtherTLoanOutBoxCountScreen()
+
+                "${OptionType.OtherTLoanBox}-${tabOptions.get(2).title}" -> screen =
+                    OtherDetPLoanOutBoxSaveScreen()
+
+                "${OptionType.OtherDetPLoan}-${tabOptions.get(0).title}" -> screen =
+                    OtherDetPLoanScanScreen()
+
+                "${OptionType.OtherDetPLoan}-${tabOptions.get(1).title}" -> screen =
+                    OtherDetPLoanOutSaveScreen()
+
+                "${OptionType.OtherDetPLoanBox}-${tabOptions.get(0).title}" -> screen =
+                    OtherDetPLoanOutBoxScanScreen()
+
+                "${OptionType.OtherDetPLoanBox}-${tabOptions.get(1).title}" -> screen =
+                    OtherDetPLoanOutBoxCountScreen()
+
+                "${OptionType.OtherDetPLoanBox}-${tabOptions.get(2).title}" -> screen =
+                    OtherTLoanOutSaveScreen()
+
+                else -> Column {}
+            }
         }
+
+        return screen
     }
 }
 

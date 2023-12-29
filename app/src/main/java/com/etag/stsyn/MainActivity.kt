@@ -23,6 +23,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
         setContent {
             val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
             val rfidUiState by sharedUiViewModel.rfidUiState.collectAsState()
@@ -42,13 +45,12 @@ class MainActivity : ComponentActivity() {
             STSYNTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     ReaderLifeCycle(viewModel = sharedUiViewModel)
+
                     NavigationGraph(
-                        navController = navController,
-                        sharedUiViewModel = sharedUiViewModel
+                        navController = navController, sharedUiViewModel = sharedUiViewModel
                     )
                 }
             }

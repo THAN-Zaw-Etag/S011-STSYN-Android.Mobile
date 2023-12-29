@@ -16,6 +16,7 @@ import com.etag.stsyn.ui.DetailScreenConfigurationGraphBuilder
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.DisableBackPress
 import com.etag.stsyn.ui.components.TabBarLayout
+import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
@@ -23,6 +24,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DetailScreen(
+    sharedUiViewModel: SharedUiViewModel,
     navigateToHomeScreen: () -> Unit,
     optionType: OptionType,
     modifier: Modifier = Modifier
@@ -84,7 +86,8 @@ fun DetailScreen(
                 // To show when tab bar is visible
                 DetailScreenConfigurationGraphBuilder.build(
                     optionType = optionType,
-                    tabTitle = tabTitle
+                    tabTitle = tabTitle,
+                    sharedUiViewModel = sharedUiViewModel
                 )
             }
         }
