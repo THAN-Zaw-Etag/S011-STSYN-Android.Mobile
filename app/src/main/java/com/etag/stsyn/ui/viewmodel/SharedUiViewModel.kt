@@ -1,7 +1,9 @@
 package com.etag.stsyn.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
+import com.etag.stsyn.core.BaseViewModel
+import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.ui.navigation.Routes
+import com.zebra.rfid.api3.TagData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,9 +12,34 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class SharedUiViewModel @Inject constructor() : ViewModel() {
+class SharedUiViewModel @Inject constructor(
+    val rfidHandler: ZebraRfidHandler
+) : BaseViewModel(rfidHandler) {
     private val _uiState = MutableStateFlow(SharedUiState())
     val uiState: StateFlow<SharedUiState> = _uiState.asStateFlow()
+
+    private val _isReaderConnected = MutableStateFlow(false)
+    val isReaderConnected: StateFlow<Boolean> = _isReaderConnected.asStateFlow()
+
+    /*private var reconnectingJob: Job? = null
+    fun connectReader() {
+        if (reconnectingJob?.isActive == true) {
+            return
+        }
+        viewModelScope.launch {
+            reconnectingJob?.cancel()
+            if (!rfidHandler.isReaderConnected) {
+                reconnectingJob = rfidHandler.onCreate()
+            }
+            reconnectingJob?.invokeOnCompletion {
+                if (!rfidHandler.isReaderConnected) {
+                    viewModelScope.launch {
+                        rfidHandler.onCreate()
+                    }
+                }
+            }
+        }
+    }*/
 
     fun updateTopAppBarStatus(show: Boolean) {
         _uiState.update {
@@ -38,6 +65,18 @@ class SharedUiViewModel @Inject constructor() : ViewModel() {
                 showBottomNavigationBar = showBottomNavigationBar
             )
         }
+    }
+
+    override fun handleTagData(tagData: Array<TagData>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun handleTriggerPress(pressed: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override fun handleReaderConnected(isConnected: Boolean) {
+        updateConnectionStatus(isConnected)
     }
 }
 

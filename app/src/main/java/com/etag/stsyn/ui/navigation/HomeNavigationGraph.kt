@@ -1,7 +1,10 @@
 package com.etag.stsyn.ui.navigation
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -22,6 +25,9 @@ fun HomeNavigationGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val rfidUiState by sharedUiViewModel.rfidUiState.collectAsState()
+
+    Log.d("TAG", "HomeNavigationGraph: ${rfidUiState.isConnected}")
 
     NavHost(
         navController = navController,
@@ -41,14 +47,17 @@ fun HomeNavigationGraph(
                 updateBottomNavigationBarStatus(false)
             }
 
-            HomeScreen(onCategoryItemClick = {
-                // save current selected bottom navigtion route
+            HomeScreen(
+                isReaderConnected = rfidUiState.isConnected,
+                batteryPercentage = rfidUiState.batteryLevel,
+                onCategoryItemClick = {
+                    // save current selected bottom navigtion route
 
-                navController.navigate(it)
-                sharedUiViewModel.apply {
-                    updateBottomNavigationSelectedItem(it)
-                }
-            })
+                    navController.navigate(it)
+                    sharedUiViewModel.apply {
+                        updateBottomNavigationSelectedItem(it)
+                    }
+                })
         }
 
         composable(route = Routes.BookOutScreen.name) {

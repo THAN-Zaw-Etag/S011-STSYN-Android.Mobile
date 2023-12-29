@@ -9,11 +9,13 @@ import com.etag.stsyn.ui.screen.main.HomeContent
 import com.etag.stsyn.ui.screen.main.LoginScreen
 import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
+import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    sharedUiViewModel: SharedUiViewModel
 ) {
     NavHost(
         navController = navController,
@@ -39,6 +41,7 @@ fun NavigationGraph(
 
         composable(route = Routes.HomeContentScreen.name) {
             HomeContent(
+                sharedUiViewModel = sharedUiViewModel,
                 onLogOutClick = {},
                 onSettingsClick = {},
             )
