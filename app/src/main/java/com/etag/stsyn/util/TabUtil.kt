@@ -2,7 +2,7 @@ package com.etag.stsyn.util
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
-import com.etag.stsyn.domain.model.TabIcon
+import com.etag.stsyn.domain.model.CustomIcon
 import com.etag.stsyn.domain.model.TabOption
 
 
@@ -19,34 +19,34 @@ object TabUtil {
         return when (optionType) {
             OptionType.OtherDetPLoan -> {
                 options.removeAt(0)
-                options.add(0, TabOption(optionType.title, TabIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
 
                 options
             }
 
             OptionType.OtherTLoan -> {
                 options.removeAt(0)
-                options.add(0, TabOption(optionType.title, TabIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
 
                 options
             }
 
             OptionType.OnsiteCheckInOut -> {
                 options.removeAt(0)
-                options.add(0, TabOption(optionType.title, TabIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
 
                 options
             }
 
             OptionType.BookOut -> {
                 options.removeAt(0)
-                options.add(0, TabOption(optionType.title, TabIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
 
                 options
             }
 
             else -> {
-                options.add(0, TabOption(optionType.title, TabIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
 
                 options
             }

@@ -5,6 +5,7 @@ package com.etag.stsyn.ui.components
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -15,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,35 +24,49 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.etag.stsyn.domain.model.TabIcon
+import com.etag.stsyn.domain.model.CustomIcon
 import com.etag.stsyn.domain.model.TabOption
-import com.etag.stsyn.ui.theme.Purple80
+import kotlinx.coroutines.launch
 
 @Composable
 fun TabBarLayout(
-    selected: Boolean,
-    onTabSelected: (String) -> Unit,
-    options: List<TabOption>
+    pagerState: PagerState,
+    oldSelectedIndex: Int,
+    options: List<TabOption>,
+    selected: Boolean, onTabSelected: (String, Int) -> Unit
 ) {
-    var selectedIndex by remember { mutableStateOf(0) }
+    var currentSelectIndex by remember { mutableStateOf(0) }
     var canBeSelected by remember { mutableStateOf(true) }
+    var oldIndex by remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(selected) {
         canBeSelected = selected
     }
 
-    TabRow(selectedTabIndex = selectedIndex) {
+    LaunchedEffect(oldSelectedIndex) {
+        oldIndex = oldSelectedIndex
+    }
+
+    TabRow(selectedTabIndex = pagerState.currentPage) {
         options.forEachIndexed { index, tabOption ->
             Tab(
-                selected = (selectedIndex == index) && false,
-                selectedContentColor = Purple80,
+                selected = pagerState.currentPage == index,
+                selectedContentColor = MaterialTheme.colorScheme.primary,
                 icon = {
                     when (tabOption.icon) {
-                        is TabIcon.Vector -> {
-                            TabItemIcon(icon = tabOption.icon.iconVector, selected = selectedIndex == index)
+                        is CustomIcon.Vector -> {
+                            TabItemIcon(
+                                icon = tabOption.icon.iconVector,
+                                selected = pagerState.currentPage == index
+                            )
                         }
-                        is TabIcon.Resource -> {
-                            TabItemIcon(icon = tabOption.icon.iconRes, selected = selectedIndex == index)
+
+                        is CustomIcon.Resource -> {
+                            TabItemIcon(
+                                icon = tabOption.icon.iconRes,
+                                selected = pagerState.currentPage == index
+                            )
                         }
                     }
                 },
@@ -60,12 +76,12 @@ fun TabBarLayout(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(vertical = 8.dp),
-                        color = if (selectedIndex == index) Purple80 else Color.Gray
+                        color = if (pagerState.currentPage == index) MaterialTheme.colorScheme.primary else Color.Gray
                     )
                 },
                 onClick = {
-                    selectedIndex = index
-                    onTabSelected(tabOption.title)
+                    scope.launch { pagerState.scrollToPage(index) }
+                    onTabSelected(tabOption.title, currentSelectIndex)
                 })
         }
     }
@@ -73,9 +89,7 @@ fun TabBarLayout(
 
 @Composable
 private fun TabItemIcon(
-    icon: ImageVector,
-    selected: Boolean,
-    modifier: Modifier = Modifier
+    icon: ImageVector, selected: Boolean, modifier: Modifier = Modifier
 ) {
     Icon(
         imageVector = icon,
@@ -87,9 +101,7 @@ private fun TabItemIcon(
 
 @Composable
 private fun TabItemIcon(
-    @DrawableRes icon: Int,
-    selected: Boolean,
-    modifier: Modifier = Modifier
+    @DrawableRes icon: Int, selected: Boolean, modifier: Modifier = Modifier
 ) {
     Icon(
         painter = painterResource(id = icon),

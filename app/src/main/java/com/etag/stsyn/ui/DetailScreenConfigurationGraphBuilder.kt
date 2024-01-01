@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.etag.stsyn.domain.model.TabOption
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckCountScreen
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckSaveScreen
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckScreen
@@ -65,12 +66,11 @@ object DetailScreenConfigurationGraphBuilder {
 
     @Composable
     fun build(
+        tabOptions: List<TabOption>,
         optionType: OptionType,
         tabTitle: String,
-        sharedUiViewModel: SharedUiViewModel,
         rfidViewModel: RfidViewModel
     ) {
-        val tabOptions = TabUtil.getTabDetails(optionType)
 
         var screen = Column {}
 

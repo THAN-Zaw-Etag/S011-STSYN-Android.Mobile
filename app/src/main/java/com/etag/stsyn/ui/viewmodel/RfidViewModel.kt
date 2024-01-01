@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * Viewmodel for reader*/
+ * Viewmodel for reader actions */
 
 @HiltViewModel
 class RfidViewModel @Inject constructor(

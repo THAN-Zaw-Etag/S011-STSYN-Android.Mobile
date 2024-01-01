@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreHoriz
@@ -12,7 +11,7 @@ import androidx.compose.material.icons.filled.Save
 import com.etag.stsyn.R
 import com.etag.stsyn.domain.model.BottomNavigationItem
 import com.etag.stsyn.domain.model.OptionButtonModel
-import com.etag.stsyn.domain.model.TabIcon
+import com.etag.stsyn.domain.model.CustomIcon
 import com.etag.stsyn.domain.model.TabOption
 import com.etag.stsyn.ui.navigation.Routes
 
@@ -109,9 +108,9 @@ object DataSource {
     )
 
     val tabOptions = listOf(
-        TabOption(title = "COUNT", icon = TabIcon.Resource(R.drawable.tally)),
-        TabOption(title = "SAVE", icon = TabIcon.Vector(Icons.Default.Save)),
-        TabOption(title = "EXIT", icon = TabIcon.Vector(Icons.Default.ExitToApp)),
+        TabOption(title = "COUNT", icon = CustomIcon.Resource(R.drawable.tally)),
+        TabOption(title = "SAVE", icon = CustomIcon.Vector(Icons.Default.Save)),
+        TabOption(title = "EXIT", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
     )
 
     val filters = listOf(
