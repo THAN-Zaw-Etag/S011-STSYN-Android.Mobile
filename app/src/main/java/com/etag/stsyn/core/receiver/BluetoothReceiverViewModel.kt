@@ -38,7 +38,7 @@ class BluetoothReceiverViewModel @Inject constructor(private val application: Ap
     }
 
     init {
-        registerBluetoothReceiver()
+        //registerBluetoothReceiver()
     }
 
     fun registerBluetoothReceiver() {

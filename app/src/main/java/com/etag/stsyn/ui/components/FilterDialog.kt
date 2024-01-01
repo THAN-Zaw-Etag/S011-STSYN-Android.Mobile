@@ -3,6 +3,7 @@
 package com.etag.stsyn.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -101,13 +103,16 @@ private fun FilterDialogContent(onDismiss: () -> Unit, onDone: (HashMap<Int, Str
         Column {
             OutlinedButton(
                 onClick = { selectedItems.clear() },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().border(color = MaterialTheme.colorScheme.primary, width = 1.dp)
             ) {
                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                 Text(text = "Delete Filter")
             }
             FilledTonalButton(
                 onClick = { onDone(selectedItems) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = "Save")
@@ -123,7 +128,7 @@ fun FilterItem(
     modifier: Modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
 ) {
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(text = title, modifier = Modifier.weight(0.4f))
+        Text(text = "$title :", modifier = Modifier.weight(0.4f))
         Spacer(modifier = Modifier.width(8.dp))
         DropDown(
             modifier = Modifier.weight(0.6f),

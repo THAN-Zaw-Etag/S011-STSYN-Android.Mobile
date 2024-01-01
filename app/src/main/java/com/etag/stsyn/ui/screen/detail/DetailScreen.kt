@@ -46,6 +46,7 @@ fun DetailScreen(
         var tabTitle by remember { mutableStateOf(options.get(0).title) }
         var showConfirmationDialog by remember { mutableStateOf(false) }
         var canBeSelected by remember { mutableStateOf(false) }
+        var isSaved by remember { mutableStateOf(false) }
 
         AnimatedVisibility(
             visible = showTabBar,
@@ -55,8 +56,8 @@ fun DetailScreen(
 
             ConfirmationDialog(
                 showDialog = showConfirmationDialog,
-                title = "Are you sure you want to exit?",
-                cancelTitle = "No",
+                title = if (isSaved) "Exit?" else "Exit without save?",
+                cancelTitle = "Cancel",
                 confirmTitle = "Exit",
                 onCancelClick = {
                     showConfirmationDialog = false

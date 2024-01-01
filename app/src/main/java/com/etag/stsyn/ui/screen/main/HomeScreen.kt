@@ -115,7 +115,7 @@ private fun RfidReaderStatusSection(
     Card(
         modifier = Modifier
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(0.1f))
     ) {
         Row(
             modifier = Modifier

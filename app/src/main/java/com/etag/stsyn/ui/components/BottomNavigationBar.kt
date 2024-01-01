@@ -69,7 +69,6 @@ fun BottomNavigationBar(
                         icon = it.icon,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 4.dp)
                     )
                 }
             }
@@ -87,10 +86,9 @@ fun CustomNavigationItem(
 ) {
     Column(
         modifier = modifier
-            .padding(8.dp)
-            .background(color = Color.Transparent, shape = RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp))
-            .clickable { onClick() },
+            //.padding(8.dp)
+            .clickable { onClick() }
+            .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(

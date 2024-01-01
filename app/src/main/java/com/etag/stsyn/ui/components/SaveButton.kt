@@ -26,9 +26,9 @@ fun SaveButton(
                 color = Purple80,
                 shape = RoundedCornerShape(20.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(20.dp))
             .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 6.dp)
     )
 }
 

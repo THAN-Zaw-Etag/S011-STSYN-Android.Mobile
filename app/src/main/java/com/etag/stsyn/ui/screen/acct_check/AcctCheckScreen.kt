@@ -46,7 +46,6 @@ fun AcctCheckScreen(
 
     ConstraintLayout(
         modifier = modifier
-            .padding(top = 64.dp)
     ) {
         val (content, scan) = createRefs()
         Column(

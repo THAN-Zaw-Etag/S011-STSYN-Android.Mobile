@@ -28,8 +28,10 @@ import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -260,11 +262,14 @@ private fun ScannedItemsOptionLayout(
             Switch(checked = checked, onCheckedChange = { checked = it })
         }
 
-        Text(text = "Reset",
-            color = if (isScanned) Purple80 else Color.DarkGray,
-            modifier = Modifier.clickable {
-                if (isScanned) showConfirmationDialog = true
-            })
+        TextButton(onClick = {
+            if (isScanned) showConfirmationDialog = true
+        }) {
+            Text(
+                text = "Reset",
+                color = if (isScanned) MaterialTheme.colorScheme.primary else Color.DarkGray
+            )
+        }
     }
 }
 

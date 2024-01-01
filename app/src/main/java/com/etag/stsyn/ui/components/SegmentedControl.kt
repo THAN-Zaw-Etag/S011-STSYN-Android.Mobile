@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,6 +43,7 @@ fun SegmentedControl(
                 Purple80,
                 RoundedCornerShape(3.dp)
             )
+            .background(shape = RoundedCornerShape(5.dp), color =  Color.White)
     ) {
         ControlType.values().forEach {
             Text(
@@ -55,6 +57,10 @@ fun SegmentedControl(
                         shape = if (selected == it) RoundedCornerShape(3.dp) else RoundedCornerShape(
                             0.dp
                         )
+                    )
+                    .border(
+                        width = 0.5.dp,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                     .padding(vertical = 8.dp)
                     .clickable(

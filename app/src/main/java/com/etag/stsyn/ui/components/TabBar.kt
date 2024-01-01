@@ -56,7 +56,6 @@ fun TabBarLayout(
                     )
                 },
                 onClick = {
-
                     selectedIndex = index
                     onTabSelected(tabOption.title)
                 })
