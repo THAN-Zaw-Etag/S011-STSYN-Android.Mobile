@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -88,10 +89,15 @@ private fun MainLowerContent(
             Image(
                 painter = painterResource(id = R.drawable.rfid_icon),
                 contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .size(72.dp)
+                    .padding(8.dp)
                     .clip(CircleShape)
-                    .clickable { onScan() }
+                    .clickable { onScan() },
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Use RFID", fontWeight = FontWeight.Medium, color = Color.White)
         }
 
         VersionText(

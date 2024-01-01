@@ -47,6 +47,7 @@ import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutSaveScr
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutScanScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out_box.OtherTLoanOutBoxCountScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out_box.OtherTLoanOutBoxScanScreen
+import com.etag.stsyn.ui.viewmodel.RfidViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
@@ -59,18 +60,21 @@ import com.etag.stsyn.util.TabUtil
  * */
 
 object DetailScreenConfigurationGraphBuilder {
-    val LocalSharedUiViewModel =
-        staticCompositionLocalOf<SharedUiViewModel> { error("No viewmodel found!") }
+    val LocalRfidViewModel =
+        staticCompositionLocalOf<RfidViewModel> { error("No viewmodel found!") }
 
     @Composable
-    fun build(optionType: OptionType, tabTitle: String, sharedUiViewModel: SharedUiViewModel) {
-
-
+    fun build(
+        optionType: OptionType,
+        tabTitle: String,
+        sharedUiViewModel: SharedUiViewModel,
+        rfidViewModel: RfidViewModel
+    ) {
         val tabOptions = TabUtil.getTabDetails(optionType)
 
         var screen = Column {}
 
-        CompositionLocalProvider(LocalSharedUiViewModel provides sharedUiViewModel) {
+        CompositionLocalProvider(LocalRfidViewModel provides rfidViewModel) {
             when ("$optionType-$tabTitle") {
                 "${OptionType.BookOut}-${tabOptions.get(0).title}" -> screen = BookOutScanScreen()
                 "${OptionType.BookOut}-${tabOptions.get(1).title}" -> screen = BookOutSaveScreen()

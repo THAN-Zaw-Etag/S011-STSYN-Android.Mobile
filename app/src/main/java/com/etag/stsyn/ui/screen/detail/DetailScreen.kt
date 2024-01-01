@@ -16,6 +16,7 @@ import com.etag.stsyn.ui.DetailScreenConfigurationGraphBuilder
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.DisableBackPress
 import com.etag.stsyn.ui.components.TabBarLayout
+import com.etag.stsyn.ui.viewmodel.RfidViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
@@ -25,6 +26,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun DetailScreen(
     sharedUiViewModel: SharedUiViewModel,
+    rfidViewModel: RfidViewModel,
     navigateToHomeScreen: () -> Unit,
     optionType: OptionType,
     modifier: Modifier = Modifier
@@ -88,6 +90,7 @@ fun DetailScreen(
                 DetailScreenConfigurationGraphBuilder.build(
                     optionType = optionType,
                     tabTitle = tabTitle,
+                    rfidViewModel = rfidViewModel,
                     sharedUiViewModel = sharedUiViewModel
                 )
             }

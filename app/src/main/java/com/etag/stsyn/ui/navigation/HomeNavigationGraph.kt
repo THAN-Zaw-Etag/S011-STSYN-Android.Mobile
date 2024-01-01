@@ -16,18 +16,18 @@ import com.etag.stsyn.ui.screen.main.BookInScreen
 import com.etag.stsyn.ui.screen.main.BookOutScreen
 import com.etag.stsyn.ui.screen.main.HomeScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
+import com.etag.stsyn.ui.viewmodel.RfidViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.OptionType
 
 @Composable
 fun HomeNavigationGraph(
+    rfidViewModel: RfidViewModel,
     sharedUiViewModel: SharedUiViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val rfidUiState by sharedUiViewModel.rfidUiState.collectAsState()
-
-    Log.d("TAG", "Scanning_State: ${rfidUiState.isStartScanning}")
+    val rfidUiState by rfidViewModel.rfidUiState.collectAsState()
 
     NavHost(
         navController = navController,
@@ -52,7 +52,6 @@ fun HomeNavigationGraph(
                 batteryPercentage = rfidUiState.batteryLevel,
                 onCategoryItemClick = {
                     // save current selected bottom navigtion route
-
                     navController.navigate(it)
                     sharedUiViewModel.apply {
                         updateBottomNavigationSelectedItem(it)
@@ -117,6 +116,7 @@ fun HomeNavigationGraph(
 
             DetailScreen(
                 optionType = optionType,
+                rfidViewModel = rfidViewModel,
                 sharedUiViewModel = sharedUiViewModel,
                 navigateToHomeScreen = {
                     navController.navigate(Routes.HomeScreen.name)

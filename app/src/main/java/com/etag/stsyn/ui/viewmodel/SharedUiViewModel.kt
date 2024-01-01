@@ -49,11 +49,11 @@ class SharedUiViewModel @Inject constructor(
     }
 
     override fun handleTriggerPress(pressed: Boolean) {
-        toggleScan()
+
     }
 
     override fun handleReaderConnected(isConnected: Boolean) {
-        updateConnectionStatus(isConnected)
+
     }
 }
 

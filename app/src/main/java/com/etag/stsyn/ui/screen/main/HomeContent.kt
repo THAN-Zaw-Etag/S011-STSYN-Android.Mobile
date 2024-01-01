@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.AppBar
@@ -44,6 +45,7 @@ import com.etag.stsyn.ui.components.BottomNavigationBar
 import com.etag.stsyn.ui.components.ProfileTextButton
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.navigation.HomeNavigationGraph
+import com.etag.stsyn.ui.viewmodel.RfidViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
 import kotlinx.coroutines.launch
@@ -64,6 +66,8 @@ fun HomeContent(
 
     val navController = rememberNavController()
     val sharedUiState by sharedUiViewModel.uiState.collectAsState()
+
+    val rfidViewModel: RfidViewModel = hiltViewModel()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -101,6 +105,7 @@ fun HomeContent(
             },
         ) {
             HomeNavigationGraph(
+                rfidViewModel = rfidViewModel,
                 navController = navController,
                 sharedUiViewModel = sharedUiViewModel,
                 modifier = Modifier.padding(it)

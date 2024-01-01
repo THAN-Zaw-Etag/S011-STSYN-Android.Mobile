@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Save
 import com.etag.stsyn.R
 import com.etag.stsyn.domain.model.BottomNavigationItem
 import com.etag.stsyn.domain.model.OptionButtonModel
+import com.etag.stsyn.domain.model.TabIcon
 import com.etag.stsyn.domain.model.TabOption
 import com.etag.stsyn.ui.navigation.Routes
 
@@ -108,9 +109,9 @@ object DataSource {
     )
 
     val tabOptions = listOf(
-        TabOption(title = "COUNT", icon = Icons.Default.Calculate),
-        TabOption(title = "SAVE", icon = Icons.Default.Save),
-        TabOption(title = "EXIT", icon = Icons.Default.ExitToApp),
+        TabOption(title = "COUNT", icon = TabIcon.Resource(R.drawable.tally)),
+        TabOption(title = "SAVE", icon = TabIcon.Vector(Icons.Default.Save)),
+        TabOption(title = "EXIT", icon = TabIcon.Vector(Icons.Default.ExitToApp)),
     )
 
     val filters = listOf(
