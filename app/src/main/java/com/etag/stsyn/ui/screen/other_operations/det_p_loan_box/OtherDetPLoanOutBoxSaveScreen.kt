@@ -21,7 +21,10 @@ import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
-fun OtherDetPLoanOutBoxSaveScreen() {
+fun OtherDetPLoanOutBoxSaveScreen(
+    otherDetPLoanBoxViewModel: OtherDetPLoanBoxViewModel,
+    modifier: Modifier = Modifier
+) {
     var inputValue by remember { mutableStateOf("") }
 
     BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {

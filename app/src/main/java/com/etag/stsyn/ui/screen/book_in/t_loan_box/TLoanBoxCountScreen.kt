@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun TLoanBoxCountScreen(
+    tLoanBoxViewModel: TLoanBoxViewModel,
     modifier: Modifier = Modifier
 ) {
     val items = remember { mutableStateListOf<String>() }

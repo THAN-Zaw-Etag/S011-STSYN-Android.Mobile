@@ -27,7 +27,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.VersionText
@@ -35,6 +34,7 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun MainScreen(
+    onScan: () -> Unit,
     modifier: Modifier = Modifier.fillMaxSize()
 ) {
     Column(modifier = modifier) {
@@ -56,7 +56,7 @@ fun MainScreen(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
-        MainLowerContent(onScan = {})
+        MainLowerContent(onScan = onScan)
     }
 }
 
@@ -107,10 +107,4 @@ private fun MainLowerContent(
                 .align(Alignment.BottomEnd)
         )
     }
-}
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun MainScreenPreview() {
-    MainScreen()
 }

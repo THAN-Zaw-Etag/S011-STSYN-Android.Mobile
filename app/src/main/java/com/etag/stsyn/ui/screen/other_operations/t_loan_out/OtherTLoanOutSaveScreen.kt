@@ -22,6 +22,7 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun OtherTLoanOutSaveScreen(
+    otherTLoanOutViewModel: OtherTLoanOutViewModel,
     modifier: Modifier = Modifier
 ) {
     var inputValue by remember { mutableStateOf("") }

@@ -29,7 +29,10 @@ import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import kotlinx.coroutines.launch
 
 @Composable
-fun OtherDetPLoanScanScreen() {
+fun OtherDetPLoanScanScreen(
+    otherDetPLoanViewModel: OtherDetPLoanViewModel,
+    modifier: Modifier = Modifier
+) {
     var showDetailBottomSheet by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()

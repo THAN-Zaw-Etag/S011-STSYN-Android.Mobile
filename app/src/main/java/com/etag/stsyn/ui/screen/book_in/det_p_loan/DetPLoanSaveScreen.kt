@@ -10,6 +10,7 @@ import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 
 @Composable
 fun DetPLoanSaveScreen(
+    detPLoanViewModel: DetPLoanViewModel,
     modifier: Modifier = Modifier
 ) {
     BaseSaveScreen(isError = false, modifier = modifier, onSave = { /*TODO*/ }) {

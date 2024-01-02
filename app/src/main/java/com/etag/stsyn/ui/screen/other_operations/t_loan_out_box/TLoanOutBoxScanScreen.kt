@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.domain.model.DetPLoanItem
 import com.etag.stsyn.ui.components.DetPLoanSwipeableItem
@@ -24,7 +25,10 @@ import com.etag.stsyn.util.DataSource
 import kotlinx.coroutines.launch
 
 @Composable
-fun OtherTLoanOutBoxScanScreen() {
+fun OtherTLoanOutBoxScanScreen(
+    otherTLoanOutBoxViewModel: OtherTLoanOutBoxViewModel,
+    modifier: Modifier = Modifier
+) {
     val items = remember { mutableStateListOf<String>() }
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = SheetState(skipPartiallyExpanded = false, skipHiddenState = false)

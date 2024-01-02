@@ -4,11 +4,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import com.etag.stsyn.ui.screen.book_out.book_out_box.BoxScreen
 import com.etag.stsyn.util.DataSource
 
 @Composable
-fun DetPLoanBoxScanScreen() {
+fun DetPLoanBoxScanScreen(
+    detPLoanBoxViewModel: DetPLoanBoxViewModel,
+    modifier: Modifier = Modifier
+) {
     val items = remember { mutableStateListOf(String()) }
 
     LaunchedEffect(Unit) {

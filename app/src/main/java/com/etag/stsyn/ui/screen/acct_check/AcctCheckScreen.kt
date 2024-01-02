@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.etag.stsyn.ui.components.FilterDialog
@@ -37,6 +36,7 @@ import com.etag.stsyn.util.DataSource
 
 @Composable
 fun AcctCheckScreen(
+    accountCheckViewModel: AccountCheckViewModel,
     modifier: Modifier = Modifier
 ) {
     var filterCount by remember { mutableStateOf(0) }
@@ -167,10 +167,4 @@ fun FilterButton(filterCount: Int, onClick: () -> Unit) {
         Text(text = "Filter applied ($filterCount/8)", fontWeight = FontWeight.Bold)
         Icon(imageVector = Icons.Default.FilterAlt, tint = Purple80, contentDescription = null)
     }
-}
-
-@Composable
-@Preview(showSystemUi = true, showBackground = true)
-fun AcctCheckScreenPreview() {
-    AcctCheckScreen()
 }

@@ -5,11 +5,15 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 
 @Composable
-fun TLoanBoxSaveScreen() {
+fun TLoanBoxSaveScreen(
+    tLoanBoxViewModel: TLoanBoxViewModel,
+    modifier: Modifier = Modifier
+) {
     BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User", showRefreshIcon = true) {
             Text(text = "Admin-123S")

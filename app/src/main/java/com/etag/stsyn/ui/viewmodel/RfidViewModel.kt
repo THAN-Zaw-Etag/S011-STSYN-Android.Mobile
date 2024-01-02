@@ -31,6 +31,10 @@ class RfidViewModel @Inject constructor(
     private val _rfidUiState = MutableStateFlow(RfidUiState())
     val rfidUiState: StateFlow<RfidUiState> = _rfidUiState.asStateFlow()
 
+    init {
+        getReaderBatteryLevel()
+    }
+
     fun updateConnectionStatus(isConnected: Boolean) {
         _rfidUiState.update {
             it.copy(isConnected = isConnected)
@@ -43,12 +47,17 @@ class RfidViewModel @Inject constructor(
         }
     }
 
+    fun updateIsScannedStatus(isScanned: Boolean) {
+        _rfidUiState.update { it.copy(isScanned = isScanned) }
+    }
+
     fun toggleScan() {
         if (_rfidUiState.value.isStartScanning) stopScan()
         else startScan()
     }
 
     fun connectReader() {
+
         if (reconnectingJob?.isActive == true) {
             return
         }
@@ -64,7 +73,6 @@ class RfidViewModel @Inject constructor(
                     }
                 }
             }
-
             updateConnectionStatus(rfidHandler.isReaderConnected)
         }
     }
@@ -94,11 +102,12 @@ class RfidViewModel @Inject constructor(
     }
 
     override fun handleTagData(tagData: Array<TagData>) {
-
+        if (tagData.isNotEmpty()) stopScan()
+        updateIsScannedStatus(tagData.isNotEmpty())
     }
 
     override fun handleTriggerPress(pressed: Boolean) {
-        toggleScan()
+        //toggleScan()
     }
 
     override fun handleReaderConnected(isConnected: Boolean) {
@@ -109,6 +118,7 @@ class RfidViewModel @Inject constructor(
 
 data class RfidUiState(
     val isConnected: Boolean = false,
+    val isScanned: Boolean = false,
     val batteryLevel: Int = 0,
     val isStartScanning: Boolean = false
 )

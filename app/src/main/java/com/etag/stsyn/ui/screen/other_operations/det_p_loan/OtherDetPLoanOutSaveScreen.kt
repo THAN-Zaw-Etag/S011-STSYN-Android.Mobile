@@ -24,6 +24,7 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun OtherDetPLoanOutSaveScreen(
+    otherDetPLoanViewModel: OtherDetPLoanViewModel,
     modifier: Modifier = Modifier
 ) {
     var value by remember { mutableStateOf("") }

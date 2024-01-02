@@ -42,14 +42,12 @@ fun PasswordField(
         } else {
             PasswordVisualTransformation()
         }, trailingIcon = {
-            if (showPassword) {
-                IconButton(onClick = { showPassword = false }) {
-                    Icon(imageVector = Icons.Filled.Visibility, contentDescription = null)
-                }
-            } else {
-                IconButton(onClick = { showPassword = true }) {
-                    Icon(imageVector = Icons.Filled.VisibilityOff, contentDescription = null)
-                }
+
+            IconButton(onClick = { showPassword = !showPassword }) {
+                Icon(
+                    imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                    contentDescription = null
+                )
             }
         }
     )

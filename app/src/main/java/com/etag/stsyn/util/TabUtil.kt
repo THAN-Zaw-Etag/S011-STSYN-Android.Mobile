@@ -47,7 +47,6 @@ object TabUtil {
 
             else -> {
                 options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
-
                 options
             }
         }

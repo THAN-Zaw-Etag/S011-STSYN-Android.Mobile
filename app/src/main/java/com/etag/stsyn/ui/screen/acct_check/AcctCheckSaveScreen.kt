@@ -10,6 +10,7 @@ import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 
 @Composable
 fun AcctCheckSaveScreen(
+    accountCheckViewModel: AccountCheckViewModel,
     modifier: Modifier = Modifier
 ) {
     BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {

@@ -7,12 +7,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.Modifier
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 
 @Composable
-fun CheckInOutSaveScreen() {
+fun CheckInOutSaveScreen(
+    onsiteCheckInOutViewModel: OnsiteCheckInOutViewModel,
+    modifier: Modifier = Modifier
+) {
     val hasScannedItems by remember { mutableStateOf(false) }
 
     BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {
@@ -30,10 +33,4 @@ fun CheckInOutSaveScreen() {
             Text(text = "-")
         }
     }
-}
-
-@Composable
-@Preview(showSystemUi = true, showBackground = true)
-fun CheckInOutSaveScreenPreview() {
-    CheckInOutSaveScreen()
 }

@@ -1,10 +1,11 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.etag.stsyn.ui.screen.book_in_cal
+package com.etag.stsyn.ui.screen.book_in.book_in_cal
 
 import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,16 +19,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.etag.stsyn.ui.components.SaveItemLayout
-import com.etag.stsyn.ui.screen.book_in.book_in.BookInSaveScreen
+import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.util.DateUtil
 
 @Composable
-fun BookInCalSaveScreen() {
+fun BookInCalSaveScreen(
+    bookInCalViewModel: BookInCalViewModel,
+    modifier: Modifier = Modifier
+) {
     var selectedDate by remember { mutableStateOf(DateUtil.getCurrentFormattedDate()) }
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
-    BookInSaveScreen(showSaveButton = false, onSave = {}, content = {
+    BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {
+        SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User") {
+            Text(text = "Admin-123S")
+        }
         SaveItemLayout(
             icon = Icons.Default.CalendarMonth,
             itemTitle = "Next Calibration Date",
@@ -36,7 +43,7 @@ fun BookInCalSaveScreen() {
             }) {
             Text(text = selectedDate)
         }
-    })
+    }
 
     if (showDatePicker) {
         DatePickerDialog(

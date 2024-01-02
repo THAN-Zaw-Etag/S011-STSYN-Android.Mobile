@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.main
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -14,11 +15,17 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,9 +36,19 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun LoginScreen(
-    onLogInClick: () -> Unit,
+    isSuccessful: Boolean,
+    onLogInClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(isSuccessful) {
+        Toast.makeText(
+            context,
+            if (isSuccessful) "Login successful!" else "Login failed!",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         LoginUpperSection()
         Spacer(modifier = Modifier.height(16.dp))
@@ -62,14 +79,14 @@ private fun LoginLowerSection(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun LoginSection(onLogInClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun LoginSection(onLogInClick: (String) -> Unit, modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 32.dp)
     ) {
-
+        var enteredPassword by remember { mutableStateOf("") }
         Text(
             text = "Welcome, Admin",
             style = MaterialTheme.typography.titleLarge,
@@ -83,7 +100,7 @@ private fun LoginSection(onLogInClick: () -> Unit, modifier: Modifier = Modifier
             color = Purple80
         )
         Spacer(modifier = Modifier.height(24.dp))
-        PasswordField(hint = "Password", onValueChange = {})
+        PasswordField(hint = "Password", onValueChange = { enteredPassword = it })
         Spacer(modifier = Modifier.height(8.dp))
         AnimatedVisibility(visible = false) {
             Text(text = "The account password is incorrect.\nPlease try again.", color = Color.Red)
@@ -91,7 +108,7 @@ private fun LoginSection(onLogInClick: () -> Unit, modifier: Modifier = Modifier
         Spacer(modifier = Modifier.height(24.dp))
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
             Button(
-                onClick = onLogInClick,
+                onClick = { onLogInClick(enteredPassword) },
                 colors = ButtonDefaults.buttonColors(containerColor = Purple80)
             ) {
                 Text(text = "Log in", modifier = Modifier.padding(horizontal = 16.dp))

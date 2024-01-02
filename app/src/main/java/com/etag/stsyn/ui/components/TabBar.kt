@@ -25,14 +25,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.domain.model.CustomIcon
-import com.etag.stsyn.domain.model.TabOption
+import com.etag.stsyn.util.TabScreen
 import kotlinx.coroutines.launch
 
 @Composable
 fun TabBarLayout(
     pagerState: PagerState,
     oldSelectedIndex: Int,
-    options: List<TabOption>,
+    options: List<TabScreen>,
     selected: Boolean, onTabSelected: (String, Int) -> Unit
 ) {
     var currentSelectIndex by remember { mutableStateOf(0) }

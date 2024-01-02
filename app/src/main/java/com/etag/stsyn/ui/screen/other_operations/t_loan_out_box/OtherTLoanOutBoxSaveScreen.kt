@@ -22,6 +22,7 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun OtherTLoanOutBoxSaveScreen(
+    otherTLoanOutBoxViewModel: OtherTLoanOutBoxViewModel,
     modifier: Modifier = Modifier
 ) {
     var inputValue by remember { mutableStateOf("") }

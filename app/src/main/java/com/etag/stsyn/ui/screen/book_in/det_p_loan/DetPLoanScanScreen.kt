@@ -13,6 +13,7 @@ import com.etag.stsyn.ui.screen.base.BaseScanScreen
 
 @Composable
 fun DetPLoanScanScreen(
+    detPLoanViewModel: DetPLoanViewModel,
     modifier: Modifier = Modifier
 ) {
     var scannedItems = remember { mutableStateListOf(String()) }

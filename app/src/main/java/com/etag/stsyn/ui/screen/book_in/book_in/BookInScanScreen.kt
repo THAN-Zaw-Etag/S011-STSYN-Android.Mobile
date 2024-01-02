@@ -16,6 +16,7 @@ import com.etag.stsyn.util.DataSource
 
 @Composable
 fun BookInScanScreen(
+    bookInViewModel: BookInViewModel,
     modifier: Modifier = Modifier
 ) {
     val scannedItems = remember { mutableStateListOf<String>() }

@@ -16,6 +16,7 @@ import com.etag.stsyn.util.DataSource
 
 @Composable
 fun BookInBoxCountScreen(
+    bookInBoxViewModel: BookInBoxViewModel,
     modifier: Modifier = Modifier
 ) {
     val items = remember { mutableStateListOf<String>() }

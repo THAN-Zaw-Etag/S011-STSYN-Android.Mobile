@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -38,6 +39,11 @@ class MainActivity : ComponentActivity() {
 
             PermissionUtil.checkBluetoothPermission(context)
 
+            // initialize reader
+            LaunchedEffect(Unit) {
+                rfidViewModel.onCreate()
+            }
+
             when (bluetoothState) {
                 BluetoothState.ON -> {
                     rfidViewModel.connectReader()
@@ -49,13 +55,14 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             STSYNTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    ReaderLifeCycle(viewModel = sharedUiViewModel)
+                    ReaderLifeCycle(viewModel = rfidViewModel)
                     NavigationGraph(
-                        navController = navController, sharedUiViewModel = sharedUiViewModel
+                        navController = navController,
+                        rfidViewModel = rfidViewModel,
+                        sharedUiViewModel = sharedUiViewModel
                     )
                 }
             }

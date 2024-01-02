@@ -10,17 +10,17 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.etag.stsyn.ui.DetailScreenConfigurationGraphBuilder.LocalRfidViewModel
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import com.etag.stsyn.util.DataSource
 
 @Composable
 fun BookOutScanScreen(
+    bookOutViewModel: BookOutViewModel,
     modifier: Modifier = Modifier
 ) {
     val scannedItems = remember { mutableStateListOf(String()) }
-    val sharedUiViewModel = LocalRfidViewModel.current
+    //val sharedUiViewModel = LocalRfidViewModel.current
 
     LaunchedEffect(Unit) {
         DataSource.dummyDataList.forEach {
@@ -31,7 +31,7 @@ fun BookOutScanScreen(
     BaseScanScreen(
         scannedItemCount = scannedItems.count(),
         modifier = modifier,
-        onScan = { sharedUiViewModel.startScan() },
+        onScan = { /*sharedUiViewModel.startScan()*/ },
         onClear = { scannedItems.clear() }) {
         LazyColumn(
             contentPadding = PaddingValues(16.dp),

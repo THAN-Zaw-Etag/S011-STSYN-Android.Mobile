@@ -15,6 +15,7 @@ import com.etag.stsyn.util.Purpose
 
 @Composable
 fun BookOutBoxSaveScreen(
+    bookOutBoxViewModel: BookOutBoxViewModel,
     modifier: Modifier = Modifier
 ) {
     BaseSaveScreen(isError = false, onSave = { }) {

@@ -13,6 +13,7 @@ import com.etag.stsyn.ui.screen.base.BaseCountScreen
 
 @Composable
 fun DetPLoanCountScreen(
+    detPLoanViewModel: DetPLoanViewModel,
     modifier: Modifier = Modifier
 ) {
     var items = remember { mutableStateListOf<String>() }

@@ -1,14 +1,16 @@
-@file:OptIn(ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
 
 package com.etag.stsyn.ui.screen.detail
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -16,9 +18,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.etag.stsyn.ui.DetailScreenConfigurationGraphBuilder
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.DisableBackPress
 import com.etag.stsyn.ui.components.TabBarLayout
@@ -27,6 +29,8 @@ import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
+import com.etag.stsyn.util.getScreensByOptionType
+import com.etag.stsyn.util.getViewModelByOptionType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -48,6 +52,9 @@ fun DetailScreen(
     var isSaved by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState { options.size }
     val scope = rememberCoroutineScope()
+
+    val viewModel = getViewModelByOptionType(optionType = optionType)
+    val screens = getScreensByOptionType(optionType = optionType, viewModel = viewModel)
 
     LaunchedEffect(pagerState.currentPage) {
         val option = options.get(pagerState.currentPage)
@@ -79,7 +86,7 @@ fun DetailScreen(
                 confirmTitle = "Exit",
                 onCancelClick = {
                     showConfirmationDialog = false
-                    scope.launch { pagerState.scrollToPage(options.size - 2) }
+                    scope.launch { pagerState.animateScrollToPage(options.size - 2) }
                     canBeSelected = false
                 },
                 onConfirmClick = {
@@ -89,8 +96,9 @@ fun DetailScreen(
                 })
 
             Column {
-                TabBarLayout(pagerState = pagerState,
-                    options = options,
+                TabBarLayout(
+                    pagerState = pagerState,
+                    options = screens,
                     selected = canBeSelected,
                     oldSelectedIndex = oldSelectedIndex,
                     onTabSelected = { title, index ->
@@ -105,13 +113,18 @@ fun DetailScreen(
 
                 // To show when tab bar is visible
                 HorizontalPager(state = pagerState) {
-
-                    DetailScreenConfigurationGraphBuilder.build(
-                        optionType = optionType,
-                        tabOptions = options,
-                        tabTitle = tabTitle,
-                        rfidViewModel = rfidViewModel
-                    )
+                    val screen = screens.getOrNull(it)
+                    if (screen != null) {
+                        screen.screen?.invoke()
+                    } else {
+                        // If the screen is null, display a default screen or handle the scenario
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("No screen available")
+                        }
+                    }
                 }
             }
         }

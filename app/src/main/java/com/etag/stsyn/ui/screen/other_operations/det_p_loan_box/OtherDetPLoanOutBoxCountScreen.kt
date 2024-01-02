@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
@@ -21,7 +22,10 @@ import com.etag.stsyn.util.DataSource
 import kotlinx.coroutines.launch
 
 @Composable
-fun OtherDetPLoanOutBoxCountScreen() {
+fun OtherDetPLoanOutBoxCountScreen(
+    otherDetPLoanBoxViewModel: OtherDetPLoanBoxViewModel,
+    modifier: Modifier = Modifier
+) {
     val items = remember { mutableStateListOf<String>() }
 
     LaunchedEffect(Unit) {

@@ -16,6 +16,7 @@ import com.etag.stsyn.util.DataSource
 
 @Composable
 fun TLoanScanScreen(
+    tLoanViewModel: TLoanViewModel,
     modifier: Modifier = Modifier
 ) {
     val scannedItems = remember { mutableStateListOf(String()) }

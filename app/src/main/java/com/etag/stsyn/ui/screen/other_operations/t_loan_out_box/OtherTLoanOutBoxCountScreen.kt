@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
@@ -22,7 +23,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OtherTLoanOutBoxCountScreen() {
+fun OtherTLoanOutBoxCountScreen(
+    otherTLoanOutBoxViewModel: OtherTLoanOutBoxViewModel,
+    modifier: Modifier = Modifier
+) {
     val items = remember { mutableStateListOf<String>() }
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = SheetState(skipPartiallyExpanded = false, skipHiddenState = false)

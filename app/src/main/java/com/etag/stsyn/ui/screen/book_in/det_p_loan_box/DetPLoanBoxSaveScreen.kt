@@ -10,7 +10,8 @@ import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 
 @Composable
 fun DetPLoanBoxSaveScreen(
-    modifier: Modifier = Modifier,
+    detPLoanBoxViewModel: DetPLoanBoxViewModel,
+    modifier: Modifier = Modifier
 ) {
     BaseSaveScreen(isError = false, modifier = modifier, onSave = { /*TODO*/ }) {
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User", showRefreshIcon = true) {

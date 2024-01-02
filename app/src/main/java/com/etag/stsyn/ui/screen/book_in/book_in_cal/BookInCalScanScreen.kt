@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.etag.stsyn.ui.screen.book_in_cal
+package com.etag.stsyn.ui.screen.book_in.book_in_cal
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,7 +20,10 @@ import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import kotlinx.coroutines.launch
 
 @Composable
-fun BookInCalScanScreen() {
+fun BookInCalScanScreen(
+    bookInCalViewModel: BookInCalViewModel,
+    modifier: Modifier = Modifier
+) {
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
 

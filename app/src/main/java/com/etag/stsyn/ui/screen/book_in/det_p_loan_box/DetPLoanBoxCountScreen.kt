@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DetPLoanBoxCountScreen(
+    detPLoanBoxViewModel: DetPLoanBoxViewModel,
     modifier: Modifier = Modifier
 ) {
     val coroutineScope = rememberCoroutineScope()

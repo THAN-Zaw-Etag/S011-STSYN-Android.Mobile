@@ -34,7 +34,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
@@ -45,7 +44,10 @@ import com.etag.stsyn.ui.theme.Purple80
 import kotlinx.coroutines.launch
 
 @Composable
-fun OnsiteVerifyScreen() {
+fun OnsiteVerifyScreen(
+    onsiteVerificationViewModel: OnsiteVerificationViewModel,
+    modifier: Modifier = Modifier
+) {
     val hasScanned by remember { mutableStateOf(true) }
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = SheetState(
@@ -165,10 +167,4 @@ fun ScannedBoxSection(
             }
         })
     }
-}
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun OnsiteVerifyScreenPreview() {
-    OnsiteVerifyScreen()
 }

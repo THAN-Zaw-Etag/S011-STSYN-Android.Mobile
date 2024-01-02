@@ -20,6 +20,7 @@ import com.etag.stsyn.util.DataSource
 
 @Composable
 fun CheckInOutScreen(
+    onsiteCheckInOutViewModel: OnsiteCheckInOutViewModel,
     modifier: Modifier = Modifier
 ) {
     val scannedItems = remember { mutableStateListOf<String>() }

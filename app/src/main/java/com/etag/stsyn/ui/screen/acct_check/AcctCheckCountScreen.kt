@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AcctCheckCountScreen(
+    accountCheckViewModel: AccountCheckViewModel,
     modifier: Modifier = Modifier
 ) {
     val items = remember { mutableStateListOf<String>() }
