@@ -33,6 +33,7 @@ class RfidViewModel @Inject constructor(
 
     init {
         getReaderBatteryLevel()
+        updateScanningStatus()
     }
 
     fun updateConnectionStatus(isConnected: Boolean) {
@@ -41,9 +42,9 @@ class RfidViewModel @Inject constructor(
         }
     }
 
-    fun updateScanningStatus(isScanning: Boolean) {
+    private fun updateScanningStatus() {
         _rfidUiState.update {
-            it.copy(isStartScanning = isScanning)
+            it.copy(isStartScanning = isScanning.value)
         }
     }
 
@@ -85,20 +86,6 @@ class RfidViewModel @Inject constructor(
                 }
             }
         })
-    }
-
-    fun startScan() {
-        viewModelScope.launch {
-            rfidHandler.performInventory()
-            updateScanningStatus(true)
-        }
-    }
-
-    fun stopScan() {
-        viewModelScope.launch {
-            rfidHandler.stopInventory()
-            updateScanningStatus(false)
-        }
     }
 
     override fun handleTagData(tagData: Array<TagData>) {

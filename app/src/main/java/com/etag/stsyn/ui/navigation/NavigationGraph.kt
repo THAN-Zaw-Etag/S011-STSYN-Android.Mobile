@@ -32,14 +32,6 @@ fun NavigationGraph(
     val loginViewModel: LoginViewModel = hiltViewModel()
     val loginUiState by loginViewModel.loginUiState.collectAsState()
 
-    LaunchedEffect(rfidUiState.isScanned) {
-        if (rfidUiState.isScanned) navController.navigate(Routes.LoginScreen.name)
-    }
-
-    LaunchedEffect(loginUiState.isLoginSuccessful) {
-        if (loginUiState.isLoginSuccessful) navController.navigate(Routes.HomeContentScreen.name)
-    }
-
     NavHost(
         navController = navController,
         modifier = modifier,
@@ -47,6 +39,7 @@ fun NavigationGraph(
     ) {
 
         composable(route = Routes.SplashScreen.name) {
+
             SplashScreen(onTimeOut = {
                 navController.navigate(Routes.MainScreen.name)
             })
@@ -56,7 +49,9 @@ fun NavigationGraph(
 
             val context = LocalContext.current
             BackHandler(enabled = true) { ExitAppOnBackPress(context) }
-
+            LaunchedEffect(rfidUiState.isScanned) {
+                if (rfidUiState.isScanned) navController.navigate(Routes.LoginScreen.name)
+            }
             MainScreen(
                 onScan = {
                     rfidViewModel.startScan()
@@ -65,6 +60,9 @@ fun NavigationGraph(
         }
 
         composable(route = Routes.LoginScreen.name) {
+            LaunchedEffect(loginUiState.isLoginSuccessful) {
+                if (loginUiState.isLoginSuccessful) navController.navigate(Routes.HomeContentScreen.name)
+            }
             LoginScreen(
                 isSuccessful = loginUiState.isLoginSuccessful,
                 onLogInClick = { loginViewModel.updateLoginStatus(it.equals("1234")) }

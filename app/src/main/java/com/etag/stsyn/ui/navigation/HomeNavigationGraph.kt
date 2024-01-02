@@ -1,8 +1,8 @@
 package com.etag.stsyn.ui.navigation
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -28,8 +28,6 @@ fun HomeNavigationGraph(
     modifier: Modifier = Modifier
 ) {
     val rfidUiState by rfidViewModel.rfidUiState.collectAsState()
-
-    Log.d("TAG", "RfidConnnected: ${rfidUiState.isConnected}")
 
     NavHost(
         navController = navController,
@@ -109,6 +107,10 @@ fun HomeNavigationGraph(
             val optionType = OptionType.valueOf(
                 it.arguments?.getString("type") ?: OptionType.BookOut.toString()
             )
+
+            LaunchedEffect(Unit) {
+                rfidViewModel.apply { updateIsScannedStatus(false) }
+            }
 
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)

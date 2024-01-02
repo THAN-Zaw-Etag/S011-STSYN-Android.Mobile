@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.screen.acct_check
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,17 +19,21 @@ import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
+import com.etag.stsyn.LocalRfidViewModel
 import com.etag.stsyn.ui.components.FilterDialog
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.theme.Purple80
@@ -43,20 +48,26 @@ fun AcctCheckScreen(
     var isScanned by remember { mutableStateOf(false) }
     var selectedFilters = remember { mutableStateOf(mutableMapOf<Int, String>()) }
     var showFilterDialog by remember { mutableStateOf(false) }
+    val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsState()
+    val rfidViewModel = LocalRfidViewModel.current
+    val rfidUiState by rfidViewModel.rfidUiState.collectAsState()
+    val context = LocalContext.current
 
-    ConstraintLayout(
+    LaunchedEffect(rfidUiState.isScanned) {
+        if (rfidUiState.isScanned) Toast.makeText(
+            context,
+            "Scanned successfully!",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    Column(
         modifier = modifier
     ) {
-        val (content, scan) = createRefs()
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScroll(rememberScrollState())
-                .constrainAs(content) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(scan.top)
-                }
                 .padding(16.dp)
         ) {
             FilterDialog(showFilterDialog, onDismiss = { showFilterDialog = false }, onDone = {
@@ -70,20 +81,17 @@ fun AcctCheckScreen(
                 isScanned = isScanned
             )
         }
-
-        ScanIconButton(onScan = { /*TODO*/ }, modifier = Modifier
-            .padding(bottom = 64.dp)
-            .constrainAs(scan) {
-                top.linkTo(content.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-            })
+        ScanIconButton(
+            onScan = { rfidViewModel.startScan() },
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(16.dp)
+        )
     }
 }
 
 @Composable
-fun AcctCheckContent(
+private fun AcctCheckContent(
     filterCount: Int,
     onFilterButtonClick: () -> Unit,
     selectedFilters: MutableMap<Int, String>,
@@ -143,7 +151,7 @@ private fun ScanBoxSection(
 }
 
 @Composable
-fun DetailItem(
+private fun DetailItem(
     title: String,
     value: String,
     modifier: Modifier = Modifier.padding(vertical = 4.dp)
@@ -155,7 +163,7 @@ fun DetailItem(
 }
 
 @Composable
-fun FilterButton(filterCount: Int, onClick: () -> Unit) {
+private fun FilterButton(filterCount: Int, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
