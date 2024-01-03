@@ -14,7 +14,7 @@ import com.etag.stsyn.ui.components.ExitAppOnBackPress
 import com.etag.stsyn.ui.screen.detail.DetailScreen
 import com.etag.stsyn.ui.screen.main.BookInScreen
 import com.etag.stsyn.ui.screen.main.BookOutScreen
-import com.etag.stsyn.ui.screen.main.HomeScreen
+import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.viewmodel.RfidViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
@@ -47,7 +47,7 @@ fun HomeNavigationGraph(
                 updateBottomNavigationBarStatus(false)
             }
 
-            HomeScreen(
+            MainScreen(
                 isReaderConnected = rfidUiState.isConnected,
                 batteryPercentage = rfidUiState.batteryLevel,
                 onCategoryItemClick = {
@@ -109,7 +109,9 @@ fun HomeNavigationGraph(
             )
 
             LaunchedEffect(Unit) {
-                rfidViewModel.apply { updateIsScannedStatus(false) }
+                sharedUiViewModel.apply {
+                    updateIsScannedStatus(false)
+                }
             }
 
             sharedUiViewModel.apply {
@@ -120,8 +122,6 @@ fun HomeNavigationGraph(
 
             DetailScreen(
                 optionType = optionType,
-                rfidViewModel = rfidViewModel,
-                sharedUiViewModel = sharedUiViewModel,
                 navigateToHomeScreen = {
                     navController.navigate(Routes.HomeScreen.name)
                 }

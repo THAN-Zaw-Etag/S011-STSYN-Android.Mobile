@@ -14,6 +14,10 @@ class DetPLoanBoxViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override fun onReceivedTagId(id: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun handleTriggerPress(pressed: Boolean) {
         TODO("Not yet implemented")
     }

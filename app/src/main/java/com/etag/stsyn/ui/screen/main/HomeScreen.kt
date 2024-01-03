@@ -1,146 +1,185 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.etag.stsyn.ui.screen.main
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import com.etag.stsyn.R
-import com.etag.stsyn.domain.model.OptionButtonModel
-import com.etag.stsyn.util.BatteryImageUtil
-import com.etag.stsyn.util.DataSource
+import com.etag.stsyn.ui.components.AppBar
+import com.etag.stsyn.ui.components.BottomNavigationBar
+import com.etag.stsyn.ui.components.ProfileTextButton
+import com.etag.stsyn.ui.components.VersionText
+import com.etag.stsyn.ui.navigation.HomeNavigationGraph
+import com.etag.stsyn.ui.viewmodel.RfidViewModel
+import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
+import com.etag.stsyn.util.TransitionUtil
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
-    isReaderConnected: Boolean,
-    batteryPercentage: Int,
-    onCategoryItemClick: (String) -> Unit,
+    onLogOutClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    rfidViewModel: RfidViewModel,
     modifier: Modifier = Modifier
 ) {
-    var batteryLevel by remember { mutableStateOf(0) }
 
-    LaunchedEffect(batteryPercentage) {
-        batteryLevel = batteryPercentage
-    }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
 
-    LazyColumn(
+    val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
+
+    val navController = rememberNavController()
+    val sharedUiState by sharedUiViewModel.uiState.collectAsState()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
         modifier = modifier,
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            RfidReaderStatusSection(isReaderConnected, batteryLevel)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Categories",
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
-        items(DataSource.categories) {
-            CategoryItem(category = it, onCategoryItemClick = onCategoryItemClick)
-        }
-    }
-}
-
-@Composable
-private fun CategoryItem(
-    category: OptionButtonModel,
-    onCategoryItemClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        onClick = { onCategoryItemClick(category.route) },
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.border(
-            width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(16.dp)
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        )
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier
-                .padding(horizontal = 8.dp, vertical = 24.dp)
-                .fillMaxWidth()
-        ) {
-            Image(
-                painter = painterResource(id = category.icon!!),
-                contentDescription = null,
-                modifier = Modifier
-                    .weight(0.2f)
-                    .scale(1.5f)
-            )
-            Text(
-                text = category.title, modifier = Modifier.weight(0.8f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun RfidReaderStatusSection(
-    isReaderConnected: Boolean,
-    batteryPercentage: Int
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(0.1f))
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "RFID reader status", style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            if (isReaderConnected) {
-                Image(
-                    painter = painterResource(id = R.drawable.bluetooth),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Image(
-                    painter = painterResource(
-                        id = BatteryImageUtil.getBatteryImageByPercentage(
-                            batteryPercentage
-                        )
-                    ), contentDescription = null, modifier = Modifier.height(24.dp)
+        gesturesEnabled = drawerState.isOpen,
+        drawerContent = {
+            ModalDrawerSheet {
+                DrawerContent(
+                    onSettingsClick = onSettingsClick,
+                    onLogOutClick = onLogOutClick
                 )
             }
         }
+    ) {
+        Scaffold(
+            bottomBar = {
+                BottomNavigationBar(
+                    selectedItem = sharedUiState.selectedBottomNavigationItem,
+                    showBottomBar = sharedUiState.showBottomNavigationBar,
+                    onBottomNavigationItemSelected = { navController.navigate(it) })
+            },
+            topBar = {
+                AnimatedVisibility(
+                    visible = sharedUiState.showTopAppBar,
+                    enter = TransitionUtil.slideInVerticallyFromTop,
+                    exit = TransitionUtil.slideOutVerticallyToTop
+                ) {
+                    AppBar(
+                        title = sharedUiState.title,
+                        onDrawerIconClick = {
+                            coroutineScope.launch { drawerState.open() }
+                        }
+                    )
+                }
+            },
+        ) {
+            HomeNavigationGraph(
+                rfidViewModel = rfidViewModel,
+                navController = navController,
+                sharedUiViewModel = sharedUiViewModel,
+                modifier = Modifier.padding(it)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun DrawerContent(
+    onSettingsClick: () -> Unit,
+    onLogOutClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Box(modifier = modifier.fillMaxWidth()) {
+            Image(
+                painter = painterResource(id = R.drawable.drawer_content_upper),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth(),
+                contentScale = ContentScale.FillWidth
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .align(Alignment.Center)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.AccountCircle,
+                    tint = Color.White,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = "Administrator",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.account_id_icon),
+                            contentDescription = null,
+                            modifier = Modifier.scale(1.5f)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "123S",
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        ProfileTextButton(
+            text = "Settings",
+            onOptionClick = onSettingsClick,
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+        )
+        ProfileTextButton(
+            text = "Logout",
+            onOptionClick = onLogOutClick,
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+        VersionText(modifier = Modifier.padding(16.dp))
     }
 }

@@ -18,6 +18,10 @@ class SharedUiViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SharedUiState())
     val uiState: StateFlow<SharedUiState> = _uiState.asStateFlow()
 
+    override fun onReceivedTagId(id: String) {
+        TODO("Not yet implemented")
+    }
+
     fun updateTopAppBarStatus(show: Boolean) {
         _uiState.update {
             it.copy(showTopAppBar = show)

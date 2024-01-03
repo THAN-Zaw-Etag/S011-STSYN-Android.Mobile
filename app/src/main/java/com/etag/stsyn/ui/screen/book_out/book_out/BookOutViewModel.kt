@@ -1,12 +1,12 @@
 package com.etag.stsyn.ui.screen.book_out.book_out
 
+import android.util.Log
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.zebra.rfid.api3.TagData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -14,31 +14,37 @@ class BookOutViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler
 ) : BaseViewModel(rfidHandler) {
 
-    private val _bookOutUiState = MutableStateFlow(BookOutUiState())
-    val bookOutUiState: StateFlow<BookOutUiState> = _bookOutUiState
+    val TAG = "BookOut ViewModel"
 
-    fun updateScannedItems(items: List<String>) {
-        _bookOutUiState.update {
-            val updatedItems = it.scannedItems.toMutableList().apply {
-                addAll(items)
-            }
-            it.copy(scannedItems = updatedItems.toMutableList())
+    private val _bookOutUiState = MutableStateFlow(BookOutUiState())
+    val bookOutUiState: StateFlow<BookOutUiState> = _bookOutUiState.asStateFlow()
+
+    private val _items = MutableStateFlow(mutableListOf<String>())
+    val items: StateFlow<List<String>> = _items.asStateFlow()
+
+    private fun addItem(item: String) {
+        val currentItems = _items.value.toMutableList()
+
+        val hasExisted = item in currentItems
+        if (!hasExisted) {
+            currentItems.add(item)
+            _items.value = currentItems // Update the StateFlow with the new list
         }
     }
 
-    override fun handleTagData(tagData: Array<TagData>) {
-        TODO("Not yet implemented")
+    fun removeItem(item: String) {
+        val currentItems = _items.value.toMutableList()
+        currentItems.remove(item)
+        _items.value = currentItems
     }
 
-    override fun handleTriggerPress(pressed: Boolean) {
-        TODO("Not yet implemented")
-    }
 
-    override fun handleReaderConnected(isConnected: Boolean) {
-        TODO("Not yet implemented")
+    override fun onReceivedTagId(id: String) {
+        addItem(id)
+        Log.d(TAG, "onReceivedTagId: ${_items.value.size}")
     }
 
     data class BookOutUiState(
-        val scannedItems: MutableList<String> = mutableListOf<String>()
+        val scannedItems: MutableList<String> = mutableListOf()
     )
 }

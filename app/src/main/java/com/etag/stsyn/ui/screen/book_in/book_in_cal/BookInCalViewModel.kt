@@ -10,6 +10,10 @@ import javax.inject.Inject
 class BookInCalViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler
 ) : BaseViewModel(rfidHandler) {
+    override fun onReceivedTagId(id: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun handleTagData(tagData: Array<TagData>) {
         TODO("Not yet implemented")
     }

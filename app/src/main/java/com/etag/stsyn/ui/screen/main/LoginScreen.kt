@@ -1,8 +1,9 @@
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+
 package com.etag.stsyn.ui.screen.main
 
-import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,63 +11,110 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
-import com.etag.stsyn.ui.components.PasswordField
 import com.etag.stsyn.ui.components.VersionText
+import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun LoginScreen(
-    isSuccessful: Boolean,
-    onLogInClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.fillMaxSize(),
+    navController: NavController,
+    loginViewModel: LoginViewModel
 ) {
-    val context = LocalContext.current
-    LaunchedEffect(isSuccessful) {
-        Toast.makeText(
-            context,
-            if (isSuccessful) "Login successful!" else "Login failed!",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        LoginUpperSection()
+    val loginUiState by loginViewModel.loginUiState.collectAsState()
+    ReaderLifeCycle(viewModel = loginViewModel)
+    LaunchedEffect(loginUiState.user) {
+        if (loginUiState.user != null) {
+            navController.navigate(Routes.LoginScreenContent.name)
+            loginViewModel.doneNavigate()
+        }
+    }
+    Column(modifier = modifier) {
+        Image(
+            painter = painterResource(id = R.drawable.main_upper),
+            modifier = Modifier
+                .fillMaxWidth(),
+            contentScale = ContentScale.FillWidth,
+            contentDescription = null
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        LoginSection(onLogInClick = onLogInClick)
+        Text(
+            text = "Store Management System",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            color = Purple80,
+            fontWeight = FontWeight.Bold
+        )
         Spacer(modifier = Modifier.weight(1f))
-        LoginLowerSection()
+        MainLowerContent(onScan = { loginViewModel.startScan() })
     }
 }
 
 @Composable
-private fun LoginLowerSection(modifier: Modifier = Modifier) {
+private fun MainLowerContent(
+    onScan: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(modifier = modifier) {
         Image(
-            painter = painterResource(id = R.drawable.login_lower),
+            painter = painterResource(id = R.drawable.main_lower),
             contentDescription = null,
-            modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.FillWidth
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .fillMaxWidth()
+                .rotate(180f)
+                .wrapContentHeight()
         )
+
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Now! Quick Login use RFID",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Image(
+                painter = painterResource(id = R.drawable.rfid_icon),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(72.dp)
+                    .padding(8.dp)
+                    .clip(CircleShape)
+                    .clickable { onScan() },
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Use RFID", fontWeight = FontWeight.Medium, color = Color.White)
+        }
 
         VersionText(
             color = Color.White,
@@ -74,69 +122,5 @@ private fun LoginLowerSection(modifier: Modifier = Modifier) {
                 .padding(16.dp)
                 .align(Alignment.BottomEnd)
         )
-
-    }
-}
-
-@Composable
-private fun LoginSection(onLogInClick: (String) -> Unit, modifier: Modifier = Modifier) {
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp)
-    ) {
-        var enteredPassword by remember { mutableStateOf("") }
-        Text(
-            text = "Welcome, Admin",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = Purple80
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Please enter your password",
-            fontWeight = FontWeight.Bold,
-            color = Purple80
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        PasswordField(hint = "Password", onValueChange = { enteredPassword = it })
-        Spacer(modifier = Modifier.height(8.dp))
-        AnimatedVisibility(visible = false) {
-            Text(text = "The account password is incorrect.\nPlease try again.", color = Color.Red)
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
-            Button(
-                onClick = { onLogInClick(enteredPassword) },
-                colors = ButtonDefaults.buttonColors(containerColor = Purple80)
-            ) {
-                Text(text = "Log in", modifier = Modifier.padding(horizontal = 16.dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun LoginUpperSection(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        Image(
-            painter = painterResource(id = R.drawable.login_upper),
-            contentDescription = null,
-            modifier = Modifier.fillMaxWidth(),
-            contentScale = ContentScale.FillWidth
-        )
-        Column(modifier = Modifier.padding(16.dp)) {
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = null,
-                modifier = Modifier.scale(1.5f)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Store Management System",
-                color = Color.White
-            )
-        }
     }
 }

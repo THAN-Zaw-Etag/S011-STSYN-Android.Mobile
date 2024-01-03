@@ -98,8 +98,6 @@ fun getViewModelByOptionType(optionType: OptionType): BaseViewModel {
         OptionType.OtherTLoanBox -> hiltViewModel<OtherTLoanOutBoxViewModel>()
         OptionType.OtherDetPLoan -> hiltViewModel<OtherDetPLoanViewModel>()
         OptionType.OtherDetPLoanBox -> hiltViewModel<OtherDetPLoanBoxViewModel>()
-
-        else -> hiltViewModel<BookInViewModel>()
     }
 }
 

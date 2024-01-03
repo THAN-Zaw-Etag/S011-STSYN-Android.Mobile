@@ -264,6 +264,7 @@ class ZebraRfidHandler @Inject constructor(
         antennaRfConfig = mConnectedReader.Config.Antennas.getAntennaRfConfig(1).apply {
             setrfModeTableIndex(0)
             tari = 0
+            transmitPowerIndex = 100
             //transmitPowerIndex = sharePreferenceHelper.readerPower ?: DEFAULT_POWER
         }
         mConnectedReader.Config.Antennas.setAntennaRfConfig(1, antennaRfConfig)

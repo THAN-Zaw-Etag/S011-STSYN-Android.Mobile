@@ -21,11 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.etag.ReaderLifeCycle
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.DisableBackPress
 import com.etag.stsyn.ui.components.TabBarLayout
-import com.etag.stsyn.ui.viewmodel.RfidViewModel
-import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
@@ -36,8 +35,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DetailScreen(
-    sharedUiViewModel: SharedUiViewModel,
-    rfidViewModel: RfidViewModel,
     navigateToHomeScreen: () -> Unit,
     optionType: OptionType,
     modifier: Modifier = Modifier
@@ -55,6 +52,8 @@ fun DetailScreen(
 
     val viewModel = getViewModelByOptionType(optionType = optionType)
     val screens = getScreensByOptionType(optionType = optionType, viewModel = viewModel)
+
+    ReaderLifeCycle(viewModel = viewModel)
 
     LaunchedEffect(pagerState.currentPage) {
         val option = options.get(pagerState.currentPage)

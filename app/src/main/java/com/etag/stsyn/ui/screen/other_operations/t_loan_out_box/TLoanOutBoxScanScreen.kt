@@ -11,6 +11,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,20 +54,22 @@ fun OtherTLoanOutBoxScanScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(items) {
-                    DetPLoanSwipeableItem(
-                        isSwipeable = true,
-                        item = DetPLoanItem(
-                            "sn0001-dlcj001",
-                            "data link jumper cable",
-                            "tool",
-                            "01010010"
-                        ),
-                        onItemClick = {
-                            if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                            else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                        },
-                        onSwipeToDismiss = {}
-                    )
+                    key(it) {
+                        DetPLoanSwipeableItem(
+                            isSwipeable = true,
+                            item = DetPLoanItem(
+                                "sn0001-dlcj001",
+                                "data link jumper cable",
+                                "tool",
+                                "01010010"
+                            ),
+                            onItemClick = {
+                                if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
+                                else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                            },
+                            onSwipeToDismiss = {}
+                        )
+                    }
                 }
             }
         }

@@ -1,19 +1,10 @@
 package com.etag.stsyn.ui.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
-import com.etag.stsyn.core.reader.RfidBatteryLevelListener
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.zebra.rfid.api3.TagData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,40 +16,9 @@ class RfidViewModel @Inject constructor(
     private val rfidHandler: ZebraRfidHandler
 ) : BaseViewModel(rfidHandler) {
 
-    private var isStartScanning by mutableStateOf(false)
     private var reconnectingJob: Job? = null
 
-    private val _rfidUiState = MutableStateFlow(RfidUiState())
-    val rfidUiState: StateFlow<RfidUiState> = _rfidUiState.asStateFlow()
-
-    init {
-        getReaderBatteryLevel()
-        updateScanningStatus()
-    }
-
-    fun updateConnectionStatus(isConnected: Boolean) {
-        _rfidUiState.update {
-            it.copy(isConnected = isConnected)
-        }
-    }
-
-    private fun updateScanningStatus() {
-        _rfidUiState.update {
-            it.copy(isStartScanning = isScanning.value)
-        }
-    }
-
-    fun updateIsScannedStatus(isScanned: Boolean) {
-        _rfidUiState.update { it.copy(isScanned = isScanned) }
-    }
-
-    fun toggleScan() {
-        if (_rfidUiState.value.isStartScanning) stopScan()
-        else startScan()
-    }
-
     fun connectReader() {
-
         if (reconnectingJob?.isActive == true) {
             return
         }
@@ -78,34 +38,8 @@ class RfidViewModel @Inject constructor(
         }
     }
 
-    private fun getReaderBatteryLevel() {
-        rfidHandler.setOnBatteryLevelListener(object : RfidBatteryLevelListener {
-            override fun onBatteryLevelChange(batteryLevel: Int) {
-                _rfidUiState.update {
-                    it.copy(batteryLevel = batteryLevel)
-                }
-            }
-        })
+    override fun onReceivedTagId(id: String) {
+        TODO("Not yet implemented")
     }
-
-    override fun handleTagData(tagData: Array<TagData>) {
-        if (tagData.isNotEmpty()) stopScan()
-        updateIsScannedStatus(tagData.isNotEmpty())
-    }
-
-    override fun handleTriggerPress(pressed: Boolean) {
-        //toggleScan()
-    }
-
-    override fun handleReaderConnected(isConnected: Boolean) {
-        updateConnectionStatus(isConnected)
-    }
-
 }
 
-data class RfidUiState(
-    val isConnected: Boolean = false,
-    val isScanned: Boolean = false,
-    val batteryLevel: Int = 0,
-    val isStartScanning: Boolean = false
-)

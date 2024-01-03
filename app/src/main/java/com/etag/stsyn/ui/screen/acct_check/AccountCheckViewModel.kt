@@ -23,6 +23,10 @@ class AccountCheckViewModel @Inject constructor(
         _acctCheckUiState.update { it.copy(isScanned = isScanned) }
     }
 
+    override fun onReceivedTagId(id: String) {
+
+    }
+
     override fun handleTagData(tagData: Array<TagData>) {
         updateScannedStatus(tagData.isNotEmpty())
         if (tagData.isNotEmpty()) stopScan()
