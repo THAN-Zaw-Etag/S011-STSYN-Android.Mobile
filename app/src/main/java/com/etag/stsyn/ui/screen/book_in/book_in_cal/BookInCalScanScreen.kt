@@ -5,9 +5,14 @@ package com.etag.stsyn.ui.screen.book_in.book_in_cal
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,24 +31,39 @@ fun BookInCalScanScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
+    val rfidUiState by bookInCalViewModel.rfidUiState.collectAsState()
+
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(rfidUiState.scannedItems) {
+        if (rfidUiState.scannedItems.size > 1) listState.animateScrollToItem(rfidUiState.scannedItems.size - 1)
+    }
 
     DetailBottomSheetScaffold(
         state = scaffoldState,
+        modifier = modifier,
         sheetContent = { BookInCalScanBottomSheetContent("Title") }) {
-        BaseScanScreen(scannedItemCount = 5, onScan = { /*TODO*/ }, onClear = { /*TODO*/ }) {
+        BaseScanScreen(
+            scannedItemCount = rfidUiState.scannedItems.size,
+            onScan = { bookInCalViewModel.toggle() },
+            isScanning = rfidUiState.isScanning,
+            onClear = { bookInCalViewModel.removeScannedItems() }
+        ) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
+                state = listState,
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(10) {
+                items(rfidUiState.scannedItems) {
                     ScannedItem(
-                        id = "id",
+                        id = it,
                         name = "john smith",
                         showTrailingIcon = true,
                         onItemClick = {
                             if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
                             else coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                        })
+                        }
+                    )
                 }
             }
         }
@@ -55,7 +75,7 @@ private fun BookInCalScanBottomSheetContent(
     title: String,
     modifier: Modifier = Modifier
 ) {
-    InfoBottomSheetContent(title = title) {
+    InfoBottomSheetContent(title = title, modifier = modifier) {
         LazyColumn(contentPadding = PaddingValues(16.dp)) {
             items(10) {
                 DetailRow(itemDetail = ItemDetail("Hello", "World"))

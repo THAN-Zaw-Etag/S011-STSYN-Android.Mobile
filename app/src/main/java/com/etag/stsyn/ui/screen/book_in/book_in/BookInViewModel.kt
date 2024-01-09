@@ -10,7 +10,7 @@ class BookInViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler
 ) : BaseViewModel(rfidHandler) {
     override fun onReceivedTagId(id: String) {
-        TODO("Not yet implemented")
+        //addItem(id)
     }
 
 }

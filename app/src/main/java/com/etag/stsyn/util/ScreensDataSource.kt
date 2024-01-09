@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.etag.stsyn.R
 import com.etag.stsyn.core.BaseViewModel
-import com.etag.stsyn.domain.model.CustomIcon
+import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.screen.acct_check.AccountCheckViewModel
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckCountScreen
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckSaveScreen

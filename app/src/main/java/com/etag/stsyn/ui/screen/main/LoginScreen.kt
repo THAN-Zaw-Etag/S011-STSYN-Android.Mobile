@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.screen.main
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -31,28 +32,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.VersionText
-import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun LoginScreen(
+    navigateToLoginContentScreen: () -> Unit,
     modifier: Modifier = Modifier.fillMaxSize(),
-    navController: NavController,
     loginViewModel: LoginViewModel
 ) {
 
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     ReaderLifeCycle(viewModel = loginViewModel)
     LaunchedEffect(loginUiState.user) {
-        if (loginUiState.user != null) {
-            navController.navigate(Routes.LoginScreenContent.name)
-            loginViewModel.doneNavigate()
+        Log.d("TAG", "LoginScreen: ${loginUiState.user?.name}")
+        if ((loginUiState.user?.name ?: "").isNotEmpty()) {
+            navigateToLoginContentScreen()
         }
     }
+
+    LaunchedEffect(loginUiState.isLoginSuccessful) {
+        Log.d("TAG", "LoginScreen: ${loginUiState.isLoginSuccessful}")
+    }
+
     Column(modifier = modifier) {
         Image(
             painter = painterResource(id = R.drawable.main_upper),

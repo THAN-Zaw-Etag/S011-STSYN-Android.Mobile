@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -20,13 +21,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,10 +39,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.etag.stsyn.util.DataSource
+import com.etag.stsyn.ui.screen.acct_check.FilterItem
 
 @Composable
 fun FilterDialog(
+    filters: List<FilterItem>,
     show: Boolean, onDismiss: () -> Unit,
     onDone: (HashMap<Int, String>) -> Unit
 ) {
@@ -65,6 +65,7 @@ fun FilterDialog(
                     showDialog = false
                     onDismiss()
                 },
+                filters = filters,
                 onDone = {
                     onDone(it)
                     showDialog = false
@@ -76,7 +77,11 @@ fun FilterDialog(
 }
 
 @Composable
-private fun FilterDialogContent(onDismiss: () -> Unit, onDone: (HashMap<Int, String>) -> Unit) {
+private fun FilterDialogContent(
+    filters: List<FilterItem>,
+    onDismiss: () -> Unit,
+    onDone: (HashMap<Int, String>) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -84,6 +89,9 @@ private fun FilterDialogContent(onDismiss: () -> Unit, onDone: (HashMap<Int, Str
             .padding(16.dp)
     ) {
         var selectedItems = hashMapOf<Int, String>()
+        var isClear by remember {
+            mutableStateOf(false)
+        }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -98,8 +106,8 @@ private fun FilterDialogContent(onDismiss: () -> Unit, onDone: (HashMap<Int, Str
         }
 
         LazyColumn(modifier = Modifier.weight(1f)) {
-            itemsIndexed(DataSource.filters) { index, item ->
-                FilterItem(title = item, onSelected = { option ->
+            itemsIndexed(filters.toList()) { index, item ->
+                FilterItemLayout(title = item.title, isClear = isClear, onSelected = { option ->
                     selectedItems.put(index, option)
                 })
             }
@@ -107,7 +115,10 @@ private fun FilterDialogContent(onDismiss: () -> Unit, onDone: (HashMap<Int, Str
 
         Column {
             Button(
-                onClick = { selectedItems.clear() },
+                onClick = {
+                    selectedItems.clear()
+                    isClear = true
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
@@ -138,19 +149,33 @@ private fun FilterDialogContent(onDismiss: () -> Unit, onDone: (HashMap<Int, Str
 }
 
 @Composable
-fun FilterItem(
+private fun FilterItemLayout(
     title: String,
+    isClear: Boolean,
     onSelected: (String) -> Unit,
     modifier: Modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
 ) {
+
+    var defaultValue by remember {
+        mutableStateOf("All")
+    }
+
+    LaunchedEffect(isClear) {
+        Log.d("TAG", "FilterItemLayout: $isClear")
+        if (isClear) defaultValue = "All"
+    }
+
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(text = "$title :", modifier = Modifier.weight(0.4f))
         Spacer(modifier = Modifier.width(8.dp))
         DropDown(
             modifier = Modifier.weight(0.6f),
             items = listOf("One", "Two", "Three"),
-            defaultValue = "All",
-            onSelected = onSelected
+            defaultValue = defaultValue,
+            onSelected = {
+                defaultValue = it
+                onSelected(it)
+            }
         )
     }
 }

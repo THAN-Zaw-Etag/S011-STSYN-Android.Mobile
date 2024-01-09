@@ -9,7 +9,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.etag.stsyn.R
 import kotlinx.coroutines.delay
 
@@ -30,10 +29,4 @@ fun SplashScreen(
     ) {
         Image(painter = painterResource(id = R.drawable.img), modifier = Modifier.scale(1.7f), contentDescription = null)
     }
-}
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun SplashScreenPreview() {
-    SplashScreen(onTimeOut = {})
 }

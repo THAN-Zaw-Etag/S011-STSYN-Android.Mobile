@@ -3,7 +3,6 @@ package com.etag.stsyn.ui.viewmodel
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.ui.navigation.Routes
-import com.zebra.rfid.api3.TagData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +18,7 @@ class SharedUiViewModel @Inject constructor(
     val uiState: StateFlow<SharedUiState> = _uiState.asStateFlow()
 
     override fun onReceivedTagId(id: String) {
-        TODO("Not yet implemented")
+
     }
 
     fun updateTopAppBarStatus(show: Boolean) {
@@ -46,18 +45,6 @@ class SharedUiViewModel @Inject constructor(
                 showBottomNavigationBar = showBottomNavigationBar
             )
         }
-    }
-
-    override fun handleTagData(tagData: Array<TagData>) {
-
-    }
-
-    override fun handleTriggerPress(pressed: Boolean) {
-
-    }
-
-    override fun handleReaderConnected(isConnected: Boolean) {
-
     }
 }
 

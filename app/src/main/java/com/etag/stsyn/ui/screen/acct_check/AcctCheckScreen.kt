@@ -1,7 +1,5 @@
 package com.etag.stsyn.ui.screen.acct_check
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,26 +16,31 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import com.etag.stsyn.LocalRfidViewModel
 import com.etag.stsyn.ui.components.FilterDialog
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.DataSource
+
+data class FilterItem(
+    val title: String,
+    val option: String
+)
 
 @Composable
 fun AcctCheckScreen(
@@ -46,19 +49,22 @@ fun AcctCheckScreen(
 ) {
     var filterCount by remember { mutableStateOf(0) }
     var isScanned by remember { mutableStateOf(false) }
-    var selectedFilters = remember { mutableStateOf(mutableMapOf<Int, String>()) }
+    var filters = remember { mutableStateListOf<FilterItem>() }
     var showFilterDialog by remember { mutableStateOf(false) }
-    val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsState()
-    val rfidViewModel = LocalRfidViewModel.current
-    val rfidUiState by rfidViewModel.rfidUiState.collectAsState()
-    val context = LocalContext.current
+    val rfidUiState by accountCheckViewModel.rfidUiState.collectAsState()
 
-    LaunchedEffect(rfidUiState.isScanned) {
-        if (rfidUiState.isScanned) Toast.makeText(
-            context,
-            "Scanned successfully!",
-            Toast.LENGTH_LONG
-        ).show()
+    LaunchedEffect(Unit) {
+        DataSource.filters.onEachIndexed { index, entry ->
+            filters.add(entry)
+        }
+    }
+
+    // clear all selected filter values before another filter dialog starts
+    fun clearAllValues() {
+        val temp = filters.toMutableList()
+        temp.forEachIndexed { index, item ->
+            filters[index] = item.copy(option = "-")
+        }
     }
 
     Column(
@@ -70,19 +76,33 @@ fun AcctCheckScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            FilterDialog(showFilterDialog, onDismiss = { showFilterDialog = false }, onDone = {
-                selectedFilters.value = it
-                Log.d("TAG", "AcctCheckScreen: ${selectedFilters.value}")
-            })
+            FilterDialog(
+                show = showFilterDialog,
+                filters = filters,
+                onDismiss = { showFilterDialog = false },
+                onDone = {
+                    filterCount = it.size
+                    clearAllValues()
+                    val mutableFilters = filters.toMutableList() // Create a mutable copy
+
+                    it.onEachIndexed { index, entry ->
+                        mutableFilters[entry.key] =
+                            mutableFilters[entry.key].copy(option = entry.value)
+                    }
+                    filters.clear()
+                    filters.addAll(mutableFilters)
+                }
+            )
             AcctCheckContent(
                 onFilterButtonClick = { showFilterDialog = true },
-                selectedFilters = selectedFilters.value,
-                filterCount = selectedFilters.value.size,
+                selectedFilters = filters,
+                filterCount = filterCount,
                 isScanned = isScanned
             )
         }
         ScanIconButton(
-            onScan = { rfidViewModel.startScan() },
+            isScanning = rfidUiState.isScanning,
+            onScan = { accountCheckViewModel.toggle() },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(16.dp)
@@ -94,15 +114,15 @@ fun AcctCheckScreen(
 private fun AcctCheckContent(
     filterCount: Int,
     onFilterButtonClick: () -> Unit,
-    selectedFilters: MutableMap<Int, String>,
+    selectedFilters: List<FilterItem>,
     isScanned: Boolean
 ) {
     FilterButton(filterCount, onClick = onFilterButtonClick)
     Spacer(modifier = Modifier.height(16.dp))
-    DataSource.filters.forEachIndexed { index, title ->
+    selectedFilters.forEach {
         DetailItem(
-            title = title,
-            value = if (index in selectedFilters.keys) selectedFilters.getValue(index) else "-"
+            title = it.title,
+            value = it.option
         )
     }
     ScanBoxSection("", "")
@@ -112,14 +132,14 @@ private fun AcctCheckContent(
             DetailItem(title = "Done", value = "0")
             DetailItem(title = "Outstanding", value = "0")
         }
-        Text(
-            text = "Reset",
-            color = if (isScanned) Purple80 else Color.Gray,
-            modifier = Modifier
-                .weight(0.2f)
-                .clickable { },
-            textDecoration = TextDecoration.Underline
-        )
+        TextButton(onClick = { }, modifier = Modifier.weight(0.2f)) {
+            Text(
+                text = "Reset",
+                color = if (isScanned) Purple80 else Color.Gray,
+                modifier = Modifier,
+                textDecoration = TextDecoration.Underline
+            )
+        }
     }
 }
 
@@ -145,8 +165,8 @@ private fun ScanBoxSection(
             textDecoration = TextDecoration.Underline,
             fontStyle = FontStyle.Italic
         )
-        Text("Item Description:- ${description.toUpperCase()}")
-        Text("ID:- ${id.toUpperCase()}")
+        Text("Item Description:- ${description.uppercase()}")
+        Text("ID:- ${id.uppercase()}")
     }
 }
 
@@ -156,7 +176,7 @@ private fun DetailItem(
     value: String,
     modifier: Modifier = Modifier.padding(vertical = 4.dp)
 ) {
-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = title, modifier = Modifier.weight(0.3f))
         Text(text = value, modifier = Modifier.weight(0.7f))
     }

@@ -20,25 +20,25 @@ fun BookOutScanScreen(
     bookOutViewModel: BookOutViewModel,
     modifier: Modifier = Modifier
 ) {
-    val scannedItems by bookOutViewModel.items.collectAsState()
-    val bookOutUiState by bookOutViewModel.bookOutUiState.collectAsState()
+    val rfidUiState by bookOutViewModel.rfidUiState.collectAsState()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(scannedItems) {
-        if (scannedItems.size > 1) listState.animateScrollToItem(scannedItems.size - 1)
+    LaunchedEffect(rfidUiState.scannedItems) {
+        if (rfidUiState.scannedItems.size > 1) listState.animateScrollToItem(rfidUiState.scannedItems.size - 1)
     }
 
     BaseScanScreen(
-        scannedItemCount = scannedItems.size,
+        scannedItemCount = rfidUiState.scannedItems.size,
         modifier = modifier,
+        isScanning = rfidUiState.isScanning,
         onScan = { bookOutViewModel.toggle() },
-        onClear = { scannedItems.toMutableList().clear() }) {
+        onClear = { rfidUiState.scannedItems.toMutableList().clear() }) {
         LazyColumn(
             state = listState,
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(scannedItems) {
+            items(rfidUiState.scannedItems) {
                 key(it) {
                     ScannedItem(
                         id = it, name = "",

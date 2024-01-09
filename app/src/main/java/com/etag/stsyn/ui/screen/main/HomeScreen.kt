@@ -118,7 +118,8 @@ fun DrawerContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
+            .fillMaxWidth(0.8f)
             .background(MaterialTheme.colorScheme.background)
     ) {
         Box(modifier = modifier.fillMaxWidth()) {

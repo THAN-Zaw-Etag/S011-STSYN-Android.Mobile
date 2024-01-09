@@ -1,4 +1,4 @@
-package com.etag.stsyn.domain.model
+package com.etag.stsyn.ui.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.Icon
@@ -7,11 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-
-data class TabOption(
-    val title: String,
-    val icon: CustomIcon,
-)
 
 sealed class CustomIcon {
     data class Resource(val iconRes: Int): CustomIcon()

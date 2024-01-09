@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -61,8 +62,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun BoxScreen(
     scannedItems: List<String>,
+    isScanning: Boolean = false,
     boxOutTitle: String = "",
     onReset: () -> Unit,
+    onScan: () -> Unit = {},
     showBoxBookOutButton: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -70,6 +73,12 @@ fun BoxScreen(
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     var show by remember { mutableStateOf(false) }
+
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(scannedItems) {
+        if (scannedItems.size > 1) listState.animateScrollToItem(scannedItems.size - 1)
+    }
 
     LaunchedEffect(scannedItems, showBoxBookOutButton) {
         items = scannedItems
@@ -89,6 +98,7 @@ fun BoxScreen(
             val (content, buttonLayout) = createRefs()
             LazyColumn(contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
+                state = listState,
                 modifier = Modifier
                     .fillMaxHeight()
                     .padding(top = 42.dp, bottom = 32.dp)
@@ -113,7 +123,7 @@ fun BoxScreen(
                     )
                 }
                 item {
-                    if (items.isNotEmpty()) {
+                    if (scannedItems.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(12.dp))
                         ScannedItemsOptionLayout(items.size, isScanned = false, onReset = onReset)
                     }
@@ -128,12 +138,13 @@ fun BoxScreen(
             }
             BottomScannedButtonLayout(outStandingItemCount = 2,
                 scannedItemsCount = 0,
+                isScanning = isScanning,
+                onScan = onScan,
                 modifier = Modifier.constrainAs(buttonLayout) {
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }) {
-            }
+                })
         }
     }
 }
@@ -203,6 +214,7 @@ fun BoxBookOutButton(title: String, onClick: () -> Unit) {
 fun BottomScannedButtonLayout(
     outStandingItemCount: Int,
     scannedItemsCount: Int,
+    isScanning: Boolean,
     modifier: Modifier = Modifier,
     onScan: () -> Unit
 ) {
@@ -219,7 +231,7 @@ fun BottomScannedButtonLayout(
             )
         }
 
-        ScanIconButton(onScan = onScan)
+        ScanIconButton(onScan = onScan, isScanning = isScanning)
 
         if (outStandingItemCount != 0) {
             Text(
@@ -263,11 +275,11 @@ private fun ScannedItemsOptionLayout(
         }
 
         TextButton(onClick = {
-            if (isScanned) showConfirmationDialog = true
+            if (itemCount != 0) showConfirmationDialog = true
         }) {
             Text(
                 text = "Reset",
-                color = if (isScanned) MaterialTheme.colorScheme.primary else Color.DarkGray
+                color = if (itemCount != 0) MaterialTheme.colorScheme.primary else Color.DarkGray
             )
         }
     }

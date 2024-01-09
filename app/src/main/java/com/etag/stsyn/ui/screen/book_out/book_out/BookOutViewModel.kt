@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.book_out.book_out
 
-import android.util.Log
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,11 +18,13 @@ class BookOutViewModel @Inject constructor(
     private val _bookOutUiState = MutableStateFlow(BookOutUiState())
     val bookOutUiState: StateFlow<BookOutUiState> = _bookOutUiState.asStateFlow()
 
-    private val _items = MutableStateFlow(mutableListOf<String>())
+    /*private val _items = MutableStateFlow(mutableListOf<String>())
     val items: StateFlow<List<String>> = _items.asStateFlow()
 
     private fun addItem(item: String) {
         val currentItems = _items.value.toMutableList()
+
+        isScanning
 
         val hasExisted = item in currentItems
         if (!hasExisted) {
@@ -36,12 +37,12 @@ class BookOutViewModel @Inject constructor(
         val currentItems = _items.value.toMutableList()
         currentItems.remove(item)
         _items.value = currentItems
-    }
+    }*/
 
 
     override fun onReceivedTagId(id: String) {
-        addItem(id)
-        Log.d(TAG, "onReceivedTagId: ${_items.value.size}")
+        /*addItem(id)
+        Log.d(TAG, "onReceivedTagId: ${_items.value.size}")*/
     }
 
     data class BookOutUiState(

@@ -110,7 +110,7 @@ fun HomeNavigationGraph(
 
             LaunchedEffect(Unit) {
                 sharedUiViewModel.apply {
-                    updateIsScannedStatus(false)
+                    //updateIsScannedStatus(false)
                 }
             }
 

@@ -2,10 +2,12 @@ package com.etag.stsyn.util
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
-import com.etag.stsyn.domain.model.CustomIcon
-import com.etag.stsyn.domain.model.TabOption
+import com.etag.stsyn.ui.components.CustomIcon
 
-
+data class TabOption(
+    val title: String,
+    val icon: CustomIcon,
+)
 object TabUtil {
 
     /**
@@ -27,7 +29,6 @@ object TabUtil {
             OptionType.OtherTLoan -> {
                 options.removeAt(0)
                 options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
-
                 options
             }
 

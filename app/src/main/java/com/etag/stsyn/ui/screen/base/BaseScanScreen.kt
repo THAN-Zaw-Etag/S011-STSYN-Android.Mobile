@@ -26,17 +26,21 @@ import com.etag.stsyn.ui.theme.Purple80
 @Composable
 fun BaseScanScreen(
     scannedItemCount: Int,
+    isScanning: Boolean = false,
     onScan: () -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
     scanContent: @Composable () -> Unit
 ) {
-    Column {
+
+
+    Column(modifier = modifier) {
         Box(modifier = Modifier.weight(1f)) {
             scanContent()
         }
         BottomScanButtonLayout(
             itemCount = scannedItemCount,
+            isScanning = isScanning,
             onScan = onScan,
             onClear = onClear
         )
@@ -46,6 +50,7 @@ fun BaseScanScreen(
 @Composable
 private fun BottomScanButtonLayout(
     itemCount: Int,
+    isScanning: Boolean,
     onScan: () -> Unit,
     onClear: () -> Unit,
     modifier: Modifier = Modifier
@@ -77,7 +82,7 @@ private fun BottomScanButtonLayout(
             modifier = if (itemCount > 0) Modifier.clickable {
                 showClearDialog = true
             } else Modifier)
-        ScanIconButton(onScan = onScan)
+        ScanIconButton(onScan = onScan, isScanning = isScanning)
         Text(text = "Total $itemCount")
     }
 }

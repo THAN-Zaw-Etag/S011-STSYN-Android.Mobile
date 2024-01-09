@@ -24,7 +24,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.etag.stsyn.domain.model.CustomIcon
 import com.etag.stsyn.util.TabScreen
 import kotlinx.coroutines.launch
 

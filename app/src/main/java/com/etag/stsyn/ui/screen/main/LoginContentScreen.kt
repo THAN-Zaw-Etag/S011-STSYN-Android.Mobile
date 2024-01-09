@@ -35,7 +35,7 @@ import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
-fun LoginScreenContent(
+fun LoginContentScreen(
     isSuccessful: Boolean,
     errorMessage: String,
     onLogInClick: (String) -> Unit,
@@ -111,7 +111,11 @@ private fun LoginSection(
             color = Purple80
         )
         Spacer(modifier = Modifier.height(24.dp))
-        PasswordField(hint = "Password", onValueChange = { enteredPassword = it })
+        PasswordField(
+            hint = "Password",
+            onValueChange = { enteredPassword = it },
+            onSubmit = { onLogInClick(it) }
+        )
         Spacer(modifier = Modifier.height(8.dp))
         AnimatedVisibility(visible = errorMessage.isNotEmpty()) {
             Text(text = errorMessage, color = Color.Red)

@@ -12,9 +12,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,18 +37,11 @@ fun OtherDetPLoanOutBoxScanScreen(
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
 
-    val items = remember {
-        mutableStateListOf(
-            DetPLoanItem("sn000001 - dljc111111", "data linkwq jumper cable", "tool", "01010011"),
-            DetPLoanItem("sn000002 - dljc111111", "data linkew jumper cable", "tool", "01010011"),
-            DetPLoanItem("sn000003 - dljc111111", "data linkwqew jumper cable", "tool", "01010011"),
-            DetPLoanItem("sn000004 - dljc111111", "data linkwq jumper cable", "tool", "01010011"),
-            DetPLoanItem("sn000005 - dljc111111", "data link dsjumper cable", "tool", "01010011"),
-        )
-    }
+    val rfidUiState by otherDetPLoanBoxViewModel.rfidUiState.collectAsState()
 
     DetailBottomSheetScaffold(
         state = scaffoldState,
+        modifier = modifier,
         sheetContent = {
             Column(
                 modifier = Modifier
@@ -59,40 +52,45 @@ fun OtherDetPLoanOutBoxScanScreen(
             }
         }) {
         DetPLoanOutContent(
-            items = items,
+            items = rfidUiState.scannedItems,
             onItemClick = {
                 if (scaffoldState.bottomSheetState.isVisible) {
                     coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
                 } else coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
             },
-            onSwipeToDismiss = { items.remove(it) },
-            onClear = { items.clear() }
+            onSwipeToDismiss = { otherDetPLoanBoxViewModel.removeItem(it) },
+            onScan = { otherDetPLoanBoxViewModel.toggle() },
+            isScanning = rfidUiState.isScanning,
+            onClear = { otherDetPLoanBoxViewModel.removeScannedItems() }
         )
     }
 }
 
 @Composable
 fun DetPLoanOutContent(
-    items: List<DetPLoanItem>,
+    items: List<String>,
     onItemClick: () -> Unit,
-    onSwipeToDismiss: (DetPLoanItem) -> Unit,
+    onScan: () -> Unit,
+    isScanning: Boolean,
+    onSwipeToDismiss: (String) -> Unit,
     onClear: () -> Unit,
 ) {
     BaseScanScreen(
         scannedItemCount = items.size,
-        onScan = { },
+        onScan = onScan,
+        isScanning = isScanning,
         onClear = onClear
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(16.dp)
         ) {
             itemsIndexed(items) { index, item ->
-                key(item.id) {
+                key(item) {
                     DetPLoanSwipeableItem(
                         isSwipeable = true,
-                        item = item,
+                        item = DetPLoanItem("", item, "", ""),
                         onItemClick = onItemClick,
-                        onSwipeToDismiss = onSwipeToDismiss
+                        onSwipeToDismiss = { onSwipeToDismiss(item) }
                     )
                 }
             }

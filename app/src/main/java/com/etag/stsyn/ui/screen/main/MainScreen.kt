@@ -37,9 +37,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
-import com.etag.stsyn.domain.model.OptionButtonModel
 import com.etag.stsyn.util.BatteryImageUtil
 import com.etag.stsyn.util.DataSource
+import com.etag.stsyn.util.OptionButtonModel
 
 @Composable
 fun MainScreen(

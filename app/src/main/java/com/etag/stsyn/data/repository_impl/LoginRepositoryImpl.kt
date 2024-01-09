@@ -4,9 +4,9 @@ import com.etag.stsyn.data.model.User
 import com.etag.stsyn.data.repository.LoginRepository
 
 class LoginRepositoryImpl : LoginRepository {
-    override suspend fun login(user: User, correctedPassword: String): Boolean {
+    override suspend fun login(user: User, correctPassword: String): Boolean {
         // handle api login here
-        return user.password.equals(correctedPassword)
+        return user.password == correctPassword
     }
 
     override suspend fun getUserByRfidId(rfidId: String): User {

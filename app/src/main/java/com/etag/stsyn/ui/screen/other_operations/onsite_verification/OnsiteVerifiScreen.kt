@@ -1,4 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.etag.stsyn.ui.screen.other_operations.onsite_verification
 
@@ -13,6 +16,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
@@ -20,6 +25,8 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,8 +64,10 @@ fun OnsiteVerifyScreen(
         )
     )
     val coroutineScope = rememberCoroutineScope()
+    val rfidUiState by onsiteVerificationViewModel.rfidUiState.collectAsState()
 
     DetailBottomSheetScaffold(
+        modifier = modifier,
         state = scaffoldState,
         sheetContent = { BottomSheetContent(itemList = listOf()) }) {
         Column(
@@ -68,10 +77,14 @@ fun OnsiteVerifyScreen(
         ) {
             ScannedBoxSection(id = "", description = "")
             if (hasScanned) {
-                ScannedContent(onReset = {}, modifier = Modifier.weight(1f), onItemClick = {
-                    if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                    else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                })
+                ScannedContent(
+                    onReset = {},
+                    scannedItems = rfidUiState.scannedItems,
+                    modifier = Modifier.weight(1f),
+                    onItemClick = {
+                        if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
+                        else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                    })
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -80,7 +93,9 @@ fun OnsiteVerifyScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "Os: 2", color = if (hasScanned) Color.Black else Color.Transparent)
-                ScanIconButton(onScan = { /*TODO*/ })
+                ScanIconButton(
+                    isScanning = rfidUiState.isScanning,
+                    onScan = { onsiteVerificationViewModel.toggle() })
                 Text(text = "Done: 0", color = if (hasScanned) Color.Black else Color.Transparent)
             }
         }
@@ -90,11 +105,18 @@ fun OnsiteVerifyScreen(
 @Composable
 private fun ScannedContent(
     // pass item list here
+    scannedItems: List<String>,
     onReset: () -> Unit,
     onItemClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showResetDialog by remember { mutableStateOf(false) }
+
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(scannedItems) {
+        if (scannedItems.size > 1) listState.animateScrollToItem(scannedItems.size - 1)
+    }
 
     Column(modifier = modifier) {
         ConfirmationDialog(
@@ -123,11 +145,12 @@ private fun ScannedContent(
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn(
+            state = listState,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            items(5) {
+            items(scannedItems) {
                 ScannedItem(
-                    id = "sn000021",
+                    id = it,
                     name = "data link jumper cable",
                     showTrailingIcon = true,
                     onItemClick = onItemClick

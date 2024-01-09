@@ -1,11 +1,13 @@
 package com.etag.stsyn.core
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.reader.RfidBatteryLevelListener
 import com.etag.stsyn.core.reader.RfidResponseHandlerInterface
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.zebra.rfid.api3.TagData
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,36 +19,52 @@ abstract class BaseViewModel(
     private val rfidHandler: ZebraRfidHandler,
 ) : ViewModel(), RfidResponseHandlerInterface {
 
-    private val _isScanning = MutableStateFlow(false)
+    /*private val _isScanning = MutableStateFlow(false)
     var isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
 
     private val _scannedItems = MutableStateFlow(mutableListOf<String>())
-    val scannedItems: StateFlow<List<String>> = _scannedItems.asStateFlow()
+    val scannedItems: StateFlow<List<String>> = _scannedItems.asStateFlow()*/
 
-    private val _isMultiScanning = MutableStateFlow(false)
-    val isMultiScanning: StateFlow<Boolean> = _isMultiScanning.asStateFlow()
-
-    private val _hasScanned = MutableStateFlow(false)
-    val hasScanned: StateFlow<Boolean> = _hasScanned.asStateFlow()
+    private val _singleScannedItem = MutableStateFlow("")
+    val singleScannedItem: StateFlow<String> = _singleScannedItem.asStateFlow()
 
     private val _rfidUiState = MutableStateFlow(RfidUiState())
     val rfidUiState: StateFlow<RfidUiState> = _rfidUiState.asStateFlow()
 
+    private var reconnectingJob: Job? = null
+
     init {
-        updateMultiScanningStatus(false)
+        updateScanType(ScanType.Multi)
     }
 
-    fun updateMultiScanningStatus(isMultiScanning: Boolean) {
-        _isMultiScanning.value = isMultiScanning
+    fun updateScanType(scanType: ScanType) {
+        _rfidUiState.update {
+            it.copy(scanType = scanType)
+        }
     }
 
-    fun addScannedItem(item: String) {
-        val hasExisted = item in _scannedItems.value
-        if (!hasExisted) _scannedItems.value.add(item)
+    private fun addItem(item: String) {
+        val currentItems = _rfidUiState.value.scannedItems.toMutableList()
+
+        val hasExisted = item in currentItems
+        if (!hasExisted) {
+            currentItems.add(item)
+            _rfidUiState.update { it.copy(scannedItems = currentItems) } // Update the StateFlow with the new list
+        }
     }
 
-    fun removeScannedItem(item: String) {
-        _scannedItems.value.remove(item)
+    fun removeItem(item: String) {
+        val currentItems = _rfidUiState.value.scannedItems.toMutableList()
+        currentItems.remove(item)
+        _rfidUiState.update { it.copy(scannedItems = currentItems) }
+    }
+
+    fun removeScannedItems() {
+        //_scannedItems.value = mutableListOf()
+
+        _rfidUiState.update {
+            it.copy(scannedItems = mutableListOf())
+        }
     }
 
     // to initialize reader when needed
@@ -58,8 +76,14 @@ abstract class BaseViewModel(
         rfidHandler.setResponseHandlerInterface(this)
     }
 
+    private fun updateIsScanningStatus(isScanning: Boolean) {
+        _rfidUiState.update {
+            it.copy(isScanning = isScanning)
+        }
+    }
+
     fun toggle() {
-        if (_isScanning.value) stopScan()
+        if (_rfidUiState.value.isScanning) stopScan()
         else startScan()
     }
 
@@ -70,53 +94,67 @@ abstract class BaseViewModel(
     fun startScan() {
         viewModelScope.launch {
             rfidHandler.performInventory()
-            _isScanning.value = true
+            updateIsScanningStatus(true)
         }
     }
 
     fun stopScan() {
         viewModelScope.launch {
             rfidHandler.stopInventory()
-            _isScanning.value = false
+            updateIsScanningStatus(false)
         }
     }
 
-    init {
-        getReaderBatteryLevel()
-    }
-
-    fun updateConnectionStatus(isConnected: Boolean) {
-        _rfidUiState.update {
-            it.copy(isConnected = isConnected)
-        }
-    }
-
-    fun updateIsScannedStatus(isScanned: Boolean) {
-        _rfidUiState.update { it.copy(isScanned = isScanned) }
-    }
-
-    protected fun updateIsConnectedStatus(isConnected: Boolean) {
+    fun updateIsConnectedStatus(isConnected: Boolean) {
         _rfidUiState.update { it.copy(isConnected = isConnected) }
+    }
+
+    fun connectReader() {
+        if (reconnectingJob?.isActive == true) {
+            return
+        }
+        viewModelScope.launch {
+            reconnectingJob?.cancel()
+            if (!rfidHandler.isReaderConnected) {
+                reconnectingJob = rfidHandler.onCreate()
+            }
+            reconnectingJob?.invokeOnCompletion {
+                if (!rfidHandler.isReaderConnected) {
+                    viewModelScope.launch {
+                        rfidHandler.onCreate()
+                    }
+                }
+            }
+            updateIsConnectedStatus(rfidHandler.isReaderConnected)
+            getReaderBatteryLevel()
+        }
     }
 
     private fun getReaderBatteryLevel() {
         rfidHandler.setOnBatteryLevelListener(object : RfidBatteryLevelListener {
             override fun onBatteryLevelChange(batteryLevel: Int) {
                 _rfidUiState.update {
+                    Log.d("TAG", "onBatteryLevelChange: $batteryLevel")
                     it.copy(batteryLevel = batteryLevel)
                 }
             }
         })
     }
 
+    private fun updateSingleScannedItem(itemId: String) {
+        _rfidUiState.update {
+            it.copy(singleScannedItem = itemId)
+        }
+    }
+
     abstract fun onReceivedTagId(id: String)
     override fun handleTagData(tagData: Array<TagData>) {
-        if (tagData.isNotEmpty() && false) stopScan()
-        addScannedItem(tagData.get(0).tagID)
-
+        if (_rfidUiState.value.scanType == ScanType.Single) {
+            updateSingleScannedItem(tagData.get(0).tagID)
+            stopScan()
+        }
+        addItem(tagData.get(0).tagID)
         onReceivedTagId(tagData.get(0).tagID)
-
-        _hasScanned.value = tagData.isNotEmpty()
     }
 
     override fun handleReaderConnected(isConnected: Boolean) {
@@ -128,8 +166,16 @@ abstract class BaseViewModel(
     }
 
     data class RfidUiState(
+        val isScanning: Boolean = false,
+        val scanType: ScanType = ScanType.Multi,
+        val scannedItems: List<String> = mutableListOf(),
+        val singleScannedItem: String = "",
         val isConnected: Boolean = false,
         val isScanned: Boolean = false,
         val batteryLevel: Int = 0,
     )
+
+    enum class ScanType {
+        Single, Multi
+    }
 }

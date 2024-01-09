@@ -1,5 +1,6 @@
 package com.etag.stsyn.util
 
+import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
@@ -8,12 +9,23 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.etag.stsyn.R
-import com.etag.stsyn.domain.model.BottomNavigationItem
-import com.etag.stsyn.domain.model.OptionButtonModel
-import com.etag.stsyn.domain.model.CustomIcon
-import com.etag.stsyn.domain.model.TabOption
+import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.navigation.Routes
+import com.etag.stsyn.ui.screen.acct_check.FilterItem
+
+data class OptionButtonModel(
+    val title: String,
+    @DrawableRes val icon: Int? = 0,
+    val route: String
+)
+
+data class BottomNavigationItem(
+    val title: String,
+    val icon: ImageVector,
+    val route: String,
+)
 
 object DataSource {
     val categories = listOf(
@@ -114,14 +126,14 @@ object DataSource {
     )
 
     val filters = listOf(
-        "Store Type",
-        "CS Number",
-        "Unit/SQN",
-        "Flight",
-        "Item Type",
-        "Location",
-        "Box",
-        "Remarks"
+        FilterItem("Store Type", "-"),
+        FilterItem("CS Number", "-"),
+        FilterItem("Unit/SQN", "-"),
+        FilterItem("Flight", "-"),
+        FilterItem("Item Type", "-"),
+        FilterItem("Location", "-"),
+        FilterItem("Box", "-"),
+        FilterItem("Remarks", "-"),
     )
 
     val dummyDataList = listOf("One", "Two", "Three", "Four", "Five")
