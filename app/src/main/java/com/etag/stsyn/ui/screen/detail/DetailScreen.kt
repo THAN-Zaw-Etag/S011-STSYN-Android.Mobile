@@ -110,8 +110,14 @@ fun DetailScreen(
                         }
                     })
 
-                // To show when tab bar is visible
                 HorizontalPager(state = pagerState) {
+                    // check current screen is scan screen or not
+                    if (it != 0) {
+                        viewModel.updateIsScanningStatus(false)
+                        viewModel.stopScan()
+                        viewModel.disableScan()
+                    } else viewModel.enableScan()
+
                     val screen = screens.getOrNull(it)
                     if (screen != null) {
                         screen.screen?.invoke()

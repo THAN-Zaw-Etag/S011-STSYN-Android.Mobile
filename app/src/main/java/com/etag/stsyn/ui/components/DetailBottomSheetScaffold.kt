@@ -18,6 +18,7 @@ fun DetailBottomSheetScaffold(
     sheetContent: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
+
     BottomSheetScaffold(
         scaffoldState = state,
         sheetPeekHeight = 0.dp, sheetContent = { sheetContent() },

@@ -41,8 +41,6 @@ class BookOutViewModel @Inject constructor(
 
 
     override fun onReceivedTagId(id: String) {
-        /*addItem(id)
-        Log.d(TAG, "onReceivedTagId: ${_items.value.size}")*/
     }
 
     data class BookOutUiState(

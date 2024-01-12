@@ -52,13 +52,15 @@ dependencies {
     val hilt_version = "2.46"
     implementation("com.google.dagger:hilt-android:$hilt_version")
     kapt("com.google.dagger:hilt-android-compiler:$hilt_version")
-
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     val accompanist_version = "0.33.2-alpha"
+    implementation("com.google.accompanist:accompanist-pager:$accompanist_version")
+    implementation("com.google.accompanist:accompanist-pager-indicators:$accompanist_version")
 
-    implementation ("com.google.accompanist:accompanist-pager:$accompanist_version")
-    implementation ("com.google.accompanist:accompanist-pager-indicators:$accompanist_version")
+    // datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences-core:1.0.0")
 
     // jetpack compose navigation
     val nav_version = "2.5.3"

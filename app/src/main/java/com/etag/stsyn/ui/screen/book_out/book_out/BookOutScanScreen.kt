@@ -22,8 +22,10 @@ fun BookOutScanScreen(
 ) {
     val rfidUiState by bookOutViewModel.rfidUiState.collectAsState()
     val listState = rememberLazyListState()
+    //var previousSize by remember { mutableStateOf(rfidUiState.scannedItems.size) }
 
     LaunchedEffect(rfidUiState.scannedItems) {
+
         if (rfidUiState.scannedItems.size > 1) listState.animateScrollToItem(rfidUiState.scannedItems.size - 1)
     }
 
@@ -45,7 +47,8 @@ fun BookOutScanScreen(
                         isSwipeable = true,
                         onSwipeToDismiss = {
                             bookOutViewModel.removeItem(it)
-                        })
+                        }
+                    )
                 }
             }
         }

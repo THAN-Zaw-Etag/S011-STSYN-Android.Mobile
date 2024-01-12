@@ -49,9 +49,9 @@ fun LoginContentScreen(
 
     val context = LocalContext.current
     LaunchedEffect(isSuccessful) {
-        Toast.makeText(
+        if (isSuccessful) Toast.makeText(
             context,
-            if (isSuccessful) "Login successful!" else "Login failed!",
+            "Login successful!",
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -59,7 +59,7 @@ fun LoginContentScreen(
     Column(modifier = modifier.fillMaxSize()) {
         LoginUpperSection()
         Spacer(modifier = Modifier.height(16.dp))
-        LoginSection(onLogInClick = onLogInClick, error)
+        LoginSection(onLogInClick = onLogInClick, errorMessage = error)
         Spacer(modifier = Modifier.weight(1f))
         LoginLowerSection()
     }
@@ -81,7 +81,6 @@ private fun LoginLowerSection(modifier: Modifier = Modifier) {
                 .padding(16.dp)
                 .align(Alignment.BottomEnd)
         )
-
     }
 }
 
@@ -91,6 +90,14 @@ private fun LoginSection(
     errorMessage: String,
     modifier: Modifier = Modifier
 ) {
+
+    var showError by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(errorMessage) {
+        showError = errorMessage.isEmpty()
+    }
 
     Column(
         modifier = modifier
@@ -113,6 +120,7 @@ private fun LoginSection(
         Spacer(modifier = Modifier.height(24.dp))
         PasswordField(
             hint = "Password",
+            isError = errorMessage.isNotEmpty(),
             onValueChange = { enteredPassword = it },
             onSubmit = { onLogInClick(it) }
         )

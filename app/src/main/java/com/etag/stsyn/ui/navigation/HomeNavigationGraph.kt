@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.etag.stsyn.ui.components.ExitAppOnBackPress
+import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.screen.detail.DetailScreen
 import com.etag.stsyn.ui.screen.main.BookInScreen
 import com.etag.stsyn.ui.screen.main.BookOutScreen
@@ -38,7 +38,7 @@ fun HomeNavigationGraph(
             val context = LocalContext.current
 
             BackHandler(enabled = true) {
-                ExitAppOnBackPress(context)
+                ExitApp(context)
             }
 
             sharedUiViewModel.apply {

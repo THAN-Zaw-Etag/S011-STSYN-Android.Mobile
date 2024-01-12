@@ -1,7 +1,8 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.etag.stsyn.ui.screen.book_out.book_out_box
+package com.etag.stsyn.ui.screen.base
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +25,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -55,12 +56,13 @@ import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.components.ScannedBoxItem
 import com.etag.stsyn.ui.components.ScannedItem
+import com.etag.stsyn.ui.navigation.BottomSheetNavigation
 import com.etag.stsyn.ui.navigation.BottomSheetNavigationGraph
 import com.etag.stsyn.ui.theme.Purple80
 import kotlinx.coroutines.launch
 
 @Composable
-fun BoxScreen(
+fun BaseBoxScreen(
     scannedItems: List<String>,
     isScanning: Boolean = false,
     boxOutTitle: String = "",
@@ -73,6 +75,7 @@ fun BoxScreen(
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     var show by remember { mutableStateOf(false) }
+    var resetNavGraph by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
 
@@ -86,7 +89,7 @@ fun BoxScreen(
     }
 
     DetailBottomSheetScaffold(state = scaffoldState, sheetContent = {
-        BottomSheetContent(boxItems = listOf(), onItemClick = {
+        BottomSheetContent(boxItems = listOf(), resetNavGraph = resetNavGraph, onItemClick = {
 
         })
     }) {
@@ -112,8 +115,12 @@ fun BoxScreen(
                     if (show) {
                         BoxBookOutButton(boxOutTitle) {
                             if (scaffoldState.bottomSheetState.isVisible) {
+                                resetNavGraph = false
                                 coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                            } else coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
+                            } else {
+                                resetNavGraph = true
+                                coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
+                            }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -151,16 +158,22 @@ fun BoxScreen(
 
 @Composable
 private fun BottomSheetContent(
-    onItemClick: () -> Unit,
-    boxItems: List<String>, modifier: Modifier = Modifier
+    resetNavGraph: Boolean,
+    onItemClick: () -> Unit, boxItems: List<String>, modifier: Modifier = Modifier
 ) {
-    BottomSheetNavigationGraph(navController = rememberNavController())
+    var bottomSheetNavController = rememberNavController()
+
+    LaunchedEffect(resetNavGraph) {
+        Log.d("TAG", "BottomSheetContent: $resetNavGraph")
+        if (resetNavGraph) bottomSheetNavController.navigate(BottomSheetNavigation.BoxList.name)
+    }
+
+    BottomSheetNavigationGraph(navController = bottomSheetNavController)
 }
 
 @Composable
 fun BookOutBoxItem(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -177,9 +190,7 @@ fun BookOutBoxItem(
             Text(text = "C123456".uppercase(), color = Purple80)
             IconButton(onClick = { onClick() }) {
                 Icon(
-                    imageVector = Icons.Default.Storage,
-                    tint = Purple80,
-                    contentDescription = null
+                    imageVector = Icons.Default.Storage, tint = Purple80, contentDescription = null
                 )
             }
         }
@@ -197,12 +208,10 @@ fun BoxBookOutButton(title: String, onClick: () -> Unit) {
         .background(Purple80.copy(alpha = 0.1f)),
         horizontalArrangement = Arrangement.SpaceBetween) {
         Text(
-            text = title,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp)
+            text = title, fontWeight = FontWeight.Bold, modifier = Modifier.padding(8.dp)
         )
         Icon(
-            imageVector = Icons.Default.KeyboardArrowRight,
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             tint = Color.Gray,
             modifier = Modifier.padding(8.dp),
             contentDescription = null

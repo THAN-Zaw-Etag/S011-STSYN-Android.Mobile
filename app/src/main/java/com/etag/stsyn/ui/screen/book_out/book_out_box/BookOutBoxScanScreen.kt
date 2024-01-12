@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.etag.stsyn.ui.screen.base.BaseBoxScreen
 
 @Composable
 fun BookOutBoxScanScreen(
@@ -12,7 +13,7 @@ fun BookOutBoxScanScreen(
 ) {
     val rfidUiState by bookOutBoxViewModel.rfidUiState.collectAsState()
 
-    BoxScreen(
+    BaseBoxScreen(
         scannedItems = rfidUiState.scannedItems,
         isScanning = rfidUiState.isScanning,
         modifier = modifier,

@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.etag.stsyn.R
+import com.etag.stsyn.data.model.User
 import com.etag.stsyn.ui.components.AppBar
 import com.etag.stsyn.ui.components.BottomNavigationBar
 import com.etag.stsyn.ui.components.ProfileTextButton
@@ -51,6 +52,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
+    savedUserState: User,
     onLogOutClick: () -> Unit,
     onSettingsClick: () -> Unit,
     rfidViewModel: RfidViewModel,
@@ -72,6 +74,7 @@ fun HomeScreen(
         drawerContent = {
             ModalDrawerSheet {
                 DrawerContent(
+                    user = savedUserState,
                     onSettingsClick = onSettingsClick,
                     onLogOutClick = onLogOutClick
                 )
@@ -92,6 +95,7 @@ fun HomeScreen(
                     exit = TransitionUtil.slideOutVerticallyToTop
                 ) {
                     AppBar(
+                        userName = savedUserState.name,
                         title = sharedUiState.title,
                         onDrawerIconClick = {
                             coroutineScope.launch { drawerState.open() }
@@ -113,6 +117,7 @@ fun HomeScreen(
 
 @Composable
 fun DrawerContent(
+    user: User,
     onSettingsClick: () -> Unit,
     onLogOutClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -143,7 +148,7 @@ fun DrawerContent(
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text(
-                        text = "Administrator",
+                        text = user.name,
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
@@ -157,7 +162,7 @@ fun DrawerContent(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "123S",
+                            text = user.rfidId,
                             color = Color.White
                         )
                     }

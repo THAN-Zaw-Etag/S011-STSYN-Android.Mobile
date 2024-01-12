@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.etag.stsyn.ui.screen.book_out.book_out_box.BoxScreen
+import com.etag.stsyn.ui.screen.base.BaseBoxScreen
 
 @Composable
 fun TLoanBoxScanScreen(
@@ -13,7 +13,7 @@ fun TLoanBoxScanScreen(
 ) {
     val rfidUiState by tLoanBoxViewModel.rfidUiState.collectAsState()
 
-    BoxScreen(
+    BaseBoxScreen(
         scannedItems = rfidUiState.scannedItems,
         modifier = modifier,
         isScanning = rfidUiState.isScanning,

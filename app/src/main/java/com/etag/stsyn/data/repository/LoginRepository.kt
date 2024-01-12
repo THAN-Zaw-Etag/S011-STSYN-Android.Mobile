@@ -8,4 +8,6 @@ interface LoginRepository {
         user: User,
         correctPassword: String
     ): Boolean  // return boolean for testing to check passwords
+
+    suspend fun logOut()
 }

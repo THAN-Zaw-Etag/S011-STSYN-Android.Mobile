@@ -12,4 +12,8 @@ class LoginRepositoryImpl : LoginRepository {
     override suspend fun getUserByRfidId(rfidId: String): User {
         return User("Kyaw Gyi", "09342342232", "1234", "")
     }
+
+    override suspend fun logOut() {
+        // handle log out logic here
+    }
 }

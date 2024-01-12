@@ -19,15 +19,6 @@ abstract class BaseViewModel(
     private val rfidHandler: ZebraRfidHandler,
 ) : ViewModel(), RfidResponseHandlerInterface {
 
-    /*private val _isScanning = MutableStateFlow(false)
-    var isScanning: StateFlow<Boolean> = _isScanning.asStateFlow()
-
-    private val _scannedItems = MutableStateFlow(mutableListOf<String>())
-    val scannedItems: StateFlow<List<String>> = _scannedItems.asStateFlow()*/
-
-    private val _singleScannedItem = MutableStateFlow("")
-    val singleScannedItem: StateFlow<String> = _singleScannedItem.asStateFlow()
-
     private val _rfidUiState = MutableStateFlow(RfidUiState())
     val rfidUiState: StateFlow<RfidUiState> = _rfidUiState.asStateFlow()
 
@@ -76,7 +67,7 @@ abstract class BaseViewModel(
         rfidHandler.setResponseHandlerInterface(this)
     }
 
-    private fun updateIsScanningStatus(isScanning: Boolean) {
+    fun updateIsScanningStatus(isScanning: Boolean) {
         _rfidUiState.update {
             it.copy(isScanning = isScanning)
         }
@@ -87,14 +78,20 @@ abstract class BaseViewModel(
         else startScan()
     }
 
+    /**
+     * Remove rfid listener
+     * */
     fun removeListener() {
         rfidHandler.removeResponseHandLerInterface()
     }
 
     fun startScan() {
         viewModelScope.launch {
-            rfidHandler.performInventory()
-            updateIsScanningStatus(true)
+            // only able to scan when isScannable is true
+            if (_rfidUiState.value.isScannable) {
+                rfidHandler.performInventory()
+                updateIsScanningStatus(true)
+            }
         }
     }
 
@@ -102,6 +99,20 @@ abstract class BaseViewModel(
         viewModelScope.launch {
             rfidHandler.stopInventory()
             updateIsScanningStatus(false)
+        }
+    }
+
+    fun disableScan() {
+        updateScannableStatus(false)
+    }
+
+    fun enableScan() {
+        updateScannableStatus(true)
+    }
+
+    private fun updateScannableStatus(isScannable: Boolean) {
+        _rfidUiState.update {
+            it.copy(isScannable = isScannable)
         }
     }
 
@@ -124,8 +135,8 @@ abstract class BaseViewModel(
                         rfidHandler.onCreate()
                     }
                 }
+                updateIsConnectedStatus(rfidHandler.isReaderConnected)
             }
-            updateIsConnectedStatus(rfidHandler.isReaderConnected)
             getReaderBatteryLevel()
         }
     }
@@ -135,7 +146,7 @@ abstract class BaseViewModel(
             override fun onBatteryLevelChange(batteryLevel: Int) {
                 _rfidUiState.update {
                     Log.d("TAG", "onBatteryLevelChange: $batteryLevel")
-                    it.copy(batteryLevel = batteryLevel)
+                    it.copy(batteryLevel = batteryLevel, isConnected = true)
                 }
             }
         })
@@ -167,6 +178,7 @@ abstract class BaseViewModel(
 
     data class RfidUiState(
         val isScanning: Boolean = false,
+        val isScannable: Boolean = true,
         val scanType: ScanType = ScanType.Multi,
         val scannedItems: List<String> = mutableListOf(),
         val singleScannedItem: String = "",

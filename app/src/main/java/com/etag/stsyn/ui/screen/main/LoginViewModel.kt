@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
+import com.etag.stsyn.data.localStorage.LocalDataStore
 import com.etag.stsyn.data.model.User
 import com.etag.stsyn.data.repository.LoginRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
+    private val localDataStore: LocalDataStore,
     private val loginRepository: LoginRepository
 ) : BaseViewModel(rfidHandler) {
     private val _loginUiState = MutableStateFlow(LoginUiState())
@@ -41,13 +43,15 @@ class LoginViewModel @Inject constructor(
                 val user = loginRepository.getUserByRfidId(rfidId)
                 _loginUiState.update {
                     it.copy(
-                        isLoginSuccessful = rfidId.isNotEmpty(),
                         user = user
                     )
                 }
+                localDataStore.saveUser(user)
             }
         }
     }
+
+    val savedUser = localDataStore.getUser
 
     private fun updateLoginErrorMessage(error: String) {
         _loginUiState.update {
@@ -65,6 +69,12 @@ class LoginViewModel @Inject constructor(
                 else updateLoginErrorMessage("")
                 updateLoginStatus(isLoginSuccessful)
             }
+        }
+    }
+
+    fun logOut() {
+        viewModelScope.launch {
+            loginRepository.logOut()
         }
     }
 

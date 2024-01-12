@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.book_out.book_out
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +32,10 @@ fun BookOutScreen(
     modifier: Modifier = Modifier
 ) {
     var showClearDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(scannedItems) {
+        Log.d("TAG", "BookOutScreen: $scannedItems")
+    }
 
     ConfirmationDialog(
         showDialog = showClearDialog,

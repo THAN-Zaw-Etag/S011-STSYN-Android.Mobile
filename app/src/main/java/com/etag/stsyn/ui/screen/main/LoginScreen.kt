@@ -2,7 +2,7 @@
 
 package com.etag.stsyn.ui.screen.main
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -45,16 +46,20 @@ fun LoginScreen(
 ) {
 
     val loginUiState by loginViewModel.loginUiState.collectAsState()
+    val rfidUiState by loginViewModel.rfidUiState.collectAsState()
+    val context = LocalContext.current
+
     ReaderLifeCycle(viewModel = loginViewModel)
+
     LaunchedEffect(loginUiState.user) {
-        Log.d("TAG", "LoginScreen: ${loginUiState.user?.name}")
         if ((loginUiState.user?.name ?: "").isNotEmpty()) {
             navigateToLoginContentScreen()
         }
     }
 
-    LaunchedEffect(loginUiState.isLoginSuccessful) {
-        Log.d("TAG", "LoginScreen: ${loginUiState.isLoginSuccessful}")
+    LaunchedEffect(rfidUiState.isConnected) {
+        if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT)
+            .show()
     }
 
     Column(modifier = modifier) {
@@ -76,7 +81,7 @@ fun LoginScreen(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
-        MainLowerContent(onScan = { loginViewModel.startScan() })
+        MainLowerContent(onScan = { loginViewModel.toggle() })
     }
 }
 

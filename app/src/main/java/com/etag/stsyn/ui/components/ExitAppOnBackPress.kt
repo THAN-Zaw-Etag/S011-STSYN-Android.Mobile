@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 
 
-fun ExitAppOnBackPress(context: Context) {
+fun ExitApp(context: Context) {
     val context = context as? ComponentActivity ?: return
     context.finish()
 }

@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.InfoBottomSheetContent
-import com.etag.stsyn.ui.screen.book_out.book_out_box.BookOutBoxItem
+import com.etag.stsyn.ui.screen.base.BookOutBoxItem
 
 @Composable
 fun BoxListBottomSheetScreen(

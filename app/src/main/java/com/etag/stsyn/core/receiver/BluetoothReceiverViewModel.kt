@@ -14,9 +14,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class BluetoothReceiverViewModel @Inject constructor(private val application: Application) :
-    ViewModel() {
-    private val _bluetoothState = MutableStateFlow<BluetoothState>(BluetoothState.UNKNOWN)
+class BluetoothReceiverViewModel @Inject constructor(
+    private val application: Application
+) : ViewModel() {
+
+    private val _bluetoothState = MutableStateFlow(BluetoothState.UNKNOWN)
     val bluetoothState: StateFlow<BluetoothState> = _bluetoothState.asStateFlow()
 
     private val bluetoothStateReceiver = object : BroadcastReceiver() {
@@ -41,12 +43,12 @@ class BluetoothReceiverViewModel @Inject constructor(private val application: Ap
         registerBluetoothReceiver()
     }
 
-    fun registerBluetoothReceiver() {
+    private fun registerBluetoothReceiver() {
         val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         application.registerReceiver(bluetoothStateReceiver, filter)
     }
 
-    fun unregisterBluetoothReceiver() {
+    private fun unregisterBluetoothReceiver() {
         application.unregisterReceiver(bluetoothStateReceiver)
     }
 
