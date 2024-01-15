@@ -1,4 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.etag.stsyn.ui.components
 
@@ -45,17 +48,25 @@ fun AppBar(
             }
         },
         actions = {
-            Card(
-                modifier = Modifier.padding(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Purple80)
-            ) {
-                Text(
-                    text = startChar,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
+            UserNameShortcutIcon(name = startChar)
         }
     )
+}
+
+@Composable
+fun UserNameShortcutIcon(
+    name: String,
+    modifier: Modifier = Modifier.padding(16.dp)
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = Purple80)
+    ) {
+        Text(
+            text = if (name.length > 0) name[0].toString() else name,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+    }
 }

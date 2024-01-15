@@ -9,8 +9,31 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 
 sealed class CustomIcon {
-    data class Resource(val iconRes: Int): CustomIcon()
-    data class Vector (val iconVector: ImageVector) : CustomIcon()
+    data class Resource(val iconRes: Int) : CustomIcon()
+    data class Vector(val iconVector: ImageVector) : CustomIcon()
+}
+
+@Composable
+fun StsynIcon(
+    icon: CustomIcon,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    when (icon) {
+        is CustomIcon.Resource -> Icon(
+            painter = painterResource(id = icon.iconRes),
+            tint = color,
+            contentDescription = null,
+            modifier = modifier
+        )
+
+        is CustomIcon.Vector -> Icon(
+            imageVector = icon.iconVector,
+            tint = color,
+            contentDescription = null,
+            modifier = modifier
+        )
+    }
 }
 
 @Composable

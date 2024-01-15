@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.components
 
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,10 +24,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.theme.errorColor
 
@@ -40,7 +43,10 @@ fun PasswordField(
     isError: Boolean,
     onValueChange: (String) -> Unit,
     hint: String,
-    onSubmit: (String) -> Unit,
+    cornerRadius: Dp = 40.dp,
+    borderColor: Color = MaterialTheme.colorScheme.primary,
+    showVisibilityIcon: Boolean = true,
+    onSubmit: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
 
@@ -56,12 +62,14 @@ fun PasswordField(
     OutlinedTextField(
         value = text,
         label = { Text(text = hint) },
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(40.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .defaultMinSize(40.dp),
+        shape = RoundedCornerShape(cornerRadius),
         maxLines = 1,
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = if (showError) errorColor else MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = if (showError) errorColor else MaterialTheme.colorScheme.primary,
+            focusedBorderColor = if (showError) errorColor else borderColor,
+            unfocusedBorderColor = if (showError) errorColor else borderColor,
         ),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
@@ -82,12 +90,14 @@ fun PasswordField(
             PasswordVisualTransformation()
         }, trailingIcon = {
 
-            IconButton(onClick = { showPassword = !showPassword }) {
-                Icon(
-                    imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                    contentDescription = null
-                )
-            }
+            if (showVisibilityIcon) {
+                IconButton(onClick = { showPassword = !showPassword }) {
+                    Icon(
+                        imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = null
+                    )
+                }
+            } else showPassword = true
         }
     )
 }

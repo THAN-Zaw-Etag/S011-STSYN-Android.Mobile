@@ -65,7 +65,7 @@ class LoginViewModel @Inject constructor(
             if (password.trim().isEmpty()) updateLoginErrorMessage("Password must not be empty!")
             else {
                 val isLoginSuccessful = loginRepository.login(loginUiState.value.user!!, password)
-                if (!isLoginSuccessful) updateLoginErrorMessage("Wrong password!")
+                if (!isLoginSuccessful) updateLoginErrorMessage("The account password is incorrect.\n Please try again")
                 else updateLoginErrorMessage("")
                 updateLoginStatus(isLoginSuccessful)
             }

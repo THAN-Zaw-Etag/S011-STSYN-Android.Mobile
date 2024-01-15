@@ -4,12 +4,10 @@ import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
-import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Save
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.navigation.Routes
@@ -23,7 +21,7 @@ data class OptionButtonModel(
 
 data class BottomNavigationItem(
     val title: String,
-    val icon: ImageVector,
+    val icon: CustomIcon,
     val route: String,
 )
 
@@ -40,8 +38,8 @@ object DataSource {
             route = Routes.BookInScreen.name
         ),
         OptionButtonModel(
-            title = "Accountability Check",
-            icon = R.drawable.accountability_check_icon,
+            title = "Calibration",
+            icon = R.drawable.calibration_icon,
             route = Routes.DetailScreen.name + "/${OptionType.AccountCheck}"
         ),
         OptionButtonModel(
@@ -52,17 +50,25 @@ object DataSource {
     )
 
     val bottomNavigationItems = listOf(
-        BottomNavigationItem("Home", Icons.Filled.Home, Routes.HomeScreen.name),
-        BottomNavigationItem("Book Out", Icons.Filled.ArrowCircleUp, Routes.BookOutScreen.name),
-        BottomNavigationItem("Book In", Icons.Filled.ArrowCircleDown, Routes.BookInScreen.name),
+        BottomNavigationItem("Home", CustomIcon.Vector(Icons.Filled.Home), Routes.HomeScreen.name),
         BottomNavigationItem(
-            "Acct Check",
-            Icons.Filled.Assignment,
+            "Book Out",
+            CustomIcon.Vector(Icons.Filled.ArrowCircleUp),
+            Routes.BookOutScreen.name
+        ),
+        BottomNavigationItem(
+            "Book In",
+            CustomIcon.Vector(Icons.Filled.ArrowCircleDown),
+            Routes.BookInScreen.name
+        ),
+        BottomNavigationItem(
+            "Calibration",
+            CustomIcon.Resource(R.drawable.calibration_icon),
             Routes.DetailScreen.name + "/${OptionType.AccountCheck}"
         ),
         BottomNavigationItem(
             "Other Operations",
-            Icons.Filled.MoreHoriz,
+            CustomIcon.Vector(Icons.Filled.MoreHoriz),
             Routes.OtherOperationsScreen.name
         )
     )

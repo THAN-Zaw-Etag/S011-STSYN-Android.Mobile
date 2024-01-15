@@ -125,19 +125,22 @@ abstract class BaseViewModel(
             return
         }
         viewModelScope.launch {
-            reconnectingJob?.cancel()
-            if (!rfidHandler.isReaderConnected) {
-                reconnectingJob = rfidHandler.onCreate()
-            }
-            reconnectingJob?.invokeOnCompletion {
+            try {
+                reconnectingJob?.cancel()
                 if (!rfidHandler.isReaderConnected) {
-                    viewModelScope.launch {
-                        rfidHandler.onCreate()
-                    }
+                    reconnectingJob = rfidHandler.onCreate()
                 }
-                updateIsConnectedStatus(rfidHandler.isReaderConnected)
+                reconnectingJob?.invokeOnCompletion {
+                    if (!rfidHandler.isReaderConnected) {
+                        viewModelScope.launch {
+                            rfidHandler.onCreate()
+                        }
+                    }
+                    updateIsConnectedStatus(rfidHandler.isReaderConnected)
+                }
+                getReaderBatteryLevel()
+            } catch (e: Exception) {
             }
-            getReaderBatteryLevel()
         }
     }
 

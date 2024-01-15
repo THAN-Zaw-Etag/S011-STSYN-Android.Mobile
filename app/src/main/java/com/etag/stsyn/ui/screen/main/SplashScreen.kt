@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -17,10 +19,10 @@ fun SplashScreen(
     onTimeOut: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
+    val currentOnTimeOut by rememberUpdatedState(onTimeOut)
     LaunchedEffect(Unit) {
         delay(1000)
-        onTimeOut()
+        currentOnTimeOut()
     }
 
     Box (

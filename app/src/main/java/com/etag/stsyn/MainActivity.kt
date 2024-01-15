@@ -37,8 +37,8 @@ class MainActivity : ComponentActivity() {
 
             // initialize reader
             LaunchedEffect(Unit) {
-                rfidViewModel.onCreate()
                 try {
+                    rfidViewModel.onCreate()
                     rfidViewModel.connectReader()
                 } catch (_: Exception) {
                 }

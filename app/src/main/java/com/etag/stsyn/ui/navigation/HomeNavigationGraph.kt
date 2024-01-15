@@ -41,6 +41,7 @@ fun HomeNavigationGraph(
                 ExitApp(context)
             }
 
+            // update ui
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.HomeScreen.title)
                 updateTopAppBarStatus(true)

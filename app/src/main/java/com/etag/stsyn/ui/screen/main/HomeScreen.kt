@@ -28,7 +28,10 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -42,6 +45,7 @@ import com.etag.stsyn.R
 import com.etag.stsyn.data.model.User
 import com.etag.stsyn.ui.components.AppBar
 import com.etag.stsyn.ui.components.BottomNavigationBar
+import com.etag.stsyn.ui.components.ChangePasswordDialog
 import com.etag.stsyn.ui.components.ProfileTextButton
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.navigation.HomeNavigationGraph
@@ -53,6 +57,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     savedUserState: User,
+    onChangePassword: (String, String) -> Unit,
     onLogOutClick: () -> Unit,
     onSettingsClick: () -> Unit,
     rfidViewModel: RfidViewModel,
@@ -75,6 +80,7 @@ fun HomeScreen(
             ModalDrawerSheet {
                 DrawerContent(
                     user = savedUserState,
+                    onChangePassword = onChangePassword,
                     onSettingsClick = onSettingsClick,
                     onLogOutClick = onLogOutClick
                 )
@@ -118,10 +124,22 @@ fun HomeScreen(
 @Composable
 fun DrawerContent(
     user: User,
+    onChangePassword: (String, String) -> Unit,
     onSettingsClick: () -> Unit,
     onLogOutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) ChangePasswordDialog(
+        userName = user.name,
+        onChangePassword = onChangePassword,
+        showDialog = showDialog,
+        onDismiss = {
+            showDialog = false
+        }
+    )
+
     Column(
         modifier = modifier
             .fillMaxWidth(0.8f)
@@ -152,6 +170,7 @@ fun DrawerContent(
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -170,6 +189,15 @@ fun DrawerContent(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+        ProfileTextButton(
+            text = "Change Password",
+            onOptionClick = {
+                showDialog = true
+            },
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+        )
         ProfileTextButton(
             text = "Settings",
             onOptionClick = onSettingsClick,

@@ -10,6 +10,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+fun String.doesNotEquals(string: String): Boolean {
+    return !this.equals(string)
+}
+
 fun Modifier.customShadow(
     color: Color = Color.Black,
     borderRadius: Dp = 0.dp,

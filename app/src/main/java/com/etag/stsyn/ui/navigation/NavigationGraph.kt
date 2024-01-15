@@ -33,6 +33,7 @@ fun NavigationGraph(
     val loginViewModel: LoginViewModel = hiltViewModel()
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     val rfidUiState by loginViewModel.rfidUiState.collectAsState()
+    val savedUser by loginViewModel.savedUser.collectAsState(User())
 
     // set scan type to single when current destination is login screen
     LaunchedEffect(navController.currentDestination) {
@@ -76,6 +77,7 @@ fun NavigationGraph(
             }
 
             LoginContentScreen(
+                userName = savedUser.name,
                 isSuccessful = loginUiState.isLoginSuccessful,
                 errorMessage = loginUiState.errorMessage,
                 onLogInClick = { loginViewModel.login(it) }
@@ -89,6 +91,7 @@ fun NavigationGraph(
             HomeScreen(
                 savedUserState = savedUserState,
                 rfidViewModel = rfidViewModel,
+                onChangePassword = { old, new -> },
                 onLogOutClick = { ExitApp(context) },
                 onSettingsClick = {},
             )

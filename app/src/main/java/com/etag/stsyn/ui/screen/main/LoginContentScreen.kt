@@ -33,13 +33,15 @@ import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.PasswordField
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.PasswordValidator
 
 @Composable
 fun LoginContentScreen(
     isSuccessful: Boolean,
     errorMessage: String,
     onLogInClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userName: String
 ) {
     var error by remember { mutableStateOf("") }
 
@@ -59,7 +61,7 @@ fun LoginContentScreen(
     Column(modifier = modifier.fillMaxSize()) {
         LoginUpperSection()
         Spacer(modifier = Modifier.height(16.dp))
-        LoginSection(onLogInClick = onLogInClick, errorMessage = error)
+        LoginSection(onLogInClick = onLogInClick, errorMessage = error, userName = userName)
         Spacer(modifier = Modifier.weight(1f))
         LoginLowerSection()
     }
@@ -86,6 +88,7 @@ private fun LoginLowerSection(modifier: Modifier = Modifier) {
 
 @Composable
 private fun LoginSection(
+    userName: String,
     onLogInClick: (String) -> Unit,
     errorMessage: String,
     modifier: Modifier = Modifier
@@ -106,7 +109,7 @@ private fun LoginSection(
     ) {
         var enteredPassword by remember { mutableStateOf("") }
         Text(
-            text = "Welcome, Admin",
+            text = "Welcome, $userName",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = Purple80
@@ -120,7 +123,9 @@ private fun LoginSection(
         Spacer(modifier = Modifier.height(24.dp))
         PasswordField(
             hint = "Password",
-            isError = errorMessage.isNotEmpty(),
+            isError = errorMessage.isNotEmpty() && !PasswordValidator.isValidPassword(
+                enteredPassword
+            ),
             onValueChange = { enteredPassword = it },
             onSubmit = { onLogInClick(it) }
         )
