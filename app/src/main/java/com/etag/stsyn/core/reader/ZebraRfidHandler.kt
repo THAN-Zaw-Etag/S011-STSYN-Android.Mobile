@@ -27,7 +27,9 @@ import com.zebra.rfid.api3.TagData
 import com.zebra.rfid.api3.TriggerInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -83,35 +85,38 @@ class ZebraRfidHandler @Inject constructor(
     //
     // RFID SDK
     private suspend fun initSDK() {
-
         if (readers == null) {
-
             createInstanceTask()
         } else {
-
             connectionTaskAsync()
         }
     }
 
     private suspend fun createInstanceTask() {
-        readers = Readers(context, ENUM_TRANSPORT.BLUETOOTH)
+        readers = Readers(context, ENUM_TRANSPORT.ALL)
         connectionTaskAsync()
         availableRFIDReaderList = readers!!.GetAvailableRFIDReaderList()
         readers!!.Dispose()
         readers = null
         if (readers == null) {
-            readers = Readers(context, ENUM_TRANSPORT.BLUETOOTH)
+            readers = Readers(context, ENUM_TRANSPORT.ALL)
         }
-
     }
 
-    suspend fun connectionTaskAsync() {
-        getAvailableReader()
+    suspend fun connectionTaskAsync(readerDevice: ReaderDevice? = null) {
+
+        if (readerDevice == null) {
+            getAvailableReader()
+        } else {
+            mConnectedReader = readerDevice.rfidReader
+        }
+
         if (mConnectedReader != null) {
             connect()
         } else {
-
+            "Failed to find or connect reader"
         }
+
     }
 
 
@@ -229,10 +234,8 @@ class ZebraRfidHandler @Inject constructor(
                     Events.setBatchModeEvent(true)
                     // set start and stop triggers
                     val triggerInfo = TriggerInfo()
-                    triggerInfo.StartTrigger.triggerType =
-                        START_TRIGGER_TYPE.START_TRIGGER_TYPE_PERIODIC
-                    triggerInfo.StopTrigger.triggerType =
-                        STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_IMMEDIATE
+                    triggerInfo.StartTrigger.triggerType = START_TRIGGER_TYPE.START_TRIGGER_TYPE_PERIODIC
+                    triggerInfo.StopTrigger.triggerType = STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_IMMEDIATE
                     Config.startTrigger = triggerInfo.StartTrigger
                     Config.stopTrigger = triggerInfo.StopTrigger
                     // delete any prefilters
@@ -406,9 +409,15 @@ class ZebraRfidHandler @Inject constructor(
         }
     }
 
-    override fun RFIDReaderAppeared(p0: ReaderDevice?) {
-        p0?.let {
-
+    // handler for receiving reader appearance events
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun RFIDReaderAppeared(readerDevice: ReaderDevice) {
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                if (!isReaderConnected) {
+                    connectionTaskAsync(readerDevice)
+                }
+            }
         }
     }
 
