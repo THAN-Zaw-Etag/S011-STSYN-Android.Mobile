@@ -1,6 +1,5 @@
 package com.etag
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -19,12 +18,10 @@ fun ReaderLifeCycle(
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
                     viewModel.setRfidListener()
-                    Log.d("TAG", "ReaderLifeCycle: ON_CREATE")
                 }
 
                 Lifecycle.Event.ON_PAUSE -> {
                     viewModel.removeListener()
-                    Log.d("TAG", "ReaderLifeCycle: ON_PAUSE")
                 }
 
                 Lifecycle.Event.ON_DESTROY -> {

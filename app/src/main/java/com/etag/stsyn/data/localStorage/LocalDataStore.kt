@@ -3,6 +3,7 @@ package com.etag.stsyn.data.localStorage
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -19,6 +20,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val USER_NAME = stringPreferencesKey("user_name")
         val USER_NRIC = stringPreferencesKey("user_nric")
         val TOKEN = stringPreferencesKey("token")
+        val IS_LOGGED_IN = booleanPreferencesKey("isLoggedIn")
     }
 
     suspend fun saveUser(user: LocalUser) {
@@ -27,6 +29,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             preferences[USER_ID] = user.id
             preferences[USER_NRIC] = user.nric
             preferences[TOKEN] = user.token
+            preferences[IS_LOGGED_IN] = false
         }
     }
 
@@ -37,5 +40,9 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val token = preferences[TOKEN] ?: ""
 
         LocalUser(name = name, id = id, nric = userNric, token = token)
+    }
+
+    val isLoggedIn: Flow<Boolean> = context.dataStore.data.map {
+        it[IS_LOGGED_IN] ?: false
     }
 }

@@ -1,11 +1,13 @@
 package com.etag.stsyn.ui.screen.login
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.data.localStorage.LocalDataStore
 import com.etag.stsyn.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.LoginRequest
+import com.tzh.retrofit_module.data.repository.LoginRepository
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,10 +21,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    rfidHandler: ZebraRfidHandler,
+    private val rfidHandler: ZebraRfidHandler,
     private val localDataStore: LocalDataStore,
-    private val loginRepository: com.tzh.retrofit_module.data.repository.LoginRepository
-) : BaseViewModel(rfidHandler) {
+    private val loginRepository: LoginRepository
+) : BaseViewModel(rfidHandler, "LoginViewmodel") {
+
     private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
 
@@ -40,19 +43,11 @@ class LoginViewModel @Inject constructor(
     private fun getUserByRfidId(rfidId: String) {
         viewModelScope.launch {
 
-            /*if (rfidId.isNotEmpty()) {
-                val user = loginRepository.getUserByRfidId(rfidId)
-                _loginUiState.update {
-                    it.copy(
-                        user = user
-                    )
-                }
-                localDataStore.saveUser(user)
-            }*/
         }
     }
 
     val savedUser = localDataStore.getUser
+    val isLoggedIn = localDataStore.isLoggedIn
 
     fun saveUserToLocalStorage(localUser: LocalUser) {
         viewModelScope.launch {
@@ -105,6 +100,7 @@ class LoginViewModel @Inject constructor(
 
     override fun onReceivedTagId(id: String) {
         _loginUiState.update { it.copy(rfidId = id) }
+        Log.d("TAG", "onReceivedTagId: $id")
         getUserByRfidId(id)
     }
 

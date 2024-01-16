@@ -6,4 +6,5 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 interface LoginRepository {
     suspend fun login(loginRequest: LoginRequest): ApiResponse<LoginResponse>
+    suspend fun logout()
 }

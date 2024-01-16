@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.data.localStorage.LocalDataStore
+import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.repository.BookInRepository
+import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,20 +28,47 @@ class BookInViewModel @Inject constructor(
     private val _bookInItems = MutableStateFlow<ApiResponse<BookInResponse>>(ApiResponse.Default)
     val bookInItems: StateFlow<ApiResponse<BookInResponse>> = _bookInItems.asStateFlow()
 
+    private val _scannedBookInItems = MutableStateFlow<List<BookInItem>>(emptyList())
+    val scannedBookInItems: StateFlow<List<BookInItem>> = _scannedBookInItems.asStateFlow()
+
     init {
         viewModelScope.launch {
             localDataStore.getUser.collect {
-                Log.d("TAG", "book in token: ${it.token}")
-                getBookInItems("CS", "2", it.id, it.token)
+                getBookInItems(store = "CS", csNo = "2", userId = it.id, token = it.token)
             }
+            getScannedItemsDetails()
         }
     }
 
     override fun onReceivedTagId(id: String) {
         // handled scanned tags here
+        Log.d("TAG", "onReceivedTagId: $id")
     }
 
-    fun getBookInItems(
+    private fun getScannedItemsDetails() {
+        viewModelScope.launch {
+            val itemDetails =
+                (_bookInItems.value as ApiResponse.Success<BookInResponse>).data?.items
+                    ?: emptyList()
+            rfidUiState.collect {
+                it.scannedItems.forEachIndexed { index, s ->
+                    if (s in itemDetails.map { it.epc }) {
+                        val currentItems = _scannedBookInItems.value.toMutableList()
+                        currentItems.add(itemDetails.get(index))
+                        _scannedBookInItems.value = currentItems
+                    }
+                }
+            }
+        }
+    }
+
+    fun saveBookIn(saveBookInRequest: SaveBookInRequest) {
+        viewModelScope.launch {
+            bookInRepository.saveBookIn(saveBookInRequest)
+        }
+    }
+
+    private fun getBookInItems(
         store: String,
         csNo: String,
         userId: String,
@@ -46,9 +76,14 @@ class BookInViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _bookInItems.value = ApiResponse.Loading
-            _bookInItems.value = bookInRepository.getBookInItems(store, csNo, userId, token)
+            delay(1000)
+            _bookInItems.value = bookInRepository.getBookInItems(
+                store = store,
+                csNo = csNo,
+                userId = userId,
+                token = token
+            )
             rfidUiState.value.scannedItems
         }
     }
-
 }

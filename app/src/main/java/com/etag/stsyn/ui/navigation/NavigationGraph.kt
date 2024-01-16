@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,21 +25,27 @@ fun NavigationGraph(
     modifier: Modifier = Modifier,
     loginViewModel: LoginViewModel,
 ) {
-
-    val loginUiState by loginViewModel.loginUiState.collectAsState()
-    val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
-
-    // set scan type to single when current destination is login screen
     LaunchedEffect(navController.currentDestination) {
         if ((navController.currentDestination ?: "") == Routes.LoginScreen.name) {
             loginViewModel.updateScanType(ScanType.Single)
         }
     }
 
+    val loginUiState by loginViewModel.loginUiState.collectAsState()
+    val rfidUiState by loginViewModel.rfidUiState.collectAsState()
+    val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
+    val isLoggedIn by loginViewModel.isLoggedIn.collectAsState(initial = false)
+
+    LaunchedEffect(isLoggedIn) {
+        Log.d("TAG", "isLoggedIn: $isLoggedIn")
+    }
+
+    // set scan type to single when current destination is login screen
+
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = Routes.LoginContentScreen.name
+        startDestination = if (isLoggedIn) Routes.HomeScreen.name else Routes.SplashScreen.name
     ) {
 
         composable(route = Routes.SplashScreen.name) {
@@ -54,7 +61,6 @@ fun NavigationGraph(
         }
 
         composable(route = Routes.LoginScreen.name) {
-            loginViewModel.updateScanType(ScanType.Single)
             LoginScreen(
                 navigateToLoginContentScreen = { navController.navigate(Routes.LoginContentScreen.name) },
                 loginViewModel = loginViewModel
@@ -63,7 +69,6 @@ fun NavigationGraph(
 
         composable(route = Routes.LoginContentScreen.name) {
             loginViewModel.removeListener() // remove listener when
-
             LaunchedEffect(loginUiState.isLoginSuccessful) {
                 if (loginUiState.isLoginSuccessful)
                     navController.navigate(Routes.HomeContentScreen.name)

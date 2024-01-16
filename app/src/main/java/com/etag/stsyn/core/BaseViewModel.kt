@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(
     private val rfidHandler: ZebraRfidHandler,
+    private val TAG: String = "Base Viewmodel"
 ) : ViewModel(), RfidResponseHandlerInterface {
 
     private val _rfidUiState = MutableStateFlow(RfidUiState())
@@ -25,7 +26,9 @@ abstract class BaseViewModel(
     private var reconnectingJob: Job? = null
 
     init {
+        onCreate()
         updateScanType(ScanType.Multi)
+        //setRfidListener()
     }
 
     fun updateScanType(scanType: ScanType) {
@@ -63,6 +66,34 @@ abstract class BaseViewModel(
         viewModelScope.launch { rfidHandler.onCreate() }
     }
 
+    fun connectReader() {
+        if (reconnectingJob?.isActive == true) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                reconnectingJob?.cancel()
+                if (!rfidHandler.isReaderConnected) {
+                    reconnectingJob = rfidHandler.onCreate()
+                }
+                reconnectingJob?.invokeOnCompletion {
+                    if (!rfidHandler.isReaderConnected) {
+                        viewModelScope.launch {
+                            rfidHandler.onCreate()
+                        }
+                    }
+
+                    Log.d("TAG", "connectReader: ${rfidHandler.isReaderConnected}")
+
+                    updateIsConnectedStatus(rfidHandler.isReaderConnected)
+                }
+                //getReaderBatteryLevel()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun setRfidListener() {
         rfidHandler.setResponseHandlerInterface(this)
     }
@@ -74,7 +105,7 @@ abstract class BaseViewModel(
     }
 
     fun toggle() {
-        if (_rfidUiState.value.isScanning) stopScan()
+        if (_rfidUiState.value.isScanning) //stopScan()
         else startScan()
     }
 
@@ -88,8 +119,8 @@ abstract class BaseViewModel(
     fun startScan() {
         viewModelScope.launch {
             // only able to scan when isScannable is true
+            rfidHandler.performInventory()
             if (_rfidUiState.value.isScannable) {
-                rfidHandler.performInventory()
                 updateIsScanningStatus(true)
             }
         }
@@ -120,29 +151,6 @@ abstract class BaseViewModel(
         _rfidUiState.update { it.copy(isConnected = isConnected) }
     }
 
-    fun connectReader() {
-        if (reconnectingJob?.isActive == true) {
-            return
-        }
-        viewModelScope.launch {
-            try {
-                reconnectingJob?.cancel()
-                if (!rfidHandler.isReaderConnected) {
-                    reconnectingJob = rfidHandler.onCreate()
-                }
-                reconnectingJob?.invokeOnCompletion {
-                    if (!rfidHandler.isReaderConnected) {
-                        viewModelScope.launch {
-                            rfidHandler.onCreate()
-                        }
-                    }
-                    updateIsConnectedStatus(rfidHandler.isReaderConnected)
-                }
-                getReaderBatteryLevel()
-            } catch (e: Exception) {
-            }
-        }
-    }
 
     private fun getReaderBatteryLevel() {
         rfidHandler.setOnBatteryLevelListener(object : RfidBatteryLevelListener {

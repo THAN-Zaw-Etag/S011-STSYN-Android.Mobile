@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
 import com.etag.stsyn.core.receiver.BluetoothState
 import com.etag.stsyn.ui.navigation.NavigationGraph
@@ -21,16 +22,18 @@ import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.theme.STSYNTheme
 import com.etag.stsyn.util.PermissionUtil
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var rfidHandler: ZebraRfidHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // lock screen rotation
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
 
         setContent {
             val loginViewModel: LoginViewModel = hiltViewModel()
@@ -40,11 +43,9 @@ class MainActivity : ComponentActivity() {
 
             PermissionUtil.checkBluetoothPermission(context)
 
+            //ReaderLifeCycle(viewModel = loginViewModel)
             LaunchedEffect(Unit) {
-                loginViewModel.apply {
-                    onCreate()
-                    connectReader()
-                }
+                loginViewModel.connectReader()
             }
 
             handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)

@@ -50,9 +50,12 @@ fun LoginScreen(
     val context = LocalContext.current
 
     ReaderLifeCycle(viewModel = loginViewModel)
+    LaunchedEffect(Unit) {
+        //loginViewModel.connectReader()
+    }
 
-    LaunchedEffect(loginUiState.user) {
-        if ((loginUiState.user?.name ?: "").isNotEmpty()) {
+    LaunchedEffect(loginUiState.rfidId) {
+        if (loginUiState.rfidId.isNotEmpty()) {
             navigateToLoginContentScreen()
         }
     }

@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.book_in.book_in
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +30,11 @@ fun BookInScanScreen(
     val rfidUiState by bookInViewModel.rfidUiState.collectAsState()
     val listState = rememberLazyListState()
     val bookInItemsResponse by bookInViewModel.bookInItems.collectAsState()
+    val bookInItems by bookInViewModel.scannedBookInItems.collectAsState()
+
+    LaunchedEffect(bookInItems) {
+        Log.d("TAG", "BookInScanScreen: $bookInItems")
+    }
 
     when (bookInItemsResponse) {
         is ApiResponse.Loading -> LoadingDialog(
