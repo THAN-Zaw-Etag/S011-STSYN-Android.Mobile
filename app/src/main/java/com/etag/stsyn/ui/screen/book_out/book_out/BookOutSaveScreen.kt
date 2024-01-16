@@ -19,11 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.components.DropDown
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.ui.theme.Purple80
-import com.etag.stsyn.util.Purpose
 
 @Composable
 fun BookOutSaveScreen(

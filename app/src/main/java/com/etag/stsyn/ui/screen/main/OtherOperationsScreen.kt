@@ -7,10 +7,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.OptionButtonLayout
 import com.etag.stsyn.ui.components.OptionsButtonRow
-import com.etag.stsyn.util.DataSource
-import com.etag.stsyn.util.OptionType
+import com.etag.stsyn.util.datasource.DataSource
 
 @Composable
 fun OtherOperationsScreen(

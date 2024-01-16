@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.FilterDialog
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.theme.Purple80
-import com.etag.stsyn.util.DataSource
+import com.etag.stsyn.util.datasource.DataSource
 
 data class FilterItem(
     val title: String,

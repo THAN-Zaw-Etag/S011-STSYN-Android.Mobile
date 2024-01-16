@@ -1,4 +1,4 @@
-package com.etag.stsyn.ui.screen.main
+package com.etag.stsyn.ui.screen.login
 
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -30,26 +32,77 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
+import com.etag.stsyn.data.model.LocalUser
+import com.etag.stsyn.ui.components.CustomIcon
+import com.etag.stsyn.ui.components.ExitApp
+import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.PasswordField
 import com.etag.stsyn.ui.components.VersionText
+import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 import com.etag.stsyn.util.PasswordValidator
+import com.tzh.retrofit_module.domain.model.login.LoginResponse
+import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun LoginContentScreen(
+    loginAttemptCount: Int,
     isSuccessful: Boolean,
     errorMessage: String,
-    onLogInClick: (String) -> Unit,
+    userName: String,
+    loginResponse: ApiResponse<LoginResponse>,
     modifier: Modifier = Modifier,
-    userName: String
+    onLogInClick: (String) -> Unit,
+    onSuccess: (LocalUser) -> Unit,
+    onFailed: () -> Unit,
 ) {
     var error by remember { mutableStateOf("") }
+    var showWarningDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(errorMessage) {
         error = errorMessage
     }
 
-    val context = LocalContext.current
+    LaunchedEffect(loginAttemptCount) {
+        showWarningDialog = loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS
+    }
+
+    when (loginResponse) {
+        is ApiResponse.Loading -> LoadingDialog(
+            title = "Signing In...",
+            showDialog = true,
+            onDismiss = { }
+        )
+
+        is ApiResponse.Success -> {
+            val user = loginResponse.data?.user
+            val localUser = LocalUser(
+                name = user?.userName ?: "",
+                id = user?.userId ?: "",
+                nric = user?.nric ?: "",
+                token = loginResponse.data?.token ?: ""
+            )
+            onSuccess(localUser)
+        }
+
+        is ApiResponse.Error -> {
+            onFailed()
+            error = loginResponse.message
+        }
+
+        else -> {}
+    }
+
+    WarningDialog(
+        icon = CustomIcon.Vector(Icons.Default.Warning),
+        message = "You've tried to log in 10 times.",
+        showDialog = showWarningDialog,
+        positiveButtonTitle = "exit",
+        onPositiveButtonClick = { ExitApp(context) }
+    )
+
     LaunchedEffect(isSuccessful) {
         if (isSuccessful) Toast.makeText(
             context,

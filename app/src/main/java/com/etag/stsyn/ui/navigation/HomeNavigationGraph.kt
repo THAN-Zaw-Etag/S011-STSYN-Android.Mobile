@@ -2,7 +2,6 @@ package com.etag.stsyn.ui.navigation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -10,24 +9,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.screen.detail.DetailScreen
+import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.BookInScreen
 import com.etag.stsyn.ui.screen.main.BookOutScreen
 import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
-import com.etag.stsyn.ui.viewmodel.RfidViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
-import com.etag.stsyn.util.OptionType
 
 @Composable
 fun HomeNavigationGraph(
-    rfidViewModel: RfidViewModel,
+    loginViewModel: LoginViewModel,
     sharedUiViewModel: SharedUiViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val rfidUiState by rfidViewModel.rfidUiState.collectAsState()
+    val rfidUiState by loginViewModel.rfidUiState.collectAsState()
 
     NavHost(
         navController = navController,
@@ -108,12 +107,6 @@ fun HomeNavigationGraph(
             val optionType = OptionType.valueOf(
                 it.arguments?.getString("type") ?: OptionType.BookOut.toString()
             )
-
-            LaunchedEffect(Unit) {
-                sharedUiViewModel.apply {
-                    //updateIsScannedStatus(false)
-                }
-            }
 
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)

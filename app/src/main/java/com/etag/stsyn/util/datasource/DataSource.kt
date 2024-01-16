@@ -1,4 +1,4 @@
-package com.etag.stsyn.util
+package com.etag.stsyn.util.datasource
 
 import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
@@ -9,9 +9,11 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Save
 import com.etag.stsyn.R
+import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.screen.acct_check.FilterItem
+import com.etag.stsyn.util.TabOption
 
 data class OptionButtonModel(
     val title: String,

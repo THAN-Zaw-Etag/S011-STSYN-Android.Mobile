@@ -42,33 +42,31 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.etag.stsyn.R
-import com.etag.stsyn.data.model.User
+import com.etag.stsyn.data.model.LocalUser
 import com.etag.stsyn.ui.components.AppBar
 import com.etag.stsyn.ui.components.BottomNavigationBar
 import com.etag.stsyn.ui.components.ChangePasswordDialog
 import com.etag.stsyn.ui.components.ProfileTextButton
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.navigation.HomeNavigationGraph
-import com.etag.stsyn.ui.viewmodel.RfidViewModel
+import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
-    savedUserState: User,
     onChangePassword: (String, String) -> Unit,
     onLogOutClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    rfidViewModel: RfidViewModel,
+    loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {
+    val savedUserState by loginViewModel.savedUser.collectAsState(initial = LocalUser())
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
-
     val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
-
     val navController = rememberNavController()
     val sharedUiState by sharedUiViewModel.uiState.collectAsState()
 
@@ -111,9 +109,9 @@ fun HomeScreen(
             },
         ) {
             HomeNavigationGraph(
-                rfidViewModel = rfidViewModel,
-                navController = navController,
+                loginViewModel = loginViewModel,
                 sharedUiViewModel = sharedUiViewModel,
+                navController = navController,
                 modifier = Modifier.padding(it)
             )
         }
@@ -122,8 +120,8 @@ fun HomeScreen(
 
 
 @Composable
-fun DrawerContent(
-    user: User,
+private fun DrawerContent(
+    user: LocalUser,
     onChangePassword: (String, String) -> Unit,
     onSettingsClick: () -> Unit,
     onLogOutClick: () -> Unit,
@@ -181,7 +179,7 @@ fun DrawerContent(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = user.rfidId,
+                            text = user.id,
                             color = Color.White
                         )
                     }

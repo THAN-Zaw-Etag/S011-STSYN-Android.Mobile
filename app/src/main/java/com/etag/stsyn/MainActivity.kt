@@ -1,5 +1,6 @@
 package com.etag.stsyn
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,8 +17,8 @@ import androidx.navigation.compose.rememberNavController
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
 import com.etag.stsyn.core.receiver.BluetoothState
 import com.etag.stsyn.ui.navigation.NavigationGraph
+import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.theme.STSYNTheme
-import com.etag.stsyn.ui.viewmodel.RfidViewModel
 import com.etag.stsyn.util.PermissionUtil
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,35 +28,26 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // lock screen rotation
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+
         setContent {
-            val rfidViewModel: RfidViewModel = hiltViewModel()
+            val loginViewModel: LoginViewModel = hiltViewModel()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
             val context = LocalContext.current
 
             PermissionUtil.checkBluetoothPermission(context)
 
-            // initialize reader
             LaunchedEffect(Unit) {
-                try {
-                    rfidViewModel.onCreate()
-                    rfidViewModel.connectReader()
-                } catch (_: Exception) {
+                loginViewModel.apply {
+                    onCreate()
+                    connectReader()
                 }
             }
 
-            when (bluetoothState) {
-                BluetoothState.ON -> {
-                    rfidViewModel.onCreate()
-                    rfidViewModel.connectReader()
-                }
-
-                BluetoothState.OFF, BluetoothState.TURNING_OFF -> {
-                    rfidViewModel.updateIsConnectedStatus(false)
-                }
-
-                else -> {}
-            }
+            handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)
 
             val navController = rememberNavController()
 
@@ -65,10 +57,30 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavigationGraph(
                         navController = navController,
-                        rfidViewModel = rfidViewModel
+                        loginViewModel = loginViewModel
                     )
                 }
             }
+        }
+    }
+
+    private fun handleBluetoothState(
+        bluetoothState: BluetoothState,
+        loginViewModel: LoginViewModel
+    ) {
+        when (bluetoothState) {
+            BluetoothState.ON -> {
+                loginViewModel.apply {
+                    onCreate()
+                    connectReader()
+                }
+            }
+
+            BluetoothState.OFF, BluetoothState.TURNING_OFF -> {
+                loginViewModel.updateIsConnectedStatus(false)
+            }
+
+            else -> {}
         }
     }
 }

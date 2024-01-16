@@ -22,14 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.ReaderLifeCycle
+import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.DisableBackPress
 import com.etag.stsyn.ui.components.TabBarLayout
-import com.etag.stsyn.util.OptionType
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
-import com.etag.stsyn.util.getScreensByOptionType
-import com.etag.stsyn.util.getViewModelByOptionType
+import com.etag.stsyn.util.datasource.getScreensByOptionType
+import com.etag.stsyn.util.datasource.getViewModelByOptionType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -111,7 +111,8 @@ fun DetailScreen(
                     })
 
                 HorizontalPager(state = pagerState) {
-                    // check current screen is scan screen or not
+                    /** Check current screen is scan screen or not
+                     * If not, make scanner not readable */
                     if (it != 0) {
                         viewModel.updateIsScanningStatus(false)
                         viewModel.stopScan()

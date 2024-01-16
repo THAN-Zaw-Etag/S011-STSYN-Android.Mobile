@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.etag.stsyn.data.model.User
+import com.etag.stsyn.data.model.LocalUser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -17,19 +17,25 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val Context.dataStore: DataStore<Preferences> by preferencesDataStore(NAME)
         val USER_ID = stringPreferencesKey("user_id")
         val USER_NAME = stringPreferencesKey("user_name")
+        val USER_NRIC = stringPreferencesKey("user_nric")
+        val TOKEN = stringPreferencesKey("token")
     }
 
-    suspend fun saveUser(user: User) {
+    suspend fun saveUser(user: LocalUser) {
         context.dataStore.edit { preferences ->
             preferences[USER_NAME] = user.name
-            preferences[USER_ID] = user.rfidId
+            preferences[USER_ID] = user.id
+            preferences[USER_NRIC] = user.nric
+            preferences[TOKEN] = user.token
         }
     }
 
-    val getUser: Flow<User> = context.dataStore.data.map { preferences ->
+    val getUser: Flow<LocalUser> = context.dataStore.data.map { preferences ->
         val name = preferences[USER_NAME] ?: ""
         val id = preferences[USER_ID] ?: ""
+        val userNric = preferences[USER_NRIC] ?: ""
+        val token = preferences[TOKEN] ?: ""
 
-        User(name = name, rfidId = id, "", "")
+        LocalUser(name = name, id = id, nric = userNric, token = token)
     }
 }

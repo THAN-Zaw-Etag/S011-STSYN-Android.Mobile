@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.etag.stsyn.ui.screen.main
+package com.etag.stsyn.ui.screen.login
 
 import android.widget.Toast
 import androidx.compose.foundation.Image

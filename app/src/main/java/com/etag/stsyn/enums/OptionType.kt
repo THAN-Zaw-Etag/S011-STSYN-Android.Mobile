@@ -1,4 +1,4 @@
-package com.etag.stsyn.util
+package com.etag.stsyn.enums
 
 enum class OptionType(val title: String = "") {
     BookOut("Book Out"),

@@ -2,7 +2,9 @@ package com.etag.stsyn.util
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
+import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.CustomIcon
+import com.etag.stsyn.util.datasource.DataSource
 
 data class TabOption(
     val title: String,

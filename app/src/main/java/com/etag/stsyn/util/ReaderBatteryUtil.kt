@@ -2,7 +2,7 @@ package com.etag.stsyn.util
 
 import com.etag.stsyn.R
 
-object BatteryImageUtil {
+object ReaderBatteryUtil {
     fun getBatteryImageByPercentage(percentage: Int): Int {
         return when (percentage) {
             in 0..20 -> R.drawable.battery_very_low

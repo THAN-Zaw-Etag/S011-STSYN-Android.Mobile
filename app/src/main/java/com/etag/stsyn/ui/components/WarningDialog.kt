@@ -84,14 +84,14 @@ fun WarningDialog(
                             TextButton(
                                 onClick = onPositiveButtonClick
                             ) {
-                                Text(text = positiveButtonTitle)
+                                Text(text = positiveButtonTitle.uppercase())
                             }
 
                             if (negativeButtonTitle.isNotEmpty()) {
                                 TextButton(
                                     onClick = onNegativeButtonClick
                                 ) {
-                                    Text(text = negativeButtonTitle)
+                                    Text(text = negativeButtonTitle.uppercase())
                                 }
                             }
                         }

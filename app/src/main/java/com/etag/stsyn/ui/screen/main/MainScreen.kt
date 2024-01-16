@@ -37,9 +37,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
-import com.etag.stsyn.util.BatteryImageUtil
-import com.etag.stsyn.util.DataSource
-import com.etag.stsyn.util.OptionButtonModel
+import com.etag.stsyn.util.ReaderBatteryUtil
+import com.etag.stsyn.util.datasource.DataSource
+import com.etag.stsyn.util.datasource.OptionButtonModel
 
 @Composable
 fun MainScreen(
@@ -142,7 +142,7 @@ private fun RfidReaderStatusSection(
                 Spacer(modifier = Modifier.width(8.dp))
                 Image(
                     painter = painterResource(
-                        id = BatteryImageUtil.getBatteryImageByPercentage(
+                        id = ReaderBatteryUtil.getBatteryImageByPercentage(
                             batteryPercentage
                         )
                     ), contentDescription = null, modifier = Modifier.height(24.dp)

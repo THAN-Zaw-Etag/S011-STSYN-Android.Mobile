@@ -8,10 +8,10 @@ import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.components.DropDown
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
-import com.etag.stsyn.util.Purpose
 
 @Composable
 fun BookOutBoxSaveScreen(

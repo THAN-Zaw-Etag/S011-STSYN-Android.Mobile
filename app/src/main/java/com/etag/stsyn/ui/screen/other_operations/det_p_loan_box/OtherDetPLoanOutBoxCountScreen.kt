@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
-import com.etag.stsyn.util.DataSource
+import com.etag.stsyn.util.datasource.DataSource
 import kotlinx.coroutines.launch
 
 @Composable

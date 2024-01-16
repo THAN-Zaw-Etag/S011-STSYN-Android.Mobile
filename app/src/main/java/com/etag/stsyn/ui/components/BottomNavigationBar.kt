@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.theme.Purple80
-import com.etag.stsyn.util.DataSource
 import com.etag.stsyn.util.TransitionUtil
+import com.etag.stsyn.util.datasource.DataSource
 
 @Composable
 fun BottomNavigationBar(
