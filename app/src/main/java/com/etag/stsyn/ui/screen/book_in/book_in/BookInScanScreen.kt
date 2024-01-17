@@ -42,7 +42,10 @@ fun BookInScanScreen(
             showDialog = true,
             onDismiss = { /*TODO*/ })
 
-        is ApiResponse.Success -> {}
+        is ApiResponse.Success -> {
+
+        }
+
         is ApiResponse.Error -> WarningDialog(
             icon = CustomIcon.Vector(Icons.Default.Error),
             message = (bookInItemsResponse as ApiResponse.Error).message,
@@ -59,7 +62,7 @@ fun BookInScanScreen(
 
     BaseScanScreen(
         modifier = modifier,
-        scannedItemCount = rfidUiState.scannedItems.size,
+        scannedItemCount = bookInItems.size,
         isScanning = rfidUiState.isScanning,
         onScan = { bookInViewModel.toggle() },
         onClear = { bookInViewModel.removeScannedItems() }) {
@@ -68,13 +71,13 @@ fun BookInScanScreen(
             state = listState,
             contentPadding = PaddingValues(16.dp)
         ) {
-            items(rfidUiState.scannedItems) {
+            items(bookInItems) {
                 key(it) {
                     ScannedItem(
-                        id = it,
+                        id = it.epc,
                         name = "World",
                         isSwipeable = true,
-                        onSwipeToDismiss = { bookInViewModel.removeItem(it) }
+                        onSwipeToDismiss = { bookInViewModel.removeItem(it.epc) }
                     )
                 }
             }

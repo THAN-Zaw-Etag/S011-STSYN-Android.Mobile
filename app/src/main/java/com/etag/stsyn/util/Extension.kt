@@ -14,6 +14,16 @@ fun String.doesNotEquals(string: String): Boolean {
     return !this.equals(string)
 }
 
+fun List<String>.toLines(): String {
+    var result = ""
+    this.forEach { result += "* ${it}\n" }
+    return result
+}
+
+fun String.toToken(): String {
+    return "Bearer $this"
+}
+
 fun Modifier.customShadow(
     color: Color = Color.Black,
     borderRadius: Dp = 0.dp,

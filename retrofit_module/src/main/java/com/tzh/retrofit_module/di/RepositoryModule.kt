@@ -2,9 +2,9 @@ package com.tzh.retrofit_module.di
 
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.repository.BookInRepository
-import com.tzh.retrofit_module.data.repository.LoginRepository
+import com.tzh.retrofit_module.data.repository.UserRepository
 import com.tzh.retrofit_module.data.repository_impl.BookInRepositoryImpl
-import com.tzh.retrofit_module.data.repository_impl.LoginRepositoryImpl
+import com.tzh.retrofit_module.data.repository_impl.UserRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,8 +16,8 @@ import javax.inject.Singleton
 object RepositoryModule {
     @Provides
     @Singleton
-    fun providesLoginRepository(apiService: ApiService): LoginRepository {
-        return LoginRepositoryImpl(apiService)
+    fun providesLoginRepository(apiService: ApiService): UserRepository {
+        return UserRepositoryImpl(apiService)
     }
 
     @Provides

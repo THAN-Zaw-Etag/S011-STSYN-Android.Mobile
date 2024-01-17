@@ -5,8 +5,11 @@ import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.repository.BookInRepository
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.util.ApiResponse
+import javax.inject.Inject
 
-class BookInRepositoryImpl(private val apiService: ApiService) : BookInRepository {
+class BookInRepositoryImpl @Inject constructor(
+    private val apiService: ApiService,
+) : BookInRepository {
     override suspend fun getBookInItems(
         store: String,
         csNo: String,
@@ -29,6 +32,6 @@ class BookInRepositoryImpl(private val apiService: ApiService) : BookInRepositor
         }
     }
 
-    override suspend fun saveBookIn(saveBookInRequest: SaveBookInRequest) =
-        apiService.saveBookIn(saveBookInRequest)
+    override suspend fun saveBookIn(token: String, saveBookInRequest: SaveBookInRequest) =
+        apiService.saveBookIn(token, saveBookInRequest)
 }

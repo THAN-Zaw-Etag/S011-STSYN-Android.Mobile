@@ -26,9 +26,9 @@ abstract class BaseViewModel(
     private var reconnectingJob: Job? = null
 
     init {
-        onCreate()
+        //onCreate()
+        setRfidListener()
         updateScanType(ScanType.Multi)
-        //setRfidListener()
     }
 
     fun updateScanType(scanType: ScanType) {
@@ -87,7 +87,7 @@ abstract class BaseViewModel(
 
                     updateIsConnectedStatus(rfidHandler.isReaderConnected)
                 }
-                //getReaderBatteryLevel()
+                getReaderBatteryLevel()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -105,8 +105,10 @@ abstract class BaseViewModel(
     }
 
     fun toggle() {
-        if (_rfidUiState.value.isScanning) //stopScan()
-        else startScan()
+        println("toggle")
+        startScan()
+        /*if (_rfidUiState.value.isScanning) stopScan()
+        else startScan()*/
     }
 
     /**
@@ -128,7 +130,7 @@ abstract class BaseViewModel(
 
     fun stopScan() {
         viewModelScope.launch {
-            rfidHandler.stopInventory()
+            //rfidHandler.stopInventory()
             updateIsScanningStatus(false)
         }
     }
@@ -160,7 +162,8 @@ abstract class BaseViewModel(
                     it.copy(batteryLevel = batteryLevel, isConnected = true)
                 }
             }
-        })
+        }
+        )
     }
 
     private fun updateSingleScannedItem(itemId: String) {

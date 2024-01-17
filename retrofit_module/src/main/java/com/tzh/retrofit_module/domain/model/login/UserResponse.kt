@@ -1,4 +1,4 @@
-package com.tzh.retrofit_module.domain.model
+package com.tzh.retrofit_module.domain.model.login
 
 data class UserResponse(
     val airbase: Any,

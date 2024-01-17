@@ -1,4 +1,4 @@
-package com.tzh.retrofit_module.data.model
+package com.tzh.retrofit_module.data.model.login
 
 data class LoginRequest(
     val id: String,

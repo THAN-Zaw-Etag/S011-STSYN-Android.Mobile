@@ -10,12 +10,18 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.OptionButtonLayout
 import com.etag.stsyn.util.datasource.DataSource
+import com.tzh.retrofit_module.domain.model.login.MenuAccessRight
 
 @Composable
 fun BookOutScreen(
+    menuAccessRight: MenuAccessRight,
     onOptionButtonClick: (OptionType) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val optionPairs = hashMapOf(
+        OptionType.BookOut.title to menuAccessRight.allowBookOut,
+        OptionType.BookOutBox.title to menuAccessRight.allowBookOutBox
+    )
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -23,9 +29,12 @@ fun BookOutScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         DataSource.bookOutOptions.forEach {
-            OptionButtonLayout(optionButtonModel = it, onOptionButtonClick = {
-                onOptionButtonClick((OptionType.valueOf(it)))
-            })
+            OptionButtonLayout(
+                showButton = optionPairs.getValue(it.title),
+                optionButtonModel = it,
+                onOptionButtonClick = {
+                    onOptionButtonClick((OptionType.valueOf(it)))
+                })
         }
     }
 }

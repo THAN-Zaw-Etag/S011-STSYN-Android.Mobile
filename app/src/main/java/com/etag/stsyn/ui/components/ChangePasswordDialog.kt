@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -50,7 +51,6 @@ fun ChangePasswordDialog(
     var oldPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-
     var isWrongPassword by remember { mutableStateOf(false) }
 
     LaunchedEffect(showDialog) {
@@ -58,7 +58,7 @@ fun ChangePasswordDialog(
     }
 
     LaunchedEffect(newPassword, confirmPassword) {
-        isWrongPassword = newPassword.doesNotEquals(confirmPassword)
+        isWrongPassword = newPassword.trim().doesNotEquals(confirmPassword.trim())
     }
 
     if (show) {
@@ -67,6 +67,7 @@ fun ChangePasswordDialog(
                 modifier = modifier
                     .fillMaxSize()
                     .padding(vertical = 32.dp)
+                    .clip(RoundedCornerShape(10.dp))
                     .background(Color.White)
             ) {
                 IconButton(
@@ -81,7 +82,6 @@ fun ChangePasswordDialog(
                         contentDescription = null
                     )
                 }
-
                 // password fields
                 Column(
                     modifier = Modifier
@@ -94,6 +94,9 @@ fun ChangePasswordDialog(
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(text = userName)
                     }
+
+                    Spacer(modifier = Modifier.weight(1f))
+
                     ChangePasswordField(
                         hint = "Old Password",
                         isError = false,
@@ -101,16 +104,16 @@ fun ChangePasswordDialog(
                     )
                     ChangePasswordField(
                         hint = "New Password",
-                        isError = isWrongPassword || if (newPassword.isNotEmpty()) !PasswordValidator.isValidPassword(
+                        isError = isWrongPassword || if (newPassword.isNotEmpty()) PasswordValidator.validatePassword(
                             newPassword
-                        ) else true,
+                        ).isNotEmpty() else false,
                         onValueChange = { newPassword = it }
                     )
                     ChangePasswordField(
                         hint = "Confirm Password",
-                        isError = isWrongPassword || if (confirmPassword.isNotEmpty()) !PasswordValidator.isValidPassword(
+                        isError = isWrongPassword || if (confirmPassword.isNotEmpty()) PasswordValidator.validatePassword(
                             confirmPassword
-                        ) else true,
+                        ).isNotEmpty() else false,
                         onValueChange = { confirmPassword = it },
                         showVisibilityIcon = false
                     )
@@ -120,11 +123,14 @@ fun ChangePasswordDialog(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         ),
-                        onClick = { onChangePassword(oldPassword, newPassword) }
+                        onClick = {
+                            onChangePassword(oldPassword, newPassword)
+                            onDismiss()
+                        }
                     ) {
                         Text(text = "Save")
                     }
-
+                    Spacer(modifier = Modifier.weight(1f))
                     // warning text
                     ErrorText(
                         text = "*Password Requirements: Minimum 12 characters (at least one upper case, lower case and special characters, and number)",

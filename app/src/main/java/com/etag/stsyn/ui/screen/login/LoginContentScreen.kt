@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.login
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -19,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,6 +44,7 @@ import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 import com.etag.stsyn.util.PasswordValidator
+import com.etag.stsyn.util.toLines
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -49,7 +52,6 @@ import com.tzh.retrofit_module.util.ApiResponse
 fun LoginContentScreen(
     loginAttemptCount: Int,
     isSuccessful: Boolean,
-    errorMessage: String,
     userName: String,
     loginResponse: ApiResponse<LoginResponse>,
     modifier: Modifier = Modifier,
@@ -61,22 +63,22 @@ fun LoginContentScreen(
     var showWarningDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    LaunchedEffect(errorMessage) {
-        error = errorMessage
-    }
-
     LaunchedEffect(loginAttemptCount) {
         showWarningDialog = loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS
     }
 
+    LaunchedEffect(error) {
+        Log.d("TAG", "LoginResponse: $error")
+    }
+
+
     when (loginResponse) {
-        is ApiResponse.Loading -> LoadingDialog(
-            title = "Signing In...",
+        is ApiResponse.Loading -> LoadingDialog(title = "Signing In...",
             showDialog = true,
-            onDismiss = { }
-        )
+            onDismiss = { })
 
         is ApiResponse.Success -> {
+            println("response: success")
             val user = loginResponse.data?.user
             val localUser = LocalUser(
                 name = user?.userName ?: "",
@@ -88,26 +90,21 @@ fun LoginContentScreen(
         }
 
         is ApiResponse.Error -> {
-            onFailed()
             error = loginResponse.message
         }
 
         else -> {}
     }
 
-    WarningDialog(
-        icon = CustomIcon.Vector(Icons.Default.Warning),
+    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Warning),
         message = "You've tried to log in 10 times.",
         showDialog = showWarningDialog,
         positiveButtonTitle = "exit",
-        onPositiveButtonClick = { ExitApp(context) }
-    )
+        onPositiveButtonClick = { ExitApp(context) })
 
     LaunchedEffect(isSuccessful) {
         if (isSuccessful) Toast.makeText(
-            context,
-            "Login successful!",
-            Toast.LENGTH_SHORT
+            context, "Login successful!", Toast.LENGTH_SHORT
         ).show()
     }
 
@@ -131,8 +128,7 @@ private fun LoginLowerSection(modifier: Modifier = Modifier) {
         )
 
         VersionText(
-            color = Color.White,
-            modifier = Modifier
+            color = Color.White, modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.BottomEnd)
         )
@@ -141,18 +137,23 @@ private fun LoginLowerSection(modifier: Modifier = Modifier) {
 
 @Composable
 private fun LoginSection(
+    errorMessage: String,
     userName: String,
     onLogInClick: (String) -> Unit,
-    errorMessage: String,
     modifier: Modifier = Modifier
 ) {
+    val errorMessages = remember { mutableStateListOf<String>() }
+    var showError by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf(errorMessage) }
 
-    var showError by remember {
-        mutableStateOf(false)
+    LaunchedEffect(errorMessages.size) {
+        showError = errorMessages.isNotEmpty()
+        error = errorMessages.toLines()
     }
 
     LaunchedEffect(errorMessage) {
-        showError = errorMessage.isEmpty()
+        showError = errorMessage.isNotEmpty()
+        error = errorMessage
     }
 
     Column(
@@ -169,28 +170,30 @@ private fun LoginSection(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Please enter your password",
-            fontWeight = FontWeight.Bold,
-            color = Purple80
+            text = "Please enter your password", fontWeight = FontWeight.Bold, color = Purple80
         )
         Spacer(modifier = Modifier.height(24.dp))
-        PasswordField(
-            hint = "Password",
-            isError = errorMessage.isNotEmpty() && !PasswordValidator.isValidPassword(
-                enteredPassword
-            ),
-            onValueChange = { enteredPassword = it },
-            onSubmit = { onLogInClick(it) }
-        )
+        PasswordField(hint = "Password", isError = showError, onValueChange = {
+            enteredPassword = it
+            errorMessages.clear()
+        }, onSubmit = {
+            errorMessages.clear() // clear old error messages
+            val messages = PasswordValidator.validatePassword(enteredPassword)
+            errorMessages.addAll(messages)
+            if (errorMessages.isEmpty()) onLogInClick(it) // if there is no error, allow to login
+        })
         Spacer(modifier = Modifier.height(8.dp))
-        AnimatedVisibility(visible = errorMessage.isNotEmpty()) {
-            Text(text = errorMessage, color = Color.Red)
+        AnimatedVisibility(visible = showError) {
+            Text(text = error, color = Color.Red)
         }
         Spacer(modifier = Modifier.height(24.dp))
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
             Button(
-                onClick = { onLogInClick(enteredPassword) },
-                colors = ButtonDefaults.buttonColors(containerColor = Purple80)
+                onClick = {
+                    errorMessages.clear() // clear old error messages
+                    errorMessages.addAll(PasswordValidator.validatePassword(enteredPassword))
+                    if (errorMessages.isEmpty()) onLogInClick(enteredPassword)
+                }, colors = ButtonDefaults.buttonColors(containerColor = Purple80)
             ) {
                 Text(text = "Log in", modifier = Modifier.padding(horizontal = 16.dp))
             }
@@ -215,8 +218,7 @@ private fun LoginUpperSection(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Store Management System",
-                color = Color.White
+                text = "Store Management System", color = Color.White
             )
         }
     }

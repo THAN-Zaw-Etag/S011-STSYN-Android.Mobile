@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,8 +22,9 @@ import com.etag.stsyn.ui.screen.main.SplashScreen
 fun NavigationGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    loginViewModel: LoginViewModel,
+    loginViewModel: LoginViewModel
 ) {
+
     LaunchedEffect(navController.currentDestination) {
         if ((navController.currentDestination ?: "") == Routes.LoginScreen.name) {
             loginViewModel.updateScanType(ScanType.Single)
@@ -32,20 +32,15 @@ fun NavigationGraph(
     }
 
     val loginUiState by loginViewModel.loginUiState.collectAsState()
-    val rfidUiState by loginViewModel.rfidUiState.collectAsState()
     val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
     val isLoggedIn by loginViewModel.isLoggedIn.collectAsState(initial = false)
-
-    LaunchedEffect(isLoggedIn) {
-        Log.d("TAG", "isLoggedIn: $isLoggedIn")
-    }
 
     // set scan type to single when current destination is login screen
 
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = if (isLoggedIn) Routes.HomeScreen.name else Routes.SplashScreen.name
+        startDestination = if (isLoggedIn) Routes.LoginContentScreen.name else Routes.LoginContentScreen.name
     ) {
 
         composable(route = Routes.SplashScreen.name) {
@@ -81,7 +76,6 @@ fun NavigationGraph(
                 userName = savedUser.name,
                 loginResponse = loginResponse,
                 isSuccessful = loginUiState.isLoginSuccessful,
-                errorMessage = loginUiState.errorMessage,
                 onLogInClick = { loginViewModel.login(it) },
                 onSuccess = loginViewModel::saveUserToLocalStorage,
                 onFailed = {
@@ -98,7 +92,7 @@ fun NavigationGraph(
 
             HomeScreen(
                 loginViewModel = loginViewModel,
-                onChangePassword = { old, new -> },
+                onChangePassword = loginViewModel::updatePassword,
                 onLogOutClick = { ExitApp(context) },
                 onSettingsClick = {},
             )

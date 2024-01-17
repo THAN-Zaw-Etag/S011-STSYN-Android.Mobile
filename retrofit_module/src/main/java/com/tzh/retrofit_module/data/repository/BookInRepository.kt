@@ -12,5 +12,5 @@ interface BookInRepository {
         token: String
     ): ApiResponse<BookInResponse>
 
-    suspend fun saveBookIn(saveBookInRequest: SaveBookInRequest)
+    suspend fun saveBookIn(token: String, saveBookInRequest: SaveBookInRequest)
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.data.localStorage.LocalDataStore
+import com.etag.stsyn.util.toToken
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.repository.BookInRepository
 import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
@@ -40,10 +41,14 @@ class BookInViewModel @Inject constructor(
         }
     }
 
+    val user = localDataStore.getUser
+
     override fun onReceivedTagId(id: String) {
         // handled scanned tags here
         Log.d("TAG", "onReceivedTagId: $id")
     }
+
+    //private fun addScannedItem()
 
     private fun getScannedItemsDetails() {
         viewModelScope.launch {
@@ -52,6 +57,7 @@ class BookInViewModel @Inject constructor(
                     ?: emptyList()
             rfidUiState.collect {
                 it.scannedItems.forEachIndexed { index, s ->
+                    println("scannedItem: $s")
                     if (s in itemDetails.map { it.epc }) {
                         val currentItems = _scannedBookInItems.value.toMutableList()
                         currentItems.add(itemDetails.get(index))
@@ -64,7 +70,12 @@ class BookInViewModel @Inject constructor(
 
     fun saveBookIn(saveBookInRequest: SaveBookInRequest) {
         viewModelScope.launch {
-            bookInRepository.saveBookIn(saveBookInRequest)
+            user.collect {
+                bookInRepository.saveBookIn(
+                    token = it.token.toToken(),
+                    saveBookInRequest = saveBookInRequest
+                )
+            }
         }
     }
 

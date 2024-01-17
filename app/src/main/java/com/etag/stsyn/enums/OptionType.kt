@@ -2,9 +2,9 @@ package com.etag.stsyn.enums
 
 enum class OptionType(val title: String = "") {
     BookOut("Book Out"),
-    BookOutBox("Book Out Box"),
+    BookOutBox("Book Out (Box)"),
     BookIn("Book In"),
-    BookInBox("Book In Box"),
+    BookInBox("Book In (Box)"),
     BookInCalibration("Book In (Cal)"),
     BookInTLoan("Book In (T-Loan)"),
     BookInTLoanBox("In (T-Loan Box)"),

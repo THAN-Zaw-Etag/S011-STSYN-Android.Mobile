@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
 import com.etag.stsyn.core.receiver.BluetoothState
@@ -43,7 +44,6 @@ class MainActivity : ComponentActivity() {
 
             PermissionUtil.checkBluetoothPermission(context)
 
-            //ReaderLifeCycle(viewModel = loginViewModel)
             LaunchedEffect(Unit) {
                 loginViewModel.connectReader()
             }
@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavigationGraph(
                         navController = navController,
-                        loginViewModel = loginViewModel
+                        loginViewModel = loginViewModel,
                     )
                 }
             }
@@ -67,14 +67,14 @@ class MainActivity : ComponentActivity() {
 
     private fun handleBluetoothState(
         bluetoothState: BluetoothState,
-        loginViewModel: LoginViewModel
+        loginViewModel: BaseViewModel
     ) {
         when (bluetoothState) {
             BluetoothState.ON -> {
-                loginViewModel.apply {
+                /*loginViewModel.apply {
                     onCreate()
                     connectReader()
-                }
+                }*/
             }
 
             BluetoothState.OFF, BluetoothState.TURNING_OFF -> {

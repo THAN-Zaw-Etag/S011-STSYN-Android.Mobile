@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,28 +20,31 @@ import com.etag.stsyn.util.datasource.OptionButtonModel
 
 @Composable
 fun OptionButtonLayout(
+    showButton: Boolean = true,
     optionButtonModel: OptionButtonModel,
     onOptionButtonClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        onClick = { onOptionButtonClick(optionButtonModel.route) },
-        modifier = modifier.border(
-            width = 1.dp,
-            color = Color.LightGray,
-            shape = RoundedCornerShape(12.dp)
-        ),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        )
-    ) {
-        Text(
-            text = optionButtonModel.title,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            textAlign = TextAlign.Center
-        )
+    AnimatedVisibility(visible = showButton, modifier = modifier) {
+        Card(
+            onClick = { onOptionButtonClick(optionButtonModel.route) },
+            modifier = Modifier.border(
+                width = 1.dp,
+                color = Color.LightGray,
+                shape = RoundedCornerShape(12.dp)
+            ),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.Transparent
+            )
+        ) {
+            Text(
+                text = optionButtonModel.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }

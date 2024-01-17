@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.screen.main
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,21 +39,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
 import com.etag.stsyn.data.model.LocalUser
 import com.etag.stsyn.ui.components.AppBar
 import com.etag.stsyn.ui.components.BottomNavigationBar
 import com.etag.stsyn.ui.components.ChangePasswordDialog
+import com.etag.stsyn.ui.components.CustomIcon
+import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.ProfileTextButton
 import com.etag.stsyn.ui.components.VersionText
+import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.navigation.HomeNavigationGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
+import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,6 +77,40 @@ fun HomeScreen(
     val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
     val navController = rememberNavController()
     val sharedUiState by sharedUiViewModel.uiState.collectAsState()
+    var showErrorDialog by remember { mutableStateOf(false) }
+    val updatePasswordResponse by loginViewModel.updatePasswordResponse.collectAsState()
+    val context = LocalContext.current
+
+    ReaderLifeCycle(viewModel = loginViewModel)
+
+    when (updatePasswordResponse) {
+        is ApiResponse.Loading -> LoadingDialog(
+            title = "Updating password...",
+            showDialog = true,
+            onDismiss = { /*TODO*/ }
+        )
+
+        is ApiResponse.Success -> {
+            Toast.makeText(context, "Password updated successfully!", Toast.LENGTH_SHORT).show()
+        }
+
+        is ApiResponse.Error -> {
+            showErrorDialog = true
+        }
+
+        else -> {}
+    }
+
+    WarningDialog(
+        icon = CustomIcon.Vector(Icons.Default.Error),
+        message = if (showErrorDialog) (updatePasswordResponse as ApiResponse.Error).message else "",
+        showDialog = showErrorDialog,
+        positiveButtonTitle = "try again",
+        onPositiveButtonClick = {
+            println("onPositiveClick")
+            showErrorDialog = false
+        }
+    )
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -80,7 +122,7 @@ fun HomeScreen(
                     user = savedUserState,
                     onChangePassword = onChangePassword,
                     onSettingsClick = onSettingsClick,
-                    onLogOutClick = onLogOutClick
+                    onLogOutClick = onLogOutClick,
                 )
             }
         }
@@ -179,7 +221,7 @@ private fun DrawerContent(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = user.id,
+                            text = user.nric,
                             color = Color.White
                         )
                     }

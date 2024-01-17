@@ -47,7 +47,7 @@ fun WarningDialog(
         show = showDialog
     }
 
-    if (showDialog) {
+    if (show) {
         Dialog(properties = DialogProperties(
             dismissOnBackPress = false, dismissOnClickOutside = false
         ), onDismissRequest = { show = false }) {

@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.screen.login
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -51,7 +52,7 @@ fun LoginScreen(
 
     ReaderLifeCycle(viewModel = loginViewModel)
     LaunchedEffect(Unit) {
-        //loginViewModel.connectReader()
+        Log.d("TAG", "LoginScreen: Unit - ${rfidUiState.isConnected}")
     }
 
     LaunchedEffect(loginUiState.rfidId) {

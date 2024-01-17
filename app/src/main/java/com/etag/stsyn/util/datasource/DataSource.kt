@@ -81,48 +81,69 @@ object DataSource {
     )
 
     val bookInOptions = listOf(
-        OptionButtonModel(title = "Book In", route = OptionType.BookIn.toString()),
-        OptionButtonModel(title = "Book In (Box)", route = OptionType.BookInBox.toString()),
+        OptionButtonModel(title = OptionType.BookIn.title, route = OptionType.BookIn.toString()),
         OptionButtonModel(
-            title = "Book In (Calibration)",
+            title = OptionType.BookInBox.title,
+            route = OptionType.BookInBox.toString()
+        ),
+        OptionButtonModel(
+            title = OptionType.BookInCalibration.title,
             route = OptionType.BookInCalibration.toString()
         ),
     )
 
     val bookInTLoanOptions = listOf(
-        OptionButtonModel(title = "T-Loan", route = OptionType.BookInTLoan.toString()),
-        OptionButtonModel(title = "T-Loan (Box)", route = OptionType.BookInTLoanBox.toString())
+        OptionButtonModel(
+            title = OptionType.BookInTLoan.title,
+            route = OptionType.BookInTLoan.toString()
+        ),
+        OptionButtonModel(
+            title = OptionType.BookInTLoanBox.title,
+            route = OptionType.BookInTLoanBox.toString()
+        )
     )
 
     val bookInDetPLoanOptions = listOf(
-        OptionButtonModel(title = "Det/P-Loan", route = OptionType.BookInDetPLoan.toString()),
         OptionButtonModel(
-            title = "Det/P-Loan (Box)",
+            title = OptionType.BookInDetPLoan.title,
+            route = OptionType.BookInDetPLoan.toString()
+        ),
+        OptionButtonModel(
+            title = OptionType.BookInDetPLoanBox.title,
             route = OptionType.BookInDetPLoanBox.toString()
         )
     )
 
     val otherOperationsOptions = listOf(
         OptionButtonModel(
-            title = "Onsite Check in/out",
+            title = OptionType.OnsiteCheckInOut.title,
             route = OptionType.OnsiteCheckInOut.toString()
         ),
         OptionButtonModel(
-            title = "Onsite Verification",
+            title = OptionType.OnsiteVerification.title,
             route = OptionType.OnsiteVerification.toString()
         )
     )
 
 
     val otherTLoanOptions = listOf(
-        OptionButtonModel(title = "T-Loan", route = OptionType.OtherTLoan.toString()),
-        OptionButtonModel(title = "T-Loan (Box)", route = OptionType.OtherTLoanBox.toString())
+        OptionButtonModel(
+            title = OptionType.OtherTLoan.title,
+            route = OptionType.OtherTLoan.toString()
+        ),
+        OptionButtonModel(
+            title = OptionType.OtherTLoanBox.title,
+            route = OptionType.OtherTLoanBox.toString()
+        )
     )
 
     val otherDetPLoanOptions = listOf(
-        OptionButtonModel(title = "Det/P-Loan", route = OptionType.OtherDetPLoan.toString()),
         OptionButtonModel(
-            title = "Det/P-Loan (Box)",
+            title = OptionType.OtherDetPLoan.title,
+            route = OptionType.OtherDetPLoan.toString()
+        ),
+        OptionButtonModel(
+            title = OptionType.OtherDetPLoanBox.title,
             route = OptionType.OtherDetPLoanBox.toString()
         )
     )

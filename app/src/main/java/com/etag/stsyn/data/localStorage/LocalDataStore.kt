@@ -29,7 +29,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             preferences[USER_ID] = user.id
             preferences[USER_NRIC] = user.nric
             preferences[TOKEN] = user.token
-            preferences[IS_LOGGED_IN] = false
+            preferences[IS_LOGGED_IN] = true
         }
     }
 
@@ -43,6 +43,8 @@ class LocalDataStore @Inject constructor(private val context: Context) {
     }
 
     val isLoggedIn: Flow<Boolean> = context.dataStore.data.map {
-        it[IS_LOGGED_IN] ?: false
+        val hasLoggedIn = it[IS_LOGGED_IN] ?: false
+        println("hasLoggedIn: $hasLoggedIn")
+        hasLoggedIn
     }
 }

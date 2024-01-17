@@ -18,6 +18,8 @@ import com.etag.stsyn.ui.screen.main.BookOutScreen
 import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
+import com.tzh.retrofit_module.domain.model.login.LoginResponse
+import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun HomeNavigationGraph(
@@ -27,6 +29,9 @@ fun HomeNavigationGraph(
     modifier: Modifier = Modifier
 ) {
     val rfidUiState by loginViewModel.rfidUiState.collectAsState()
+    val loginResponseState by loginViewModel.loginResponse.collectAsState()
+    val loginResponse: LoginResponse =
+        (loginResponseState as ApiResponse.Success<LoginResponse>).data!!
 
     NavHost(
         navController = navController,
@@ -69,6 +74,7 @@ fun HomeNavigationGraph(
                 updateBottomNavigationBarStatus(true)
             }
             BookOutScreen(
+                menuAccessRight = loginResponse.rolePermission.handheldMenuAccessRight,
                 onOptionButtonClick = {
                     navController.navigate(Routes.DetailScreen.name + "/$it")
                 }
@@ -84,9 +90,11 @@ fun HomeNavigationGraph(
                 updateTopAppBarStatus(true)
                 updateBottomNavigationBarStatus(true)
             }
-            BookInScreen(onOptionButtonClick = { optionType ->
-                navController.navigate(Routes.DetailScreen.name + "/$optionType")
-            })
+            BookInScreen(
+                menuAccessRight = loginResponse.rolePermission.handheldMenuAccessRight,
+                onOptionButtonClick = { optionType ->
+                    navController.navigate(Routes.DetailScreen.name + "/$optionType")
+                })
         }
 
         composable(route = Routes.OtherOperationsScreen.name) {
@@ -98,9 +106,11 @@ fun HomeNavigationGraph(
                 updateTopAppBarStatus(true)
                 updateBottomNavigationBarStatus(true)
             }
-            OtherOperationsScreen(onOptionButtonClick = { optionType ->
-                navController.navigate(Routes.DetailScreen.name + "/$optionType")
-            })
+            OtherOperationsScreen(
+                menuAccessRight = loginResponse.rolePermission.handheldMenuAccessRight,
+                onOptionButtonClick = { optionType ->
+                    navController.navigate(Routes.DetailScreen.name + "/$optionType")
+                })
         }
 
         composable(route = Routes.DetailScreen.name + "/{type}") {

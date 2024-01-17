@@ -16,6 +16,7 @@ import com.etag.stsyn.util.datasource.OptionButtonModel
 @Composable
 fun OptionsButtonRow(
     text: String,
+    optionPairs: HashMap<String, Boolean> = hashMapOf(),
     optionButtonModels: List<OptionButtonModel>,
     onOptionItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -32,7 +33,9 @@ fun OptionsButtonRow(
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             optionButtonModels.forEach {
+                println("options: ${optionPairs.getValue(it.title)}")
                 OptionButtonLayout(
+                    showButton = optionPairs.getValue(it.title),
                     modifier = Modifier.weight(0.5f), // use layout weight 0.5f to get equal width items because it only has two items
                     optionButtonModel = it,
                     onOptionButtonClick = onOptionItemClick

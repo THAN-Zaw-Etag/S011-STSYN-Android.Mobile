@@ -135,10 +135,12 @@ private fun RfidReaderStatusSection(
             )
             Spacer(modifier = Modifier.weight(1f))
             if (isReaderConnected) {
-                Image(
-                    painter = painterResource(id = R.drawable.bluetooth),
-                    contentDescription = null
-                )
+                if (batteryPercentage != 0) {
+                    Image(
+                        painter = painterResource(id = R.drawable.bluetooth),
+                        contentDescription = null
+                    )
+                }
                 Spacer(modifier = Modifier.width(8.dp))
                 Image(
                     painter = painterResource(
