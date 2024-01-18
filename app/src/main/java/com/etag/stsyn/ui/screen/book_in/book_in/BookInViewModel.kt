@@ -1,11 +1,9 @@
 package com.etag.stsyn.ui.screen.book_in.book_in
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.etag.stsyn.data.localStorage.LocalDataStore
-import com.etag.stsyn.util.toToken
+import com.tzh.retrofit_module.data.localStorage.LocalDataStore
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.repository.BookInRepository
 import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
@@ -16,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,63 +26,88 @@ class BookInViewModel @Inject constructor(
 ) : BaseViewModel(rfidHandler) {
 
     private val _bookInItems = MutableStateFlow<ApiResponse<BookInResponse>>(ApiResponse.Default)
-    val bookInItems: StateFlow<ApiResponse<BookInResponse>> = _bookInItems.asStateFlow()
+    val bookInItemsResponse: StateFlow<ApiResponse<BookInResponse>> = _bookInItems.asStateFlow()
 
-    private val _scannedBookInItems = MutableStateFlow<List<BookInItem>>(emptyList())
-    val scannedBookInItems: StateFlow<List<BookInItem>> = _scannedBookInItems.asStateFlow()
+    private val _scannedBookInItems = MutableStateFlow<List<BookInItem?>>(emptyList())
+    val scannedBookInItems: StateFlow<List<BookInItem?>> = _scannedBookInItems.asStateFlow()
+
+    //private val _boxItems
+
+    val user = localDataStore.getUser
 
     init {
         viewModelScope.launch {
             localDataStore.getUser.collect {
-                getBookInItems(store = "CS", csNo = "2", userId = it.id, token = it.token)
+                getBookInItems(store = "CS", csNo = "2", userId = it.userId)
             }
-            getScannedItemsDetails()
         }
     }
-
-    val user = localDataStore.getUser
 
     override fun onReceivedTagId(id: String) {
         // handled scanned tags here
-        Log.d("TAG", "onReceivedTagId: $id")
+        addScannedItem(id)
     }
 
-    //private fun addScannedItem()
-
-    private fun getScannedItemsDetails() {
+    private fun addScannedItem(id: String) {
         viewModelScope.launch {
-            val itemDetails =
-                (_bookInItems.value as ApiResponse.Success<BookInResponse>).data?.items
-                    ?: emptyList()
-            rfidUiState.collect {
-                it.scannedItems.forEachIndexed { index, s ->
-                    println("scannedItem: $s")
-                    if (s in itemDetails.map { it.epc }) {
-                        val currentItems = _scannedBookInItems.value.toMutableList()
-                        currentItems.add(itemDetails.get(index))
-                        _scannedBookInItems.value = currentItems
+            if (_bookInItems.value is ApiResponse.Success) {
+                val bookInItems =
+                    (_bookInItems.value as ApiResponse.Success<BookInResponse>).data!!.items
+                val currentItems = _scannedBookInItems.value.toMutableList()
+                val hasExisted = id in currentItems.map { it?.epc }
+
+                try {
+                    if (!hasExisted) {
+                        val item = bookInItems.find { it.epc == id }
+                        if (item != null) {
+                            currentItems.add(item)
+                            _scannedBookInItems.update {
+                                it + item
+                            }
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }
+    }
+
+    fun removeScannedBookInItem(currentItem: BookInItem) {
+        viewModelScope.launch {
+            val currentList = _scannedBookInItems.value
+            val indexToRemove = currentList.indexOf(currentItem)
+            val updatedList = currentList.toMutableList().apply {
+                removeAt(indexToRemove)
+            }
+            _scannedBookInItems.value = updatedList
+        }
+    }
+
+    fun removeAllScannedItems() {
+        _scannedBookInItems.value = emptyList()
     }
 
     fun saveBookIn(saveBookInRequest: SaveBookInRequest) {
         viewModelScope.launch {
             user.collect {
                 bookInRepository.saveBookIn(
-                    token = it.token.toToken(),
                     saveBookInRequest = saveBookInRequest
                 )
             }
         }
     }
 
+    fun getBoxItemsForBookIn() {
+        viewModelScope.launch {
+
+        }
+    }
+
     private fun getBookInItems(
         store: String,
         csNo: String,
-        userId: String,
-        token: String
+        userId: String
     ) {
         viewModelScope.launch {
             _bookInItems.value = ApiResponse.Loading
@@ -91,10 +115,8 @@ class BookInViewModel @Inject constructor(
             _bookInItems.value = bookInRepository.getBookInItems(
                 store = store,
                 csNo = csNo,
-                userId = userId,
-                token = token
+                userId = userId
             )
-            rfidUiState.value.scannedItems
         }
     }
 }

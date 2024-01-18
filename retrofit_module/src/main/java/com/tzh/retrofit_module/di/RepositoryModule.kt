@@ -1,5 +1,6 @@
 package com.tzh.retrofit_module.di
 
+import com.tzh.retrofit_module.data.localStorage.LocalDataStore
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.repository.BookInRepository
 import com.tzh.retrofit_module.data.repository.UserRepository
@@ -16,13 +17,19 @@ import javax.inject.Singleton
 object RepositoryModule {
     @Provides
     @Singleton
-    fun providesLoginRepository(apiService: ApiService): UserRepository {
-        return UserRepositoryImpl(apiService)
+    fun providesLoginRepository(
+        apiService: ApiService,
+        localDataStore: LocalDataStore
+    ): UserRepository {
+        return UserRepositoryImpl(apiService, localDataStore)
     }
 
     @Provides
     @Singleton
-    fun providesBookInRepository(apiService: ApiService): BookInRepository {
-        return BookInRepositoryImpl(apiService)
+    fun providesBookInRepository(
+        apiService: ApiService,
+        localDataStore: LocalDataStore
+    ): BookInRepository {
+        return BookInRepositoryImpl(apiService, localDataStore)
     }
 }

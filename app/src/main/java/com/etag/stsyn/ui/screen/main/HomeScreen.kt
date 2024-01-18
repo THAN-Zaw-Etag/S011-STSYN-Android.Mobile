@@ -46,7 +46,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
-import com.etag.stsyn.data.model.LocalUser
 import com.etag.stsyn.ui.components.AppBar
 import com.etag.stsyn.ui.components.BottomNavigationBar
 import com.etag.stsyn.ui.components.ChangePasswordDialog
@@ -59,6 +58,7 @@ import com.etag.stsyn.ui.navigation.HomeNavigationGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
+import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.launch
 
@@ -94,7 +94,7 @@ fun HomeScreen(
             Toast.makeText(context, "Password updated successfully!", Toast.LENGTH_SHORT).show()
         }
 
-        is ApiResponse.Error -> {
+        is ApiResponse.ApiError -> {
             showErrorDialog = true
         }
 
@@ -103,11 +103,10 @@ fun HomeScreen(
 
     WarningDialog(
         icon = CustomIcon.Vector(Icons.Default.Error),
-        message = if (showErrorDialog) (updatePasswordResponse as ApiResponse.Error).message else "",
+        message = if (showErrorDialog) (updatePasswordResponse as ApiResponse.ApiError).message else "",
         showDialog = showErrorDialog,
         positiveButtonTitle = "try again",
         onPositiveButtonClick = {
-            println("onPositiveClick")
             showErrorDialog = false
         }
     )

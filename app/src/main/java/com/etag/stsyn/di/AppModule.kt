@@ -1,7 +1,7 @@
 package com.etag.stsyn.di
 
 import android.content.Context
-import com.etag.stsyn.data.localStorage.LocalDataStore
+import com.tzh.retrofit_module.data.localStorage.LocalDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

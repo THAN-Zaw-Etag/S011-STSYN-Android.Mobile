@@ -33,7 +33,7 @@ fun BookInBoxCountScreen(
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
             items(items) {
-                ExpandedScannedItem()
+                ExpandedScannedItem(null)
             }
         }
     }

@@ -83,8 +83,6 @@ abstract class BaseViewModel(
                         }
                     }
 
-                    Log.d("TAG", "connectReader: ${rfidHandler.isReaderConnected}")
-
                     updateIsConnectedStatus(rfidHandler.isReaderConnected)
                 }
                 getReaderBatteryLevel()
@@ -105,10 +103,8 @@ abstract class BaseViewModel(
     }
 
     fun toggle() {
-        println("toggle")
-        startScan()
-        /*if (_rfidUiState.value.isScanning) stopScan()
-        else startScan()*/
+        if (_rfidUiState.value.isScanning) stopScan()
+        else startScan()
     }
 
     /**
@@ -130,7 +126,7 @@ abstract class BaseViewModel(
 
     fun stopScan() {
         viewModelScope.launch {
-            //rfidHandler.stopInventory()
+            rfidHandler.stopInventory()
             updateIsScanningStatus(false)
         }
     }
@@ -184,10 +180,12 @@ abstract class BaseViewModel(
 
     override fun handleReaderConnected(isConnected: Boolean) {
         updateIsConnectedStatus(isConnected)
+
+        if (isConnected) getReaderBatteryLevel()
     }
 
     override fun handleTriggerPress(pressed: Boolean) {
-        if (pressed) startScan() else stopScan()
+        if (pressed && _rfidUiState.value.isScannable) startScan() else stopScan()
     }
 
     data class RfidUiState(

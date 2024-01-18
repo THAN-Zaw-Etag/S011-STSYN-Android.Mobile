@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.login
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -34,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
-import com.etag.stsyn.data.model.LocalUser
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.components.LoadingDialog
@@ -45,6 +43,7 @@ import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 import com.etag.stsyn.util.PasswordValidator
 import com.etag.stsyn.util.toLines
+import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -67,29 +66,24 @@ fun LoginContentScreen(
         showWarningDialog = loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS
     }
 
-    LaunchedEffect(error) {
-        Log.d("TAG", "LoginResponse: $error")
-    }
-
-
     when (loginResponse) {
         is ApiResponse.Loading -> LoadingDialog(title = "Signing In...",
             showDialog = true,
             onDismiss = { })
 
         is ApiResponse.Success -> {
-            println("response: success")
             val user = loginResponse.data?.user
             val localUser = LocalUser(
                 name = user?.userName ?: "",
-                id = user?.userId ?: "",
+                userId = user?.userId ?: "",
+                roleId = user?.roleId ?: "",
                 nric = user?.nric ?: "",
                 token = loginResponse.data?.token ?: ""
             )
             onSuccess(localUser)
         }
 
-        is ApiResponse.Error -> {
+        is ApiResponse.ApiError -> {
             error = loginResponse.message
         }
 

@@ -11,7 +11,7 @@ data class UserResponse(
     val nric: String,
     val password: Any,
     val remark: Any,
-    val roleId: Int,
+    val roleId: String,
     val tagId: Any,
     val unit: Any,
     val unitId: Any,

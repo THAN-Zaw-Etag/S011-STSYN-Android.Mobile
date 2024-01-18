@@ -4,20 +4,23 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.etag.stsyn.data.localStorage.LocalDataStore
-import com.etag.stsyn.data.model.LocalUser
-import com.etag.stsyn.util.toToken
+import com.tzh.retrofit_module.data.localStorage.LocalDataStore
+import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.data.repository.UserRepository
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
-import com.tzh.retrofit_module.domain.model.login.UpdatePasswordResponse
+import com.tzh.retrofit_module.domain.model.login.MenuAccessRight
+import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -36,15 +39,36 @@ class LoginViewModel @Inject constructor(
     val loginResponse: StateFlow<ApiResponse<LoginResponse>> = _loginResponse.asStateFlow()
 
     private val _updatePasswordResponse =
-        MutableStateFlow<ApiResponse<UpdatePasswordResponse>>(ApiResponse.Default)
-    val updatePasswordResponse: StateFlow<ApiResponse<UpdatePasswordResponse>> =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val updatePasswordResponse: StateFlow<ApiResponse<NormalResponse>> =
         _updatePasswordResponse.asStateFlow()
 
-    val savedUser = localDataStore.getUser
-    val isLoggedIn = localDataStore.isLoggedIn
+    private val userMenuAccessRightsByIdResponse =
+        MutableStateFlow<ApiResponse<UserMenuAccessRightsByIdResponse>>(ApiResponse.Default)
+
+    private val _userMenuAccessRights = MutableStateFlow(MenuAccessRight())
+    val userMenuAccessRight: StateFlow<MenuAccessRight> = _userMenuAccessRights.asStateFlow()
+
+    private val _savedUser = MutableStateFlow(LocalUser())
+    val savedUser: StateFlow<LocalUser> = _savedUser.asStateFlow()
+
+    private var _isLoggedIn: Flow<Boolean> = emptyFlow()
+    var isLoggedIn = emptyFlow<Boolean>()
 
     init {
         updateScanType(ScanType.Single)
+
+        // if user is already logged in, fetch menu access rights from api
+        viewModelScope.launch {
+            localDataStore.getUser.collect {
+                _savedUser.value = it
+                if (it.isLoggedIn) getUserMenuAccessRightsById()
+            }
+        }
+    }
+
+    private fun updateAuthorizationFailedDialogVisibility(isVisible: Boolean) {
+        _loginUiState.update { it.copy(showAuthorizationFailedDialog = isVisible) }
     }
 
     fun updateLoginStatus(isSuccessful: Boolean) {
@@ -65,7 +89,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun increaseLoginAttempt() {
-        var currentCount = _loginUiState.value.attemptCount
+        //var currentCount = _loginUiState.value.attemptCount
         _loginUiState.update {
             it.copy(
                 attemptCount = it.attemptCount + 1
@@ -74,6 +98,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login(password: String) {
+        updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             _loginResponse.value = ApiResponse.Loading
             delay(1000) // set delay for loading
@@ -82,35 +107,69 @@ class LoginViewModel @Inject constructor(
                 LoginRequest(
                     id = "",
                     nric = "",
-                    rfid = "0210000000012", //_loginUiState.value.rfidId
+                    rfid = _loginUiState.value.rfidId, //_loginUiState.value.rfidId
                     password = password,
                     isFromMobile = true
                 )
             )
+
+            // when login is successful, update user menu access rights
+            when (_loginResponse.value) {
+                is ApiResponse.Success -> {
+                    updateLoginStatus(true)
+                    _userMenuAccessRights.value =
+                        (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.rolePermission!!.handheldMenuAccessRight
+                }
+
+                else -> {}
+            }
         }
     }
 
     fun updatePassword(oldPassword: String, newPassword: String) {
+        updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             _updatePasswordResponse.value = ApiResponse.Loading
             delay(1000)
 
             savedUser.collect {
                 _updatePasswordResponse.value = userRepository.updatePassword(
-                    it.token.toToken(),
                     UpdatePasswordRequest(
                         oldPassword = oldPassword,
                         newPassword = newPassword,
-                        userId = it.id ?: ""
+                        userId = it.userId ?: ""
                     )
                 )
+
+                updateAuthorizationFailedDialogVisibility(_updatePasswordResponse.value is ApiResponse.AuthorizationError)
+            }
+        }
+    }
+
+    private fun getUserMenuAccessRightsById() {
+        updateAuthorizationFailedDialogVisibility(false)
+        viewModelScope.launch {
+            userMenuAccessRightsByIdResponse.value = ApiResponse.Loading
+            delay(1000)
+
+            userMenuAccessRightsByIdResponse.value = userRepository.getUserMenuAccessRightsById()
+
+            // when data is fetched, update user menu access rights
+            when (userMenuAccessRightsByIdResponse.value) {
+                is ApiResponse.Success -> {
+                    _userMenuAccessRights.value =
+                        (userMenuAccessRightsByIdResponse.value as ApiResponse.Success).data?.rolePermission!!.handheldMenuAccessRight
+                }
+
+                is ApiResponse.AuthorizationError -> updateAuthorizationFailedDialogVisibility(true)
+                else -> {}
             }
         }
     }
 
     fun logOut() {
         viewModelScope.launch {
-            //loginRepository.logOut()
+            localDataStore.updateLoggedInStatus(false)
         }
     }
 
@@ -125,6 +184,7 @@ class LoginViewModel @Inject constructor(
         var attemptCount: Int = 0,
         val rfidId: String = "",
         val errorMessage: String = "",
+        val showAuthorizationFailedDialog: Boolean = false,
         val user: LocalUser? = LocalUser("", "", "1234", "")
     )
 }

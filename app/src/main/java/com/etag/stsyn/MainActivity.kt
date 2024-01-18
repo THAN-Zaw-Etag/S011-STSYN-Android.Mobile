@@ -71,10 +71,9 @@ class MainActivity : ComponentActivity() {
     ) {
         when (bluetoothState) {
             BluetoothState.ON -> {
-                /*loginViewModel.apply {
-                    onCreate()
+                loginViewModel.apply {
                     connectReader()
-                }*/
+                }
             }
 
             BluetoothState.OFF, BluetoothState.TURNING_OFF -> {

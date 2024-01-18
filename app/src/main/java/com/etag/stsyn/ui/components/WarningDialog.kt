@@ -50,7 +50,10 @@ fun WarningDialog(
     if (show) {
         Dialog(properties = DialogProperties(
             dismissOnBackPress = false, dismissOnClickOutside = false
-        ), onDismissRequest = { show = false }) {
+        ), onDismissRequest = {
+            onPositiveButtonClick()
+            show = false
+        }) {
             Surface(
                 modifier = modifier
                     .fillMaxWidth(0.9f)

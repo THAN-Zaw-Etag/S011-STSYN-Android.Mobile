@@ -1,8 +1,8 @@
 package com.tzh.retrofit_module.data.network
 
-import com.etag.stsyn.data.localStorage.LocalDataStore
-import com.etag.stsyn.data.model.LocalUser
-import com.etag.stsyn.util.toToken
+import com.tzh.retrofit_module.data.localStorage.LocalDataStore
+import com.tzh.retrofit_module.data.model.LocalUser
+import com.tzh.retrofit_module.util.toToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first

@@ -2,8 +2,10 @@ package com.etag.stsyn.ui.screen.base
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +28,7 @@ fun BaseSaveScreen(
         }
         if (isError) {
             ErrorText(text = errorMessage)
+            Spacer(modifier = Modifier.height(16.dp))
         } else {
             Box(
                 modifier = Modifier

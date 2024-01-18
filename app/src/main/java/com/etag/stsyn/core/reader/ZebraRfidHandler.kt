@@ -93,19 +93,19 @@ class ZebraRfidHandler @Inject constructor(
     }
 
     private suspend fun createInstanceTask() {
-        readers = Readers(context, ENUM_TRANSPORT.ALL) // ALL
+        readers = Readers(context, ENUM_TRANSPORT.BLUETOOTH) // ALL
         connectionTaskAsync()
         availableRFIDReaderList = readers!!.GetAvailableRFIDReaderList()
         readers!!.Dispose()
         readers = null
         if (readers == null) {
-            readers = Readers(context, ENUM_TRANSPORT.ALL) // ALL
+            readers = Readers(context, ENUM_TRANSPORT.BLUETOOTH) // ALL
         }
     }
 
     suspend fun connectionTaskAsync(readerDevice: ReaderDevice? = null) {
 
-        /*if (readerDevice == null) {
+        if (readerDevice == null) {
             getAvailableReader()
         } else {
             mConnectedReader = readerDevice.rfidReader
@@ -115,14 +115,15 @@ class ZebraRfidHandler @Inject constructor(
             connect()
         } else {
             "Failed to find or connect reader"
-        }*/
-
-        getAvailableReader()
-        if (mConnectedReader != null) {
-            connect()
-        } else {
-
         }
+
+//        // it works
+//        getAvailableReader()
+//        if (mConnectedReader != null) {
+//            connect()
+//        } else {
+//
+//        }
 
     }
 
@@ -394,6 +395,7 @@ class ZebraRfidHandler @Inject constructor(
     @SuppressLint("StaticFieldLeak")
     override fun eventStatusNotify(rfidStatusEvents: RfidStatusEvents) {
 
+        println("powerData: ${rfidStatusEvents.StatusEventData.statusEventType}")
         if (rfidStatusEvents.StatusEventData.statusEventType === STATUS_EVENT_TYPE.HANDHELD_TRIGGER_EVENT) {
             if (rfidStatusEvents.StatusEventData.HandheldTriggerEventData.handheldEvent == HANDHELD_TRIGGER_EVENT_TYPE.HANDHELD_TRIGGER_PRESSED) {
                 mRfidResponseHandlerInterface?.handleTriggerPress(true)

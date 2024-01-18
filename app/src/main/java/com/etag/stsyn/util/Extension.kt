@@ -20,10 +20,6 @@ fun List<String>.toLines(): String {
     return result
 }
 
-fun String.toToken(): String {
-    return "Bearer $this"
-}
-
 fun Modifier.customShadow(
     color: Color = Color.Black,
     borderRadius: Dp = 0.dp,

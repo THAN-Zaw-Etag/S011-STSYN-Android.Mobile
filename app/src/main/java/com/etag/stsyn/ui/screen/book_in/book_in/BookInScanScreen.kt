@@ -29,12 +29,13 @@ fun BookInScanScreen(
 ) {
     val rfidUiState by bookInViewModel.rfidUiState.collectAsState()
     val listState = rememberLazyListState()
-    val bookInItemsResponse by bookInViewModel.bookInItems.collectAsState()
+    val bookInItemsResponse by bookInViewModel.bookInItemsResponse.collectAsState()
     val bookInItems by bookInViewModel.scannedBookInItems.collectAsState()
 
     LaunchedEffect(bookInItems) {
         Log.d("TAG", "BookInScanScreen: $bookInItems")
     }
+
 
     when (bookInItemsResponse) {
         is ApiResponse.Loading -> LoadingDialog(
@@ -46,9 +47,9 @@ fun BookInScanScreen(
 
         }
 
-        is ApiResponse.Error -> WarningDialog(
+        is ApiResponse.ApiError -> WarningDialog(
             icon = CustomIcon.Vector(Icons.Default.Error),
-            message = (bookInItemsResponse as ApiResponse.Error).message,
+            message = (bookInItemsResponse as ApiResponse.ApiError).message,
             showDialog = true,
             positiveButtonTitle = "try again"
         )
@@ -65,19 +66,19 @@ fun BookInScanScreen(
         scannedItemCount = bookInItems.size,
         isScanning = rfidUiState.isScanning,
         onScan = { bookInViewModel.toggle() },
-        onClear = { bookInViewModel.removeScannedItems() }) {
+        onClear = { bookInViewModel.removeAllScannedItems() }) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             state = listState,
             contentPadding = PaddingValues(16.dp)
         ) {
             items(bookInItems) {
-                key(it) {
+                key(it?.epc) {
                     ScannedItem(
-                        id = it.epc,
-                        name = "World",
+                        id = it?.epc ?: "",
+                        name = it?.description ?: "",
                         isSwipeable = true,
-                        onSwipeToDismiss = { bookInViewModel.removeItem(it.epc) }
+                        onSwipeToDismiss = { bookInViewModel.removeScannedBookInItem(it!!) }
                     )
                 }
             }

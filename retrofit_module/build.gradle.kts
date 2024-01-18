@@ -44,13 +44,15 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    // datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences-core:1.0.0")
+
     // login intercept
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     //Retrofit https://square.github.io/retrofit/ - latest vesion https://github.com/square/retrofit.
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     //Gson -> json data to java or kotlin format
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
-    implementation(project(":app"))
 
 }

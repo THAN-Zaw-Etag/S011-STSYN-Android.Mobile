@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -10,13 +11,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.etag.stsyn.core.BaseViewModel.ScanType
-import com.etag.stsyn.data.model.LocalUser
 import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.screen.login.LoginContentScreen
 import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.HomeScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
+import com.tzh.retrofit_module.data.model.LocalUser
+import kotlinx.coroutines.delay
 
 @Composable
 fun NavigationGraph(
@@ -33,20 +35,25 @@ fun NavigationGraph(
 
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
-    val isLoggedIn by loginViewModel.isLoggedIn.collectAsState(initial = false)
 
-    // set scan type to single when current destination is login screen
+    LaunchedEffect(savedUser.isLoggedIn) {
+        Log.d("TAG", "isLoggedIn: ${savedUser.isLoggedIn}")
+        delay(1000)
+    }
 
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = if (isLoggedIn) Routes.LoginContentScreen.name else Routes.LoginContentScreen.name
+        startDestination = Routes.SplashScreen.name
     ) {
 
         composable(route = Routes.SplashScreen.name) {
             SplashScreen(
                 onTimeOut = {
-                    navController.navigate(Routes.LoginScreen.name) {
+                    navController.navigate(
+                        if (savedUser.isLoggedIn) Routes.HomeContentScreen.name
+                        else Routes.LoginScreen.name
+                    ) {
                         popUpTo(Routes.SplashScreen.name) {
                             inclusive = true
                         }
@@ -93,7 +100,10 @@ fun NavigationGraph(
             HomeScreen(
                 loginViewModel = loginViewModel,
                 onChangePassword = loginViewModel::updatePassword,
-                onLogOutClick = { ExitApp(context) },
+                onLogOutClick = {
+                    loginViewModel.logOut()
+                    ExitApp(context)
+                },
                 onSettingsClick = {},
             )
         }
