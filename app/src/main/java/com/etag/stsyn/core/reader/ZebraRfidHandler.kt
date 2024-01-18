@@ -6,8 +6,8 @@ import android.content.Context
 import android.util.Log
 import com.etag.m003ams.common.reader.core.DWInterface
 import com.zebra.rfid.api3.Antennas
+import com.zebra.rfid.api3.BATCH_MODE
 import com.zebra.rfid.api3.ENUM_TRANSPORT
-import com.zebra.rfid.api3.ENUM_TRIGGER_MODE
 import com.zebra.rfid.api3.HANDHELD_TRIGGER_EVENT_TYPE
 import com.zebra.rfid.api3.INVENTORY_STATE
 import com.zebra.rfid.api3.InvalidUsageException
@@ -74,6 +74,7 @@ class ZebraRfidHandler @Inject constructor(
         // application context
         Log.e("ASDASD", "CONNECT")
         context = application
+        Readers.attach(this)
         // SDK
         return withContext(Dispatchers.IO) {
             async {
@@ -93,30 +94,36 @@ class ZebraRfidHandler @Inject constructor(
     }
 
     private suspend fun createInstanceTask() {
-        readers = Readers(context, ENUM_TRANSPORT.BLUETOOTH) // ALL
-        connectionTaskAsync()
-        availableRFIDReaderList = readers!!.GetAvailableRFIDReaderList()
-        readers!!.Dispose()
-        readers = null
-        if (readers == null) {
-            readers = Readers(context, ENUM_TRANSPORT.BLUETOOTH) // ALL
+        withContext(Dispatchers.IO) {
+            async {
+                readers = Readers(context, ENUM_TRANSPORT.BLUETOOTH) // ALL
+                connectionTaskAsync()
+                availableRFIDReaderList = readers!!.GetAvailableRFIDReaderList()
+                readers!!.Dispose()
+                readers = null
+                if (readers == null) {
+                    readers = Readers(context, ENUM_TRANSPORT.BLUETOOTH) // ALL
+                }
+            }.await()
         }
     }
 
     suspend fun connectionTaskAsync(readerDevice: ReaderDevice? = null) {
+        withContext(Dispatchers.IO) {
+            async {
+                if (readerDevice == null) {
+                    getAvailableReader()
+                } else {
+                    mConnectedReader = readerDevice.rfidReader
+                }
 
-        if (readerDevice == null) {
-            getAvailableReader()
-        } else {
-            mConnectedReader = readerDevice.rfidReader
+                if (mConnectedReader != null) {
+                    connect()
+                } else {
+                    "Failed to find or connect reader"
+                }
+            }.await()
         }
-
-        if (mConnectedReader != null) {
-            connect()
-        } else {
-            "Failed to find or connect reader"
-        }
-
 //        // it works
 //        getAvailableReader()
 //        if (mConnectedReader != null) {
@@ -227,25 +234,44 @@ class ZebraRfidHandler @Inject constructor(
     private fun configureReader(mConnectedReader: RFIDReader) {
         if (mConnectedReader.isConnected) {
             try {
+                val triggerInfo = TriggerInfo()
+                triggerInfo.StartTrigger.triggerType = START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE
+                triggerInfo.StopTrigger.triggerType = STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_IMMEDIATE
                 mConnectedReader.apply {
                     // receive events from reader
                     Events.addEventsListener(this@ZebraRfidHandler)
                     // HH event
                     Events.setHandheldEvent(true)
+
                     // tag event with tag data
                     Events.setTagReadEvent(true)
                     Events.setAttachTagDataWithReadEvent(false)
-                    // set trigger mode as rfid so scanner beam will not come
-                    Config.setTriggerMode(ENUM_TRIGGER_MODE.RFID_MODE, true)
+
+                    //battery event for batter level
                     Events.setBatteryEvent(true)
                     Events.setReaderDisconnectEvent(true)
-                    Events.setBatchModeEvent(true)
+
                     // set start and stop triggers
-                    val triggerInfo = TriggerInfo()
-                    triggerInfo.StartTrigger.triggerType = START_TRIGGER_TYPE.START_TRIGGER_TYPE_PERIODIC
-                    triggerInfo.StopTrigger.triggerType = STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_IMMEDIATE
                     Config.startTrigger = triggerInfo.StartTrigger
                     Config.stopTrigger = triggerInfo.StopTrigger
+                    Config.setBatchMode(BATCH_MODE.AUTO)
+                    Config.setUniqueTagReport(true)
+
+                    // set antenna configurations
+                    antennaRfConfig = Config.Antennas.getAntennaRfConfig(1)
+//                config.transmitPowerIndex = MAX_POWER
+                    antennaRfConfig?.setrfModeTableIndex(1)
+                    antennaRfConfig?.tari = 6250
+
+                    Config.Antennas.setAntennaRfConfig(1, antennaRfConfig)
+                    // Set the singulation control
+                    val s1_singulationControl = Config.Antennas.getSingulationControl(1)
+                    s1_singulationControl.session = SESSION.SESSION_S1
+                    s1_singulationControl.tagPopulation = 600
+                    s1_singulationControl.Action.inventoryState = INVENTORY_STATE.INVENTORY_STATE_A
+                    s1_singulationControl.Action.slFlag = SL_FLAG.SL_ALL
+                    Config.Antennas.setSingulationControl(1, s1_singulationControl)
+
                     // delete any prefilters
                     Actions.PreFilters.deleteAll()
                 }
