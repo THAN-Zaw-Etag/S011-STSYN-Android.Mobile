@@ -9,6 +9,8 @@ sealed class Routes(val name: String, val title: String = "") {
     object BookOutScreen : Routes(name = "/book_out_screen", title = "Book Out")
     object BookInScreen : Routes(name = "/book_in_screen", title = "Book In")
 
+    object SettingsScreen : Routes(name = "/settings_screen", title = "Settings")
+
     object DetailScreen : Routes(name = "/detail_screen")
 
     object OtherOperationsScreen :

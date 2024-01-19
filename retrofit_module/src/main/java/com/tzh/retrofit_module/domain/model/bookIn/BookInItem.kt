@@ -1,5 +1,8 @@
 package com.tzh.retrofit_module.domain.model.bookIn
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class BookInItem(
     val actualCalDate: String?,
     val airbase: String?,

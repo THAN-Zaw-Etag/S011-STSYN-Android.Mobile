@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,10 +27,11 @@ fun BookInCountScreen(
 ) {
     val scannedItems by viewModel.scannedBookInItems.collectAsState()
     val bookInItemsResponse by viewModel.bookInItemsResponse.collectAsState()
+    val outstandingItems by viewModel.outstandingItems.collectAsState()
 
     var items by remember { mutableStateOf<List<BookInItem>>(emptyList()) }
 
-    BaseCountScreen(itemCount = items.size, onTabSelected = { controlType ->
+    BaseCountScreen(modifier = modifier, itemCount = items.size, onTabSelected = { controlType ->
         when (controlType) {
             ControlType.All -> {
                 if (bookInItemsResponse is ApiResponse.Success) {
@@ -42,9 +44,9 @@ fun BookInCountScreen(
                 items = scannedItems.map { it!! }
             }
 
-            ControlType.Outstanding -> {}
-
-            else -> {}
+            ControlType.Outstanding -> {
+                items = outstandingItems.map { it!! }
+            }
         }
 
     }
@@ -54,10 +56,12 @@ fun BookInCountScreen(
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(scannedItems) {
-                ExpandedScannedItem(
-                    bookInItem = it
-                )
+            items(items) {
+                key(it.epc) {
+                    ExpandedScannedItem(
+                        bookInItem = it
+                    )
+                }
             }
         }
     }

@@ -1,5 +1,8 @@
 package com.etag.stsyn.ui.viewmodel
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.ui.navigation.Routes
@@ -33,6 +36,10 @@ class SharedUiViewModel @Inject constructor(
         }
     }
 
+    fun updateAppBarNavigationIcon(icon: ImageVector) {
+        _uiState.update { it.copy(icon = icon) }
+    }
+
     fun updateTopBarTitle(title: String) {
         _uiState.update {
             it.copy(title = title)
@@ -51,6 +58,7 @@ class SharedUiViewModel @Inject constructor(
 data class SharedUiState(
     val title: String = Routes.HomeScreen.title,
     val showTopAppBar: Boolean = true,
+    val icon: ImageVector = Icons.Default.Menu,
     val selectedBottomNavigationItem: String = Routes.HomeScreen.title,
     val showBottomNavigationBar: Boolean = false
 )

@@ -1,7 +1,9 @@
-package com.etag.stsyn.util
+package com.tzh.retrofit_module.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object DateUtil {
@@ -17,5 +19,11 @@ object DateUtil {
 
         val dateFormat = SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault())
         return dateFormat.format(calendar.time)
+    }
+
+    fun getCurrentDate(): String {
+        val calendar = LocalDateTime.now()
+        val dateFormat = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        return calendar.format(dateFormat)
     }
 }

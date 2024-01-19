@@ -2,6 +2,7 @@ package com.etag.stsyn.di
 
 import android.content.Context
 import com.tzh.retrofit_module.data.localStorage.LocalDataStore
+import com.tzh.retrofit_module.data.settings.AppConfiguration
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,5 +17,11 @@ object AppModule {
     @Provides
     fun providesDataStore(@ApplicationContext context: Context): LocalDataStore {
         return LocalDataStore(context)
+    }
+
+    @Singleton
+    @Provides
+    fun providesAppConfiguration(@ApplicationContext context: Context): AppConfiguration {
+        return AppConfiguration(context)
     }
 }

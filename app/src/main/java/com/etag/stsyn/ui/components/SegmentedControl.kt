@@ -38,14 +38,10 @@ fun SegmentedControl(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .border(
-                1.dp,
-                Purple80,
-                RoundedCornerShape(3.dp)
-            )
-            .background(shape = RoundedCornerShape(5.dp), color =  Color.White)
+            .border(width = 1.dp, color = Purple80, shape = RoundedCornerShape(3.dp))
+            .background(shape = RoundedCornerShape(5.dp), color = Color.White)
     ) {
-        ControlType.values().forEach {
+        ControlType.entries.forEach {
             Text(
                 text = it.toString(),
                 color = if (selected == it) Color.White else Purple80,

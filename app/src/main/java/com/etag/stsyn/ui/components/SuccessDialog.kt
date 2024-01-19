@@ -68,13 +68,16 @@ fun SuccessDialog(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         FilledTonalButton(
-                            onClick = onDoneClick,
+                            onClick = {
+                                openDialog = false
+                                onDoneClick()
+                            },
                             colors = ButtonDefaults.filledTonalButtonColors(
                                 containerColor = SuccessColor
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(12.dp)
+                                .padding(16.dp)
                         ) {
                             Text(text = "OK", color = Color.White)
                         }

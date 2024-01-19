@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
-import com.etag.stsyn.util.DateUtil
+import com.tzh.retrofit_module.util.DateUtil
 
 @Composable
 fun BookInCalSaveScreen(

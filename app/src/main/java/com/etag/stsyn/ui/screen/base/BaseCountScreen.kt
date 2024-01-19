@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,9 +21,16 @@ fun BaseCountScreen(
     onTabSelected: (ControlType) -> Unit,
     content: @Composable () -> Unit,
 ) {
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    // set default value when no tab is selected
+    LaunchedEffect(Unit) {
+        onTabSelected(ControlType.All)
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         SegmentedControl(onTabSelected = onTabSelected)
         Column(modifier = Modifier.weight(1f)) {
             content()

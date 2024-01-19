@@ -8,6 +8,7 @@ import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.repository.BookInRepository
 import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
+import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -31,7 +32,13 @@ class BookInViewModel @Inject constructor(
     private val _scannedBookInItems = MutableStateFlow<List<BookInItem?>>(emptyList())
     val scannedBookInItems: StateFlow<List<BookInItem?>> = _scannedBookInItems.asStateFlow()
 
-    //private val _boxItems
+    private val _savedBookInResponse =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val savedBookInResponse: StateFlow<ApiResponse<NormalResponse>> =
+        _savedBookInResponse.asStateFlow()
+
+    private val _outstandingItems = MutableStateFlow<List<BookInItem?>>(emptyList())
+    val outstandingItems: StateFlow<List<BookInItem?>> = _outstandingItems.asStateFlow()
 
     val user = localDataStore.getUser
 
@@ -41,6 +48,7 @@ class BookInViewModel @Inject constructor(
                 getBookInItems(store = "CS", csNo = "2", userId = it.userId)
             }
         }
+        addOutstandingItem()
     }
 
     override fun onReceivedTagId(id: String) {
@@ -48,21 +56,42 @@ class BookInViewModel @Inject constructor(
         addScannedItem(id)
     }
 
+    private fun addOutstandingItem() {
+        viewModelScope.launch {
+            rfidUiState.collect {
+                if (!it.isScanning) {
+                    if (_bookInItems.value is ApiResponse.Success) {
+                        val bookInItems =
+                            (_bookInItems.value as ApiResponse.Success<BookInResponse>).data!!.items.toMutableList()
+
+                        _scannedBookInItems.collect { items ->
+                            items.forEach { bookInItem ->
+                                bookInItems.remove(bookInItem)
+                            }
+                            _outstandingItems.update { bookInItems }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun addScannedItem(id: String) {
         viewModelScope.launch {
             if (_bookInItems.value is ApiResponse.Success) {
                 val bookInItems =
                     (_bookInItems.value as ApiResponse.Success<BookInResponse>).data!!.items
+
                 val currentItems = _scannedBookInItems.value.toMutableList()
                 val hasExisted = id in currentItems.map { it?.epc }
 
                 try {
+                    val scannedItem = bookInItems.find { it.epc == id }
                     if (!hasExisted) {
-                        val item = bookInItems.find { it.epc == id }
-                        if (item != null) {
-                            currentItems.add(item)
+                        if (scannedItem != null) {
+                            currentItems.add(scannedItem)
                             _scannedBookInItems.update {
-                                it + item
+                                it + scannedItem
                             }
                         }
                     }
@@ -75,26 +104,32 @@ class BookInViewModel @Inject constructor(
 
     fun removeScannedBookInItem(currentItem: BookInItem) {
         viewModelScope.launch {
+
             val currentList = _scannedBookInItems.value
             val indexToRemove = currentList.indexOf(currentItem)
             val updatedList = currentList.toMutableList().apply {
                 removeAt(indexToRemove)
             }
             _scannedBookInItems.value = updatedList
+
+            // update outstanding when scanned items change
+            addOutstandingItem()
         }
     }
 
     fun removeAllScannedItems() {
         _scannedBookInItems.value = emptyList()
+
+        // update outstanding when scanned items change
+        addOutstandingItem()
     }
 
     fun saveBookIn(saveBookInRequest: SaveBookInRequest) {
         viewModelScope.launch {
-            user.collect {
-                bookInRepository.saveBookIn(
-                    saveBookInRequest = saveBookInRequest
-                )
-            }
+            _savedBookInResponse.value = ApiResponse.Loading
+            delay(1000)
+            _savedBookInResponse.value =
+                bookInRepository.saveBookIn(saveBookInRequest = saveBookInRequest)
         }
     }
 

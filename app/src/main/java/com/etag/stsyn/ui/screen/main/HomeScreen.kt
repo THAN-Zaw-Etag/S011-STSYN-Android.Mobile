@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,6 +56,7 @@ import com.etag.stsyn.ui.components.ProfileTextButton
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.navigation.HomeNavigationGraph
+import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
@@ -120,7 +122,10 @@ fun HomeScreen(
                 DrawerContent(
                     user = savedUserState,
                     onChangePassword = onChangePassword,
-                    onSettingsClick = onSettingsClick,
+                    onSettingsClick = {
+                        coroutineScope.launch { drawerState.close() }
+                        navController.navigate(Routes.SettingsScreen.name)
+                    },
                     onLogOutClick = onLogOutClick,
                 )
             }
@@ -142,8 +147,11 @@ fun HomeScreen(
                     AppBar(
                         userName = savedUserState.name,
                         title = sharedUiState.title,
-                        onDrawerIconClick = {
-                            coroutineScope.launch { drawerState.open() }
+                        icon = sharedUiState.icon,
+                        onIconClick = {
+                            if (sharedUiState.icon == Icons.Default.ArrowBack) {
+                                navController.navigateUp()
+                            } else coroutineScope.launch { drawerState.open() }
                         }
                     )
                 }

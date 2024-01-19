@@ -1,6 +1,9 @@
 package com.etag.stsyn.ui.navigation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,6 +25,7 @@ import com.etag.stsyn.ui.screen.main.BookInScreen
 import com.etag.stsyn.ui.screen.main.BookOutScreen
 import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
+import com.etag.stsyn.ui.screen.settings.SettingsScreen
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 
@@ -64,6 +68,7 @@ fun HomeNavigationGraph(
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.HomeScreen.title)
                 updateTopAppBarStatus(true)
+                updateAppBarNavigationIcon(Icons.Default.Menu)
                 updateBottomNavigationBarStatus(false)
             }
 
@@ -86,6 +91,7 @@ fun HomeNavigationGraph(
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.BookOutScreen.title)
                 updateTopAppBarStatus(true)
+                updateAppBarNavigationIcon(Icons.Default.Menu)
                 updateBottomNavigationBarStatus(true)
             }
             BookOutScreen(
@@ -103,6 +109,7 @@ fun HomeNavigationGraph(
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.BookInScreen.title)
                 updateTopAppBarStatus(true)
+                updateAppBarNavigationIcon(Icons.Default.Menu)
                 updateBottomNavigationBarStatus(true)
             }
             BookInScreen(
@@ -119,6 +126,7 @@ fun HomeNavigationGraph(
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)
                 updateTopAppBarStatus(true)
+                updateAppBarNavigationIcon(Icons.Default.Menu)
                 updateBottomNavigationBarStatus(true)
             }
             OtherOperationsScreen(
@@ -136,6 +144,7 @@ fun HomeNavigationGraph(
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)
                 updateTopAppBarStatus(false)
+                updateAppBarNavigationIcon(Icons.Default.Menu)
                 updateBottomNavigationBarStatus(false)
             }
 
@@ -145,6 +154,17 @@ fun HomeNavigationGraph(
                     navController.navigate(Routes.HomeScreen.name)
                 }
             )
+        }
+
+        composable(route = Routes.SettingsScreen.name) {
+            sharedUiViewModel.apply {
+                updateTopBarTitle(Routes.SettingsScreen.title)
+                updateTopAppBarStatus(true)
+                updateAppBarNavigationIcon(Icons.Default.ArrowBack)
+                updateBottomNavigationBarStatus(false)
+            }
+
+            SettingsScreen()
         }
     }
 }
