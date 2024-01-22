@@ -1,4 +1,4 @@
-package com.tzh.retrofit_module.data.repository
+package com.tzh.retrofit_module.domain.repository
 
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse

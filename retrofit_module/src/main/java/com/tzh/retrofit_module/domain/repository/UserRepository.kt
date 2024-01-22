@@ -1,4 +1,4 @@
-package com.tzh.retrofit_module.data.repository
+package com.tzh.retrofit_module.domain.repository
 
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest

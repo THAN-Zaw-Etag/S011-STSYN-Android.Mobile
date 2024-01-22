@@ -3,7 +3,7 @@ package com.tzh.retrofit_module.data.model.book_in
 data class ItemMovementLog(
     val approverId: Int,
     val buddyId: String,
-    val calDate: String,
+    val calDate: String?,
     val date: String,
     val description: String,
     val handheldReaderId: Int,

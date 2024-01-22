@@ -42,6 +42,7 @@ fun ConfirmationDialog(
     title: String,
     cancelTitle: String,
     confirmTitle: String,
+    onDismiss: () -> Unit = {},
     onCancelClick: () -> Unit,
     onConfirmClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -59,7 +60,10 @@ fun ConfirmationDialog(
                 dismissOnBackPress = false,
                 dismissOnClickOutside = false
             ),
-            onDismissRequest = { openDialog = false }
+            onDismissRequest = {
+                openDialog = false
+                onDismiss()
+            }
         ) {
             Surface(
                 modifier = modifier
@@ -85,7 +89,10 @@ fun ConfirmationDialog(
                                     Text(text = cancelTitle, color = Purple80)
                                 }
 
-                                TextButton(onClick = onConfirmClick) {
+                                TextButton(onClick = {
+                                    onConfirmClick()
+                                    openDialog = false
+                                }) {
                                     Text(text = confirmTitle, color = Purple80)
                                 }
                             }

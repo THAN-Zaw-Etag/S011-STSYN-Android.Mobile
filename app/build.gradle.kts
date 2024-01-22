@@ -62,6 +62,9 @@ dependencies {
     val nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
+    // swipeable item
+    implementation("io.github.kevinnzou:compose-swipebox:1.2.0")
+
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
     implementation(files("libs/API3_LIB_release_2.0.1.44.aar"))

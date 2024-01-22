@@ -40,7 +40,7 @@ fun SuccessDialog(
     onDoneClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var openDialog by remember { mutableStateOf(showDialog) }
+    var openDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(showDialog) {
         openDialog = showDialog

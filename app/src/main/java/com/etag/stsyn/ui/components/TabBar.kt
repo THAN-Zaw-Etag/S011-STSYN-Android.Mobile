@@ -20,7 +20,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -53,7 +52,8 @@ fun TabBarLayout(
                 selected = pagerState.currentPage == index,
                 selectedContentColor = MaterialTheme.colorScheme.primary,
                 icon = {
-                    when (tabOption.icon) {
+                    TabItemIcon(icon = tabOption.icon, selected = pagerState.currentPage == index)
+                    /*when (tabOption.icon) {
                         is CustomIcon.Vector -> {
                             TabItemIcon(
                                 icon = tabOption.icon.iconVector,
@@ -67,7 +67,7 @@ fun TabBarLayout(
                                 selected = pagerState.currentPage == index
                             )
                         }
-                    }
+                    }*/
                 },
                 text = {
                     Text(
@@ -88,13 +88,12 @@ fun TabBarLayout(
 
 @Composable
 private fun TabItemIcon(
-    icon: ImageVector, selected: Boolean, modifier: Modifier = Modifier
+    icon: CustomIcon, selected: Boolean, modifier: Modifier = Modifier
 ) {
-    Icon(
-        imageVector = icon,
+    StsynIcon(
+        icon = icon,
+        color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
         modifier = modifier,
-        tint = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
-        contentDescription = null
     )
 }
 

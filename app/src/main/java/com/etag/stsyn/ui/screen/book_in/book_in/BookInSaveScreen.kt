@@ -32,6 +32,7 @@ fun BookInSaveScreen(
     modifier: Modifier = Modifier,
 ) {
     var showConfirmationDialog by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
     val user by viewModel.user.collectAsState(initial = LocalUser())
     val scannedBookInItems by viewModel.scannedBookInItems.collectAsState()
     val saveBookInResponse by viewModel.savedBookInResponse.collectAsState()
@@ -49,7 +50,12 @@ fun BookInSaveScreen(
 
         is ApiResponse.Success -> {
             showConfirmationDialog = false
-            SuccessDialog(showDialog = true, title = "SUCCESS!", onDoneClick = { /*TODO*/ })
+            showSuccessDialog = true
+            viewModel.updateIsSavedStatus(true)
+            SuccessDialog(
+                showDialog = false,
+                title = "SUCCESS!",
+                onDoneClick = { showSuccessDialog = false })
         }
 
         is ApiResponse.ApiError -> {
@@ -58,12 +64,16 @@ fun BookInSaveScreen(
                 message = (saveBookInResponse as ApiResponse.ApiError).message,
                 showDialog = true,
                 positiveButtonTitle = "exit",
-                onPositiveButtonClick = {}
+                onPositiveButtonClick = {
+
+                }
             )
         }
 
         else -> {}
     }
+
+
 
     BaseSaveScreen(
         isError = scannedBookInItems.isEmpty(),

@@ -50,6 +50,7 @@ import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.AppBar
 import com.etag.stsyn.ui.components.BottomNavigationBar
 import com.etag.stsyn.ui.components.ChangePasswordDialog
+import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.ProfileTextButton
@@ -177,6 +178,7 @@ private fun DrawerContent(
     modifier: Modifier = Modifier
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    var showLogOutDialog by remember { mutableStateOf(false) }
 
     if (showDialog) ChangePasswordDialog(
         userName = user.name,
@@ -186,6 +188,15 @@ private fun DrawerContent(
             showDialog = false
         }
     )
+
+    ConfirmationDialog(
+        showDialog = showLogOutDialog,
+        title = "Log Out?",
+        cancelTitle = "Cancel",
+        confirmTitle = "Ok",
+        onCancelClick = { },
+        onDismiss = { showLogOutDialog = false },
+        onConfirmClick = { onLogOutClick() })
 
     Column(
         modifier = modifier
@@ -254,7 +265,7 @@ private fun DrawerContent(
         )
         ProfileTextButton(
             text = "Logout",
-            onOptionClick = onLogOutClick,
+            onOptionClick = { showLogOutDialog = true },
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 8.dp)
                 .fillMaxWidth()

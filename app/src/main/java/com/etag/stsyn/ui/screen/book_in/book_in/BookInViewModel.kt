@@ -3,12 +3,13 @@ package com.etag.stsyn.ui.screen.book_in.book_in
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.tzh.retrofit_module.data.localStorage.LocalDataStore
+import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
-import com.tzh.retrofit_module.data.repository.BookInRepository
+import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -23,7 +24,8 @@ import javax.inject.Inject
 class BookInViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
     private val bookInRepository: BookInRepository,
-    private val localDataStore: LocalDataStore
+    private val localDataStore: LocalDataStore,
+    private val appConfig: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
 
     private val _bookInItems = MutableStateFlow<ApiResponse<BookInResponse>>(ApiResponse.Default)
@@ -41,11 +43,12 @@ class BookInViewModel @Inject constructor(
     val outstandingItems: StateFlow<List<BookInItem?>> = _outstandingItems.asStateFlow()
 
     val user = localDataStore.getUser
+    private val appConfiguration = appConfig.appConfig
 
     init {
         viewModelScope.launch {
             localDataStore.getUser.collect {
-                getBookInItems(store = "CS", csNo = "2", userId = it.userId)
+                getBookInItems(userId = it.userId)
             }
         }
         addOutstandingItem()
@@ -140,18 +143,18 @@ class BookInViewModel @Inject constructor(
     }
 
     private fun getBookInItems(
-        store: String,
-        csNo: String,
         userId: String
     ) {
         viewModelScope.launch {
             _bookInItems.value = ApiResponse.Loading
             delay(1000)
-            _bookInItems.value = bookInRepository.getBookInItems(
-                store = store,
-                csNo = csNo,
-                userId = userId
-            )
+            appConfiguration.collect {
+                _bookInItems.value = bookInRepository.getBookInItems(
+                    store = it.store.name,
+                    csNo = it.csNo,
+                    userId = userId
+                )
+            }
         }
     }
 }

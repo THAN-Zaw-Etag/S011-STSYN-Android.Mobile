@@ -11,17 +11,18 @@ fun List<BookInItem>.toItemMovementLog(
 ): List<ItemMovementLog> {
     val currentDate = DateUtil.getCurrentDate()
     return map {
+        println("calDate: ${it.calDate}")
         ItemMovementLog(
             itemId = it.id,
             description = it.description,
             itemStatus = ItemStatus.BookIn.title,
             workLoc = it.workLocation,
-            issuerId = it.issuerId,
+            issuerId = 0,
             receiverId = it.receiverId,
             approverId = 0,
             date = currentDate,
             handheldReaderId = handleHeldId,
-            calDate = it.calDate.toString(),
+            calDate = "2024-01-22T03:27:46.114Z", // it.calDate
             iS_ONSITE_TRANSFER = "0",
             remarks = it.remarks,
             receiverName = "",

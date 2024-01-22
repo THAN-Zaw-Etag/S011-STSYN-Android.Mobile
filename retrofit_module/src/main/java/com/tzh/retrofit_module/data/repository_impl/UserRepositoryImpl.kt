@@ -1,13 +1,13 @@
 package com.tzh.retrofit_module.data.repository_impl
 
-import com.tzh.retrofit_module.data.localStorage.LocalDataStore
+import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.data.network.ApiService
-import com.tzh.retrofit_module.data.repository.UserRepository
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
+import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_ERROR
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse

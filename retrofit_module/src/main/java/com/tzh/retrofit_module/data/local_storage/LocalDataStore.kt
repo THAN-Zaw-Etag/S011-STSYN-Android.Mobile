@@ -1,4 +1,4 @@
-package com.tzh.retrofit_module.data.localStorage
+package com.tzh.retrofit_module.data.local_storage
 
 import android.content.Context
 import androidx.datastore.core.DataStore

@@ -23,12 +23,19 @@ abstract class BaseViewModel(
     private val _rfidUiState = MutableStateFlow(RfidUiState())
     val rfidUiState: StateFlow<RfidUiState> = _rfidUiState.asStateFlow()
 
+    private val _isSaved = MutableStateFlow(false)
+    val isSaved: StateFlow<Boolean> = _isSaved.asStateFlow()
+
     private var reconnectingJob: Job? = null
 
     init {
         //onCreate()
         setRfidListener()
         updateScanType(ScanType.Multi)
+    }
+
+    fun updateIsSavedStatus(isSaved: Boolean) {
+        _isSaved.update { isSaved }
     }
 
     fun updateScanType(scanType: ScanType) {

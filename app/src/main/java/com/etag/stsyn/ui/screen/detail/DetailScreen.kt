@@ -1,4 +1,7 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
+@file:OptIn(
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
+)
 
 package com.etag.stsyn.ui.screen.detail
 
@@ -13,6 +16,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,24 +50,30 @@ fun DetailScreen(
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var oldSelectedIndex by remember { mutableStateOf(0) }
     var canBeSelected by remember { mutableStateOf(false) }
-    var isSaved by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState { options.size }
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModelByOptionType(optionType = optionType)
     val screens = getScreensByOptionType(optionType = optionType, viewModel = viewModel)
+    val isSaved by viewModel.isSaved.collectAsState()
 
     ReaderLifeCycle(viewModel = viewModel)
 
     LaunchedEffect(pagerState.currentPage) {
         val option = options.get(pagerState.currentPage)
         tabTitle = option.title
-        if (option.title.equals(exitTitle)) showConfirmationDialog = true
+        if (pagerState.currentPage == options.size - 1) showConfirmationDialog = true
+
+        println("showDialog: ${pagerState.currentPage == options.size - 1}")
     }
 
     LaunchedEffect(Unit) {
         delay(300)
         showTabBar = true
+    }
+
+    LaunchedEffect(isSaved) {
+        //showConfirmationDialog = !isSaved
     }
 
     DisableBackPress()
@@ -79,7 +89,8 @@ fun DetailScreen(
             exit = TransitionUtil.slideOutVerticallyToTop
         ) {
 
-            ConfirmationDialog(showDialog = showConfirmationDialog,
+            ConfirmationDialog(
+                showDialog = showConfirmationDialog,
                 title = if (isSaved) "Exit?" else "Exit without save?",
                 cancelTitle = "Cancel",
                 confirmTitle = "Exit",
@@ -92,13 +103,14 @@ fun DetailScreen(
                     showConfirmationDialog = false
                     canBeSelected = true
                     navigateToHomeScreen()
-                })
+                }
+            )
 
             Column {
                 TabBarLayout(
-                    pagerState = pagerState,
                     options = screens,
                     selected = canBeSelected,
+                    pagerState = pagerState,
                     oldSelectedIndex = oldSelectedIndex,
                     onTabSelected = { title, index ->
                         tabTitle = title
@@ -108,9 +120,10 @@ fun DetailScreen(
                         if (title.equals(options.get(options.size - 1).title)) {
                             showConfirmationDialog = true
                         }
-                    })
+                    }
+                )
 
-                HorizontalPager(state = pagerState) {
+                HorizontalPager(state = pagerState, userScrollEnabled = false) {
                     /** Check current screen is scan screen or not
                      * If not, make scanner not readable */
                     if (it != 0) {

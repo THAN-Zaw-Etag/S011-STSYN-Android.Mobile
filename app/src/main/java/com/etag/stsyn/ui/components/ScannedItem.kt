@@ -1,8 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterialApi::class
+)
 
 package com.etag.stsyn.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -13,20 +15,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,6 +37,10 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.theme.DarkGreen
 import com.etag.stsyn.ui.theme.LightGreen
 import com.etag.stsyn.ui.theme.errorColor
+import com.kevinnzou.compose.swipebox.SwipeBox
+import com.kevinnzou.compose.swipebox.SwipeDirection
+import com.kevinnzou.compose.swipebox.widget.SwipeIcon
+import kotlinx.coroutines.launch
 
 @Composable
 fun ScannedItem(
@@ -48,8 +54,44 @@ fun ScannedItem(
     onSwipeToDismiss: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-
-    val state = rememberDismissState(confirmValueChange = {
+    val coroutineScope = rememberCoroutineScope()
+    if (isSwipeable) {
+        SwipeBox(
+            modifier = Modifier.fillMaxWidth(),
+            swipeDirection = SwipeDirection.EndToStart,
+            endContentWidth = 60.dp,
+            endContent = { swipeableState, endSwipeProgress ->
+                SwipeIcon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = null,
+                    background = errorColor,
+                    tint = Color.White
+                ) {
+                    onSwipeToDismiss()
+                    coroutineScope.launch { swipeableState.animateTo(0) }
+                }
+            }
+        ) { _, _, _ ->
+            ScannedItemContent(
+                isScanned = isScanned,
+                id = id,
+                showError = showError,
+                showTrailingIcon = showTrailingIcon,
+                onItemClick = onItemClick,
+                name = name,
+                modifier = modifier
+            )
+        }
+    } else ScannedItemContent(
+        isScanned = isScanned,
+        id = id,
+        showError = showError,
+        showTrailingIcon = showTrailingIcon,
+        onItemClick = onItemClick,
+        name = name,
+        modifier = modifier
+    )
+    /*val state = rememberDismissState(confirmValueChange = {
         if (it == DismissValue.DismissedToStart) {
             onSwipeToDismiss()
         }
@@ -79,11 +121,11 @@ fun ScannedItem(
         onItemClick = onItemClick,
         name = name,
         modifier = modifier
-    )
+    )*/
 }
 
 @Composable
-fun ScannedItemContent(
+private fun ScannedItemContent(
     id: String,
     name: String,
     isScanned: Boolean,
@@ -140,7 +182,7 @@ fun ScannedItemContent(
 }
 
 @Composable
-fun ScannedItemDismissBackground(
+private fun ScannedItemDismissBackground(
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -164,7 +206,8 @@ fun ScannedItemDismissBackground(
 fun ScannedItemPreview() {
     ScannedItem(
         onSwipeToDismiss = {},
-        isSwipeable = true,
+        isScanned = false,
+        isSwipeable = false,
         id = "SN000001 - DLJC11111",
         name = "DATA LINK JUMPER CABLE",
         showTrailingIcon = true
