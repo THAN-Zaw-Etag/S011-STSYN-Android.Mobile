@@ -4,6 +4,7 @@ import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
+import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -55,5 +56,13 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("issuerId") issuerId: String
     ): SelectBoxForBookInResponse
+
+    @GET(SELECT_BOX_FOR_BOOK_IN_ROUTE)
+    suspend fun getAllBookInItemsOfBox(
+        @Header("Authorization") token: String,
+        @Query("box") box: String,
+        @Query("status") status: String,
+        @Query("loginUserId") loginUserId: String,
+    ): GetAllBookInItemsOfBoxResponse
 
 }

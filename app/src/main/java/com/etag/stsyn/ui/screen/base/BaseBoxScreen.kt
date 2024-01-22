@@ -1,4 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.etag.stsyn.ui.screen.base
 
@@ -59,19 +62,23 @@ import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.navigation.BottomSheetNavigation
 import com.etag.stsyn.ui.navigation.BottomSheetNavigationGraph
 import com.etag.stsyn.ui.theme.Purple80
+import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import kotlinx.coroutines.launch
 
 @Composable
 fun BaseBoxScreen(
-    scannedItems: List<String>,
+    bookItems: List<BoxItem>,
+    scannedItemList: List<String> = emptyList(),
     isScanning: Boolean = false,
     boxOutTitle: String = "",
+    scannedBox: BoxItem = BoxItem(),
     onReset: () -> Unit,
     onScan: () -> Unit = {},
+    onCheckChange: (Boolean) -> Unit = {},
     showBoxBookOutButton: Boolean = false,
     modifier: Modifier = Modifier
 ) {
-    var items by remember { mutableStateOf(listOf<String>()) }
+    var items by remember { mutableStateOf(listOf<BoxItem>()) }
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     var show by remember { mutableStateOf(false) }
@@ -79,12 +86,12 @@ fun BaseBoxScreen(
 
     val listState = rememberLazyListState()
 
-    LaunchedEffect(scannedItems) {
-        if (scannedItems.size > 1) listState.animateScrollToItem(scannedItems.size - 1)
+    LaunchedEffect(bookItems) {
+        if (bookItems.size > 1) listState.animateScrollToItem(bookItems.size - 1)
     }
 
-    LaunchedEffect(scannedItems, showBoxBookOutButton) {
-        items = scannedItems
+    LaunchedEffect(bookItems, showBoxBookOutButton) {
+        items = bookItems
         show = showBoxBookOutButton
     }
 
@@ -125,25 +132,31 @@ fun BaseBoxScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                     BoxScanSection(
-                        boxId = "C123456".uppercase(),
-                        boxDescription = "ADAPTER SET AIRCRAFT MAINTENANCE (BOX)(R01) C123456".uppercase()
+                        boxId = scannedBox.serialNo.uppercase(),
+                        boxDescription = scannedBox.description.uppercase()
                     )
                 }
                 item {
-                    if (scannedItems.isNotEmpty()) {
+                    if (bookItems.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(12.dp))
-                        ScannedItemsOptionLayout(items.size, isScanned = false, onReset = onReset)
+                        ScannedItemsOptionLayout(
+                            itemCount = items.size,
+                            onCheckChange = onCheckChange,
+                            isScanned = false,
+                            onReset = onReset
+                        )
                     }
                 }
-                itemsIndexed(scannedItems) { index, item ->
+                itemsIndexed(bookItems) { index, item ->
                     ScannedItem(
-                        id = item,
+                        id = item.description,
                         name = "Box 01 item 0${index + 1}",
-                        isScanned = false,
+                        isScanned = item.epc in scannedItemList,
                     )
                 }
             }
-            BottomScannedButtonLayout(outStandingItemCount = 2,
+            BottomScannedButtonLayout(
+                outStandingItemCount = 2,
                 scannedItemsCount = 0,
                 isScanning = isScanning,
                 onScan = onScan,
@@ -252,6 +265,7 @@ fun BottomScannedButtonLayout(
 
 @Composable
 private fun ScannedItemsOptionLayout(
+    onCheckChange: (Boolean) -> Unit,
     itemCount: Int, isScanned: Boolean = false, modifier: Modifier = Modifier, onReset: () -> Unit
 ) {
     var checked by remember { mutableStateOf(false) }
@@ -280,7 +294,10 @@ private fun ScannedItemsOptionLayout(
                 text = "Visual Check", fontSize = 16.sp
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Switch(checked = checked, onCheckedChange = { checked = it })
+            Switch(checked = checked, onCheckedChange = {
+                onCheckChange(it)
+                checked = it
+            })
         }
 
         TextButton(onClick = {

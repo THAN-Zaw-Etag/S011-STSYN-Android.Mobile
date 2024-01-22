@@ -9,6 +9,8 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 interface UserRepository {
     suspend fun login(loginRequest: LoginRequest): ApiResponse<LoginResponse>
+
+    suspend fun refreshToken(token: String)
     suspend fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest
     ): ApiResponse<NormalResponse>

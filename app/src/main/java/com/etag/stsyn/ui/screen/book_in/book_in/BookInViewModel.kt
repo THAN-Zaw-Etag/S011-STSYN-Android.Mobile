@@ -57,6 +57,7 @@ class BookInViewModel @Inject constructor(
     override fun onReceivedTagId(id: String) {
         // handled scanned tags here
         addScannedItem(id)
+        println("scannedItem: $id")
     }
 
     private fun addOutstandingItem() {

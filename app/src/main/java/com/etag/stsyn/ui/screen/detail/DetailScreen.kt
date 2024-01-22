@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,8 +30,11 @@ import androidx.compose.ui.unit.dp
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.ConfirmationDialog
+import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.DisableBackPress
+import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.TabBarLayout
+import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
 import com.etag.stsyn.util.datasource.getScreensByOptionType
@@ -55,25 +60,38 @@ fun DetailScreen(
 
     val viewModel = getViewModelByOptionType(optionType = optionType)
     val screens = getScreensByOptionType(optionType = optionType, viewModel = viewModel)
-    val isSaved by viewModel.isSaved.collectAsState()
+    var isSaved by remember { mutableStateOf(false) }
+    val detailUiState by viewModel.detailUiState.collectAsState()
 
     ReaderLifeCycle(viewModel = viewModel)
+
+    LaunchedEffect(detailUiState) {
+        isSaved = detailUiState.isSaved
+    }
+
+    // show loading while data is fetching
+    LoadingDialog(
+        title = "Loading...",
+        showDialog = detailUiState.showLoadingDialog,
+        onDismiss = { })
+
+    // show error when error message is not empty
+    WarningDialog(
+        icon = CustomIcon.Vector(Icons.Default.Error),
+        message = detailUiState.message,
+        showDialog = detailUiState.message.isNotEmpty(),
+        positiveButtonTitle = "Ok"
+    )
 
     LaunchedEffect(pagerState.currentPage) {
         val option = options.get(pagerState.currentPage)
         tabTitle = option.title
         if (pagerState.currentPage == options.size - 1) showConfirmationDialog = true
-
-        println("showDialog: ${pagerState.currentPage == options.size - 1}")
     }
 
     LaunchedEffect(Unit) {
         delay(300)
         showTabBar = true
-    }
-
-    LaunchedEffect(isSaved) {
-        //showConfirmationDialog = !isSaved
     }
 
     DisableBackPress()
