@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.navigation
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -92,6 +93,9 @@ fun NavigationGraph(
                     }
                 }
             )
+            BackHandler {
+                navController.navigate(Routes.LoginScreen.name)
+            }
         }
 
         composable(route = Routes.HomeContentScreen.name) {
