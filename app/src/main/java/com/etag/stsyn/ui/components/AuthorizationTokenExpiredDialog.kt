@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
 @Composable
-fun AnotherDeviceHasBeenLoggedInDialog(
+fun AuthorizationTokenExpiredDialog(
     message: String,
     onLogOut: () -> Unit
 ) {

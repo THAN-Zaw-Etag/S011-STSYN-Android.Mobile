@@ -38,7 +38,10 @@ fun LoadingDialog(
 
     if (openDialog) {
         Dialog(
-            onDismissRequest = { openDialog = false }, properties = DialogProperties(
+            onDismissRequest = {
+                openDialog = false
+                onDismiss()
+            }, properties = DialogProperties(
                 dismissOnBackPress = false,
                 dismissOnClickOutside = false
             )

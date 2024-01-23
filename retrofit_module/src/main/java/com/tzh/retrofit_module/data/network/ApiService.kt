@@ -2,9 +2,11 @@ package com.tzh.retrofit_module.data.network
 
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.model.login.LoginRequest
+import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
+import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -12,6 +14,7 @@ import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdRespons
 import com.tzh.retrofit_module.util.BOOK_IN_GET_ITEM_ROUTE
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
+import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.SELECT_BOX_FOR_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.UPDATE_PASSWORD_ROUTE
@@ -24,6 +27,9 @@ import retrofit2.http.Query
 interface ApiService {
     @POST(LOGIN_ROUTE)
     suspend fun login(@Body loginRequest: LoginRequest): LoginResponse
+
+    @POST(REFRESH_TOKEN_ROUTE)
+    suspend fun refreshToken(@Body refreshTokenRequest: RefreshTokenRequest): RefreshTokenResponse
 
     @GET(BOOK_IN_GET_ITEM_ROUTE)
     suspend fun getBookInItems(

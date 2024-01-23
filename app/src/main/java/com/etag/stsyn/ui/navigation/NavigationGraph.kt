@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,18 +32,18 @@ fun NavigationGraph(
         }
     }
 
+
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
 
     LaunchedEffect(savedUser.isLoggedIn) {
-        Log.d("TAG", "isLoggedIn: ${savedUser.isLoggedIn}")
         delay(1000)
     }
 
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = Routes.SplashScreen.name
+        startDestination = Routes.LoginContentScreen.name
     ) {
 
         composable(route = Routes.SplashScreen.name) {

@@ -1,4 +1,4 @@
-package com.tzh.retrofit_module.data.repository_impl
+package com.tzh.retrofit_module.data.repository
 
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
@@ -39,6 +39,7 @@ class BookInRepositoryImpl @Inject constructor(
             e.printStackTrace()
 
             val error = e.message.toString().trim()
+            println("isAuthorizationFailed: ${error == AUTHORIZATION_FAILED_ERROR}")
             if (error == AUTHORIZATION_FAILED_ERROR) ApiResponse.AuthorizationError(
                 AUTHORIZATION_FAILED_MESSAGE
             )

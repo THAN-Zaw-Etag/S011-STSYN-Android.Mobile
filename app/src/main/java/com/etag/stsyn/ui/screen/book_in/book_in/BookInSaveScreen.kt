@@ -22,6 +22,8 @@ import com.tzh.retrofit_module.data.mapper.toItemMovementLog
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
+import com.tzh.retrofit_module.data.settings.AppConfigModel
+import com.tzh.retrofit_module.enum.ItemStatus
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.DateUtil
 import kotlinx.coroutines.delay
@@ -35,6 +37,7 @@ fun BookInSaveScreen(
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
     val user by viewModel.user.collectAsState(initial = LocalUser())
+    val setting by viewModel.appConfiguration.collectAsState(initial = AppConfigModel())
     val scannedBookInItems by viewModel.scannedBookInItems.collectAsState()
     val saveBookInResponse by viewModel.savedBookInResponse.collectAsState()
 
@@ -74,8 +77,6 @@ fun BookInSaveScreen(
         else -> {}
     }
 
-
-
     BaseSaveScreen(
         isError = scannedBookInItems.isEmpty(),
         errorMessage = "Please read an item first.",
@@ -86,8 +87,8 @@ fun BookInSaveScreen(
                     itemMovementLogs = scannedBookInItems.map { it!! }.toItemMovementLog(0),
                     printJob = PrintJob(
                         date = DateUtil.getCurrentDate(),
-                        handheldId = 0,
-                        reportType = "",
+                        handheldId = setting.handheldReaderId.toInt(),
+                        reportType = ItemStatus.BookIn.title, //TODO Need to add report type
                         userId = user.userId.toInt()
                     )
                 )

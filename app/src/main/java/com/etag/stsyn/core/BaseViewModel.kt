@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 abstract class BaseViewModel(
     private val rfidHandler: ZebraRfidHandler,
     private val TAG: String = "Base Viewmodel"
@@ -26,15 +25,19 @@ abstract class BaseViewModel(
     private val _detailUiState = MutableStateFlow(DetailUiState())
     val detailUiState: StateFlow<DetailUiState> = _detailUiState.asStateFlow()
 
-    private val _isSaved = MutableStateFlow(false)
-    val isSaved: StateFlow<Boolean> = _isSaved.asStateFlow()
+    private val _showAuthorizationFailedDialog = MutableStateFlow(false)
+    val showAuthorizationFailedDialog: StateFlow<Boolean> =
+        _showAuthorizationFailedDialog.asStateFlow()
 
     private var reconnectingJob: Job? = null
 
     init {
-        //onCreate()
         setRfidListener()
         updateScanType(ScanType.Multi)
+    }
+
+    protected fun updateAuthorizationFailedDialogVisibility(isVisible: Boolean) {
+        _showAuthorizationFailedDialog.update { isVisible }
     }
 
     fun updateIsSavedStatus(isSaved: Boolean) {

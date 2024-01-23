@@ -8,6 +8,7 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
+import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.MenuAccessRight
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -16,11 +17,9 @@ import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,7 +29,7 @@ class LoginViewModel @Inject constructor(
     private val rfidHandler: ZebraRfidHandler,
     private val localDataStore: LocalDataStore,
     private val userRepository: UserRepository
-) : BaseViewModel(rfidHandler, "LoginViewmodel") {
+) : BaseViewModel(rfidHandler) {
 
     private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
@@ -49,11 +48,13 @@ class LoginViewModel @Inject constructor(
     private val _userMenuAccessRights = MutableStateFlow(MenuAccessRight())
     val userMenuAccessRight: StateFlow<MenuAccessRight> = _userMenuAccessRights.asStateFlow()
 
+    private val _refreshTokenResponse =
+        MutableStateFlow<ApiResponse<RefreshTokenResponse>>(ApiResponse.Default)
+    val refreshTokenResponse: StateFlow<ApiResponse<RefreshTokenResponse>> =
+        _refreshTokenResponse.asStateFlow()
+
     private val _savedUser = MutableStateFlow(LocalUser())
     val savedUser: StateFlow<LocalUser> = _savedUser.asStateFlow()
-
-    private var _isLoggedIn: Flow<Boolean> = emptyFlow()
-    var isLoggedIn = emptyFlow<Boolean>()
 
     init {
         updateScanType(ScanType.Single)
@@ -62,13 +63,10 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             localDataStore.getUser.collect {
                 _savedUser.value = it
+                println("isLoggedIn: ${it.token}")
                 if (it.isLoggedIn) getUserMenuAccessRightsById()
             }
         }
-    }
-
-    private fun updateAuthorizationFailedDialogVisibility(isVisible: Boolean) {
-        _loginUiState.update { it.copy(showAuthorizationFailedDialog = isVisible) }
     }
 
     fun updateLoginStatus(isSuccessful: Boolean) {
@@ -121,8 +119,18 @@ class LoginViewModel @Inject constructor(
                         (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.rolePermission!!.handheldMenuAccessRight
                 }
 
+                is ApiResponse.AuthorizationError -> {
+                    updateAuthorizationFailedDialogVisibility(true)
+                }
+
                 else -> {}
             }
+        }
+    }
+
+    fun refreshToken() {
+        viewModelScope.launch {
+            _refreshTokenResponse.value = userRepository.refreshToken()
         }
     }
 
@@ -141,17 +149,18 @@ class LoginViewModel @Inject constructor(
                     )
                 )
 
+                // show authorization error dialog if error is authorization failed error
                 updateAuthorizationFailedDialogVisibility(_updatePasswordResponse.value is ApiResponse.AuthorizationError)
             }
         }
     }
 
     private fun getUserMenuAccessRightsById() {
-        updateAuthorizationFailedDialogVisibility(false)
+        //updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             userMenuAccessRightsByIdResponse.value = ApiResponse.Loading
+            println("userMenuAccessRightsByIdResponse: ${_userMenuAccessRights.value}")
             delay(1000)
-
             userMenuAccessRightsByIdResponse.value = userRepository.getUserMenuAccessRightsById()
 
             // when data is fetched, update user menu access rights
@@ -184,7 +193,6 @@ class LoginViewModel @Inject constructor(
         var attemptCount: Int = 0,
         val rfidId: String = "",
         val errorMessage: String = "",
-        val showAuthorizationFailedDialog: Boolean = false,
         val user: LocalUser? = LocalUser("", "", "1234", "")
     )
 }

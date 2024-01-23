@@ -21,8 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BookInBoxViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
+    private val localDataStore: LocalDataStore,
     private val bookInRepository: BookInRepository,
-    private val localDataStore: LocalDataStore
 ) : BaseViewModel(rfidHandler) {
 
     private val _getBoxItemsForBookInResponse =

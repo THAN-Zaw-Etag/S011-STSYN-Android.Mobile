@@ -5,19 +5,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.etag.stsyn.enums.OptionType
-import com.etag.stsyn.ui.components.AnotherDeviceHasBeenLoggedInDialog
 import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.screen.detail.DetailScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
@@ -27,7 +22,6 @@ import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.screen.settings.SettingsScreen
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
-import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 
 @Composable
 fun HomeNavigationGraph(
@@ -39,18 +33,7 @@ fun HomeNavigationGraph(
     val rfidUiState by loginViewModel.rfidUiState.collectAsState()
     val menuAccessRights by loginViewModel.userMenuAccessRight.collectAsState()
     val loginUiState by loginViewModel.loginUiState.collectAsState()
-    var showAuthorizationFailedDialog by remember { mutableStateOf(false) }
-
-    LaunchedEffect(loginUiState.showAuthorizationFailedDialog) {
-        showAuthorizationFailedDialog = loginUiState.showAuthorizationFailedDialog
-    }
-
-    if (showAuthorizationFailedDialog) {
-        AnotherDeviceHasBeenLoggedInDialog(
-            message = AUTHORIZATION_FAILED_MESSAGE,
-            onLogOut = loginViewModel::logOut
-        )
-    }
+    val context = LocalContext.current
 
     NavHost(
         navController = navController,
@@ -58,7 +41,6 @@ fun HomeNavigationGraph(
         modifier = modifier
     ) {
         composable(route = Routes.HomeScreen.name) {
-            val context = LocalContext.current
 
             BackHandler(enabled = true) {
                 ExitApp(context)
@@ -150,6 +132,10 @@ fun HomeNavigationGraph(
 
             DetailScreen(
                 optionType = optionType,
+                logOut = {
+                    loginViewModel.logOut()
+                    ExitApp(context)
+                },
                 navigateToHomeScreen = {
                     navController.navigate(Routes.HomeScreen.name)
                 }

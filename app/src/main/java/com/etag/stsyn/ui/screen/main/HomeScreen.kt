@@ -84,6 +84,7 @@ fun HomeScreen(
     val updatePasswordResponse by loginViewModel.updatePasswordResponse.collectAsState()
     val context = LocalContext.current
 
+
     ReaderLifeCycle(viewModel = loginViewModel)
 
     when (updatePasswordResponse) {

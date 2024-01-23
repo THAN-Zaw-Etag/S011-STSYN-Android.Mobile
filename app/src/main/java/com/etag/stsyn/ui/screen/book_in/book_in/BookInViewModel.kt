@@ -43,7 +43,7 @@ class BookInViewModel @Inject constructor(
     val outstandingItems: StateFlow<List<BookInItem?>> = _outstandingItems.asStateFlow()
 
     val user = localDataStore.getUser
-    private val appConfiguration = appConfig.appConfig
+    val appConfiguration = appConfig.appConfig
 
     init {
         viewModelScope.launch {
@@ -155,6 +155,8 @@ class BookInViewModel @Inject constructor(
                     csNo = it.csNo,
                     userId = userId
                 )
+                println("authorizationFailed: ${_bookInItems.value is ApiResponse.AuthorizationError}")
+                updateAuthorizationFailedDialogVisibility(_bookInItems.value is ApiResponse.AuthorizationError)
             }
         }
     }

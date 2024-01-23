@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val loginViewModel: LoginViewModel = hiltViewModel()
+            val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsState()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
             val context = LocalContext.current

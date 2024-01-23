@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.enums.OptionType
+import com.etag.stsyn.ui.components.AuthorizationTokenExpiredDialog
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.DisableBackPress
@@ -39,14 +40,16 @@ import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
 import com.etag.stsyn.util.datasource.getScreensByOptionType
 import com.etag.stsyn.util.datasource.getViewModelByOptionType
+import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
 fun DetailScreen(
-    navigateToHomeScreen: () -> Unit,
     optionType: OptionType,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    logOut: () -> Unit,
+    navigateToHomeScreen: () -> Unit,
 ) {
     var showTabBar by remember { mutableStateOf(false) }
     var options = TabUtil.getTabDetails(optionType)
@@ -63,7 +66,14 @@ fun DetailScreen(
     var isSaved by remember { mutableStateOf(false) }
     val detailUiState by viewModel.detailUiState.collectAsState()
 
+    val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsState()
+
     ReaderLifeCycle(viewModel = viewModel)
+
+    if (showAuthorizationFailedDialog) AuthorizationTokenExpiredDialog(
+        message = AUTHORIZATION_FAILED_MESSAGE,
+        onLogOut = logOut
+    )
 
     LaunchedEffect(detailUiState) {
         isSaved = detailUiState.isSaved
