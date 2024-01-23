@@ -19,6 +19,7 @@ import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.HomeScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
 import com.tzh.retrofit_module.data.model.LocalUser
+import com.tzh.retrofit_module.domain.model.user.UserModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -36,6 +37,7 @@ fun NavigationGraph(
 
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
+    val epcModelUserName by  loginViewModel.epcModelUser.collectAsState(UserModel())
 
     LaunchedEffect(savedUser.isLoggedIn) {
         Log.d("TAG", "isLoggedIn: ${savedUser.isLoggedIn}")
@@ -81,7 +83,7 @@ fun NavigationGraph(
 
             LoginContentScreen(
                 loginAttemptCount = loginUiState.attemptCount,
-                userName = savedUser.name,
+                userName = epcModelUserName.userName ,
                 loginResponse = loginResponse,
                 isSuccessful = loginUiState.isLoginSuccessful,
                 onLogInClick = { loginViewModel.login(it) },

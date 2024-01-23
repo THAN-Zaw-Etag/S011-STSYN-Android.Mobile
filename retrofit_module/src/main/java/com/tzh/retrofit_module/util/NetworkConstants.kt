@@ -13,3 +13,4 @@ const val GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH = "User/GetUserAccessRightByRol
 const val AUTHORIZATION_FAILED_ERROR = "HTTP 401"
 
 const val AUTHORIZATION_FAILED_MESSAGE = "Your account has been logged in from another device!"
+const val GET_USER_BY_EPC_ROUTE = "User/GetUserByEPC"

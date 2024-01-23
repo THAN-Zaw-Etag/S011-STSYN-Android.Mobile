@@ -11,14 +11,19 @@ import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.MenuAccessRight
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
+import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
@@ -34,6 +39,11 @@ class LoginViewModel @Inject constructor(
 
     private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
+
+
+    private val _getUserResponse = MutableSharedFlow<ApiResponse<GetUserByEPCResponse>>()
+    val getUserByEPCResponse: SharedFlow<ApiResponse<GetUserByEPCResponse>> = _getUserResponse.asSharedFlow()
+
 
     private val _loginResponse = MutableStateFlow<ApiResponse<LoginResponse>>(ApiResponse.Default)
     val loginResponse: StateFlow<ApiResponse<LoginResponse>> = _loginResponse.asStateFlow()
@@ -52,6 +62,9 @@ class LoginViewModel @Inject constructor(
     private val _savedUser = MutableStateFlow(LocalUser())
     val savedUser: StateFlow<LocalUser> = _savedUser.asStateFlow()
 
+    private val _epcModelUser = MutableStateFlow(UserModel())
+    val epcModelUser: StateFlow<UserModel> = _epcModelUser.asStateFlow()
+
     private var _isLoggedIn: Flow<Boolean> = emptyFlow()
     var isLoggedIn = emptyFlow<Boolean>()
 
@@ -60,11 +73,23 @@ class LoginViewModel @Inject constructor(
 
         // if user is already logged in, fetch menu access rights from api
         viewModelScope.launch {
-            localDataStore.getUser.collect {
-                _savedUser.value = it
-                if (it.isLoggedIn) getUserMenuAccessRightsById()
+
+            launch {
+                localDataStore.getUser.collect {
+                    _savedUser.value = it
+                    if (it.isLoggedIn) getUserMenuAccessRightsById()
+                }
             }
+
+            launch {
+                localDataStore.getEpcUser.collect {
+                    _epcModelUser.value =it
+                }
+            }
+
         }
+
+
     }
 
     private fun updateAuthorizationFailedDialogVisibility(isVisible: Boolean) {
@@ -75,12 +100,22 @@ class LoginViewModel @Inject constructor(
         _loginUiState.update { it.copy(isLoginSuccessful = isSuccessful) }
     }
 
-    private fun getUserByRfidId(rfidId: String) {
-        viewModelScope.launch {
 
-        }
+      fun getUserByRfidId(rfidId: String) {
+         viewModelScope.launch {
+             _getUserResponse.emit(ApiResponse.Loading)
+             //Test tag ID = 455341303030303030303130
+             val response = userRepository.getUserByEPC(rfidId)
+             _getUserResponse.emit(response)
+            }
+
     }
 
+    fun saveUserByEpcResponseToLocal(userModel: UserModel) {
+        viewModelScope.launch {
+            localDataStore.saveEpcUser(userModel)
+        }
+    }
     fun saveUserToLocalStorage(localUser: LocalUser) {
         viewModelScope.launch {
             localDataStore.saveUser(localUser)

@@ -6,6 +6,7 @@ import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_ERROR
@@ -68,5 +69,25 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun logout() {
 
+    }
+
+    override suspend fun getUserByEPC(epc: String): ApiResponse<GetUserByEPCResponse> {
+        return try {
+            val response = apiService.getUserByEPC(epc)
+            if (response.isSuccessful && response.body() != null) {
+                // response.code() will give you the HTTP status code
+                ApiResponse.Success(response.body()!!)
+            } else {
+                val responseCode = response.code()
+                if (responseCode == 401) {
+                    ApiResponse.AuthorizationError( AUTHORIZATION_FAILED_MESSAGE)
+                } else {
+                    ApiResponse.ApiError(response.message() ?: "")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ApiResponse.ApiError(e.localizedMessage ?: "An unknown error occurred")
+        }
     }
 }

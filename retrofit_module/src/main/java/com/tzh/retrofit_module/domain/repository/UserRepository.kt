@@ -4,6 +4,7 @@ import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -16,4 +17,6 @@ interface UserRepository {
     suspend fun getUserMenuAccessRightsById(): ApiResponse<UserMenuAccessRightsByIdResponse>
 
     suspend fun logout()
+
+    suspend fun getUserByEPC(epc: String): ApiResponse<GetUserByEPCResponse>
 }

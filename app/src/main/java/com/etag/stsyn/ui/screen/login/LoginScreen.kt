@@ -23,6 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,14 +33,17 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
+import com.etag.stsyn.ui.components.LoginProgressDialog
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
+import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun LoginScreen(
@@ -54,12 +60,63 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         Log.d("TAG", "LoginScreen: Unit - ${rfidUiState.isConnected}")
     }
+    var showLoadingDialog by remember {
+        mutableStateOf(false)
+    }
+    var showInvalidUserDialog by remember {
+        mutableStateOf(false)
+    }
 
-    LaunchedEffect(loginUiState.rfidId) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner) {
+        loginViewModel.getUserByEPCResponse.collect { response ->
+            when (response) {
+                is ApiResponse.Loading -> {
+                    showLoadingDialog = true
+                }
+
+                is ApiResponse.Success -> {
+                    showLoadingDialog = false
+                    val userModel = response.data?.userModel
+
+
+                    if (userModel != null) {
+                        navigateToLoginContentScreen()
+                        loginViewModel.saveUserByEpcResponseToLocal(userModel)
+                    } else {
+                        showInvalidUserDialog = true
+                        Toast.makeText(context, "Invalid user Id", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                is ApiResponse.ApiError -> {
+                    showLoadingDialog = false
+                }
+
+                else -> {
+                    showLoadingDialog = false
+                }
+            }
+        }
+    }
+    /*
+  *
+  *  LaunchedEffect(loginUiState.rfidId) {
         if (loginUiState.rfidId.isNotEmpty()) {
             navigateToLoginContentScreen()
         }
     }
+  **/
+
+
+
+
+
+
+    LoginProgressDialog(showDialog = showLoadingDialog)
+
+
 
     LaunchedEffect(rfidUiState.isConnected) {
         if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT)

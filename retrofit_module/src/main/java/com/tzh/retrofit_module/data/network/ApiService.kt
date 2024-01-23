@@ -7,13 +7,16 @@ import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.util.BOOK_IN_GET_ITEM_ROUTE
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
+import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.SELECT_BOX_FOR_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.UPDATE_PASSWORD_ROUTE
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -55,5 +58,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Query("issuerId") issuerId: String
     ): SelectBoxForBookInResponse
+
+
+    @GET(GET_USER_BY_EPC_ROUTE)
+    suspend fun getUserByEPC(
+        @Query("epc") epc: String
+    ): Response<GetUserByEPCResponse>
 
 }
