@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.etag.stsyn.ui.screen.base.BaseBoxScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
+import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
@@ -25,6 +26,7 @@ fun BookInBoxScanScreen(
     val allItemsOfBoxResponse by bookInBoxViewModel.getAllItemsOfBox.collectAsState()
     val bookInBoxUiState by bookInBoxViewModel.bookInBoxUiState.collectAsState()
     var scannedBox by remember { mutableStateOf(BoxItem()) }
+    var boxes by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
     val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsState()
 
     LaunchedEffect(bookInBoxUiState) {
@@ -33,7 +35,12 @@ fun BookInBoxScanScreen(
 
     when (getAllBoxesResponse) {
         is ApiResponse.Loading -> bookInBoxViewModel.toggleLoadingVisibility(true)
-        is ApiResponse.Success -> bookInBoxViewModel.toggleLoadingVisibility(false)
+        is ApiResponse.Success -> {
+            bookInBoxViewModel.toggleLoadingVisibility(false)
+            boxes =
+                (getAllBoxesResponse as ApiResponse.Success<SelectBoxForBookInResponse>).data!!.items
+        }
+
         is ApiResponse.ApiError -> {
             bookInBoxViewModel.toggleLoadingVisibility(false)
             bookInBoxViewModel.showError((getAllBoxesResponse as ApiResponse.ApiError).message)
@@ -42,20 +49,19 @@ fun BookInBoxScanScreen(
         else -> {}
     }
 
-    LaunchedEffect(scannedItemList) {
-        println("scannedItemList: $scannedItemList")
-    }
-
     BaseBoxScreen(
         bookItems = bookInBoxUiState.allItemsOfBox,
         scannedItemList = scannedItemList,
+        boxes = boxes,
         onReset = { bookInBoxViewModel.removeScannedItems() },
         onScan = { bookInBoxViewModel.toggle() },
+        onRefresh = { bookInBoxViewModel.refreshScannedBox() },
         isScanning = rfidUiState.isScanning,
         scannedBox = scannedBox,
         modifier = modifier,
+        checked = bookInBoxUiState.isChecked,
         onCheckChange = { bookInBoxViewModel.toggleVisualCheck(it) },
         showBoxBookOutButton = true,
-        boxOutTitle = "Box booked out (${rfidUiState.scannedItems.size})",
+        boxOutTitle = "Box booked out (${boxes.size})",
     )
 }

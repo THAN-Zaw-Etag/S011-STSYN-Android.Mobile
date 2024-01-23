@@ -14,6 +14,7 @@ const val UPDATE_PASSWORD_ROUTE = "User/ChangePassword"
 const val GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH = "User/GetUserAccessRightByRoleId"
 
 const val AUTHORIZATION_FAILED_ERROR = "HTTP 401"
+const val AUTHORIZATION_FAILED_ERROR_CODE = 401
 
 const val AUTHORIZATION_FAILED_MESSAGE =
     "Your authorization token has been expired. Try login again!"

@@ -20,6 +20,9 @@ fun AuthorizationTokenExpiredDialog(
         message = message,
         showDialog = show,
         positiveButtonTitle = "Log out",
+        onDismiss = {
+            show = false
+        },
         onPositiveButtonClick = {
             onLogOut()
             show = false

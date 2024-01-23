@@ -30,3 +30,30 @@ fun List<BookInItem>.toItemMovementLog(
         )
     }
 }
+
+/*
+fun List<BookInItem>.toExpandedScannedItems(): List<ExpandedScannedItemModel> {
+    return map {
+        ExpandedScannedItemModel(
+            serialNo = "${it.serialNo} - ${it.partNo}",
+            description = it.description,
+            code = it.unit,
+            location = it.itemLocation,
+            storeLocation = it.storeLocation,
+            status = ItemStatus.BookIn.title
+        )
+    }
+}
+
+fun List<BoxItem>.toExpandedScannedItems(): List<ExpandedScannedItemModel> {
+    return map {
+        ExpandedScannedItemModel(
+            serialNo = "${it.serialNo} - ${it.partNo}",
+            description = it.description,
+            code = it.unit,
+            location = it.itemLocation,
+            storeLocation = it.storeLocation,
+            status = ItemStatus.BookIn.title
+        )
+    }
+}*/

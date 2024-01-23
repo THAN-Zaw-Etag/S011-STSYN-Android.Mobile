@@ -20,6 +20,7 @@ import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.SELECT_BOX_FOR_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.UPDATE_PASSWORD_ROUTE
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -31,7 +32,7 @@ interface ApiService {
     suspend fun login(@Body loginRequest: LoginRequest): LoginResponse
 
     @POST(REFRESH_TOKEN_ROUTE)
-    suspend fun refreshToken(@Body refreshTokenRequest: RefreshTokenRequest): RefreshTokenResponse
+    suspend fun refreshToken(@Body refreshTokenRequest: RefreshTokenRequest): Response<RefreshTokenResponse>
 
     @GET(BOOK_IN_GET_ITEM_ROUTE)
     suspend fun getBookInItems(
@@ -39,31 +40,31 @@ interface ApiService {
         @Query("Store") store: String,
         @Query("CsNo") csNo: String,
         @Query("LoginUserId") userID: String
-    ): BookInResponse
+    ): Response<BookInResponse>
 
     @POST(SAVE_BOOK_IN_ROUTE)
     suspend fun saveBookIn(
         @Header("Authorization") token: String,
         @Body saveBookInRequest: SaveBookInRequest
-    ): NormalResponse
+    ): Response<NormalResponse>
 
     @POST(UPDATE_PASSWORD_ROUTE)
     suspend fun updatePassword(
         @Header("Authorization") token: String,
         @Body updatePasswordRequest: UpdatePasswordRequest
-    ): NormalResponse
+    ): Response<NormalResponse>
 
     @GET(GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH)
     suspend fun getUserAccessRightsByRoleId(
         @Header("Authorization") token: String,
         @Query("roleId") id: String
-    ): UserMenuAccessRightsByIdResponse
+    ): Response<UserMenuAccessRightsByIdResponse>
 
     @GET(SELECT_BOX_FOR_BOOK_IN_ROUTE)
     suspend fun getBoxItemsForBookIn(
         @Header("Authorization") token: String,
         @Query("issuerId") issuerId: String
-    ): SelectBoxForBookInResponse
+    ): Response<SelectBoxForBookInResponse>
 
     @GET(SELECT_BOX_FOR_BOOK_IN_ROUTE)
     suspend fun getAllBookInItemsOfBox(
@@ -71,9 +72,9 @@ interface ApiService {
         @Query("box") box: String,
         @Query("status") status: String,
         @Query("loginUserId") loginUserId: String,
-    ): GetAllBookInItemsOfBoxResponse
+    ): Response<GetAllBookInItemsOfBoxResponse>
 
     @GET(CHECK_U_S_CASE_BY_BOX_ROUTE)
-    suspend fun checkUSCaseByBox(@Query("Box") box: String): CheckUSCaseResponse
+    suspend fun checkUSCaseByBox(@Query("Box") box: String): Response<CheckUSCaseResponse>
 
 }

@@ -68,6 +68,7 @@ fun BookInSaveScreen(
                 message = (saveBookInResponse as ApiResponse.ApiError).message,
                 showDialog = true,
                 positiveButtonTitle = "exit",
+                onDismiss = {},
                 onPositiveButtonClick = {
 
                 }

@@ -9,7 +9,7 @@ import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxRespons
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookInRepository
-import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_ERROR
+import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_ERROR_CODE
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.toToken
@@ -34,17 +34,14 @@ class BookInRepositoryImpl @Inject constructor(
                 token = token
             )
 
-            if (response.isSuccess) ApiResponse.Success(response)
-            else ApiResponse.ApiError(response.error ?: "")
-        } catch (e: Exception) {
-            e.printStackTrace()
-
-            val error = e.message.toString().trim()
-            println("isAuthorizationFailed: ${error == AUTHORIZATION_FAILED_ERROR}")
-            if (error == AUTHORIZATION_FAILED_ERROR) ApiResponse.AuthorizationError(
+            if (response.isSuccessful) ApiResponse.Success(response)
+            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
                 AUTHORIZATION_FAILED_MESSAGE
             )
-            else ApiResponse.ApiError(e.message.toString())
+            else ApiResponse.ApiError(response.body()?.error ?: "")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ApiResponse.ApiError(e.message.toString())
         }
     }
 
@@ -54,17 +51,15 @@ class BookInRepositoryImpl @Inject constructor(
             val token = user.token.toToken()
             val response = apiService.saveBookIn(token, saveBookInRequest)
 
-            if (response.isSuccess) ApiResponse.Success(response)
-            else ApiResponse.ApiError(response.error ?: "")
+            if (response.isSuccessful) ApiResponse.Success(response)
+            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
+                AUTHORIZATION_FAILED_MESSAGE
+            )
+            else ApiResponse.ApiError(response.body()?.error ?: "")
 
         } catch (e: Exception) {
             e.printStackTrace()
-
-            val error = e.message.toString().trim()
-            if (error == AUTHORIZATION_FAILED_ERROR) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(e.message.toString())
+            ApiResponse.ApiError(e.message.toString())
         }
     }
 
@@ -74,17 +69,15 @@ class BookInRepositoryImpl @Inject constructor(
             val token = user.token.toToken()
             val response = apiService.getBoxItemsForBookIn(token, issuerId)
 
-            if (response.isSuccess) ApiResponse.Success(response)
-            else ApiResponse.ApiError(response.error ?: "")
+            if (response.isSuccessful) ApiResponse.Success(response)
+            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
+                AUTHORIZATION_FAILED_MESSAGE
+            )
+            else ApiResponse.ApiError(response.body()?.error ?: "")
 
         } catch (e: Exception) {
             e.printStackTrace()
-
-            val error = e.message.toString().trim()
-            if (error == AUTHORIZATION_FAILED_ERROR) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(e.message.toString())
+            ApiResponse.ApiError(e.message.toString())
         }
     }
 
@@ -98,34 +91,31 @@ class BookInRepositoryImpl @Inject constructor(
             val token = user.token.toToken()
             val response = apiService.getAllBookInItemsOfBox(token, box, status, loginUserId)
 
-            if (response.isSuccess) ApiResponse.Success(response)
-            else ApiResponse.ApiError(response.error ?: "")
+            if (response.isSuccessful) ApiResponse.Success(response)
+            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
+                AUTHORIZATION_FAILED_MESSAGE
+            )
+            else ApiResponse.ApiError(response.body()?.error ?: "")
+
 
         } catch (e: Exception) {
             e.printStackTrace()
-
-            val error = e.message.toString().trim()
-            if (error == AUTHORIZATION_FAILED_ERROR) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(e.message.toString())
+            ApiResponse.ApiError(e.message.toString())
         }
     }
 
     override suspend fun checkUSCaseByBox(boxName: String): ApiResponse<CheckUSCaseResponse> {
         return try {
             val response = apiService.checkUSCaseByBox(boxName)
-            if (response.isSuccess) ApiResponse.Success(response)
-            else ApiResponse.ApiError(response.error ?: "")
+            if (response.isSuccessful) ApiResponse.Success(response)
+            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
+                AUTHORIZATION_FAILED_MESSAGE
+            )
+            else ApiResponse.ApiError(response.body()?.error ?: "")
 
         } catch (e: Exception) {
             e.printStackTrace()
-
-            val error = e.message.toString().trim()
-            if (error == AUTHORIZATION_FAILED_ERROR) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(e.message.toString())
+            ApiResponse.ApiError(e.message.toString())
         }
     }
 }

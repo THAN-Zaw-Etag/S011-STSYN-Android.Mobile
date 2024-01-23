@@ -36,6 +36,7 @@ fun WarningDialog(
     color: Color = MaterialTheme.colorScheme.primary,
     showDialog: Boolean,
     positiveButtonTitle: String,
+    onDismiss: () -> Unit = {},
     negativeButtonTitle: String = "",
     onNegativeButtonClick: () -> Unit = {},
     onPositiveButtonClick: () -> Unit = {},
@@ -51,7 +52,7 @@ fun WarningDialog(
         Dialog(properties = DialogProperties(
             dismissOnBackPress = false, dismissOnClickOutside = false
         ), onDismissRequest = {
-            show = false
+            onDismiss()
         }) {
             Surface(
                 modifier = modifier

@@ -1,16 +1,13 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class
 )
 
 package com.etag.stsyn.ui.screen.base
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,16 +20,15 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -68,12 +64,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun BaseBoxScreen(
     bookItems: List<BoxItem>,
+    boxes: List<BoxItem> = emptyList(), //TODO Need to remove empty list later
     scannedItemList: List<String> = emptyList(),
     isScanning: Boolean = false,
     boxOutTitle: String = "",
+    checked: Boolean = false,
     scannedBox: BoxItem = BoxItem(),
     onReset: () -> Unit,
     onScan: () -> Unit = {},
+    onRefresh: () -> Unit = {},
     onCheckChange: (Boolean) -> Unit = {},
     showBoxBookOutButton: Boolean = false,
     modifier: Modifier = Modifier
@@ -96,7 +95,7 @@ fun BaseBoxScreen(
     }
 
     DetailBottomSheetScaffold(state = scaffoldState, sheetContent = {
-        BottomSheetContent(boxItems = listOf(), resetNavGraph = resetNavGraph, onItemClick = {
+        BottomSheetContent(boxItems = boxes, resetNavGraph = resetNavGraph, onItemClick = {
 
         })
     }) {
@@ -133,6 +132,7 @@ fun BaseBoxScreen(
                     }
                     BoxScanSection(
                         boxId = scannedBox.serialNo.uppercase(),
+                        onRefresh = onRefresh,
                         boxDescription = scannedBox.description.uppercase()
                     )
                 }
@@ -141,6 +141,7 @@ fun BaseBoxScreen(
                         Spacer(modifier = Modifier.height(12.dp))
                         ScannedItemsOptionLayout(
                             itemCount = items.size,
+                            checked = checked,
                             onCheckChange = onCheckChange,
                             isScanned = false,
                             onReset = onReset
@@ -172,44 +173,15 @@ fun BaseBoxScreen(
 @Composable
 private fun BottomSheetContent(
     resetNavGraph: Boolean,
-    onItemClick: () -> Unit, boxItems: List<String>, modifier: Modifier = Modifier
+    onItemClick: () -> Unit, boxItems: List<BoxItem>, modifier: Modifier = Modifier
 ) {
     var bottomSheetNavController = rememberNavController()
 
     LaunchedEffect(resetNavGraph) {
-        Log.d("TAG", "BottomSheetContent: $resetNavGraph")
         if (resetNavGraph) bottomSheetNavController.navigate(BottomSheetNavigation.BoxList.name)
     }
 
-    BottomSheetNavigationGraph(navController = bottomSheetNavController)
-}
-
-@Composable
-fun BookOutBoxItem(
-    onClick: () -> Unit, modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = Purple80.copy(0.1f), shape = RoundedCornerShape(8.dp))
-            .padding(16.dp)
-            .clickable { },
-    ) {
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "C123456".uppercase(), color = Purple80)
-            IconButton(onClick = { onClick() }) {
-                Icon(
-                    imageVector = Icons.Default.Storage, tint = Purple80, contentDescription = null
-                )
-            }
-        }
-        Text(text = "adapter set aircraft maintenance".uppercase(), color = Purple80)
-        Text(text = "(box)(r01)c123456".uppercase(), color = Purple80)
-    }
+    BottomSheetNavigationGraph(navController = bottomSheetNavController, boxList = boxItems)
 }
 
 @Composable
@@ -247,32 +219,32 @@ fun BottomScannedButtonLayout(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (outStandingItemCount != 0) {
-            Text(
-                text = "Os: $outStandingItemCount"
-            )
-        }
-
+        Text(
+            text = "Os: $outStandingItemCount"
+        )
         ScanIconButton(onScan = onScan, isScanning = isScanning)
 
-        if (outStandingItemCount != 0) {
-            Text(
-                text = "Done: $scannedItemsCount"
-            )
-        }
+        Text(
+            text = "Done: $scannedItemsCount"
+        )
     }
 }
 
 @Composable
 private fun ScannedItemsOptionLayout(
-    onCheckChange: (Boolean) -> Unit,
     itemCount: Int,
     isScanned: Boolean = false,
     modifier: Modifier = Modifier,
-    onReset: () -> Unit
+    checked: Boolean,
+    onCheckChange: (Boolean) -> Unit,
+    onReset: () -> Unit,
 ) {
-    var checked by remember { mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(checked) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(checked) {
+        isChecked = checked
+    }
 
     ConfirmationDialog(showDialog = showConfirmationDialog,
         title = "Reset?",
@@ -297,9 +269,9 @@ private fun ScannedItemsOptionLayout(
                 text = "Visual Check", fontSize = 16.sp
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Switch(checked = checked, onCheckedChange = {
+            Switch(checked = isChecked, onCheckedChange = {
                 onCheckChange(it)
-                checked = it
+                isChecked = it
             })
         }
 
@@ -316,15 +288,17 @@ private fun ScannedItemsOptionLayout(
 
 @Composable
 private fun BoxScanSection(
-    boxId: String, boxDescription: String, modifier: Modifier = Modifier
+    boxId: String, boxDescription: String, modifier: Modifier = Modifier,
+    onRefresh: () -> Unit
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(intrinsicSize = IntrinsicSize.Max)
+            .wrapContentHeight()
     ) {
         ScannedBoxItem(
             boxTitle = "Box",
+            showRefreshIcon = false,
             boxDescription = boxId,
             modifier = Modifier
                 .fillMaxHeight()
@@ -334,6 +308,8 @@ private fun BoxScanSection(
         ScannedBoxItem(
             boxTitle = "Description",
             boxDescription = boxDescription,
+            showRefreshIcon = true,
+            onRefresh = onRefresh,
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(0.7f)
