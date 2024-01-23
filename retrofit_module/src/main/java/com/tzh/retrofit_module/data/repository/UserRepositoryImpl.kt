@@ -96,7 +96,7 @@ class UserRepositoryImpl @Inject constructor(
                 ApiResponse.Success(response.body()!!)
             } else {
                 val responseCode = response.code()
-                if (responseCode == 401) {
+                if (responseCode == AUTHORIZATION_FAILED_ERROR_CODE) {
                     ApiResponse.AuthorizationError( AUTHORIZATION_FAILED_MESSAGE)
                 } else {
                     ApiResponse.ApiError(response.message() ?: "")

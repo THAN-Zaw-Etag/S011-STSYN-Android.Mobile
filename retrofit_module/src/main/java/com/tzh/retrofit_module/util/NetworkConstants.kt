@@ -18,5 +18,5 @@ const val AUTHORIZATION_FAILED_ERROR_CODE = 401
 
 const val AUTHORIZATION_FAILED_MESSAGE =
     "Your authorization token has been expired. Try login again!"
-const val AUTHORIZATION_FAILED_MESSAGE = "Your account has been logged in from another device!"
+
 const val GET_USER_BY_EPC_ROUTE = "User/GetUserByEPC"

@@ -69,22 +69,14 @@ class LoginViewModel @Inject constructor(
     private val _epcModelUser = MutableStateFlow(UserModel())
     val epcModelUser: StateFlow<UserModel> = _epcModelUser.asStateFlow()
 
-    private var _isLoggedIn: Flow<Boolean> = emptyFlow()
-    var isLoggedIn = emptyFlow<Boolean>()
-
     init {
         updateScanType(ScanType.Single)
-
         // if user is already logged in, fetch menu access rights from api
         viewModelScope.launch {
-            localDataStore.getUser.collect {
-                _savedUser.value = it
-                println("isLoggedIn: ${it.token}")
-                if (it.isLoggedIn) getUserMenuAccessRightsById()
-
             launch {
                 localDataStore.getUser.collect {
                     _savedUser.value = it
+                    println("isLoggedIn: ${it.token}")
                     if (it.isLoggedIn) getUserMenuAccessRightsById()
                 }
             }
@@ -105,13 +97,13 @@ class LoginViewModel @Inject constructor(
     }
 
 
-      fun getUserByRfidId(rfidId: String) {
-         viewModelScope.launch {
-             _getUserResponse.emit(ApiResponse.Loading)
-             //Test tag ID = 455341303030303030303130
-             val response = userRepository.getUserByEPC(rfidId)
-             _getUserResponse.emit(response)
-            }
+    fun getUserByRfidId(rfidId: String) {
+        viewModelScope.launch {
+            _getUserResponse.emit(ApiResponse.Loading)
+            //Test tag ID = 455341303030303030303130
+            val response = userRepository.getUserByEPC(rfidId)
+            _getUserResponse.emit(response)
+        }
 
     }
 
