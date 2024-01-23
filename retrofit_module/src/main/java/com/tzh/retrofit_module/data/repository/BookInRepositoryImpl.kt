@@ -35,6 +35,7 @@ class BookInRepositoryImpl @Inject constructor(
             )
 
             if (response.isSuccessful) ApiResponse.Success(response)
+
             if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
                 AUTHORIZATION_FAILED_MESSAGE
             )
@@ -70,6 +71,7 @@ class BookInRepositoryImpl @Inject constructor(
             val response = apiService.getBoxItemsForBookIn(token, issuerId)
 
             if (response.isSuccessful) ApiResponse.Success(response)
+
             if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
                 AUTHORIZATION_FAILED_MESSAGE
             )
