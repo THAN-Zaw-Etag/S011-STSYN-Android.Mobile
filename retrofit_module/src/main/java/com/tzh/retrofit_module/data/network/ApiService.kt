@@ -31,7 +31,7 @@ import retrofit2.http.Query
 
 interface ApiService {
     @POST(LOGIN_ROUTE)
-    suspend fun login(@Body loginRequest: LoginRequest): LoginResponse
+    suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
     @POST(REFRESH_TOKEN_ROUTE)
     suspend fun refreshToken(@Body refreshTokenRequest: RefreshTokenRequest): Response<RefreshTokenResponse>

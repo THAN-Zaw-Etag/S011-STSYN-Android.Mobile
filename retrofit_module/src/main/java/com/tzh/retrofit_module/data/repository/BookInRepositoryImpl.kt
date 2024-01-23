@@ -2,6 +2,7 @@ package com.tzh.retrofit_module.data.repository
 
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
+import com.tzh.retrofit_module.data.network.ApiResponseHandler
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
@@ -9,8 +10,6 @@ import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxRespons
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookInRepository
-import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_ERROR_CODE
-import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.toToken
 import kotlinx.coroutines.flow.first
@@ -34,12 +33,8 @@ class BookInRepositoryImpl @Inject constructor(
                 token = token
             )
 
-            if (response.isSuccessful) ApiResponse.Success(response)
+            ApiResponseHandler.processResponse(response)
 
-            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(response.body()?.error ?: "")
         } catch (e: Exception) {
             e.printStackTrace()
             ApiResponse.ApiError(e.message.toString())
@@ -52,11 +47,7 @@ class BookInRepositoryImpl @Inject constructor(
             val token = user.token.toToken()
             val response = apiService.saveBookIn(token, saveBookInRequest)
 
-            if (response.isSuccessful) ApiResponse.Success(response)
-            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(response.body()?.error ?: "")
+            ApiResponseHandler.processResponse(response)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -70,12 +61,7 @@ class BookInRepositoryImpl @Inject constructor(
             val token = user.token.toToken()
             val response = apiService.getBoxItemsForBookIn(token, issuerId)
 
-            if (response.isSuccessful) ApiResponse.Success(response)
-
-            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(response.body()?.error ?: "")
+            ApiResponseHandler.processResponse(response)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -93,11 +79,7 @@ class BookInRepositoryImpl @Inject constructor(
             val token = user.token.toToken()
             val response = apiService.getAllBookInItemsOfBox(token, box, status, loginUserId)
 
-            if (response.isSuccessful) ApiResponse.Success(response)
-            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(response.body()?.error ?: "")
+            ApiResponseHandler.processResponse(response)
 
 
         } catch (e: Exception) {
@@ -109,11 +91,7 @@ class BookInRepositoryImpl @Inject constructor(
     override suspend fun checkUSCaseByBox(boxName: String): ApiResponse<CheckUSCaseResponse> {
         return try {
             val response = apiService.checkUSCaseByBox(boxName)
-            if (response.isSuccessful) ApiResponse.Success(response)
-            if (response.code() == AUTHORIZATION_FAILED_ERROR_CODE) ApiResponse.AuthorizationError(
-                AUTHORIZATION_FAILED_MESSAGE
-            )
-            else ApiResponse.ApiError(response.body()?.error ?: "")
+            ApiResponseHandler.processResponse(response)
 
         } catch (e: Exception) {
             e.printStackTrace()
