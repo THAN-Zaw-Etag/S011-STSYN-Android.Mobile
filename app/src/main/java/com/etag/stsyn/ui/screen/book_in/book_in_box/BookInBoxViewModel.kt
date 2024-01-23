@@ -70,6 +70,7 @@ class BookInBoxViewModel @Inject constructor(
                     }
                 }
 
+                is ApiResponse.AuthorizationError -> updateAuthorizationFailedDialogVisibility(true)
                 else -> {}
             }
         }
@@ -132,6 +133,10 @@ class BookInBoxViewModel @Inject constructor(
                         _bookInBoxUiState.update { it.copy(allBoxes = boxes) }
                     }
 
+                    is ApiResponse.AuthorizationError -> updateAuthorizationFailedDialogVisibility(
+                        true
+                    )
+
                     else -> {}
                 }
             }
@@ -151,13 +156,21 @@ class BookInBoxViewModel @Inject constructor(
                     loginUserId = it.userId
                 )
 
-                if (_getAllItemsOfBox.value is ApiResponse.Success) {
-                    val allItems = (_getAllItemsOfBox.value as ApiResponse.Success).data!!.items
-                    viewModelScope.launch {
-                        _getAllItemsOfBox.collect { response ->
-                            _bookInBoxUiState.update { it.copy(allItemsOfBox = allItems.toMutableList()) }
+                when (_getAllItemsOfBox.value) {
+                    is ApiResponse.Success -> {
+                        val allItems = (_getAllItemsOfBox.value as ApiResponse.Success).data!!.items
+                        viewModelScope.launch {
+                            _getAllItemsOfBox.collect { response ->
+                                _bookInBoxUiState.update { it.copy(allItemsOfBox = allItems.toMutableList()) }
+                            }
                         }
                     }
+
+                    is ApiResponse.AuthorizationError -> {
+                        updateAuthorizationFailedDialogVisibility(true)
+                    }
+
+                    else -> {}
                 }
             }
         }
