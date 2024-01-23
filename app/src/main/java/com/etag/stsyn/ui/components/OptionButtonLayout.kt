@@ -2,7 +2,6 @@
 
 package com.etag.stsyn.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,26 +24,25 @@ fun OptionButtonLayout(
     onOptionButtonClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AnimatedVisibility(visible = showButton, modifier = modifier) {
-        Card(
-            onClick = { onOptionButtonClick(optionButtonModel.route) },
-            modifier = Modifier.border(
-                width = 1.dp,
-                color = Color.LightGray,
-                shape = RoundedCornerShape(12.dp)
-            ),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Transparent
-            )
-        ) {
-            Text(
-                text = optionButtonModel.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                textAlign = TextAlign.Center
-            )
-        }
+    Card(
+        enabled = showButton,
+        onClick = { onOptionButtonClick(optionButtonModel.route) },
+        modifier = modifier.border(
+            width = 1.dp,
+            color = Color.LightGray,
+            shape = RoundedCornerShape(12.dp)
+        ),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        )
+    ) {
+        Text(
+            text = optionButtonModel.title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            textAlign = TextAlign.Center
+        )
     }
 }

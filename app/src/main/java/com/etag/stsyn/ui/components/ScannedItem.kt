@@ -1,17 +1,15 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterialApi::class
+    ExperimentalMaterialApi::class, ExperimentalMaterialApi::class
 )
 
 package com.etag.stsyn.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,12 +18,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -91,37 +87,6 @@ fun ScannedItem(
         name = name,
         modifier = modifier
     )
-    /*val state = rememberDismissState(confirmValueChange = {
-        if (it == DismissValue.DismissedToStart) {
-            onSwipeToDismiss()
-        }
-        true
-    })
-
-    val isDismissed = state.isDismissed(DismissDirection.EndToStart)
-
-    if (isSwipeable && !isScanned) {
-        AnimatedVisibility(visible = !isDismissed) {
-            SwipeableItem(state = state, modifier = modifier, content = {
-                ScannedItemContent(
-                    id = id,
-                    name = name,
-                    showError = showError,
-                    showTrailingIcon = showTrailingIcon,
-                    onItemClick = onItemClick,
-                    isScanned = isScanned
-                )
-            })
-        }
-    } else ScannedItemContent(
-        isScanned = isScanned,
-        id = id,
-        showError = showError,
-        showTrailingIcon = showTrailingIcon,
-        onItemClick = onItemClick,
-        name = name,
-        modifier = modifier
-    )*/
 }
 
 @Composable
@@ -181,7 +146,7 @@ private fun ScannedItemContent(
     }
 }
 
-@Composable
+/*@Composable
 private fun ScannedItemDismissBackground(
     modifier: Modifier = Modifier
 ) {
@@ -199,7 +164,7 @@ private fun ScannedItemDismissBackground(
                 .align(Alignment.CenterEnd)
         )
     }
-}
+}*/
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)

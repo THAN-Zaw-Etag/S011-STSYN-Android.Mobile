@@ -2,8 +2,8 @@ package com.tzh.retrofit_module.di
 
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.network.ApiService
-import com.tzh.retrofit_module.data.repository_impl.BookInRepositoryImpl
-import com.tzh.retrofit_module.data.repository_impl.UserRepositoryImpl
+import com.tzh.retrofit_module.data.repository.BookInRepositoryImpl
+import com.tzh.retrofit_module.data.repository.UserRepositoryImpl
 import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import dagger.Module

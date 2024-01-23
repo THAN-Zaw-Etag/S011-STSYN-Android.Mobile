@@ -1,6 +1,6 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class
 )
 
 package com.etag.stsyn.ui.screen.main
@@ -35,8 +35,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
+import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.util.ReaderBatteryUtil
 import com.etag.stsyn.util.datasource.DataSource
 import com.etag.stsyn.util.datasource.OptionButtonModel
@@ -77,12 +79,14 @@ fun MainScreen(
 @Composable
 private fun CategoryItem(
     category: OptionButtonModel,
+    enabled: Boolean = true,
     onCategoryItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         onClick = { onCategoryItemClick(category.route) },
         shape = RoundedCornerShape(16.dp),
+        enabled = enabled,
         modifier = Modifier.border(
             width = 1.dp, color = Color.LightGray, shape = RoundedCornerShape(16.dp)
         ),
@@ -108,6 +112,19 @@ private fun CategoryItem(
             )
         }
     }
+}
+
+@Composable
+@Preview(showBackground = true, showSystemUi = true)
+fun CategoryItemPreview() {
+    CategoryItem(
+        enabled = false,
+        category = OptionButtonModel(
+            title = "Book Out",
+            icon = R.drawable.book_in_icon,
+            route = OptionType.BookOut.toString()
+        ), onCategoryItemClick = {}
+    )
 }
 
 @Composable

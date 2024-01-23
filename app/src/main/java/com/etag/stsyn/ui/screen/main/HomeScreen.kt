@@ -122,7 +122,10 @@ fun HomeScreen(
             ModalDrawerSheet {
                 DrawerContent(
                     user = savedUserState,
-                    onChangePassword = onChangePassword,
+                    onChangePassword = { old, new ->
+                        coroutineScope.launch { drawerState.close() }
+                        onChangePassword(old, new)
+                    },
                     onSettingsClick = {
                         coroutineScope.launch { drawerState.close() }
                         navController.navigate(Routes.SettingsScreen.name)

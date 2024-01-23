@@ -14,7 +14,7 @@ fun TLoanBoxScanScreen(
     val rfidUiState by tLoanBoxViewModel.rfidUiState.collectAsState()
 
     BaseBoxScreen(
-        scannedItems = rfidUiState.scannedItems,
+        bookItems = emptyList(),
         modifier = modifier,
         isScanning = rfidUiState.isScanning,
         onReset = { tLoanBoxViewModel.removeScannedItems() },

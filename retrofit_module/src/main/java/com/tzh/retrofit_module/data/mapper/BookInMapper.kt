@@ -11,7 +11,6 @@ fun List<BookInItem>.toItemMovementLog(
 ): List<ItemMovementLog> {
     val currentDate = DateUtil.getCurrentDate()
     return map {
-        println("calDate: ${it.calDate}")
         ItemMovementLog(
             itemId = it.id,
             description = it.description,
@@ -22,7 +21,7 @@ fun List<BookInItem>.toItemMovementLog(
             approverId = 0,
             date = currentDate,
             handheldReaderId = handleHeldId,
-            calDate = "2024-01-22T03:27:46.114Z", // it.calDate
+            calDate = "2024-01-22T03:27:46.114Z", //TODO it.calDate
             iS_ONSITE_TRANSFER = "0",
             remarks = it.remarks,
             receiverName = "",
@@ -31,3 +30,30 @@ fun List<BookInItem>.toItemMovementLog(
         )
     }
 }
+
+/*
+fun List<BookInItem>.toExpandedScannedItems(): List<ExpandedScannedItemModel> {
+    return map {
+        ExpandedScannedItemModel(
+            serialNo = "${it.serialNo} - ${it.partNo}",
+            description = it.description,
+            code = it.unit,
+            location = it.itemLocation,
+            storeLocation = it.storeLocation,
+            status = ItemStatus.BookIn.title
+        )
+    }
+}
+
+fun List<BoxItem>.toExpandedScannedItems(): List<ExpandedScannedItemModel> {
+    return map {
+        ExpandedScannedItemModel(
+            serialNo = "${it.serialNo} - ${it.partNo}",
+            description = it.description,
+            code = it.unit,
+            location = it.itemLocation,
+            storeLocation = it.storeLocation,
+            status = ItemStatus.BookIn.title
+        )
+    }
+}*/

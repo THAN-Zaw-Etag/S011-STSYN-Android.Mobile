@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 abstract class BaseViewModel(
     private val rfidHandler: ZebraRfidHandler,
     private val TAG: String = "Base Viewmodel"
@@ -23,19 +22,42 @@ abstract class BaseViewModel(
     private val _rfidUiState = MutableStateFlow(RfidUiState())
     val rfidUiState: StateFlow<RfidUiState> = _rfidUiState.asStateFlow()
 
-    private val _isSaved = MutableStateFlow(false)
-    val isSaved: StateFlow<Boolean> = _isSaved.asStateFlow()
+    private val _detailUiState = MutableStateFlow(DetailUiState())
+    val detailUiState: StateFlow<DetailUiState> = _detailUiState.asStateFlow()
+
+    private val _showAuthorizationFailedDialog = MutableStateFlow(false)
+    val showAuthorizationFailedDialog: StateFlow<Boolean> =
+        _showAuthorizationFailedDialog.asStateFlow()
 
     private var reconnectingJob: Job? = null
 
     init {
-        //onCreate()
         setRfidListener()
         updateScanType(ScanType.Multi)
     }
 
+    protected fun updateAuthorizationFailedDialogVisibility(isVisible: Boolean) {
+        _showAuthorizationFailedDialog.update { isVisible }
+    }
+
     fun updateIsSavedStatus(isSaved: Boolean) {
-        _isSaved.update { isSaved }
+        _detailUiState.update {
+            it.copy(isSaved = isSaved)
+        }
+    }
+
+    fun toggleLoadingVisibility(visible: Boolean) {
+        _detailUiState.update {
+            it.copy(showLoadingDialog = visible, message = "")
+        }
+    }
+
+    fun showError(message: String) {
+        _detailUiState.update { it.copy(message = message) }
+    }
+
+    fun hideError() {
+        _detailUiState.update { it.copy(message = "") }
     }
 
     fun updateScanType(scanType: ScanType) {
@@ -194,6 +216,12 @@ abstract class BaseViewModel(
     override fun handleTriggerPress(pressed: Boolean) {
         if (pressed && _rfidUiState.value.isScannable) startScan() else stopScan()
     }
+
+    data class DetailUiState(
+        val showLoadingDialog: Boolean = false,
+        val isSaved: Boolean = false,
+        val message: String = ""
+    )
 
     data class RfidUiState(
         val isScanning: Boolean = false,

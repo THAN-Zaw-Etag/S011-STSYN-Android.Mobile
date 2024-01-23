@@ -15,7 +15,7 @@ fun DetPLoanBoxScanScreen(
 
     BaseBoxScreen(
         modifier = modifier,
-        scannedItems = rfidUiState.scannedItems,
+        bookItems = emptyList(),
         isScanning = rfidUiState.isScanning,
         onScan = { detPLoanBoxViewModel.toggle() },
         onReset = { detPLoanBoxViewModel.removeScannedItems() },
