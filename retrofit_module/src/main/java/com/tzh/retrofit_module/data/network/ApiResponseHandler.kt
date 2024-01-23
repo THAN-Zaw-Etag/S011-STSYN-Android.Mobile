@@ -8,7 +8,8 @@ import retrofit2.Response
 import java.io.IOException
 
 object ApiResponseHandler {
-    fun <T> processResponse(response: Response<T>): ApiResponse<T> {
+    suspend fun <T> processResponse(makeApiCall: suspend () -> Response<T>): ApiResponse<T> {
+        val response = makeApiCall()
         return try {
             if (response.isSuccessful) {
                 ApiResponse.Success(response.body())
@@ -16,6 +17,7 @@ object ApiResponseHandler {
                 handleResponseCode<T>(response.code())
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             handleError<T>(e)
         }
     }

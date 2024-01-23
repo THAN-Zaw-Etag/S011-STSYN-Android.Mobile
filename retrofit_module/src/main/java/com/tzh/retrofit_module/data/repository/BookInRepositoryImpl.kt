@@ -16,86 +16,52 @@ import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class BookInRepositoryImpl @Inject constructor(
-    private val apiService: ApiService,
-    private val localDataStore: LocalDataStore
+    private val apiService: ApiService, private val localDataStore: LocalDataStore
 ) : BookInRepository {
     override suspend fun getBookInItems(
-        store: String,
-        csNo: String,
-        userId: String
+        store: String, csNo: String, userId: String
     ): ApiResponse<BookInResponse> {
-        return try {
-            val token = localDataStore.getUser.first().token.toToken()
-            val response = apiService.getBookInItems(
-                store = store,
-                csNo = csNo,
-                userID = userId,
-                token = token
+        val token = localDataStore.getUser.first().token.toToken()
+
+        return ApiResponseHandler.processResponse {
+            apiService.getBookInItems(
+                store = store, csNo = csNo, userID = userId, token = token
             )
-
-            ApiResponseHandler.processResponse(response)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
         }
     }
 
     override suspend fun saveBookIn(saveBookInRequest: SaveBookInRequest): ApiResponse<NormalResponse> {
-        return try {
-            val user = localDataStore.getUser.first()
-            val token = user.token.toToken()
-            val response = apiService.saveBookIn(token, saveBookInRequest)
+        val user = localDataStore.getUser.first()
+        val token = user.token.toToken()
 
-            ApiResponseHandler.processResponse(response)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
+        return ApiResponseHandler.processResponse {
+            apiService.saveBookIn(token, saveBookInRequest)
         }
     }
 
     override suspend fun getBoxItemsForBookIn(issuerId: String): ApiResponse<SelectBoxForBookInResponse> {
-        return try {
-            val user = localDataStore.getUser.first()
-            val token = user.token.toToken()
-            val response = apiService.getBoxItemsForBookIn(token, issuerId)
+        val user = localDataStore.getUser.first()
+        val token = user.token.toToken()
 
-            ApiResponseHandler.processResponse(response)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
+        return ApiResponseHandler.processResponse {
+            apiService.getBoxItemsForBookIn(token, issuerId)
         }
     }
 
     override suspend fun getAllBookItemsOfBox(
-        box: String,
-        status: String,
-        loginUserId: String
+        box: String, status: String, loginUserId: String
     ): ApiResponse<GetAllBookInItemsOfBoxResponse> {
-        return try {
-            val user = localDataStore.getUser.first()
-            val token = user.token.toToken()
-            val response = apiService.getAllBookInItemsOfBox(token, box, status, loginUserId)
+        val user = localDataStore.getUser.first()
+        val token = user.token.toToken()
 
-            ApiResponseHandler.processResponse(response)
-
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
+        return ApiResponseHandler.processResponse {
+            apiService.getAllBookInItemsOfBox(token, box, status, loginUserId)
         }
     }
 
     override suspend fun checkUSCaseByBox(boxName: String): ApiResponse<CheckUSCaseResponse> {
-        return try {
-            val response = apiService.checkUSCaseByBox(boxName)
-            ApiResponseHandler.processResponse(response)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
+        return ApiResponseHandler.processResponse {
+            apiService.checkUSCaseByBox(boxName)
         }
     }
 }

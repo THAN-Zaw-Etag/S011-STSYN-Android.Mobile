@@ -23,50 +23,33 @@ class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
 
     override suspend fun login(loginRequest: LoginRequest): ApiResponse<LoginResponse> {
-        return try {
-            val response = apiService.login(loginRequest)
-            ApiResponseHandler.processResponse(response)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
+        return ApiResponseHandler.processResponse {
+            apiService.login(loginRequest)
         }
     }
 
     override suspend fun refreshToken(): ApiResponse<RefreshTokenResponse> {
-        return try {
-            val user = localDataStore.getUser.last()
-            val response = apiService.refreshToken(RefreshTokenRequest(user.token))
-            ApiResponseHandler.processResponse(response)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
+        val user = localDataStore.getUser.last()
+        return ApiResponseHandler.processResponse {
+            apiService.refreshToken(RefreshTokenRequest(user.token))
         }
     }
 
     override suspend fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest
     ): ApiResponse<NormalResponse> {
-        return try {
-            val token = localDataStore.getUser.last().token.toToken()
-            val response = apiService.updatePassword(token, updatePasswordRequest)
-            ApiResponseHandler.processResponse(response)
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
+        val token = localDataStore.getUser.last().token.toToken()
+        return ApiResponseHandler.processResponse {
+            apiService.updatePassword(token, updatePasswordRequest)
         }
     }
 
     override suspend fun getUserMenuAccessRightsById(): ApiResponse<UserMenuAccessRightsByIdResponse> {
-        return try {
-            val user = localDataStore.getUser.last()
-            val token = user.token.toToken()
+        val user = localDataStore.getUser.last()
+        val token = user.token.toToken()
 
-            val response = apiService.getUserAccessRightsByRoleId(token = token, id = user.roleId)
-            ApiResponseHandler.processResponse(response)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.message.toString())
+        return ApiResponseHandler.processResponse {
+            apiService.getUserAccessRightsByRoleId(token = token, id = user.roleId)
         }
     }
 
@@ -75,12 +58,8 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getUserByEPC(epc: String): ApiResponse<GetUserByEPCResponse> {
-        return try {
-            val response = apiService.getUserByEPC(epc)
-            ApiResponseHandler.processResponse(response)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ApiResponse.ApiError(e.localizedMessage ?: "An unknown error occurred")
+        return ApiResponseHandler.processResponse {
+            apiService.getUserByEPC(epc)
         }
     }
 }
