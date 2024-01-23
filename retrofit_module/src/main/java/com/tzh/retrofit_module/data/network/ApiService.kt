@@ -5,6 +5,7 @@ import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
+import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
@@ -12,6 +13,7 @@ import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.util.BOOK_IN_GET_ITEM_ROUTE
+import com.tzh.retrofit_module.util.CHECK_U_S_CASE_BY_BOX_ROUTE
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
 import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
@@ -70,5 +72,8 @@ interface ApiService {
         @Query("status") status: String,
         @Query("loginUserId") loginUserId: String,
     ): GetAllBookInItemsOfBoxResponse
+
+    @GET(CHECK_U_S_CASE_BY_BOX_ROUTE)
+    suspend fun checkUSCaseByBox(@Query("Box") box: String): CheckUSCaseResponse
 
 }

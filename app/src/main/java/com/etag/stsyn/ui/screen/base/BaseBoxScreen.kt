@@ -156,8 +156,8 @@ fun BaseBoxScreen(
                 }
             }
             BottomScannedButtonLayout(
-                outStandingItemCount = 2,
-                scannedItemsCount = 0,
+                outStandingItemCount = bookItems.size,
+                scannedItemsCount = scannedItemList.size,
                 isScanning = isScanning,
                 onScan = onScan,
                 modifier = Modifier.constrainAs(buttonLayout) {
@@ -266,7 +266,10 @@ fun BottomScannedButtonLayout(
 @Composable
 private fun ScannedItemsOptionLayout(
     onCheckChange: (Boolean) -> Unit,
-    itemCount: Int, isScanned: Boolean = false, modifier: Modifier = Modifier, onReset: () -> Unit
+    itemCount: Int,
+    isScanned: Boolean = false,
+    modifier: Modifier = Modifier,
+    onReset: () -> Unit
 ) {
     var checked by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }

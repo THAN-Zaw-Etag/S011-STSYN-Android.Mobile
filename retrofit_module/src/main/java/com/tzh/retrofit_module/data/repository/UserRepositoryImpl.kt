@@ -38,7 +38,7 @@ class UserRepositoryImpl @Inject constructor(
             val user = localDataStore.getUser.last()
             val response = apiService.refreshToken(RefreshTokenRequest(user.token))
             if (response.isSuccess) ApiResponse.Success(response)
-            else ApiResponse.ApiError(response.error)
+            else ApiResponse.ApiError(response.error ?: "")
         } catch (e: Exception) {
             e.printStackTrace()
             ApiResponse.ApiError(e.message.toString())

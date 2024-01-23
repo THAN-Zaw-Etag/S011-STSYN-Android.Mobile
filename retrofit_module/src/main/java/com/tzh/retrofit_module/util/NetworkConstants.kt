@@ -6,6 +6,7 @@ const val REFRESH_TOKEN_ROUTE = "Authenticate/RefreshToken"
 const val BOOK_IN_GET_ITEM_ROUTE = "BookIn/GetValidBookInItems"
 const val SAVE_BOOK_IN_ROUTE = "BookIn/SaveBookIn"
 const val SELECT_BOX_FOR_BOOK_IN_ROUTE = "BookIn/SelectBoxForBookIn"
+const val CHECK_U_S_CASE_BY_BOX_ROUTE = "BookIn/CheckUSCaseByBox"
 const val GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE = "BookIn/SelectItemsInCTKBoxForBookIn"
 
 

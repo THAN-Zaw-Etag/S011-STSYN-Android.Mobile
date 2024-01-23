@@ -59,6 +59,23 @@ class BookInBoxViewModel @Inject constructor(
         }
     }
 
+    private fun checkUsCaseByBoxName(boxName: String) {
+        viewModelScope.launch {
+            val response = bookInRepository.checkUSCaseByBox(boxName)
+            when (response) {
+                is ApiResponse.Success -> {
+                    _bookInBoxUiState.update {
+                        it.copy(
+                            isUsCase = response.data?.isUsCase ?: false
+                        )
+                    }
+                }
+
+                else -> {}
+            }
+        }
+    }
+
     override fun onReceivedTagId(id: String) {
         if (_getBoxItemsForBookInResponse.value is ApiResponse.Success) {
             boxItems.value =
@@ -70,6 +87,9 @@ class BookInBoxViewModel @Inject constructor(
                     box = scannedBoxItem.box,
                     status = scannedBoxItem.itemStatus
                 )
+
+                // check box is us case
+                checkUsCaseByBoxName(scannedBoxItem.box)
             }
 
             if (boxItems.value.isNotEmpty()) updateScanType(ScanType.Multi) else updateScanType(
@@ -83,7 +103,7 @@ class BookInBoxViewModel @Inject constructor(
 
     fun toggleVisualCheck(enable: Boolean) {
         if (enable) {
-            scannedItemsList.update { boxItems.value.map { it.id } }
+            scannedItemsList.update { boxItems.value.map { it.epc } }
         } else scannedItemsList.update { emptyList() }
     }
 
@@ -125,6 +145,7 @@ class BookInBoxViewModel @Inject constructor(
 
     data class BookInBoxUiState(
         val scannedBox: BoxItem = BoxItem(),
+        val isUsCase: Boolean = false,
         val allItemsOfBox: MutableList<BoxItem> = mutableListOf()
     )
 }

@@ -2,6 +2,7 @@ package com.tzh.retrofit_module.domain.repository
 
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
+import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -16,6 +17,8 @@ interface BookInRepository {
 
     suspend fun saveBookIn(saveBookInRequest: SaveBookInRequest): ApiResponse<NormalResponse>
     suspend fun getBoxItemsForBookIn(issuerId: String): ApiResponse<SelectBoxForBookInResponse>
+
+    suspend fun checkUSCaseByBox(boxName: String): ApiResponse<CheckUSCaseResponse>
 
     suspend fun getAllBookItemsOfBox(
         box: String,

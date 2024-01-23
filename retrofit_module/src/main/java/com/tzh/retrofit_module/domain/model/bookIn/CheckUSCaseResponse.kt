@@ -1,7 +1,7 @@
 package com.tzh.retrofit_module.domain.model.bookIn
 
-data class RefreshTokenResponse(
+data class CheckUSCaseResponse(
     val error: String?,
     val isSuccess: Boolean,
-    val token: String
+    val isUsCase: Boolean
 )

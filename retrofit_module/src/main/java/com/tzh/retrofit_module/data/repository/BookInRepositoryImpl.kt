@@ -4,6 +4,7 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
+import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -97,6 +98,23 @@ class BookInRepositoryImpl @Inject constructor(
             val token = user.token.toToken()
             val response = apiService.getAllBookInItemsOfBox(token, box, status, loginUserId)
 
+            if (response.isSuccess) ApiResponse.Success(response)
+            else ApiResponse.ApiError(response.error ?: "")
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            val error = e.message.toString().trim()
+            if (error == AUTHORIZATION_FAILED_ERROR) ApiResponse.AuthorizationError(
+                AUTHORIZATION_FAILED_MESSAGE
+            )
+            else ApiResponse.ApiError(e.message.toString())
+        }
+    }
+
+    override suspend fun checkUSCaseByBox(boxName: String): ApiResponse<CheckUSCaseResponse> {
+        return try {
+            val response = apiService.checkUSCaseByBox(boxName)
             if (response.isSuccess) ApiResponse.Success(response)
             else ApiResponse.ApiError(response.error ?: "")
 
