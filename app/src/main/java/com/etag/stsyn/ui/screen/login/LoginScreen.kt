@@ -56,6 +56,7 @@ fun LoginScreen(
     }
 
     LaunchedEffect(loginUiState.rfidId) {
+        println("rfidId: ${loginUiState.rfidId}")
         if (loginUiState.rfidId.isNotEmpty()) {
             navigateToLoginContentScreen()
         }

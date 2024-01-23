@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.navigation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,7 +33,6 @@ fun NavigationGraph(
         }
     }
 
-
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
 
@@ -43,7 +43,7 @@ fun NavigationGraph(
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = Routes.LoginContentScreen.name
+        startDestination = Routes.SplashScreen.name
     ) {
 
         composable(route = Routes.SplashScreen.name) {
@@ -62,6 +62,7 @@ fun NavigationGraph(
         }
 
         composable(route = Routes.LoginScreen.name) {
+            loginViewModel.enableScan()
             LoginScreen(
                 navigateToLoginContentScreen = { navController.navigate(Routes.LoginContentScreen.name) },
                 loginViewModel = loginViewModel
@@ -70,6 +71,12 @@ fun NavigationGraph(
 
         composable(route = Routes.LoginContentScreen.name) {
             loginViewModel.removeListener() // remove listener when
+
+            BackHandler(true) {
+                loginViewModel.navigateToScanScreen()
+                navController.navigateUp()
+            }
+
             LaunchedEffect(loginUiState.isLoginSuccessful) {
                 if (loginUiState.isLoginSuccessful)
                     navController.navigate(Routes.HomeContentScreen.name)

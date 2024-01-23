@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.login
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -182,9 +181,12 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun navigateToScanScreen() {
+        _loginUiState.update { it.copy(rfidId = "") }
+    }
+
     override fun onReceivedTagId(id: String) {
         _loginUiState.update { it.copy(rfidId = id) }
-        Log.d("TAG", "onReceivedTagId: $id")
         getUserByRfidId(id)
     }
 
