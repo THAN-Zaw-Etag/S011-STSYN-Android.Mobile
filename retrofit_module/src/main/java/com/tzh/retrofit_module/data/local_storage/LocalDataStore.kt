@@ -57,6 +57,12 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         }
     }
 
+    suspend fun saveToken(token: String) {
+        context.dataStore.edit {
+            it[TOKEN] = token
+        }
+    }
+
     suspend fun saveEpcUser(userModel: UserModel) {
         context.dataStore.edit { preferences ->
             preferences[EPC_AIRBASE] = userModel.airbase

@@ -38,10 +38,8 @@ class LoginViewModel @Inject constructor(
     private val _loginUiState = MutableStateFlow(LoginUiState())
     val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
 
-
     private val _getUserResponse = MutableSharedFlow<ApiResponse<GetUserByEPCResponse>>()
     val getUserByEPCResponse: SharedFlow<ApiResponse<GetUserByEPCResponse>> = _getUserResponse.asSharedFlow()
-
 
     private val _loginResponse = MutableStateFlow<ApiResponse<LoginResponse>>(ApiResponse.Default)
     val loginResponse: StateFlow<ApiResponse<LoginResponse>> = _loginResponse.asStateFlow()
@@ -59,8 +57,6 @@ class LoginViewModel @Inject constructor(
 
     private val _refreshTokenResponse =
         MutableStateFlow<ApiResponse<RefreshTokenResponse>>(ApiResponse.Default)
-    val refreshTokenResponse: StateFlow<ApiResponse<RefreshTokenResponse>> =
-        _refreshTokenResponse.asStateFlow()
 
     private val _savedUser = MutableStateFlow(LocalUser())
     val savedUser: StateFlow<LocalUser> = _savedUser.asStateFlow()
@@ -75,7 +71,6 @@ class LoginViewModel @Inject constructor(
             launch {
                 localDataStore.getUser.collect {
                     _savedUser.value = it
-                    println("isLoggedIn: ${it.token}")
                     if (it.isLoggedIn) getUserMenuAccessRightsById()
                 }
             }
@@ -85,9 +80,7 @@ class LoginViewModel @Inject constructor(
                     _epcModelUser.value =it
                 }
             }
-
         }
-
     }
 
     fun updateLoginStatus(isSuccessful: Boolean) {
@@ -95,14 +88,12 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    fun getUserByRfidId(rfidId: String) {
+    private fun getUserByRfidId(rfidId: String) {
         viewModelScope.launch {
             _getUserResponse.emit(ApiResponse.Loading)
-            //Test tag ID = 455341303030303030303130
             val response = userRepository.getUserByEPC(rfidId)
             _getUserResponse.emit(response)
         }
-
     }
 
     fun saveUserByEpcResponseToLocal(userModel: UserModel) {
@@ -162,6 +153,13 @@ class LoginViewModel @Inject constructor(
     fun refreshToken() {
         viewModelScope.launch {
             _refreshTokenResponse.value = userRepository.refreshToken()
+            when (_refreshTokenResponse.value) {
+                is ApiResponse.Success -> {
+                    localDataStore.saveToken((_refreshTokenResponse.value as ApiResponse.Success<RefreshTokenResponse>).data!!.token)
+                }
+
+                else -> {}
+            }
         }
     }
 

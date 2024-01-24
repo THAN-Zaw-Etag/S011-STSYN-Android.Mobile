@@ -1,5 +1,6 @@
 package com.tzh.retrofit_module.data.network
 
+import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
 import org.json.JSONException
@@ -12,7 +13,9 @@ object ApiResponseHandler {
         return try {
             val response = makeApiCall()
             if (response.isSuccessful) {
-                ApiResponse.Success(response.body())
+                val normalResponse = getNormalResponseFromApiResponse(response.body().toString())
+                if (normalResponse.isSuccess) return ApiResponse.Success(response.body())
+                else return ApiResponse.ApiError(normalResponse.error ?: "Unknown error")
             } else {
                 handleResponseCode<T>(response.code())
             }
@@ -20,6 +23,14 @@ object ApiResponseHandler {
             e.printStackTrace()
             handleError<T>(e)
         }
+    }
+
+    private fun getNormalResponseFromApiResponse(response: String): NormalResponse {
+        val isSuccess = response.contains("isSuccess=true")
+        val pattern = Regex("error=(.*?),")
+        val matchResult = pattern.find(response)
+        val error = matchResult?.groupValues?.getOrNull(1)
+        return NormalResponse(isSuccess = isSuccess, error = error)
     }
 
     private fun <T> handleError(exception: Exception): ApiResponse<T> {

@@ -1,8 +1,6 @@
 package com.etag.stsyn.ui.navigation
 
 import androidx.activity.compose.BackHandler
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -13,7 +11,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.etag.stsyn.core.BaseViewModel.ScanType
-import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.screen.login.LoginContentScreen
 import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
@@ -115,7 +112,7 @@ fun NavigationGraph(
                 onChangePassword = loginViewModel::updatePassword,
                 onLogOutClick = {
                     loginViewModel.logOut()
-                    ExitApp(context)
+                    navController.navigate(Routes.LoginScreen.name)
                 },
                 onSettingsClick = {},
             )

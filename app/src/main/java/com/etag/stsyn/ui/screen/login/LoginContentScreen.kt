@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.login
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -69,7 +70,8 @@ fun LoginContentScreen(
     when (loginResponse) {
         is ApiResponse.Loading -> LoadingDialog(title = "Signing In...",
             showDialog = true,
-            onDismiss = { })
+            onDismiss = { }
+        )
 
         is ApiResponse.Success -> {
             val user = loginResponse.data?.user
@@ -84,6 +86,8 @@ fun LoginContentScreen(
         }
 
         is ApiResponse.ApiError -> {
+            Log.d("TAG", "LoginContentScreen: ${loginResponse.message}")
+            onFailed()
             error = loginResponse.message
         }
 

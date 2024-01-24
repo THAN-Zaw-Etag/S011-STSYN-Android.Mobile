@@ -48,8 +48,8 @@ import com.tzh.retrofit_module.util.ApiResponse
 @Composable
 fun LoginScreen(
     navigateToLoginContentScreen: () -> Unit,
+    loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier.fillMaxSize(),
-    loginViewModel: LoginViewModel
 ) {
 
     val loginUiState by loginViewModel.loginUiState.collectAsState()
@@ -57,9 +57,7 @@ fun LoginScreen(
     val context = LocalContext.current
 
     ReaderLifeCycle(viewModel = loginViewModel)
-    LaunchedEffect(Unit) {
-        Log.d("TAG", "LoginScreen: Unit - ${rfidUiState.isConnected}")
-    }
+
     var showLoadingDialog by remember {
         mutableStateOf(false)
     }
@@ -80,8 +78,8 @@ fun LoginScreen(
                     showLoadingDialog = false
                     val userModel = response.data?.userModel
 
-
                     if (userModel != null) {
+                        Log.d("TAG", "LoginScreen: validId")
                         navigateToLoginContentScreen()
                         loginViewModel.saveUserByEpcResponseToLocal(userModel)
                     } else {
@@ -100,23 +98,8 @@ fun LoginScreen(
             }
         }
     }
-    /*
-  *
-  *  LaunchedEffect(loginUiState.rfidId) {
-        if (loginUiState.rfidId.isNotEmpty()) {
-            navigateToLoginContentScreen()
-        }
-    }
-  **/
-
-
-
-
-
 
     LoginProgressDialog(showDialog = showLoadingDialog)
-
-
 
     LaunchedEffect(rfidUiState.isConnected) {
         if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT)

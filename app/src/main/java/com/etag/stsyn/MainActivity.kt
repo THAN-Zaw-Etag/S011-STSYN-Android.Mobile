@@ -2,6 +2,7 @@ package com.etag.stsyn
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -23,6 +26,7 @@ import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.theme.STSYNTheme
 import com.etag.stsyn.util.PermissionUtil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -41,9 +45,23 @@ class MainActivity : ComponentActivity() {
             val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsState()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
+            val savedUser by loginViewModel.savedUser.collectAsState()
             val context = LocalContext.current
 
             PermissionUtil.checkBluetoothPermission(context)
+
+            LaunchedEffect(savedUser) {
+                Log.d("TAG", "appToken: ${savedUser.token}")
+            }
+
+            LaunchedEffect(Unit) {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    while (true) {
+                        delay(5 * 1000L)
+                        loginViewModel.refreshToken()
+                    }
+                }
+            }
 
             LaunchedEffect(Unit) {
                 loginViewModel.connectReader()

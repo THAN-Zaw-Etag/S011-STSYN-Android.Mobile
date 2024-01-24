@@ -56,10 +56,6 @@ abstract class BaseViewModel(
         _detailUiState.update { it.copy(message = message) }
     }
 
-    fun hideError() {
-        _detailUiState.update { it.copy(message = "") }
-    }
-
     fun updateScanType(scanType: ScanType) {
         _rfidUiState.update {
             it.copy(scanType = scanType)
