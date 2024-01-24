@@ -9,8 +9,8 @@ import java.io.IOException
 
 object ApiResponseHandler {
     suspend fun <T> processResponse(makeApiCall: suspend () -> Response<T>): ApiResponse<T> {
-        val response = makeApiCall()
         return try {
+            val response = makeApiCall()
             if (response.isSuccessful) {
                 ApiResponse.Success(response.body())
             } else {

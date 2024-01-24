@@ -43,7 +43,7 @@ fun BookInBoxScanScreen(
 
         is ApiResponse.ApiError -> {
             bookInBoxViewModel.toggleLoadingVisibility(false)
-            bookInBoxViewModel.showError((getAllBoxesResponse as ApiResponse.ApiError).message)
+            bookInBoxViewModel.updateErrorMessage((getAllBoxesResponse as ApiResponse.ApiError).message)
         }
 
         else -> {}

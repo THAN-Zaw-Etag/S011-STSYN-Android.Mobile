@@ -52,6 +52,7 @@ fun WarningDialog(
         Dialog(properties = DialogProperties(
             dismissOnBackPress = false, dismissOnClickOutside = false
         ), onDismissRequest = {
+            show = false
             onDismiss()
         }) {
             Surface(
@@ -84,16 +85,18 @@ fun WarningDialog(
                         }
 
                         Row(modifier = Modifier.align(Alignment.End)) {
-                            TextButton(
-                                onClick = onPositiveButtonClick
-                            ) {
+                            TextButton(onClick = {
+                                onPositiveButtonClick()
+                                onDismiss()
+                            }) {
                                 Text(text = positiveButtonTitle.uppercase())
                             }
 
                             if (negativeButtonTitle.isNotEmpty()) {
-                                TextButton(
-                                    onClick = onNegativeButtonClick
-                                ) {
+                                TextButton(onClick = {
+                                    onNegativeButtonClick()
+                                    onDismiss()
+                                }) {
                                     Text(text = negativeButtonTitle.uppercase())
                                 }
                             }

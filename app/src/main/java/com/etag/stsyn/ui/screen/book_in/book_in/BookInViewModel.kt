@@ -57,7 +57,6 @@ class BookInViewModel @Inject constructor(
     override fun onReceivedTagId(id: String) {
         // handled scanned tags here
         addScannedItem(id)
-        println("scannedItem: $id")
     }
 
     private fun addOutstandingItem() {
@@ -155,8 +154,16 @@ class BookInViewModel @Inject constructor(
                     csNo = it.csNo,
                     userId = userId
                 )
-                println("authorizationFailed: ${_bookInItems.value is ApiResponse.AuthorizationError}")
                 updateAuthorizationFailedDialogVisibility(_bookInItems.value is ApiResponse.AuthorizationError)
+
+                when (_bookInItems.value) {
+                    is ApiResponse.ApiError -> {
+                        updateErrorMessage((_bookInItems.value as ApiResponse.ApiError).message)
+                        println("error: ${(_bookInItems.value as ApiResponse.ApiError).message}")
+                    }
+
+                    else -> {}
+                }
             }
         }
     }

@@ -48,11 +48,11 @@ abstract class BaseViewModel(
 
     fun toggleLoadingVisibility(visible: Boolean) {
         _detailUiState.update {
-            it.copy(showLoadingDialog = visible, message = "")
+            it.copy(showLoadingDialog = visible)
         }
     }
 
-    fun showError(message: String) {
+    fun updateErrorMessage(message: String) {
         _detailUiState.update { it.copy(message = message) }
     }
 

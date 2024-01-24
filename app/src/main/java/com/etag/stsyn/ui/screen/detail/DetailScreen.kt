@@ -1,6 +1,7 @@
 @file:OptIn(
     ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class
 )
 
 package com.etag.stsyn.ui.screen.detail
@@ -67,6 +68,7 @@ fun DetailScreen(
     val detailUiState by viewModel.detailUiState.collectAsState()
 
     val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsState()
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     ReaderLifeCycle(viewModel = viewModel)
 
@@ -77,20 +79,25 @@ fun DetailScreen(
 
     LaunchedEffect(detailUiState) {
         isSaved = detailUiState.isSaved
+        showErrorDialog = detailUiState.message.isNotEmpty()
     }
 
     // show loading while data is fetching
     LoadingDialog(
         title = "Loading...",
         showDialog = detailUiState.showLoadingDialog,
-        onDismiss = { })
+        onDismiss = { }
+    )
 
     // show error when error message is not empty
     WarningDialog(
         icon = CustomIcon.Vector(Icons.Default.Error),
         message = detailUiState.message,
-        showDialog = detailUiState.message.isNotEmpty(),
-        positiveButtonTitle = "Ok"
+        showDialog = showErrorDialog,
+        positiveButtonTitle = "Ok",
+        onDismiss = {
+            showErrorDialog = false
+        }
     )
 
     LaunchedEffect(pagerState.currentPage) {
