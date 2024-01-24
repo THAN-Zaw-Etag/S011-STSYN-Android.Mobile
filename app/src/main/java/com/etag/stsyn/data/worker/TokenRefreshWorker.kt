@@ -4,41 +4,51 @@ import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
+import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.domain.repository.UserRepository
+import com.tzh.retrofit_module.util.ApiResponse
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltWorker
 class TokenRefreshWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) : CoroutineWorker(context, params) {
-    override suspend fun doWork(): Result = coroutineScope {
+    @Inject
+    lateinit var apiService: ApiService
+    override suspend fun doWork(): Result  {
         Log.d("TAG", "doWork: working...")
-        //val response = userRepository.refreshToken()
-        //Log.d("TAG", "doWork: $response")
-        delay(3000)
-        Result.success()
-        /*try {
-            when (response) {
+        //userRepository.refreshToken()
+        return try {
+            Log.d("TAG", "doWork: try")
+            val response = apiService.refreshToken(RefreshTokenRequest("hel"))
+            Log.d("TAG", "doWork: $response")
+            Result.success()
+            /*when (response) {
                 is ApiResponse.Success -> {
-                    Log.d("TAG", "doWork: ${response.data?.token}")
-                     Result.success()
+                    Log.d("TAG", "doWork: ${response.data}")
+                    return Result.success()
                 }
 
                 else -> {
                     Log.d("TAG", "doWork: failed...")
-                     Result.failure()
+                    return Result.failure()
                 }
-            }
+            }*/
         } catch (e: Exception) {
             e.printStackTrace()
-             Result.failure()
-        }*/
+            Result.failure()
+        }
     }
-
 }

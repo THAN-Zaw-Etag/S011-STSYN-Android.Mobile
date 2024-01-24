@@ -2,6 +2,9 @@ package com.etag.stsyn.ui.screen.login
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -161,7 +164,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun refreshToken(context: Context) {
+    fun refreshToken(context: Context,owner: LifecycleOwner) {
         Log.d("TAG", "doWork: call refresh token")
         val periodicRefreshRequest = PeriodicWorkRequest.Builder(
             TokenRefreshWorker::class.java,
@@ -182,9 +185,17 @@ class LoginViewModel @Inject constructor(
         val workManager = WorkManager.getInstance(context)
         workManager.enqueueUniquePeriodicWork(
             "1023",
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.REPLACE,
             periodicRefreshRequest
         )
+
+        val workStatus = workManager.getWorkInfoByIdLiveData(periodicRefreshRequest.id)
+        workStatus.observe(owner, Observer {
+            if (it != null && it.state.isFinished) {
+                Log.d("TAG", "doWork: work done")
+                workManager.cancelWorkById(periodicRefreshRequest.id)
+            }
+        })
 
         viewModelScope.launch {
             workManager.getWorkInfosByTagLiveData("1023").observeForever {

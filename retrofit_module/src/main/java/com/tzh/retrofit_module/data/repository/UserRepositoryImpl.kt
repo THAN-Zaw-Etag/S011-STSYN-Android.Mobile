@@ -1,5 +1,6 @@
 package com.tzh.retrofit_module.data.repository
 
+import android.util.Log
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
@@ -30,6 +31,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun refreshToken(): ApiResponse<RefreshTokenResponse> {
         val user = localDataStore.getUser.last()
+        Log.d("TAG", "doWork: ${user.name}")
         return ApiResponseHandler.processResponse {
             apiService.refreshToken(RefreshTokenRequest(user.token))
         }
