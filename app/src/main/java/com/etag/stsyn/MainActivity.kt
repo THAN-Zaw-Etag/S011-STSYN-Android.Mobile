@@ -14,8 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -26,7 +24,6 @@ import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.theme.STSYNTheme
 import com.etag.stsyn.util.PermissionUtil
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -41,6 +38,7 @@ class MainActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         setContent {
+            val navController = rememberNavController()
             val loginViewModel: LoginViewModel = hiltViewModel()
             val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsState()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
@@ -50,26 +48,18 @@ class MainActivity : ComponentActivity() {
 
             PermissionUtil.checkBluetoothPermission(context)
 
-            LaunchedEffect(savedUser) {
-                Log.d("TAG", "appToken: ${savedUser.token}")
-            }
+            loginViewModel.refreshToken(this)
 
-            LaunchedEffect(Unit) {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    while (true) {
-                        delay(5 * 1000L)
-                        loginViewModel.refreshToken()
-                    }
-                }
-            }
-
+            // connect reader only when the app starts
             LaunchedEffect(Unit) {
                 loginViewModel.connectReader()
+                loginViewModel.savedUser.collect {
+                    Log.d("TAG", "appToken: ${it.token}")
+                }
             }
 
             handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)
 
-            val navController = rememberNavController()
 
             STSYNTheme {
                 Surface(

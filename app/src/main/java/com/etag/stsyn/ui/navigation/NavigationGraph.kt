@@ -6,7 +6,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -27,15 +26,15 @@ fun NavigationGraph(
     loginViewModel: LoginViewModel
 ) {
 
+    val loginUiState by loginViewModel.loginUiState.collectAsState()
+    val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
+    val epcModelUserName by loginViewModel.epcModelUser.collectAsState(UserModel())
+
     LaunchedEffect(navController.currentDestination) {
         if ((navController.currentDestination ?: "") == Routes.LoginScreen.name) {
             loginViewModel.updateScanType(ScanType.Single)
         }
     }
-
-    val loginUiState by loginViewModel.loginUiState.collectAsState()
-    val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
-    val epcModelUserName by  loginViewModel.epcModelUser.collectAsState(UserModel())
 
     LaunchedEffect(savedUser.isLoggedIn) {
         delay(1000)
@@ -44,7 +43,7 @@ fun NavigationGraph(
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = Routes.SplashScreen.name
+        startDestination = Routes.LoginContentScreen.name
     ) {
 
         composable(route = Routes.SplashScreen.name) {
@@ -105,7 +104,8 @@ fun NavigationGraph(
         }
 
         composable(route = Routes.HomeContentScreen.name) {
-            val context = LocalContext.current
+            // disable scan
+            loginViewModel.disableScan()
 
             HomeScreen(
                 loginViewModel = loginViewModel,

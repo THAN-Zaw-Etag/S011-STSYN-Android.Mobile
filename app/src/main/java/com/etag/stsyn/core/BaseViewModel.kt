@@ -156,6 +156,8 @@ abstract class BaseViewModel(
         }
     }
 
+    /**
+     * Disable reader scan*/
     fun disableScan() {
         updateScannableStatus(false)
     }

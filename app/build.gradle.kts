@@ -50,9 +50,15 @@ android {
 
 dependencies {
     val hilt_version = "2.46"
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
     implementation("com.google.dagger:hilt-android:$hilt_version")
     kapt("com.google.dagger:hilt-android-compiler:$hilt_version")
+    //kapt ("com.google.dagger:hilt-android-compiler:$hilt_version")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 
     val accompanist_version = "0.33.2-alpha"
     implementation("com.google.accompanist:accompanist-pager:$accompanist_version")

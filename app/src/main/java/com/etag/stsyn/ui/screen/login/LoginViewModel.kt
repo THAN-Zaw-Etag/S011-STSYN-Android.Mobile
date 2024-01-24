@@ -1,8 +1,15 @@
 package com.etag.stsyn.ui.screen.login
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
+import com.etag.stsyn.data.worker.TokenRefreshWorker
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
@@ -17,6 +24,7 @@ import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +34,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,6 +72,8 @@ class LoginViewModel @Inject constructor(
 
     private val _epcModelUser = MutableStateFlow(UserModel())
     val epcModelUser: StateFlow<UserModel> = _epcModelUser.asStateFlow()
+
+    private var tokenRefreshingJob: Job? = null
 
     init {
         updateScanType(ScanType.Single)
@@ -127,8 +138,8 @@ class LoginViewModel @Inject constructor(
                 LoginRequest(
                     id = "",
                     nric = "",
-                    rfid = _loginUiState.value.rfidId, //_loginUiState.value.rfidId
-                    password = password,
+                    rfid = "455341303030303030303130", //_loginUiState.value.rfidId
+                    password = "Password23456",
                     isFromMobile = true
                 )
             )
@@ -150,15 +161,34 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun refreshToken() {
-        viewModelScope.launch {
-            _refreshTokenResponse.value = userRepository.refreshToken()
-            when (_refreshTokenResponse.value) {
-                is ApiResponse.Success -> {
-                    localDataStore.saveToken((_refreshTokenResponse.value as ApiResponse.Success<RefreshTokenResponse>).data!!.token)
-                }
+    fun refreshToken(context: Context) {
+        Log.d("TAG", "doWork: call refresh token")
+        val periodicRefreshRequest = PeriodicWorkRequest.Builder(
+            TokenRefreshWorker::class.java,
+            5,
+            TimeUnit.SECONDS
+        ).build()
 
-                else -> {}
+        /*WorkManager.getInstance().enqueueUniquePeriodicWork(
+            "1023",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            periodicRefreshRequest.build()
+        )*/
+
+        val oneTimeWorker = OneTimeWorkRequestBuilder<TokenRefreshWorker>()
+            .setInitialDelay(10, TimeUnit.SECONDS)
+            .build()
+
+        val workManager = WorkManager.getInstance(context)
+        workManager.enqueueUniquePeriodicWork(
+            "1023",
+            ExistingPeriodicWorkPolicy.KEEP,
+            periodicRefreshRequest
+        )
+
+        viewModelScope.launch {
+            workManager.getWorkInfosByTagLiveData("1023").observeForever {
+                Log.d("TAG", "doWork: $it")
             }
         }
     }
