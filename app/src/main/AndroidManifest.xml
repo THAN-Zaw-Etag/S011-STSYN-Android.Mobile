@@ -16,15 +16,32 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.STSYN"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove"></provider>
+        <!--<provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+        android:exported="false"
+        tools:node="merge">
+        &lt;!&ndash; If you are using androidx.startup to initialize other components &ndash;&gt;
+        <meta-data
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:value="androidx.startup"
+            tools:node="remove" />
+    </provider>-->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.STSYN">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

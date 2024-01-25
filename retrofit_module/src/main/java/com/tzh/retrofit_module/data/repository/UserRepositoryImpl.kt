@@ -14,6 +14,7 @@ import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdRespons
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.toToken
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import javax.inject.Inject
 
@@ -29,9 +30,9 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun refreshToken(): ApiResponse<RefreshTokenResponse> {
-        val user = localDataStore.getUser.last()
+        val user = localDataStore.getUser.first()
         return ApiResponseHandler.processResponse {
-            apiService.refreshToken(RefreshTokenRequest(user.token))
+            apiService.refreshToken(user.token.toToken(), RefreshTokenRequest(user.token))
         }
     }
 
@@ -53,8 +54,8 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun logout() {
-
+    override suspend fun saveToken(token: String) {
+        localDataStore.saveToken(token)
     }
 
     override suspend fun getUserByEPC(epc: String): ApiResponse<GetUserByEPCResponse> {

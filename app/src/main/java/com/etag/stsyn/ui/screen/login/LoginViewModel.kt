@@ -7,7 +7,6 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
-import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.MenuAccessRight
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -30,7 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val rfidHandler: ZebraRfidHandler,
+    val rfidHandler: ZebraRfidHandler,
     private val localDataStore: LocalDataStore,
     private val userRepository: UserRepository
 ) : BaseViewModel(rfidHandler) {
@@ -54,9 +53,6 @@ class LoginViewModel @Inject constructor(
 
     private val _userMenuAccessRights = MutableStateFlow(MenuAccessRight())
     val userMenuAccessRight: StateFlow<MenuAccessRight> = _userMenuAccessRights.asStateFlow()
-
-    private val _refreshTokenResponse =
-        MutableStateFlow<ApiResponse<RefreshTokenResponse>>(ApiResponse.Default)
 
     private val _savedUser = MutableStateFlow(LocalUser())
     val savedUser: StateFlow<LocalUser> = _savedUser.asStateFlow()
@@ -192,10 +188,8 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun getUserMenuAccessRightsById() {
-        //updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             userMenuAccessRightsByIdResponse.value = ApiResponse.Loading
-            println("userMenuAccessRightsByIdResponse: ${_userMenuAccessRights.value}")
             delay(1000)
             userMenuAccessRightsByIdResponse.value = userRepository.getUserMenuAccessRightsById()
 

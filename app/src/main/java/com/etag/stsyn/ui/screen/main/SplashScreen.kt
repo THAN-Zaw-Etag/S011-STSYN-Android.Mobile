@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import com.etag.stsyn.R
+import com.etag.stsyn.util.SPLASH_TIME_OUT
 import kotlinx.coroutines.delay
 
 @Composable
@@ -20,15 +21,21 @@ fun SplashScreen(
     modifier: Modifier = Modifier
 ) {
     val currentOnTimeOut by rememberUpdatedState(onTimeOut)
+
+    // finish splash screen after 1 second
     LaunchedEffect(Unit) {
-        delay(1000)
+        delay(SPLASH_TIME_OUT)
         currentOnTimeOut()
     }
 
-    Box (
+    Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(painter = painterResource(id = R.drawable.img), modifier = Modifier.scale(1.7f), contentDescription = null)
+        Image(
+            painter = painterResource(id = R.drawable.img),
+            modifier = Modifier.scale(1.7f),
+            contentDescription = null
+        )
     }
 }
