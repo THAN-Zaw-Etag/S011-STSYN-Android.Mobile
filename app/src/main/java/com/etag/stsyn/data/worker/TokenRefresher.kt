@@ -12,16 +12,21 @@ object TokenRefresher {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED).build()
 
+        val workName = "refreshWorkName"
+
+        workManager.cancelUniqueWork(workName)
+
         val periodicRefreshRequest =
-            PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 15, TimeUnit.MINUTES)
-                .setInitialDelay(5L, TimeUnit.SECONDS)
+            PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 16, TimeUnit.MINUTES)
+                .setInitialDelay(45, TimeUnit.MINUTES)
                 .setConstraints(constraints)
                 .build()
 
         workManager.enqueueUniquePeriodicWork(
-            "DateUtil.getCurrentDate()",
+            workName,
             ExistingPeriodicWorkPolicy.KEEP,
             periodicRefreshRequest
         )
+
     }
 }
