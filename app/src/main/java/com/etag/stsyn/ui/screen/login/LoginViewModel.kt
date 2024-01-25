@@ -1,23 +1,12 @@
 package com.etag.stsyn.ui.screen.login
 
-import android.content.Context
-import android.util.Log
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.etag.stsyn.data.worker.TokenRefreshWorker
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
-import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.MenuAccessRight
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -27,7 +16,6 @@ import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,12 +25,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val rfidHandler: ZebraRfidHandler,
+    val rfidHandler: ZebraRfidHandler,
     private val localDataStore: LocalDataStore,
     private val userRepository: UserRepository
 ) : BaseViewModel(rfidHandler) {
@@ -67,16 +54,11 @@ class LoginViewModel @Inject constructor(
     private val _userMenuAccessRights = MutableStateFlow(MenuAccessRight())
     val userMenuAccessRight: StateFlow<MenuAccessRight> = _userMenuAccessRights.asStateFlow()
 
-    private val _refreshTokenResponse =
-        MutableStateFlow<ApiResponse<RefreshTokenResponse>>(ApiResponse.Default)
-
     private val _savedUser = MutableStateFlow(LocalUser())
     val savedUser: StateFlow<LocalUser> = _savedUser.asStateFlow()
 
     private val _epcModelUser = MutableStateFlow(UserModel())
     val epcModelUser: StateFlow<UserModel> = _epcModelUser.asStateFlow()
-
-    private var tokenRefreshingJob: Job? = null
 
     init {
         updateScanType(ScanType.Single)
@@ -164,51 +146,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun refreshToken(context: Context,owner: LifecycleOwner) {
-        Log.d("TAG", "doWork: call refresh token")
-        val periodicRefreshRequest = PeriodicWorkRequest.Builder(
-            TokenRefreshWorker::class.java,
-            5,
-            TimeUnit.SECONDS
-        ).build()
-
-        /*WorkManager.getInstance().enqueueUniquePeriodicWork(
-            "1023",
-            ExistingPeriodicWorkPolicy.REPLACE,
-            periodicRefreshRequest.build()
-        )*/
-
-        val oneTimeWorker = OneTimeWorkRequestBuilder<TokenRefreshWorker>()
-            .setInitialDelay(10, TimeUnit.SECONDS)
-            .build()
-
-        val workManager = WorkManager.getInstance(context)
-        workManager.enqueueUniquePeriodicWork(
-            "1023",
-            ExistingPeriodicWorkPolicy.REPLACE,
-            periodicRefreshRequest
-        )
-
-        val workStatus = workManager.getWorkInfoByIdLiveData(periodicRefreshRequest.id)
-        workStatus.observe(owner, Observer {
-            if (it != null && it.state.isFinished) {
-                Log.d("TAG", "doWork: work done")
-                workManager.cancelWorkById(periodicRefreshRequest.id)
-            }
-        })
-
-        viewModelScope.launch {
-            workManager.getWorkInfosByTagLiveData("1023").observeForever {
-                Log.d("TAG", "doWork: $it")
-            }
-        }
-    }
-
     fun updatePassword(oldPassword: String, newPassword: String) {
         updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             _updatePasswordResponse.value = ApiResponse.Loading
-            delay(1000)
+            delay(1000) // not to hide loading dialog immediately
 
             savedUser.collect {
                 _updatePasswordResponse.value = userRepository.updatePassword(
@@ -226,10 +168,8 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun getUserMenuAccessRightsById() {
-        //updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             userMenuAccessRightsByIdResponse.value = ApiResponse.Loading
-            println("userMenuAccessRightsByIdResponse: ${_userMenuAccessRights.value}")
             delay(1000)
             userMenuAccessRightsByIdResponse.value = userRepository.getUserMenuAccessRightsById()
 

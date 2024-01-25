@@ -19,7 +19,7 @@ interface UserRepository {
 
     suspend fun getUserMenuAccessRightsById(): ApiResponse<UserMenuAccessRightsByIdResponse>
 
-    suspend fun logout()
+    suspend fun saveToken(token: String)
 
     suspend fun getUserByEPC(epc: String): ApiResponse<GetUserByEPCResponse>
 }

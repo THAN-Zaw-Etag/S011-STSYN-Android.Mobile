@@ -1,6 +1,5 @@
 package com.etag.stsyn.core
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.reader.RfidBatteryLevelListener
@@ -62,7 +61,7 @@ abstract class BaseViewModel(
         }
     }
 
-    private fun addItem(item: String) {
+    /*private fun addItem(item: String) {
         val currentItems = _rfidUiState.value.scannedItems.toMutableList()
 
         val hasExisted = item in currentItems
@@ -70,7 +69,7 @@ abstract class BaseViewModel(
             currentItems.add(item)
             _rfidUiState.update { it.copy(scannedItems = currentItems) } // Update the StateFlow with the new list
         }
-    }
+    }*/
 
     fun removeItem(item: String) {
         val currentItems = _rfidUiState.value.scannedItems.toMutableList()
@@ -121,6 +120,13 @@ abstract class BaseViewModel(
         rfidHandler.setResponseHandlerInterface(this)
     }
 
+    /**
+     * Remove rfid listener
+     * */
+    fun removeListener() {
+        rfidHandler.removeResponseHandLerInterface()
+    }
+
     fun updateIsScanningStatus(isScanning: Boolean) {
         _rfidUiState.update {
             it.copy(isScanning = isScanning)
@@ -132,14 +138,7 @@ abstract class BaseViewModel(
         else startScan()
     }
 
-    /**
-     * Remove rfid listener
-     * */
-    fun removeListener() {
-        rfidHandler.removeResponseHandLerInterface()
-    }
-
-    fun startScan() {
+    private fun startScan() {
         viewModelScope.launch {
             // only able to scan when isScannable is true
             rfidHandler.performInventory()
@@ -181,7 +180,6 @@ abstract class BaseViewModel(
         rfidHandler.setOnBatteryLevelListener(object : RfidBatteryLevelListener {
             override fun onBatteryLevelChange(batteryLevel: Int) {
                 _rfidUiState.update {
-                    Log.d("TAG", "onBatteryLevelChange: $batteryLevel")
                     it.copy(batteryLevel = batteryLevel, isConnected = true)
                 }
             }
@@ -201,13 +199,12 @@ abstract class BaseViewModel(
             updateSingleScannedItem(tagData.get(0).tagID)
             stopScan()
         }
-        addItem(tagData.get(0).tagID)
+        //addItem(tagData.get(0).tagID)
         onReceivedTagId(tagData.get(0).tagID)
     }
 
     override fun handleReaderConnected(isConnected: Boolean) {
         updateIsConnectedStatus(isConnected)
-
         if (isConnected) getReaderBatteryLevel()
     }
 

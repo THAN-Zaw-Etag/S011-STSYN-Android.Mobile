@@ -34,7 +34,10 @@ interface ApiService {
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
     @POST(REFRESH_TOKEN_ROUTE)
-    suspend fun refreshToken(@Body refreshTokenRequest: RefreshTokenRequest): Response<RefreshTokenResponse>
+    suspend fun refreshToken(
+        @Header("Authorization") token: String,
+        @Body refreshTokenRequest: RefreshTokenRequest
+    ): Response<RefreshTokenResponse>
 
     @GET(BOOK_IN_GET_ITEM_ROUTE)
     suspend fun getBookInItems(
