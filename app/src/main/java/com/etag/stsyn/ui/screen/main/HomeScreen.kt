@@ -64,10 +64,11 @@ import com.etag.stsyn.util.TransitionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.launch
+import kotlin.reflect.KFunction2
 
 @Composable
 fun HomeScreen(
-    onChangePassword: (String, String) -> Unit,
+    onChangePassword: KFunction2<CharArray, CharArray, Unit>,
     onLogOutClick: () -> Unit,
     onSettingsClick: () -> Unit,
     loginViewModel: LoginViewModel,
@@ -124,7 +125,7 @@ fun HomeScreen(
                     user = savedUserState,
                     onChangePassword = { old, new ->
                         coroutineScope.launch { drawerState.close() }
-                        onChangePassword(old, new)
+                        onChangePassword(old.toCharArray(), new.toCharArray())
                     },
                     onSettingsClick = {
                         coroutineScope.launch { drawerState.close() }

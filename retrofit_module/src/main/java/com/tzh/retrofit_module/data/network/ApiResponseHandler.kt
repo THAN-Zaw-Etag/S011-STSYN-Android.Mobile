@@ -14,7 +14,8 @@ object ApiResponseHandler {
             val response = makeApiCall()
             if (response.isSuccessful) {
                 val normalResponse = getNormalResponseFromApiResponse(response.body().toString())
-                if (normalResponse.isSuccess) return ApiResponse.Success(response.body())
+                val normalResponseError = normalResponse.error ?: "Unknown error"
+                if (normalResponse.isSuccess && normalResponseError.contains("null")) return ApiResponse.Success(response.body())
                 else return ApiResponse.ApiError(normalResponse.error ?: "Unknown error")
             } else {
                 handleResponseCode<T>(response.code())

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Surface
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
+import com.etag.stsyn.ui.components.ErrorDialog
 import com.etag.stsyn.ui.components.LoginProgressDialog
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
@@ -61,6 +63,12 @@ fun LoginScreen(
     var showLoadingDialog by remember {
         mutableStateOf(false)
     }
+    var showErrorDialog by remember {
+        mutableStateOf(false)
+    }
+    var errorMessage by remember {
+        mutableStateOf("")
+    }
     var showInvalidUserDialog by remember {
         mutableStateOf(false)
     }
@@ -72,10 +80,14 @@ fun LoginScreen(
             when (response) {
                 is ApiResponse.Loading -> {
                     showLoadingDialog = true
+                    showErrorDialog = false
+                    Log.d("TAGUser", "LoginScreen: Loading")
                 }
 
                 is ApiResponse.Success -> {
+                    Log.d("TAGUser", "LoginScreen: Success")
                     showLoadingDialog = false
+                    showErrorDialog = false
                     val userModel = response.data?.userModel
 
                     if (userModel != null) {
@@ -89,16 +101,29 @@ fun LoginScreen(
                 }
 
                 is ApiResponse.ApiError -> {
+                    val error = response.message
+                   showErrorDialog = true
+                    errorMessage = error
+                    Log.d("TAGUser", "LoginScreen: ApiError")
                     showLoadingDialog = false
                 }
 
                 else -> {
+                    Log.d( "TAGUser", "LoginScreen: else"  )
                     showLoadingDialog = false
+                    showErrorDialog = false
                 }
             }
         }
     }
-
+    Surface {
+        ErrorDialog(
+            showDialog = showErrorDialog,
+            errorTitle = "Error",
+            errorMessage = errorMessage,
+            onDismiss = {showErrorDialog = false}
+        )
+    }
     LoginProgressDialog(showDialog = showLoadingDialog)
 
     LaunchedEffect(rfidUiState.isConnected) {
@@ -125,7 +150,11 @@ fun LoginScreen(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
-        MainLowerContent(onScan = { loginViewModel.toggle() })
+        MainLowerContent(onScan = {
+            //TODO delete this loginViewModel.getUserByRfidId("455341303030303030303130") when launch this
+            //loginViewModel.getUserByRfidId("455341303030303030303130")
+           loginViewModel.toggle()
+        })
     }
 }
 

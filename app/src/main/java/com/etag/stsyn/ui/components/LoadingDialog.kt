@@ -76,12 +76,10 @@ fun LoadingDialog(
 @Composable
 fun LoginProgressDialog(showDialog: Boolean) {
     if (showDialog) {
-        Dialog(onDismissRequest = { /* Dialog cannot be dismissed by clicking outside */ }) {
-            // To make the dialog take up the full screen
+        Dialog(onDismissRequest = {}) {
             Box(modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0x66000000))) { // Semi-transparent background
-                // Dialog content
+                .background(Color(0x66000000))) {
                 Card(
                     modifier = Modifier
                         .align(Alignment.Center)

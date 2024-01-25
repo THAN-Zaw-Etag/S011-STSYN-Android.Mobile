@@ -90,7 +90,7 @@ fun NavigationGraph(
                 userName = epcModelUserName.userName ,
                 loginResponse = loginResponse,
                 isSuccessful = loginUiState.isLoginSuccessful,
-                onLogInClick = { loginViewModel.login(it) },
+                onLogInClick = { loginViewModel.login(it.toCharArray()) },
                 onSuccess = loginViewModel::saveUserToLocalStorage,
                 onFailed = {
                     loginViewModel.apply {
@@ -112,7 +112,11 @@ fun NavigationGraph(
                 onChangePassword = loginViewModel::updatePassword,
                 onLogOutClick = {
                     loginViewModel.logOut()
-                    navController.navigate(Routes.LoginScreen.name)
+                    navController.navigate(Routes.LoginScreen.name) {
+                        popUpTo(Routes.HomeContentScreen.name) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onSettingsClick = {},
             )

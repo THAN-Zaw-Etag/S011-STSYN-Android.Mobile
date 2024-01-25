@@ -117,18 +117,19 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun login(password: String) {
+    fun login(passwordCharArray: CharArray) {
         updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             _loginResponse.value = ApiResponse.Loading
             delay(1000) // set delay for loading
-
+            //TODO remove unuse lines of code and encrypt password if required
+            val passwordString = String(passwordCharArray)
             _loginResponse.value = userRepository.login(
                 LoginRequest(
                     id = "",
                     nric = "",
-                    rfid = _loginUiState.value.rfidId, //_loginUiState.value.rfidId
-                    password = password,
+                    rfid = _loginUiState.value.rfidId,
+                    password = passwordString,
                     isFromMobile = true
                 )
             )
@@ -139,6 +140,7 @@ class LoginViewModel @Inject constructor(
                     updateLoginStatus(true)
                     _userMenuAccessRights.value =
                         (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.rolePermission!!.handheldMenuAccessRight
+
                 }
 
                 is ApiResponse.AuthorizationError -> {
@@ -147,6 +149,7 @@ class LoginViewModel @Inject constructor(
 
                 else -> {}
             }
+            passwordCharArray.fill('0')
         }
     }
 
@@ -163,12 +166,14 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun updatePassword(oldPassword: String, newPassword: String) {
+    fun updatePassword(oldPasswordCharArr: CharArray, newPasswordChar: CharArray) {
+        val oldPassword =String(oldPasswordCharArr)
+        val newPassword = String(newPasswordChar)
+        //TODO remove unuse lines of code and encrypt password if required
         updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             _updatePasswordResponse.value = ApiResponse.Loading
             delay(1000)
-
             savedUser.collect {
                 _updatePasswordResponse.value = userRepository.updatePassword(
                     UpdatePasswordRequest(
@@ -182,6 +187,8 @@ class LoginViewModel @Inject constructor(
                 updateAuthorizationFailedDialogVisibility(_updatePasswordResponse.value is ApiResponse.AuthorizationError)
             }
         }
+        oldPasswordCharArr.fill('0')
+        newPasswordChar.fill('0')
     }
 
     private fun getUserMenuAccessRightsById() {
