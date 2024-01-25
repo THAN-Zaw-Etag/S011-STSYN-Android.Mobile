@@ -179,7 +179,7 @@ class LoginViewModel @Inject constructor(
                     UpdatePasswordRequest(
                         oldPassword = oldPassword,
                         newPassword = newPassword,
-                        userId = it.userId ?: ""
+                        userId = it.userId
                     )
                 )
 
