@@ -59,7 +59,7 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.0.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
-    implementation("androidx.work:work-runtime-ktx:2.7.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
     val accompanist_version = "0.33.2-alpha"
     implementation("com.google.accompanist:accompanist-pager:$accompanist_version")

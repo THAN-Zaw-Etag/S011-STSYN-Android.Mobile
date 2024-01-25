@@ -44,15 +44,17 @@ class MainActivity : ComponentActivity() {
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
             val context = LocalContext.current
+            val user by loginViewModel.savedUser.collectAsState()
 
             PermissionUtil.checkBluetoothPermission(context)
-
-            // refresh token every 45 minutes
-            TokenRefresher.refresh(workManager)
 
             // connect reader only when the app starts
             LaunchedEffect(Unit) {
                 loginViewModel.connectReader()
+
+                // refresh token every 45 minutes
+                TokenRefresher.refresh(workManager)
+
             }
 
             handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)
