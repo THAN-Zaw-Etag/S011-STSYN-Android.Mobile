@@ -1,6 +1,7 @@
 package com.tzh.retrofit_module.data.network
 
 import android.util.Log
+import com.tzh.retrofit_module.data.exception.NetworkException
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
@@ -24,6 +25,7 @@ object ApiResponseHandler {
         } catch (e: Exception) {
             e.printStackTrace()
             Log.d("TAG", "doWork: ${e.localizedMessage}")
+            ApiResponse.ApiError(e.localizedMessage ?: "Unknown error")
             handleError<T>(e)
         }
     }
@@ -38,6 +40,7 @@ object ApiResponseHandler {
 
     private fun <T> handleError(exception: Exception): ApiResponse<T> {
         return when (exception) {
+            is NetworkException -> ApiResponse.ApiError(exception.message.toString())
             is IOException -> ApiResponse.ApiError("Network error occurred")
             is JSONException -> ApiResponse.ApiError("Error parsing response")
             is HttpException -> ApiResponse.ApiError(exception.message.toString())

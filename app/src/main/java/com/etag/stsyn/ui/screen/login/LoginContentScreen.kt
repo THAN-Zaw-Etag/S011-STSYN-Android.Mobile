@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.CustomIcon
+import com.etag.stsyn.ui.components.ErrorDialog
 import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.PasswordField
@@ -62,36 +65,47 @@ fun LoginContentScreen(
     var error by remember { mutableStateOf("") }
     var showWarningDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    var showLoadingDialog by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(loginAttemptCount) {
         showWarningDialog = loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS
     }
 
-    when (loginResponse) {
-        is ApiResponse.Loading -> LoadingDialog(title = "Signing In...",
-            showDialog = true,
-            onDismiss = { }
-        )
+    LoadingDialog(title = "Signing In...",
+        showDialog = showLoadingDialog,
+        onDismiss = { }
+    )
 
-        is ApiResponse.Success -> {
-            val user = loginResponse.data?.user
-            val localUser = LocalUser(
-                name = user?.userName ?: "",
-                userId = user?.userId ?: "",
-                roleId = user?.roleId ?: "",
-                nric = user?.nric ?: "",
-                token = loginResponse.data?.token ?: ""
-            )
-            onSuccess(localUser)
+    LaunchedEffect(loginResponse) {
+        when (loginResponse) {
+            is ApiResponse.Loading -> showLoadingDialog = true
+
+            is ApiResponse.Success -> {
+                showLoadingDialog = false
+                val user = loginResponse.data?.user
+                val localUser = LocalUser(
+                    name = user?.userName ?: "",
+                    userId = user?.userId ?: "",
+                    roleId = user?.roleId ?: "",
+                    nric = user?.nric ?: "",
+                    token = loginResponse.data?.token ?: ""
+                )
+                onSuccess(localUser)
+            }
+
+            is ApiResponse.ApiError -> {
+                showLoadingDialog = false
+                Log.d("TAG", "LoginContentScreen: ${loginResponse.message}")
+                onFailed()
+                error = loginResponse.message
+            }
+
+            else -> {
+                showLoadingDialog = false
+            }
         }
-
-        is ApiResponse.ApiError -> {
-            Log.d("TAG", "LoginContentScreen: ${loginResponse.message}")
-            onFailed()
-            error = loginResponse.message
-        }
-
-        else -> {}
     }
 
     WarningDialog(icon = CustomIcon.Vector(Icons.Default.Warning),

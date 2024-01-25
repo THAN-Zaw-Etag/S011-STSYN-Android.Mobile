@@ -15,6 +15,7 @@ import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.HomeScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
+import com.etag.stsyn.util.logout
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.domain.model.user.UserModel
 import kotlinx.coroutines.delay
@@ -112,11 +113,7 @@ fun NavigationGraph(
                 onChangePassword = loginViewModel::updatePassword,
                 onLogOutClick = {
                     loginViewModel.logOut()
-                    navController.navigate(Routes.LoginScreen.name) {
-                        popUpTo(Routes.HomeContentScreen.name) {
-                            inclusive = true
-                        }
-                    }
+                    logout(navController, Routes.LoginScreen.name)
                 },
                 onSettingsClick = {},
             )

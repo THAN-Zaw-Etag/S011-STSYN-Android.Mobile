@@ -118,13 +118,13 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _loginResponse.value = ApiResponse.Loading
             delay(1000) // set delay for loading
-            //TODO remove unuse lines of code and encrypt password if required
+            //TODO remove unused lines of code and encrypt password if required
             val passwordString = String(passwordCharArray)
             _loginResponse.value = userRepository.login(
                 LoginRequest(
                     id = "",
                     nric = "",
-                    rfid = _loginUiState.value.rfidId,
+                    rfid ="455341303030303030303130" , // _loginUiState.value.rfidId
                     password = passwordString,
                     isFromMobile = true
                 )
@@ -151,7 +151,7 @@ class LoginViewModel @Inject constructor(
     fun updatePassword(oldPasswordCharArr: CharArray, newPasswordChar: CharArray) {
         val oldPassword =String(oldPasswordCharArr)
         val newPassword = String(newPasswordChar)
-        //TODO remove unuse lines of code and encrypt password if required
+        //TODO remove unused lines of code and encrypt password if required
         updateAuthorizationFailedDialogVisibility(false)
         viewModelScope.launch {
             _updatePasswordResponse.value = ApiResponse.Loading

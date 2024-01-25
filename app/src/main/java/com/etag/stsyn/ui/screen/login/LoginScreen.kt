@@ -39,13 +39,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.ErrorDialog
 import com.etag.stsyn.ui.components.LoginProgressDialog
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.DeviceSize
+import com.etag.stsyn.util.getDeviceSize
 import com.tzh.retrofit_module.util.ApiResponse
+
 
 @Composable
 fun LoginScreen(
@@ -151,8 +155,8 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.weight(1f))
         MainLowerContent(onScan = {
-            //TODO delete this loginViewModel.getUserByRfidId("455341303030303030303130") when launch this
-            //loginViewModel.getUserByRfidId("455341303030303030303130")
+            //TODO delete this loginViewModel.getUserByRfidId("455341303030303030303130") when app release
+//            loginViewModel.getUserByRfidId("455341303030303030303130")
            loginViewModel.toggle()
         })
     }
@@ -163,6 +167,12 @@ private fun MainLowerContent(
     onScan: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var quickLoginTextFontSize =16.sp
+    when(getDeviceSize()){
+        DeviceSize.SMALL -> quickLoginTextFontSize = MaterialTheme.typography.titleSmall.fontSize
+        DeviceSize.MEDIUM -> Log.d("TAG", "LoginScreen: MEDIUM")
+        DeviceSize.TABLET -> Log.d("TAG", "LoginScreen: TABLET")
+    }
     Box(modifier = modifier) {
         Image(
             painter = painterResource(id = R.drawable.main_lower),
@@ -181,6 +191,8 @@ private fun MainLowerContent(
             Text(
                 text = "Now! Quick Login use RFID",
                 color = Color.White,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = quickLoginTextFontSize,
                 fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(16.dp))

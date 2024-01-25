@@ -22,6 +22,7 @@ import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.screen.settings.SettingsScreen
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
+import com.etag.stsyn.util.logout
 
 @Composable
 fun HomeNavigationGraph(
@@ -134,7 +135,7 @@ fun HomeNavigationGraph(
                 optionType = optionType,
                 logOut = {
                     loginViewModel.logOut()
-                    ExitApp(context)
+                    logout(navController, Routes.LoginScreen.name)
                 },
                 navigateToHomeScreen = {
                     navController.navigate(Routes.HomeScreen.name)
