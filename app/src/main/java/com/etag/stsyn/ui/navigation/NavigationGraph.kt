@@ -43,7 +43,7 @@ fun NavigationGraph(
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = Routes.LoginContentScreen.name
+        startDestination = Routes.SplashScreen.name
     ) {
 
         composable(route = Routes.SplashScreen.name) {

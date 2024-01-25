@@ -148,20 +148,6 @@ class LoginViewModel @Inject constructor(
             passwordCharArray.fill('0')
         }
     }
-
-    fun refreshToken() {
-        viewModelScope.launch {
-            _refreshTokenResponse.value = userRepository.refreshToken()
-            when (_refreshTokenResponse.value) {
-                is ApiResponse.Success -> {
-                    localDataStore.saveToken((_refreshTokenResponse.value as ApiResponse.Success<RefreshTokenResponse>).data!!.token)
-                }
-
-                else -> {}
-            }
-        }
-    }
-
     fun updatePassword(oldPasswordCharArr: CharArray, newPasswordChar: CharArray) {
         val oldPassword =String(oldPasswordCharArr)
         val newPassword = String(newPasswordChar)
