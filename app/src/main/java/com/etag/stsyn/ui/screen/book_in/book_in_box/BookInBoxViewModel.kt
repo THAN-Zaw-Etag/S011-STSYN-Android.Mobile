@@ -143,7 +143,7 @@ class BookInBoxViewModel @Inject constructor(
         }
     }
 
-    fun getAllBookInItemsOfBox(
+    private fun getAllBookInItemsOfBox(
         box: String,
         status: String,
     ) {
