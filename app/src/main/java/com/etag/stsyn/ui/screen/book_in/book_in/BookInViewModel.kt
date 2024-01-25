@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.book_in.book_in
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -55,6 +56,7 @@ class BookInViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
+        Log.d("TAG", "onReceivedTagId: $id")
         // handled scanned tags here
         addScannedItem(id)
     }

@@ -53,7 +53,7 @@ fun BookInBoxScanScreen(
         bookItems = bookInBoxUiState.allItemsOfBox,
         scannedItemList = scannedItemList,
         boxes = boxes,
-        onReset = { bookInBoxViewModel.removeScannedItems() },
+        onReset = { bookInBoxViewModel.resetScannedItems() },
         onScan = { bookInBoxViewModel.toggle() },
         onRefresh = { bookInBoxViewModel.refreshScannedBox() },
         isScanning = rfidUiState.isScanning,

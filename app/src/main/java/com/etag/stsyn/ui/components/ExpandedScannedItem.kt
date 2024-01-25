@@ -16,11 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
+import com.tzh.retrofit_module.domain.model.ExpandedScannedItemModel
 
 @Composable
 fun ExpandedScannedItem(
-    bookInItem: BookInItem? = null
+    bookInItem: ExpandedScannedItemModel? = null
 ) {
     Column(
         modifier = Modifier
@@ -31,8 +31,8 @@ fun ExpandedScannedItem(
             .padding(16.dp)
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "${bookInItem?.partNo} - ${bookInItem?.unit}".uppercase())
             Text(text = "${bookInItem?.serialNo}".uppercase())
+            Text(text = "${bookInItem?.code}".uppercase())
         }
         Text(text = "${bookInItem?.description}".uppercase())
         Spacer(modifier = Modifier.height(16.dp))
@@ -44,9 +44,9 @@ fun ExpandedScannedItem(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            DetailItem(title = "Location", value = "${bookInItem?.itemLocation}")
+            DetailItem(title = "Location", value = "${bookInItem?.location}")
             DetailItem(title = "Store Location", value = "${bookInItem?.storeLocation}")
-            DetailItem(title = "Status", value = "${bookInItem?.itemStatus}")
+            DetailItem(title = "Status", value = "${bookInItem?.status}")
         }
     }
 }

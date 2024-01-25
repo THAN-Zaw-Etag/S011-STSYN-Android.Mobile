@@ -60,8 +60,9 @@ class BookInRepositoryImpl @Inject constructor(
     }
 
     override suspend fun checkUSCaseByBox(boxName: String): ApiResponse<CheckUSCaseResponse> {
+        val user = localDataStore.getUser.first()
         return ApiResponseHandler.processResponse {
-            apiService.checkUSCaseByBox(boxName)
+            apiService.checkUSCaseByBox(user.token.toToken(), boxName)
         }
     }
 }

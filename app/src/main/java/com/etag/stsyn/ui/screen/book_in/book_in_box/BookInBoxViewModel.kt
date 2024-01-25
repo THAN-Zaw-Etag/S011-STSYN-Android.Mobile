@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.book_in.book_in_box
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -49,6 +50,7 @@ class BookInBoxViewModel @Inject constructor(
     }
 
     private fun addScannedItemToList(id: String) {
+        Log.d("TAG", "addScannedItemToList: $id")
         scannedItemsList.update { currentList ->
             if (id in currentList) {
                 currentList
@@ -77,6 +79,10 @@ class BookInBoxViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
+
+        // stop scan when all items are scanned
+        if (scannedItemsList.value.size == _bookInBoxUiState.value.allItemsOfBox.size) stopScan()
+
         if (_boxItemsForBookInResponse.value is ApiResponse.Success) {
             boxItems.value =
                 (_boxItemsForBookInResponse.value as ApiResponse.Success<SelectBoxForBookInResponse>).data!!.items
@@ -92,12 +98,19 @@ class BookInBoxViewModel @Inject constructor(
                 checkUsCaseByBoxName(scannedBoxItem.box)
             }
 
-            if (boxItems.value.isNotEmpty()) updateScanType(ScanType.Multi) else updateScanType(
-                ScanType.Single
-            )
+            when (_getAllItemsOfBox.value) {
+                is ApiResponse.Success -> {
+                    val boxesOfItem = _bookInBoxUiState.value.allItemsOfBox ?: emptyList()
+                    if (boxesOfItem.isNotEmpty()) updateScanType(ScanType.Multi) else updateScanType(
+                        ScanType.Single
+                    )
 
-            val hasCurrentItemScanned = id in boxItems.value.map { it.epc }
-            if (hasCurrentItemScanned) addScannedItemToList(id)
+                    val hasCurrentItemScanned = id in boxesOfItem.map { it.epc }
+                    if (hasCurrentItemScanned) addScannedItemToList(id)
+                }
+
+                else -> {}
+            }
         }
     }
 
@@ -114,8 +127,12 @@ class BookInBoxViewModel @Inject constructor(
     fun toggleVisualCheck(enable: Boolean) {
         _bookInBoxUiState.update { it.copy(isChecked = enable) }
         if (enable) {
-            scannedItemsList.update { boxItems.value.map { it.epc } }
+            scannedItemsList.update { _bookInBoxUiState.value.allItemsOfBox.map { it.epc } }
         } else scannedItemsList.update { emptyList() }
+    }
+
+    fun resetScannedItems() {
+        scannedItemsList.update { emptyList() }
     }
 
     private fun getAllBoxesForBookInItem() {

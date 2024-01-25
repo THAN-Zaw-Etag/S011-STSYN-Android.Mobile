@@ -15,6 +15,7 @@ import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.util.BOOK_IN_GET_ITEM_ROUTE
 import com.tzh.retrofit_module.util.CHECK_U_S_CASE_BY_BOX_ROUTE
+import com.tzh.retrofit_module.util.GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
@@ -71,7 +72,7 @@ interface ApiService {
         @Query("issuerId") issuerId: String
     ): Response<SelectBoxForBookInResponse>
 
-    @GET(SELECT_BOX_FOR_BOOK_IN_ROUTE)
+    @GET(GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE)
     suspend fun getAllBookInItemsOfBox(
         @Header("Authorization") token: String,
         @Query("box") box: String,
@@ -80,7 +81,10 @@ interface ApiService {
     ): Response<GetAllBookInItemsOfBoxResponse>
 
     @GET(CHECK_U_S_CASE_BY_BOX_ROUTE)
-    suspend fun checkUSCaseByBox(@Query("Box") box: String): Response<CheckUSCaseResponse>
+    suspend fun checkUSCaseByBox(
+        @Header("Authorization") token: String,
+        @Query("Box") box: String
+    ): Response<CheckUSCaseResponse>
 
 
     @GET(GET_USER_BY_EPC_ROUTE)

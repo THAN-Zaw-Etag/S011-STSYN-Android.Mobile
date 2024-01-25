@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val loginViewModel: LoginViewModel = hiltViewModel()
+            val loginUiState by loginViewModel.loginUiState.collectAsState()
             val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsState()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
@@ -52,8 +53,10 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 loginViewModel.connectReader()
 
-                // refresh token every 45 minutes
-                TokenRefresher.refresh(workManager)
+                // refresh token every 45 minutes if only login is successful
+                if (loginUiState.isLoginSuccessful) {
+                    TokenRefresher.refresh(workManager)
+                }
 
             }
 

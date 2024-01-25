@@ -1,7 +1,9 @@
 package com.tzh.retrofit_module.data.mapper
 
 import com.tzh.retrofit_module.data.model.book_in.ItemMovementLog
+import com.tzh.retrofit_module.domain.model.ExpandedScannedItemModel
 import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
+import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.enum.ItemStatus
 import com.tzh.retrofit_module.util.DateUtil
 
@@ -31,29 +33,24 @@ fun List<BookInItem>.toItemMovementLog(
     }
 }
 
-/*
-fun List<BookInItem>.toExpandedScannedItems(): List<ExpandedScannedItemModel> {
-    return map {
-        ExpandedScannedItemModel(
-            serialNo = "${it.serialNo} - ${it.partNo}",
-            description = it.description,
-            code = it.unit,
-            location = it.itemLocation,
-            storeLocation = it.storeLocation,
-            status = ItemStatus.BookIn.title
-        )
-    }
+fun BookInItem.toExpandedScannedItems(): ExpandedScannedItemModel {
+    return ExpandedScannedItemModel(
+        serialNo = "${this.serialNo} - ${this.partNo}",
+        description = this.description,
+        code = this.unit,
+        location = this.itemLocation,
+        storeLocation = this.storeLocation,
+        status = ItemStatus.BookIn.title
+    )
 }
 
-fun List<BoxItem>.toExpandedScannedItems(): List<ExpandedScannedItemModel> {
-    return map {
-        ExpandedScannedItemModel(
-            serialNo = "${it.serialNo} - ${it.partNo}",
-            description = it.description,
-            code = it.unit,
-            location = it.itemLocation,
-            storeLocation = it.storeLocation,
-            status = ItemStatus.BookIn.title
-        )
-    }
-}*/
+fun BoxItem.toExpandedScannedItems(): ExpandedScannedItemModel {
+    return ExpandedScannedItemModel(
+        serialNo = "${this.serialNo} - ${this.partNo}",
+        description = this.description,
+        code = this.unit,
+        location = this.itemLocation,
+        storeLocation = this.storeLocation,
+        status = ItemStatus.BookIn.title
+    )
+}

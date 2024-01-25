@@ -1,6 +1,7 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
 )
 
 package com.etag.stsyn.ui.screen.base
@@ -150,8 +151,8 @@ fun BaseBoxScreen(
                 }
                 itemsIndexed(bookItems) { index, item ->
                     ScannedItem(
-                        id = item.description,
-                        name = "Box 01 item 0${index + 1}",
+                        id = "${item.serialNo} - ${item.partNo}",
+                        name = item.description,
                         isScanned = item.epc in scannedItemList,
                     )
                 }
@@ -220,7 +221,7 @@ fun BottomScannedButtonLayout(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Os: $outStandingItemCount"
+            text = "Os: ${outStandingItemCount - scannedItemsCount}"
         )
         ScanIconButton(onScan = onScan, isScanning = isScanning)
 

@@ -42,12 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
+import com.etag.stsyn.enums.DeviceSize
 import com.etag.stsyn.ui.components.ErrorDialog
 import com.etag.stsyn.ui.components.LoginProgressDialog
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
-import com.etag.stsyn.util.DeviceSize
-import com.etag.stsyn.util.getDeviceSize
+import com.etag.stsyn.util.AppUtil.getDeviceSize
 import com.tzh.retrofit_module.util.ApiResponse
 
 

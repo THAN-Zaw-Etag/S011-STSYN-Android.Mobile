@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ fun ScannedBoxItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .animateContentSize()
             .background(
                 color = Purple80.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(12.dp)

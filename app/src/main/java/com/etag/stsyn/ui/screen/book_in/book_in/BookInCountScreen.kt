@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.ExpandedScannedItem
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
+import com.tzh.retrofit_module.data.mapper.toExpandedScannedItems
 import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.util.ApiResponse
@@ -59,7 +60,7 @@ fun BookInCountScreen(
             items(items) {
                 key(it.epc) {
                     ExpandedScannedItem(
-                        bookInItem = it
+                        bookInItem = it.toExpandedScannedItems()
                     )
                 }
             }
