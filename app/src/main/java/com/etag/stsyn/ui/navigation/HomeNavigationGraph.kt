@@ -22,7 +22,8 @@ import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.screen.settings.SettingsScreen
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
-import com.etag.stsyn.util.logout
+import com.etag.stsyn.util.AppUtil.logout
+
 
 @Composable
 fun HomeNavigationGraph(
