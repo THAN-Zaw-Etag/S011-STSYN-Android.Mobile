@@ -14,7 +14,8 @@ import javax.net.ssl.X509TrustManager
 
 class NetworkClientBuilder(
     private val context: Context,
-    private val  tokenRepository: TokenRepository
+    private val  tokenRepository: TokenRepository,
+    private val baseUrlProvider: BaseUrlProvider
     ) {
     fun build(): OkHttpClient {
         val trustManager = object : X509TrustManager {
@@ -38,12 +39,12 @@ class NetworkClientBuilder(
         sslContext.init(null, arrayOf<TrustManager>(trustManager), java.security.SecureRandom())
 
         return OkHttpClient.Builder()
+            .addInterceptor(BaseUrlInterceptor(baseUrlProvider))
             .sslSocketFactory(sslContext.socketFactory, trustManager)
             .hostnameVerifier(HostnameVerifier { _, _ -> true }) // Bypass hostname verification
             .addInterceptor(AuthInterceptor(tokenRepository) )
             .addInterceptor(NoConnectionInterceptor(context))
               .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-          // Optional: Logging for debugging
-            .build()
+              .build()
     }
 }

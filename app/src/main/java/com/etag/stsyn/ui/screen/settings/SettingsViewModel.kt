@@ -2,6 +2,7 @@ package com.etag.stsyn.ui.screen.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tzh.retrofit_module.data.network.BaseUrlProvider
 import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,7 +11,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val appConfiguration: AppConfiguration
+    private val appConfiguration: AppConfiguration,
+    private val baseUrlProvider: BaseUrlProvider
 ) : ViewModel() {
     val appConfig = appConfiguration.appConfig
 
@@ -18,5 +20,10 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             appConfiguration.updateAppConfig(appConfigModel)
         }
+    }
+
+    //TODO if unused in future, remove this
+    fun updateBaseUrl(newBaseUrl: String) {
+        baseUrlProvider.updateBaseUrl(newBaseUrl)
     }
 }
