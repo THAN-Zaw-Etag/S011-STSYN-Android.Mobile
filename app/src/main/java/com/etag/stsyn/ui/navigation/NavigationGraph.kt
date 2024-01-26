@@ -17,7 +17,6 @@ import com.etag.stsyn.ui.screen.main.HomeScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
 import com.etag.stsyn.util.AppUtil.logout
 import com.tzh.retrofit_module.data.model.LocalUser
-import com.tzh.retrofit_module.domain.model.user.UserModel
 import kotlinx.coroutines.delay
 
 @Composable

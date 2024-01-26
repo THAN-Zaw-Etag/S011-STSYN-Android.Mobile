@@ -8,6 +8,7 @@ import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.repository.BookInRepository
+import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -23,6 +24,7 @@ class BookInBoxViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
     private val localDataStore: LocalDataStore,
     private val bookInRepository: BookInRepository,
+    private val userRepository: UserRepository
 ) : BaseViewModel(rfidHandler) {
 
     private val _boxItemsForBookInResponse =
@@ -74,6 +76,10 @@ class BookInBoxViewModel @Inject constructor(
                 else -> {}
             }
         }
+    }
+
+    fun getIssuerByEPC(epc: String) {
+
     }
 
     override fun onReceivedTagId(id: String) {
@@ -193,6 +199,7 @@ class BookInBoxViewModel @Inject constructor(
 
     data class BookInBoxUiState(
         val scannedBox: BoxItem = BoxItem(),
+        val rfidId: String = "",
         val isUsCase: Boolean = false,
         val isChecked: Boolean = false,
         val allBoxes: List<BoxItem> = listOf(),
