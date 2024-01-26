@@ -44,7 +44,7 @@ class BookInBoxViewModel @Inject constructor(
     private var boxItems = MutableStateFlow<List<BoxItem>>(emptyList())  // items from api
     val scannedItemsList = MutableStateFlow<List<String>>(emptyList()) // scanned tag list
 
-    private val user = localDataStore.getUser
+    val user = localDataStore.getUser
 
     init {
         updateScanType(ScanType.Single)
@@ -124,7 +124,7 @@ class BookInBoxViewModel @Inject constructor(
                     if (hasCurrentItemScanned) addScannedItemToList(id)
 
                     if (scannedItemsList.value.isNotEmpty()) {
-
+                        getIssuerByEPC(id)
                     }
                 }
 
