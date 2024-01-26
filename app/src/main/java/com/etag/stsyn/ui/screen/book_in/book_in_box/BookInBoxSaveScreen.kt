@@ -1,10 +1,12 @@
 package com.etag.stsyn.ui.screen.book_in.book_in_box
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -18,6 +20,10 @@ fun BookInBoxSaveScreen(
 ) {
     val bookInBoxUiState by bookInBoxViewModel.bookInBoxUiState.collectAsState()
     val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsState()
+
+    LaunchedEffect(bookInBoxUiState.issuerUser) {
+        Log.d("TAG", "BookInBoxSaveScreen: ${bookInBoxUiState.issuerUser}")
+    }
 
     BaseSaveScreen(
         isError = scannedItemList.isEmpty(),

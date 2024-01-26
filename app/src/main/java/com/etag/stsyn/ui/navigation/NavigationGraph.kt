@@ -17,6 +17,7 @@ import com.etag.stsyn.ui.screen.main.HomeScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
 import com.etag.stsyn.util.AppUtil.logout
 import com.tzh.retrofit_module.data.model.LocalUser
+import com.tzh.retrofit_module.domain.model.user.UserModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -43,7 +44,7 @@ fun NavigationGraph(
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = Routes.SplashScreen.name
+        startDestination = Routes.HomeContentScreen.name
     ) {
 
         composable(route = Routes.SplashScreen.name) {

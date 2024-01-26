@@ -7,6 +7,7 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
+import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
@@ -79,7 +80,16 @@ class BookInBoxViewModel @Inject constructor(
     }
 
     fun getIssuerByEPC(epc: String) {
+        viewModelScope.launch {
+            val response = userRepository.getIssuerByEPC(epc)
+            when (response) {
+                is ApiResponse.Success -> {
+                    _bookInBoxUiState.update { it.copy(issuerUser = response.data?.userModel) }
+                }
 
+                else -> {}
+            }
+        }
     }
 
     override fun onReceivedTagId(id: String) {
@@ -91,6 +101,7 @@ class BookInBoxViewModel @Inject constructor(
             boxItems.value =
                 (_boxItemsForBookInResponse.value as ApiResponse.Success<SelectBoxForBookInResponse>).data!!.items
             val scannedBoxItem = boxItems.value.find { it.epc == id }
+
             if (scannedBoxItem != null) {
                 _bookInBoxUiState.update { it.copy(scannedBox = scannedBoxItem) }
                 getAllBookInItemsOfBox(
@@ -111,10 +122,15 @@ class BookInBoxViewModel @Inject constructor(
 
                     val hasCurrentItemScanned = id in boxesOfItem.map { it.epc }
                     if (hasCurrentItemScanned) addScannedItemToList(id)
+
+                    if (scannedItemsList.value.isNotEmpty()) {
+
+                    }
                 }
 
                 else -> {}
             }
+
         }
     }
 
@@ -199,7 +215,7 @@ class BookInBoxViewModel @Inject constructor(
 
     data class BookInBoxUiState(
         val scannedBox: BoxItem = BoxItem(),
-        val rfidId: String = "",
+        val issuerUser: UserModel? = null,
         val isUsCase: Boolean = false,
         val isChecked: Boolean = false,
         val allBoxes: List<BoxItem> = listOf(),

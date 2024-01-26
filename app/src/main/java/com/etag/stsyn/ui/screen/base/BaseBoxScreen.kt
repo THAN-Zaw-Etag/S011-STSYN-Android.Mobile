@@ -31,16 +31,16 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +52,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.compose.rememberNavController
 import com.etag.stsyn.ui.components.ConfirmationDialog
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.components.ScannedBoxItem
 import com.etag.stsyn.ui.components.ScannedItem
@@ -60,7 +59,6 @@ import com.etag.stsyn.ui.navigation.BottomSheetNavigation
 import com.etag.stsyn.ui.navigation.BottomSheetNavigationGraph
 import com.etag.stsyn.ui.theme.Purple80
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
-import kotlinx.coroutines.launch
 
 @Composable
 fun BaseBoxScreen(
@@ -79,10 +77,10 @@ fun BaseBoxScreen(
     modifier: Modifier = Modifier
 ) {
     var items by remember { mutableStateOf(listOf<BoxItem>()) }
-    val coroutineScope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
     var show by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(false) }
     var resetNavGraph by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
 
     val listState = rememberLazyListState()
 
@@ -95,86 +93,80 @@ fun BaseBoxScreen(
         show = showBoxBookOutButton
     }
 
-    DetailBottomSheetScaffold(state = scaffoldState, sheetContent = {
-        BottomSheetContent(boxItems = boxes, resetNavGraph = resetNavGraph, onItemClick = {
+    if (showBottomSheet) {
+        ModalBottomSheet(onDismissRequest = { showBottomSheet = false }, sheetState = sheetState) {
+            BottomSheetContent(boxItems = boxes, resetNavGraph = resetNavGraph)
+        }
+    }
 
-        })
-    }) {
-        ConstraintLayout(
-            modifier = modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.navigationBars)
-        ) {
-            val (content, buttonLayout) = createRefs()
-            LazyColumn(contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                state = listState,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(top = 42.dp, bottom = 32.dp)
-                    .constrainAs(content) {
-                        bottom.linkTo(buttonLayout.top)
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }) {
-                item {
-                    if (show) {
-                        BoxBookOutButton(boxOutTitle) {
-                            if (scaffoldState.bottomSheetState.isVisible) {
-                                resetNavGraph = false
-                                coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                            } else {
-                                resetNavGraph = true
-                                coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.navigationBars)
+    ) {
+        val (content, buttonLayout) = createRefs()
+        LazyColumn(contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            state = listState,
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(top = 42.dp, bottom = 32.dp)
+                .constrainAs(content) {
+                    bottom.linkTo(buttonLayout.top)
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }) {
+            item {
+                if (show) {
+                    BoxBookOutButton(boxOutTitle) {
+
+                        showBottomSheet = !showBottomSheet
                     }
-                    BoxScanSection(
-                        boxId = scannedBox.serialNo.uppercase(),
-                        onRefresh = onRefresh,
-                        boxDescription = scannedBox.description.uppercase()
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                item {
-                    if (bookItems.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        ScannedItemsOptionLayout(
-                            itemCount = items.size,
-                            checked = checked,
-                            onCheckChange = onCheckChange,
-                            isScanned = false,
-                            onReset = onReset
-                        )
-                    }
-                }
-                itemsIndexed(bookItems) { index, item ->
-                    ScannedItem(
-                        id = "${item.serialNo} - ${item.partNo}",
-                        name = item.description,
-                        isScanned = item.epc in scannedItemList,
+                BoxScanSection(
+                    boxId = scannedBox.serialNo.uppercase(),
+                    onRefresh = onRefresh,
+                    boxDescription = scannedBox.description.uppercase()
+                )
+            }
+            item {
+                if (bookItems.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    ScannedItemsOptionLayout(
+                        itemCount = items.size,
+                        checked = checked,
+                        onCheckChange = onCheckChange,
+                        isScanned = false,
+                        onReset = onReset
                     )
                 }
             }
-            BottomScannedButtonLayout(
-                outStandingItemCount = bookItems.size,
-                scannedItemsCount = scannedItemList.size,
-                isScanning = isScanning,
-                onScan = onScan,
-                modifier = Modifier.constrainAs(buttonLayout) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                })
+            itemsIndexed(bookItems) { index, item ->
+                ScannedItem(
+                    id = "${item.serialNo} - ${item.partNo}",
+                    name = item.description,
+                    isScanned = item.epc in scannedItemList,
+                )
+            }
         }
+        BottomScannedButtonLayout(
+            outStandingItemCount = bookItems.size,
+            scannedItemsCount = scannedItemList.size,
+            isScanning = isScanning,
+            onScan = onScan,
+            modifier = Modifier.constrainAs(buttonLayout) {
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            })
     }
 }
 
 @Composable
 private fun BottomSheetContent(
-    resetNavGraph: Boolean,
-    onItemClick: () -> Unit, boxItems: List<BoxItem>, modifier: Modifier = Modifier
+    resetNavGraph: Boolean, boxItems: List<BoxItem>
 ) {
     var bottomSheetNavController = rememberNavController()
 
