@@ -17,8 +17,13 @@ fun BookInBoxSaveScreen(
     modifier: Modifier = Modifier
 ) {
     val bookInBoxUiState by bookInBoxViewModel.bookInBoxUiState.collectAsState()
+    val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsState()
 
-    BaseSaveScreen(isError = false, modifier = modifier, onSave = { /*TODO*/ }) {
+    BaseSaveScreen(
+        isError = scannedItemList.isEmpty(),
+        errorMessage = if (bookInBoxUiState.scannedBox.epc.isEmpty()) "Please read a box first" else "Please read an item first",
+        modifier = modifier,
+        onSave = { /*TODO*/ }) {
         SaveItemLayout(
             icon = Icons.Default.Person,
             itemTitle = "User",

@@ -18,7 +18,7 @@ object TokenRefresher {
 
         val periodicRefreshRequest =
             PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 16, TimeUnit.MINUTES)
-                .setInitialDelay(3, TimeUnit.SECONDS)
+                .setInitialDelay(5, TimeUnit.SECONDS)
                 .setConstraints(constraints)
                 .build()
 
@@ -27,6 +27,5 @@ object TokenRefresher {
             ExistingPeriodicWorkPolicy.KEEP,
             periodicRefreshRequest
         )
-
     }
 }

@@ -129,7 +129,8 @@ abstract class BaseViewModel(
 
     fun updateIsScanningStatus(isScanning: Boolean) {
         _rfidUiState.update {
-            it.copy(isScanning = isScanning)
+            // update value only when reader is connected
+            it.copy(isScanning = if (it.isConnected) isScanning else it.isScanning)
         }
     }
 
