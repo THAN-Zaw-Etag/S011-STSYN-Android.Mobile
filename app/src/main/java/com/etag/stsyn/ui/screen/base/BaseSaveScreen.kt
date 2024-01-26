@@ -10,18 +10,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ErrorText
 import com.etag.stsyn.ui.components.SaveButton
-import dagger.Provides
+import com.etag.stsyn.ui.components.ScanIconButton
 
 @Composable
 fun BaseSaveScreen(
     isError: Boolean,
+    isUsCase: Boolean = false,
     errorMessage: String = "",
-    onSave: () -> Unit,
     modifier: Modifier = Modifier,
+    onSave: () -> Unit,
+    onScan: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -38,19 +39,9 @@ fun BaseSaveScreen(
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                SaveButton(onClick = onSave)
+                if (isUsCase) ScanIconButton(onScan = onScan)
+                else SaveButton(onClick = onSave)
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewBaseSave() {
-    BaseSaveScreen(
-        isError = false,
-        onSave = {},
-        content = {}
-    )
-
 }

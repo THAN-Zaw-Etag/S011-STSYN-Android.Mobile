@@ -129,7 +129,7 @@ class LoginViewModel @Inject constructor(
                 LoginRequest(
                     id = "",
                     nric = "",
-                    rfid =_loginUiState.value.rfidId,
+                    rfid = "455341303030303030303130",
                     password = passwordString,
                     isFromMobile = true
                 )

@@ -5,6 +5,7 @@ import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.model.user.GetIssuerUserResponse
 import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.util.ApiResponse
@@ -22,4 +23,6 @@ interface UserRepository {
     suspend fun saveToken(token: String)
 
     suspend fun getUserByEPC(epc: String): ApiResponse<GetUserByEPCResponse>
+
+    suspend fun getIssuerByEPC(epc: String): ApiResponse<GetIssuerUserResponse>
 }
