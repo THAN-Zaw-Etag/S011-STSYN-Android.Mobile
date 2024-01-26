@@ -115,7 +115,7 @@ class BookInBoxViewModel @Inject constructor(
 
             when (_getAllItemsOfBox.value) {
                 is ApiResponse.Success -> {
-                    val boxesOfItem = _bookInBoxUiState.value.allItemsOfBox ?: emptyList()
+                    val boxesOfItem = _bookInBoxUiState.value.allItemsOfBox
                     if (boxesOfItem.isNotEmpty()) updateScanType(ScanType.Multi) else updateScanType(
                         ScanType.Single
                     )

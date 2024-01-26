@@ -1,6 +1,8 @@
 @file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class,
     ExperimentalMaterial3Api::class
 )
 
@@ -143,6 +145,7 @@ fun BaseBoxScreen(
                     )
                 }
             }
+
             itemsIndexed(bookItems) { index, item ->
                 ScannedItem(
                     id = "${item.serialNo} - ${item.partNo}",
@@ -281,8 +284,7 @@ private fun ScannedItemsOptionLayout(
 
 @Composable
 private fun BoxScanSection(
-    boxId: String, boxDescription: String, modifier: Modifier = Modifier,
-    onRefresh: () -> Unit
+    boxId: String, boxDescription: String, modifier: Modifier = Modifier, onRefresh: () -> Unit
 ) {
     Row(
         modifier = modifier
