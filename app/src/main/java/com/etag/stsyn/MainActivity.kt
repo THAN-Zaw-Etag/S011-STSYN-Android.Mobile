@@ -2,6 +2,7 @@ package com.etag.stsyn
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,8 +13,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
@@ -46,6 +49,17 @@ class MainActivity : ComponentActivity() {
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
             val context = LocalContext.current
             val user by loginViewModel.savedUser.collectAsState()
+
+            workManager.getWorkInfosByTagLiveData("refreshWorkName")
+                .observe(LocalLifecycleOwner.current) {
+                    val workInfo = it.firstOrNull { it.state.isFinished }
+                    if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
+                        val outputData = workInfo.outputData
+                        val outputValue = outputData.getString("api_token")
+                        loginViewModel.saveToken(outputValue!!)
+                        Log.d("TAG", "doWork: savedToken: $outputValue")
+                    }
+                }
 
             PermissionUtil.checkBluetoothPermission(context)
 

@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.book_in.book_in_box
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -50,7 +49,6 @@ class BookInBoxViewModel @Inject constructor(
     }
 
     private fun addScannedItemToList(id: String) {
-        Log.d("TAG", "addScannedItemToList: $id")
         scannedItemsList.update { currentList ->
             if (id in currentList) {
                 currentList

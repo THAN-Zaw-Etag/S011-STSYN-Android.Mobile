@@ -97,11 +97,16 @@ class LoginViewModel @Inject constructor(
             localDataStore.saveEpcUser(userModel)
         }
     }
+
     fun saveUserToLocalStorage(localUser: LocalUser) {
         viewModelScope.launch {
             localDataStore.saveUser(localUser)
             updateLoginStatus(true)
         }
+    }
+
+    fun saveToken(token: String) {
+        viewModelScope.launch { localDataStore.saveToken(token) }
     }
 
     fun increaseLoginAttempt() {

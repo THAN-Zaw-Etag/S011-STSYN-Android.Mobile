@@ -20,30 +20,33 @@ import com.tzh.retrofit_module.data.mapper.toExpandedScannedItems
 
 @Composable
 fun BookInBoxCountScreen(
-    bookInBoxViewModel: BookInBoxViewModel,
-    modifier: Modifier = Modifier
+    bookInBoxViewModel: BookInBoxViewModel, modifier: Modifier = Modifier
 ) {
     val bookInBoxUiState by bookInBoxViewModel.bookInBoxUiState.collectAsState()
     var boxes by remember { mutableStateOf(bookInBoxUiState.allItemsOfBox) }
     var controlType by remember { mutableStateOf(ControlType.All) }
+    val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsState()
 
     LaunchedEffect(controlType) {
         val items = bookInBoxUiState.allItemsOfBox
-        /*boxes = when (controlType) {
-             ControlType.All -> items
-            ControlType.Done -> items.filter {  }
-         }*/
+        boxes = when (controlType) {
+            ControlType.All -> items
+            ControlType.Done -> items.filter { it.epc in scannedItemList }.toMutableList()
+            ControlType.Outstanding -> items.filter { it.epc !in scannedItemList }.toMutableList()
+        }
     }
 
-    BaseCountScreen(itemCount = bookInBoxUiState.allItemsOfBox.size, onTabSelected = {
-        controlType = it
-    }
-    ) {
+    BaseCountScreen(
+        itemCount = bookInBoxUiState.allItemsOfBox.size,
+        modifier = modifier,
+        onTabSelected = {
+            controlType = it
+        }) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(vertical = 16.dp)
         ) {
-            items(bookInBoxUiState.allItemsOfBox) {
+            items(boxes) {
                 ExpandedScannedItem(it.toExpandedScannedItems())
             }
         }

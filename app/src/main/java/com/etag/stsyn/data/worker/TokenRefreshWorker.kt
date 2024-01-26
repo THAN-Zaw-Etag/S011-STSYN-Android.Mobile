@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import androidx.work.workDataOf
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.assisted.Assisted
@@ -21,11 +22,13 @@ class TokenRefreshWorker @AssistedInject constructor(
 
         return try {
             val response = userRepository.refreshToken()
+
             when (response) {
                 is ApiResponse.Success -> {
                     Log.d("TAG", "doWork: success")
-                    userRepository.saveToken(response.data!!.token)
-                    return Result.success()
+
+                    val outputData = workDataOf("api_token" to response.data!!.token)
+                    return Result.success(outputData)
                 }
 
                 else -> {
