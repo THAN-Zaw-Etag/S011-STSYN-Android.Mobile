@@ -1,8 +1,10 @@
 package com.tzh.retrofit_module.di
 
 import android.content.Context
+import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.network.NetworkClientBuilder
+import com.tzh.retrofit_module.data.repository.TokenRepository
 import com.tzh.retrofit_module.util.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -16,13 +18,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
-
     @Provides
     @Singleton
     fun providesNetworkClientBuilder(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        tokenRepository: TokenRepository
     ): NetworkClientBuilder {
-        return NetworkClientBuilder(context)
+        return NetworkClientBuilder(context,tokenRepository)
     }
 
     @Provides

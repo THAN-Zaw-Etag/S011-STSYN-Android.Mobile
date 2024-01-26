@@ -43,15 +43,6 @@ fun HomeNavigationGraph(
         startDestination = Routes.HomeScreen.name,
         modifier = modifier
     ) {
-        composable(route = Routes.LoginScreen.name){
-            BackHandler(enabled = true) {
-                ExitApp(context)
-            }
-            LoginScreen(
-                loginViewModel = loginViewModel,
-                navigateToLoginContentScreen = {}
-            )
-        }
 
         composable(route = Routes.HomeScreen.name) {
 
@@ -164,6 +155,18 @@ fun HomeNavigationGraph(
             }
 
             SettingsScreen()
+        }
+
+                composable(route = Routes.LoginScreen.name){
+            BackHandler(enabled = true) {
+                ExitApp(context)
+            }
+            LoginScreen(
+                loginViewModel = loginViewModel,
+                navigateToLoginContentScreen = {
+                    navController.navigate(Routes.LoginContentScreen.name)
+                }
+            )
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.tzh.retrofit_module.data.network
 
 import android.content.Context
+import com.tzh.retrofit_module.data.local_storage.LocalDataStore
+import com.tzh.retrofit_module.data.repository.TokenRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -10,7 +12,10 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-class NetworkClientBuilder( private val context: Context) {
+class NetworkClientBuilder(
+    private val context: Context,
+    private val  tokenRepository: TokenRepository
+    ) {
     fun build(): OkHttpClient {
         val trustManager = object : X509TrustManager {
             override fun checkClientTrusted(
@@ -35,8 +40,10 @@ class NetworkClientBuilder( private val context: Context) {
         return OkHttpClient.Builder()
             .sslSocketFactory(sslContext.socketFactory, trustManager)
             .hostnameVerifier(HostnameVerifier { _, _ -> true }) // Bypass hostname verification
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .addInterceptor(NoConnectionInterceptor(context))// Optional: Logging for debugging
+            .addInterceptor(AuthInterceptor(tokenRepository) )
+            .addInterceptor(NoConnectionInterceptor(context))
+              .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+          // Optional: Logging for debugging
             .build()
     }
 }

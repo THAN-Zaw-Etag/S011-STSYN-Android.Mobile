@@ -36,13 +36,11 @@ interface ApiService {
 
     @POST(REFRESH_TOKEN_ROUTE)
     suspend fun refreshToken(
-        @Header("Authorization") token: String,
         @Body refreshTokenRequest: RefreshTokenRequest
     ): Response<RefreshTokenResponse>
 
     @GET(BOOK_IN_GET_ITEM_ROUTE)
     suspend fun getBookInItems(
-        @Header("Authorization") token: String,
         @Query("Store") store: String,
         @Query("CsNo") csNo: String,
         @Query("LoginUserId") userID: String
@@ -50,39 +48,37 @@ interface ApiService {
 
     @POST(SAVE_BOOK_IN_ROUTE)
     suspend fun saveBookIn(
-        @Header("Authorization") token: String,
         @Body saveBookInRequest: SaveBookInRequest
     ): Response<NormalResponse>
 
+
     @POST(UPDATE_PASSWORD_ROUTE)
     suspend fun updatePassword(
-        @Header("Authorization") token: String,
         @Body updatePasswordRequest: UpdatePasswordRequest
     ): Response<NormalResponse>
 
+
     @GET(GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH)
     suspend fun getUserAccessRightsByRoleId(
-        @Header("Authorization") token: String,
         @Query("roleId") id: String
     ): Response<UserMenuAccessRightsByIdResponse>
-
     @GET(SELECT_BOX_FOR_BOOK_IN_ROUTE)
     suspend fun getBoxItemsForBookIn(
-        @Header("Authorization") token: String,
         @Query("issuerId") issuerId: String
     ): Response<SelectBoxForBookInResponse>
 
+
     @GET(GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE)
     suspend fun getAllBookInItemsOfBox(
-        @Header("Authorization") token: String,
         @Query("box") box: String,
         @Query("status") status: String,
         @Query("loginUserId") loginUserId: String,
     ): Response<GetAllBookInItemsOfBoxResponse>
 
+
+
     @GET(CHECK_U_S_CASE_BY_BOX_ROUTE)
     suspend fun checkUSCaseByBox(
-        @Header("Authorization") token: String,
         @Query("Box") box: String
     ): Response<CheckUSCaseResponse>
 

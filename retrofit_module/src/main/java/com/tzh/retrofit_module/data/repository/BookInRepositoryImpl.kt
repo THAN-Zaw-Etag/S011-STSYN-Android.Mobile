@@ -21,48 +21,36 @@ class BookInRepositoryImpl @Inject constructor(
     override suspend fun getBookInItems(
         store: String, csNo: String, userId: String
     ): ApiResponse<BookInResponse> {
-        val token = localDataStore.getUser.first().token.toToken()
-
         return ApiResponseHandler.processResponse {
             apiService.getBookInItems(
-                store = store, csNo = csNo, userID = userId, token = token
+                store = store, csNo = csNo, userID = userId
             )
         }
     }
 
     override suspend fun saveBookIn(saveBookInRequest: SaveBookInRequest): ApiResponse<NormalResponse> {
-        val user = localDataStore.getUser.first()
-        val token = user.token.toToken()
-
         return ApiResponseHandler.processResponse {
-            apiService.saveBookIn(token, saveBookInRequest)
+            apiService.saveBookIn( saveBookInRequest)
         }
     }
 
     override suspend fun getBoxItemsForBookIn(issuerId: String): ApiResponse<SelectBoxForBookInResponse> {
-        val user = localDataStore.getUser.first()
-        val token = user.token.toToken()
-
         return ApiResponseHandler.processResponse {
-            apiService.getBoxItemsForBookIn(token, issuerId)
+            apiService.getBoxItemsForBookIn( issuerId)
         }
     }
 
     override suspend fun getAllBookItemsOfBox(
         box: String, status: String, loginUserId: String
     ): ApiResponse<GetAllBookInItemsOfBoxResponse> {
-        val user = localDataStore.getUser.first()
-        val token = user.token.toToken()
-
         return ApiResponseHandler.processResponse {
-            apiService.getAllBookInItemsOfBox(token, box, status, loginUserId)
+            apiService.getAllBookInItemsOfBox( box, status, loginUserId)
         }
     }
 
     override suspend fun checkUSCaseByBox(boxName: String): ApiResponse<CheckUSCaseResponse> {
-        val user = localDataStore.getUser.first()
         return ApiResponseHandler.processResponse {
-            apiService.checkUSCaseByBox(user.token.toToken(), boxName)
+            apiService.checkUSCaseByBox( boxName)
         }
     }
 }
