@@ -23,6 +23,7 @@ class AuthInterceptor @Inject constructor(private val localDataStore: LocalDataS
             .newBuilder()
             .build()
 
+
         val modifiedRequest = originalRequest.newBuilder()
             .url(modifiedUrl)
             .addHeader("Authorization", user?.token!!.toToken()) // Add bearer token header
