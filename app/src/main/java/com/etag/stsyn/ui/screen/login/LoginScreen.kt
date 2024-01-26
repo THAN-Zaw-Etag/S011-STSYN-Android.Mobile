@@ -44,9 +44,11 @@ import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
 import com.etag.stsyn.enums.DeviceSize
 import com.etag.stsyn.ui.components.ErrorDialog
+import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.LoginProgressDialog
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.AppUtil
 import com.etag.stsyn.util.AppUtil.getDeviceSize
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -128,7 +130,11 @@ fun LoginScreen(
             onDismiss = {showErrorDialog = false}
         )
     }
-    LoginProgressDialog(showDialog = showLoadingDialog)
+//    LoginProgressDialog(showDialog = showLoadingDialog)
+    LoadingDialog(title = "ID verifying...",
+        showDialog = showLoadingDialog,
+        onDismiss = { }
+    )
 
     LaunchedEffect(rfidUiState.isConnected) {
         if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT)

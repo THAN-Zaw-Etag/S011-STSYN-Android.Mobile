@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.screen.detail.DetailScreen
+import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.BookInScreen
 import com.etag.stsyn.ui.screen.main.BookOutScreen
@@ -42,6 +43,7 @@ fun HomeNavigationGraph(
         startDestination = Routes.HomeScreen.name,
         modifier = modifier
     ) {
+
         composable(route = Routes.HomeScreen.name) {
 
             BackHandler(enabled = true) {
@@ -153,6 +155,18 @@ fun HomeNavigationGraph(
             }
 
             SettingsScreen()
+        }
+
+                composable(route = Routes.LoginScreen.name){
+            BackHandler(enabled = true) {
+                ExitApp(context)
+            }
+            LoginScreen(
+                loginViewModel = loginViewModel,
+                navigateToLoginContentScreen = {
+                    navController.navigate(Routes.LoginContentScreen.name)
+                }
+            )
         }
     }
 }

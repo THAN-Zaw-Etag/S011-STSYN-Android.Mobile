@@ -32,25 +32,22 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun refreshToken(): ApiResponse<RefreshTokenResponse> {
         val user = localDataStore.getUser.first()
         return ApiResponseHandler.processResponse {
-            apiService.refreshToken(user.token.toToken(), RefreshTokenRequest(user.token))
+            apiService.refreshToken( RefreshTokenRequest(user.token))
         }
     }
 
     override suspend fun updatePassword(
         updatePasswordRequest: UpdatePasswordRequest
     ): ApiResponse<NormalResponse> {
-        val token = localDataStore.getUser.last().token.toToken()
         return ApiResponseHandler.processResponse {
-            apiService.updatePassword(token, updatePasswordRequest)
+            apiService.updatePassword(updatePasswordRequest)
         }
     }
 
     override suspend fun getUserMenuAccessRightsById(): ApiResponse<UserMenuAccessRightsByIdResponse> {
         val user = localDataStore.getUser.last()
-        val token = user.token.toToken()
-
         return ApiResponseHandler.processResponse {
-            apiService.getUserAccessRightsByRoleId(token = token, id = user.roleId)
+            apiService.getUserAccessRightsByRoleId( id = user.roleId)
         }
     }
 
