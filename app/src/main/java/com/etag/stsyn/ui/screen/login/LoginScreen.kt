@@ -130,7 +130,7 @@ fun LoginScreen(
             onDismiss = {showErrorDialog = false}
         )
     }
-//    LoginProgressDialog(showDialog = showLoadingDialog)
+
     LoadingDialog(title = "ID verifying...",
         showDialog = showLoadingDialog,
         onDismiss = { }

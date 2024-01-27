@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.login
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -7,6 +8,8 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
+import com.tzh.retrofit_module.data.settings.AppConfigModel
+import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.MenuAccessRight
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -16,6 +19,8 @@ import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +36,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     val rfidHandler: ZebraRfidHandler,
     private val localDataStore: LocalDataStore,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val appConfiguration: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
 
     private val _loginUiState = MutableStateFlow(LoginUiState())
@@ -60,6 +66,11 @@ class LoginViewModel @Inject constructor(
     private val _epcModelUser = MutableStateFlow(UserModel())
     val epcModelUser: StateFlow<UserModel> = _epcModelUser.asStateFlow()
 
+    val appConfig = appConfiguration.appConfig
+    //TODO change with livedata or shareFlow
+    private val _shouldShowEmptyBaseUrlDialog = MutableStateFlow(false)
+    val shouldShowEmptyBaseUrlDialog: StateFlow<Boolean> = _shouldShowEmptyBaseUrlDialog.asStateFlow()
+
     init {
         updateScanType(ScanType.Single)
         // if user is already logged in, fetch menu access rights from api
@@ -76,7 +87,27 @@ class LoginViewModel @Inject constructor(
                     _epcModelUser.value =it
                 }
             }
+
+            baseUrlStatus()
         }
+    }
+
+    fun updateAppConfig(appConfigModel: AppConfigModel) {
+        viewModelScope.launch {
+            appConfiguration.updateAppConfig(appConfigModel)
+        }
+    }
+    fun baseUrlStatus() {
+        viewModelScope.launch {
+            appConfiguration.appConfig.collect { appConfigModel ->
+                Log.d("BaseUrlProvider", "appConfigModel: $appConfigModel")
+                val  baseUrl = appConfigModel.apiUrl
+                if (baseUrl.isEmpty()){
+                    _shouldShowEmptyBaseUrlDialog.value = true
+                }
+            }
+        }
+
     }
 
     fun updateLoginStatus(isSuccessful: Boolean) {
@@ -129,7 +160,7 @@ class LoginViewModel @Inject constructor(
                 LoginRequest(
                     id = "",
                     nric = "",
-                    rfid = "455341303030303030303130",
+                    rfid = loginUiState.value.rfidId,
                     password = passwordString,
                     isFromMobile = true
                 )
