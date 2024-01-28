@@ -97,7 +97,7 @@ class LoginViewModel @Inject constructor(
             appConfiguration.updateAppConfig(appConfigModel)
         }
     }
-    fun baseUrlStatus() {
+    private fun baseUrlStatus() {
         viewModelScope.launch {
             appConfiguration.appConfig.collect { appConfigModel ->
                 Log.d("BaseUrlProvider", "appConfigModel: $appConfigModel")
@@ -107,7 +107,6 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
     fun updateLoginStatus(isSuccessful: Boolean) {
@@ -185,7 +184,7 @@ class LoginViewModel @Inject constructor(
         }
     }
     fun updatePassword(oldPasswordCharArr: CharArray, newPasswordChar: CharArray) {
-        val oldPassword =String(oldPasswordCharArr)
+        val oldPassword = String(oldPasswordCharArr)
         val newPassword = String(newPasswordChar)
         //TODO remove unused lines of code and encrypt password if required
         updateAuthorizationFailedDialogVisibility(false)
