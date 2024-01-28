@@ -1,5 +1,5 @@
 package com.etag.stsyn.enums
 
 enum class Purpose {
-    WORK, CALIBRATION
+    WORK, CALIBRATION, MAINTENANCE, REPAIR, SCRAP
 }
