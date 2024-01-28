@@ -59,7 +59,7 @@ fun PasswordField(
     var showPassword by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
 
-    OutlinedTextField(
+    STSYNTExtField(
         value = text,
         label = { Text(text = hint) },
         modifier = modifier
