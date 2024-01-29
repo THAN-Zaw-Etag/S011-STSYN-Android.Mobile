@@ -1,6 +1,7 @@
 package com.etag.stsyn.util
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
@@ -35,6 +36,12 @@ object AppUtil {
             screenWidthDp < LARGE_SCREEN_WIDTH_DP -> DeviceSize.MEDIUM
             else -> DeviceSize.TABLET
         }
+    }
+
+    fun baseUrlValidationStatus(newBaseUrl: String):Boolean {
+        Log.d("BaseUrlProvider", "From Class newBaseUrl: $newBaseUrl")
+        return !(!newBaseUrl.startsWith("http://") && !newBaseUrl.startsWith("https://"))
+
     }
 
 }

@@ -9,33 +9,43 @@ import javax.inject.Inject
 
 class BaseUrlInterceptor @Inject constructor(private val baseUrlProvider: BaseUrlProvider) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        var request = chain.request()
+        val request = chain.request()
         val originalUrl = request.url
 
-        // Log the base URL at the start
         val newBaseUrlString = baseUrlProvider.getBaseUrl()
-        Log.d("BaseUrlInterceptor", "start newUrl: $newBaseUrlString")
-
         val newBaseUrl = newBaseUrlString.toHttpUrlOrNull()
+
         if (newBaseUrl != null) {
-            // Construct the new URL using the new base URL but preserving the original path and query parameters
-            val newUrl = originalUrl.newBuilder()
-                .scheme(newBaseUrl.scheme)
-                .host(newBaseUrl.host)
-                .port(newBaseUrl.port)
-                .encodedPath(newBaseUrl.encodedPath)  // Use encodedPath to preserve the full path
-                // If the base URL might also contain query parameters, add/merge them here
+            // Remove the trailing slash from the base URL's path if it exists
+            val baseWithPath = if (newBaseUrl.encodedPath.endsWith("/")) {
+                newBaseUrl.encodedPath.removeSuffix("/")
+            } else {
+                newBaseUrl.encodedPath
+            }
+
+            // Remove the leading slash from the original request's path if it exists
+            val originalWithPath = if (originalUrl.encodedPath.startsWith("/")) {
+                originalUrl.encodedPath.removePrefix("/")
+            } else {
+                originalUrl.encodedPath
+            }
+
+            // Construct the new URL by combining the base URL with the original request's path and query parameters
+            val newUrl = newBaseUrl.newBuilder()
+                .encodedPath("$baseWithPath/$originalWithPath") // Combine paths with a single slash
+                .query(originalUrl.query) // Preserve original query parameters
                 .build()
 
-            // Log the final URL
-            Log.d("BaseUrlInterceptor", "end newUrl: $newUrl")
+            // Log the final URL for debugging
+            Log.d("BaseUrlInterceptor", "Final URL: $newUrl")
 
-            // Update the request with the new URL
-            request = request.newBuilder().url(newUrl).build()
+            // Create a new request with the updated URL
+            val newRequest = request.newBuilder().url(newUrl).build()
+
+            return chain.proceed(newRequest)
         } else {
-            Log.e("BaseUrlInterceptor", "Invalid new base URL: $newBaseUrlString")
+            Log.e("BaseUrlInterceptor", "Invalid base URL: $newBaseUrlString")
+            return chain.proceed(request) // Proceed with the original request if the base URL is invalid
         }
-
-        return chain.proceed(request)
     }
 }

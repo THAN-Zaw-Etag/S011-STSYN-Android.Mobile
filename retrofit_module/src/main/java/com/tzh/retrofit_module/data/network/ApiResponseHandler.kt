@@ -44,6 +44,7 @@ object ApiResponseHandler {
             is IOException -> ApiResponse.ApiError("Network error occurred")
             is JSONException -> ApiResponse.ApiError("Error parsing response")
             is HttpException -> ApiResponse.ApiError(exception.message.toString())
+            is IllegalStateException -> ApiResponse.ApiError(exception.message.toString())
             else -> ApiResponse.ApiError("Unknown error occurred")
         }
     }

@@ -22,30 +22,27 @@ class BaseUrlProvider @Inject constructor(
         }
     }
 
-    fun getBaseUrl(): String {
+        fun getBaseUrl(): String {
+        if (baseUrl.isEmpty()) {
+            throw IllegalStateException("Base URL is not set.")
+        }
+        if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+            throw IllegalStateException("Base URL must start with in get 'http://' or 'https://'. Current base URL: $baseUrl")
+        }
         return baseUrl
     }
+    // todo delete it if not needed
+//    fun getBaseUrlWithTrailingSlash(): String {
+//        return getBaseUrl().trimEnd('/') + "/"}
+
+
     fun updateBaseUrl(newBaseUrl: String) {
+         Log.d("BaseUrlProvider", "From Class newBaseUrl: $newBaseUrl")
+        if (!newBaseUrl.startsWith("http://") && !newBaseUrl.startsWith("https://")) {
+            throw IllegalArgumentException("Base URL must start with in update 'http://' or 'https://'. Provided URL: $newBaseUrl")
+        }
         baseUrl = newBaseUrl
     }
 
-    //Todo delete this later if not needed
-//    private var baseUrl: String = "https://"
-//
-//    fun getBaseUrl(): String {
-//        if (baseUrl.isEmpty()) {
-//            throw IllegalStateException("Base URL is not set.")
-//        }
-//        if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
-//            throw IllegalStateException("Base URL must start with 'http://' or 'https://'. Current base URL: $baseUrl")
-//        }
-//        return baseUrl
-//    }
-//
-//    fun updateBaseUrl(newBaseUrl: String) {
-//        if (!newBaseUrl.startsWith("http://") && !newBaseUrl.startsWith("https://")) {
-//            throw IllegalArgumentException("Base URL must start with 'http://' or 'https://'. Provided URL: $newBaseUrl")
-//        }
-//        baseUrl = newBaseUrl
-//    }
+
 }

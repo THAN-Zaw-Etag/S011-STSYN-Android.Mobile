@@ -70,7 +70,7 @@ class LoginViewModel @Inject constructor(
     val epcModelUser: StateFlow<UserModel> = _epcModelUser.asStateFlow()
 
     val appConfig = appConfiguration.appConfig
-    //TODO change with livedata or shareFlow
+
     private val _shouldShowEmptyBaseUrlDialog = MutableLiveData(false)
     val shouldShowEmptyBaseUrlDialog: LiveData<Boolean> = _shouldShowEmptyBaseUrlDialog
 
@@ -119,7 +119,7 @@ class LoginViewModel @Inject constructor(
     }
 
 
-     private fun getUserByRfidId(rfidId: String) {
+      private fun getUserByRfidId(rfidId: String) {
         viewModelScope.launch {
             _getUserResponse.emit(ApiResponse.Loading)
             val response = userRepository.getUserByEPC(rfidId)

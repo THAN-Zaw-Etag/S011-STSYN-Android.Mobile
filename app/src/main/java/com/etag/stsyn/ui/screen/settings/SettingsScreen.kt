@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.screen.settings
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,12 +45,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.etag.stsyn.ui.components.DropDown
+import com.etag.stsyn.util.AppUtil
 import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.data.settings.StoreType
 
@@ -57,11 +60,18 @@ import com.tzh.retrofit_module.data.settings.StoreType
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val appConfiguration by viewModel.appConfig.collectAsState(initial = AppConfigModel())
     var needLocation by remember { mutableStateOf(false) }
 
     LaunchedEffect(appConfiguration.needLocation) {
         needLocation = appConfiguration.needLocation
+    }
+    var baseUrlStatus by remember { mutableStateOf(false) }
+
+    LaunchedEffect(baseUrlStatus) {
+        if (baseUrlStatus) Toast.makeText(context, "Enter valid Url!", Toast.LENGTH_SHORT)
+            .show()
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -86,8 +96,14 @@ fun SettingsScreen(
             value = appConfiguration.apiUrl,
             description = appConfiguration.apiUrl,
             onUpdateClick = {
-                viewModel.updateAppConfig(appConfiguration.copy(apiUrl = it))
-                viewModel.updateBaseUrl(it)
+                baseUrlStatus = if (AppUtil.baseUrlValidationStatus(it)) {
+                    viewModel.updateAppConfig(appConfiguration.copy(apiUrl = it))
+                    viewModel.updateBaseUrl(it)
+                    false
+                }else{
+                    true
+                }
+
             }
         )
 
