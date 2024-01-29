@@ -4,18 +4,26 @@ import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
+import com.tzh.retrofit_module.data.mapper.toItemMovementLogs
+import com.tzh.retrofit_module.data.model.book_in.ItemMovementLog
+import com.tzh.retrofit_module.data.model.book_in.PrintJob
+import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
+import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
+import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.domain.repository.UserRepository
+import com.tzh.retrofit_module.enum.ItemStatus
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +33,7 @@ class BookInBoxViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
     private val localDataStore: LocalDataStore,
     private val bookInRepository: BookInRepository,
+    private val appConfiguration: AppConfiguration,
     private val userRepository: UserRepository
 ) : BaseViewModel(rfidHandler) {
 
@@ -38,6 +47,11 @@ class BookInBoxViewModel @Inject constructor(
     val getAllItemsOfBox: StateFlow<ApiResponse<GetAllBookInItemsOfBoxResponse>> =
         _getAllItemsOfBox.asStateFlow()
 
+    private val _saveBookInBoxResponse =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveBookInBoxResponse: StateFlow<ApiResponse<NormalResponse>> =
+        _saveBookInBoxResponse.asStateFlow()
+
     private val _bookInBoxUiState = MutableStateFlow(BookInBoxUiState())
     val bookInBoxUiState: StateFlow<BookInBoxUiState> = _bookInBoxUiState.asStateFlow()
 
@@ -45,6 +59,7 @@ class BookInBoxViewModel @Inject constructor(
     val scannedItemsList = MutableStateFlow<List<String>>(emptyList()) // scanned tag list
 
     val user = localDataStore.getUser
+    private val appConfig = appConfiguration.appConfig
 
     init {
         updateScanType(ScanType.Single)
@@ -58,6 +73,77 @@ class BookInBoxViewModel @Inject constructor(
             } else {
                 currentList + id
             }
+        }
+    }
+
+    fun saveBookInBox() {
+        viewModelScope.launch {
+
+            // set initial loading state
+            _saveBookInBoxResponse.value = ApiResponse.Loading
+
+            val readerId = appConfig.first().handheldReaderId
+            val currentDate =
+                "2024-01-29T03:29:20.016Z" //TODO replace with DateUtil.getCurrentDate()
+            val buddy = bookInBoxUiState.value.issuerUser
+            val scannedItems =
+                _bookInBoxUiState.value.allItemsOfBox.filter { it.epc in scannedItemsList.value }
+            val outStandingItems =
+                _bookInBoxUiState.value.allItemsOfBox.filter { it.epc !in scannedItemsList.value }
+
+            val itemMovementLogs = mutableListOf<ItemMovementLog>()
+            val scannedBox = bookInBoxUiState.value.scannedBox
+            if (!scannedItems.map { it.epc }.contains(scannedBox.epc)) {
+                itemMovementLogs.add(
+                    ItemMovementLog(
+                        itemId = scannedBox.id.toInt(),
+                        itemStatus = ItemStatus.BookIn.title,
+                        workLoc = "",
+                        issuerId = scannedBox.issuerId.toInt(),
+                        date = currentDate,
+                        handheldReaderId = readerId.toInt(),
+                        receiverId = scannedBox.receiverId.toInt(),
+                        approverId = 0,
+                        remarks = if (bookInBoxUiState.value.isChecked) "Visual Check" else "",
+                        receiverName = "",
+                        calDate = scannedBox.calDate,
+                        description = "",
+                        buddyId = buddy?.userId ?: "0",
+                        iS_ONSITE_TRANSFER = "0",
+                        itemType = ""
+                    )
+                )
+            }
+
+            itemMovementLogs.addAll(
+                scannedItems.toItemMovementLogs(
+                    date = currentDate,
+                    itemStatus = ItemStatus.BookIn,
+                    buddyId = buddy?.userId,
+                    isVisualChecked = _bookInBoxUiState.value.isChecked,
+                    handleHeldId = readerId.toInt()
+                )
+            )
+            itemMovementLogs.addAll(
+                outStandingItems.toItemMovementLogs(
+                    date = currentDate,
+                    itemStatus = ItemStatus.OUTSTANDING,
+                    buddyId = buddy?.userId,
+                    isVisualChecked = _bookInBoxUiState.value.isChecked,
+                    handleHeldId = readerId.toInt()
+                )
+            )
+            val saveBookInBoxRequest = SaveBookInRequest(
+                itemMovementLogs = itemMovementLogs,
+                printJob = PrintJob(
+                    date = currentDate,
+                    handheldId = readerId.toInt(),
+                    reportType = ItemStatus.BookIn.title,
+                    userId = user.first().userId.toInt()
+                )
+            )
+
+            _saveBookInBoxResponse.value = bookInRepository.saveBookIn(saveBookInBoxRequest)
         }
     }
 

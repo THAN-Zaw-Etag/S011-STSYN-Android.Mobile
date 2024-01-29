@@ -35,20 +35,18 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         // lock screen rotation
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
         workManager = WorkManager.getInstance(this)
 
         setContent {
             val navController = rememberNavController()
             val loginViewModel: LoginViewModel = hiltViewModel()
             val loginUiState by loginViewModel.loginUiState.collectAsState()
-            val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsState()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
             val context = LocalContext.current
-            val user by loginViewModel.savedUser.collectAsState()
 
             workManager.getWorkInfosByTagLiveData("refreshWorkName")
                 .observe(LocalLifecycleOwner.current) {
@@ -71,7 +69,6 @@ class MainActivity : ComponentActivity() {
                 if (loginUiState.isLoginSuccessful) {
                     TokenRefresher.refresh(workManager)
                 }
-
             }
 
             handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)

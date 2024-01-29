@@ -112,7 +112,6 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
     fun updateLoginStatus(isSuccessful: Boolean) {
@@ -165,7 +164,7 @@ class LoginViewModel @Inject constructor(
                 LoginRequest(
                     id = "",
                     nric = "",
-                    rfid = loginUiState.value.rfidId,
+                    rfid = "455341303030303030303130", //TODO _loginUiState.value.rfid
                     password = passwordString,
                     isFromMobile = true
                 )
@@ -190,7 +189,7 @@ class LoginViewModel @Inject constructor(
         }
     }
     fun updatePassword(oldPasswordCharArr: CharArray, newPasswordChar: CharArray) {
-        val oldPassword =String(oldPasswordCharArr)
+        val oldPassword = String(oldPasswordCharArr)
         val newPassword = String(newPasswordChar)
         //TODO remove unused lines of code and encrypt password if required
         updateAuthorizationFailedDialogVisibility(false)

@@ -39,7 +39,7 @@ fun BaseSaveScreen(
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                if (true) ScanIconButton(onScan = onScan)
+                if (isUsCase) ScanIconButton(onScan = onScan)
                 else SaveButton(onClick = onSave)
             }
         }
