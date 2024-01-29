@@ -5,6 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,6 +33,7 @@ fun NavigationGraph(
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
     val epcModelUserName by loginViewModel.epcModelUser.collectAsState(UserModel())
+    var startDestination by remember { mutableStateOf(Routes.LoginScreen.name) }
 
     LaunchedEffect(navController.currentDestination) {
         if ((navController.currentDestination ?: "") == Routes.LoginScreen.name) {
@@ -38,13 +42,15 @@ fun NavigationGraph(
     }
 
     LaunchedEffect(savedUser.isLoggedIn) {
-        delay(1000)
+        startDestination =
+            if (savedUser.isLoggedIn) Routes.HomeContentScreen.name else Routes.LoginScreen.name
+        delay(1000) // not to show splash screen in a short period of time
     }
 
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = Routes.LoginContentScreen.name
+        startDestination = startDestination
     ) {
 
         composable(route = Routes.SplashScreen.name) {
