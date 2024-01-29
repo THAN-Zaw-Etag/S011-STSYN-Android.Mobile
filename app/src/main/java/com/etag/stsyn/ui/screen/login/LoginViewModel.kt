@@ -1,6 +1,8 @@
 package com.etag.stsyn.ui.screen.login
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -8,6 +10,7 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
+import com.tzh.retrofit_module.data.network.BaseUrlProvider
 import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
@@ -68,8 +71,8 @@ class LoginViewModel @Inject constructor(
 
     val appConfig = appConfiguration.appConfig
     //TODO change with livedata or shareFlow
-    private val _shouldShowEmptyBaseUrlDialog = MutableStateFlow(false)
-    val shouldShowEmptyBaseUrlDialog: StateFlow<Boolean> = _shouldShowEmptyBaseUrlDialog.asStateFlow()
+    private val _shouldShowEmptyBaseUrlDialog = MutableLiveData(false)
+    val shouldShowEmptyBaseUrlDialog: LiveData<Boolean> = _shouldShowEmptyBaseUrlDialog
 
     init {
         updateScanType(ScanType.Single)
@@ -88,22 +91,24 @@ class LoginViewModel @Inject constructor(
                 }
             }
 
-            baseUrlStatus()
+            launch {  baseUrlStatus() }
+
         }
     }
 
     fun updateAppConfig(appConfigModel: AppConfigModel) {
         viewModelScope.launch {
             appConfiguration.updateAppConfig(appConfigModel)
+            baseUrlStatus()
         }
     }
-    fun baseUrlStatus() {
+    private fun baseUrlStatus() {
         viewModelScope.launch {
             appConfiguration.appConfig.collect { appConfigModel ->
-                Log.d("BaseUrlProvider", "appConfigModel: $appConfigModel")
+                Log.d("BaseUrlProvider", "appConfigModel: ${appConfigModel.apiUrl}")
                 val  baseUrl = appConfigModel.apiUrl
                 if (baseUrl.isEmpty()){
-                    _shouldShowEmptyBaseUrlDialog.value = true
+                    _shouldShowEmptyBaseUrlDialog.postValue(true)
                 }
             }
         }
@@ -115,7 +120,7 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    private fun getUserByRfidId(rfidId: String) {
+     private fun getUserByRfidId(rfidId: String) {
         viewModelScope.launch {
             _getUserResponse.emit(ApiResponse.Loading)
             val response = userRepository.getUserByEPC(rfidId)

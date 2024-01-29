@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,10 +47,12 @@ import com.etag.stsyn.enums.DeviceSize
 import com.etag.stsyn.ui.components.ErrorDialog
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.LoginProgressDialog
+import com.etag.stsyn.ui.components.ShowBaseUrlAlertDialog
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.AppUtil
 import com.etag.stsyn.util.AppUtil.getDeviceSize
+import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.util.ApiResponse
 
 
@@ -80,6 +83,17 @@ fun LoginScreen(
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
+    val emptyBaseUrlStatus = loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
+    val appConfiguration by loginViewModel.appConfig.collectAsState(initial = AppConfigModel())
+    Log.d("@baseUrl",emptyBaseUrlStatus.value.toString())
+    if (emptyBaseUrlStatus.value){
+        ShowBaseUrlAlertDialog(
+            onConfirm = {
+                loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = "https://18.139.63.32/SMS-STSYN-Dev/api/"))   //TODO change this when app release
+        }) {
+
+        }
+    }
 
     LaunchedEffect(lifecycleOwner) {
         loginViewModel.getUserByEPCResponse.collect { response ->

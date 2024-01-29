@@ -85,7 +85,10 @@ fun SettingsScreen(
             title = "API Url",
             value = appConfiguration.apiUrl,
             description = appConfiguration.apiUrl,
-            onUpdateClick = { viewModel.updateAppConfig(appConfiguration.copy(apiUrl = it)) }
+            onUpdateClick = {
+                viewModel.updateAppConfig(appConfiguration.copy(apiUrl = it))
+                viewModel.updateBaseUrl(it)
+            }
         )
 
         SettingItem(

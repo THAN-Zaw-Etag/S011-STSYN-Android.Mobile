@@ -97,7 +97,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
-
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.3")
     implementation(project(":retrofit_module"))
 }
 
