@@ -82,7 +82,7 @@ fun BookOutScanScreen(
             items(bookOutUiState.scannedItems) {
                 key(it) {
                     ScannedItem(
-                        id = it.serialNo, name = it.description,
+                        id = it.epc, name = it.description,
                         isSwipeable = true,
                         onSwipeToDismiss = {
                             //bookOutViewModel.removeItem(it)

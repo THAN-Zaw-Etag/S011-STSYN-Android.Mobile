@@ -146,26 +146,6 @@ private fun ScannedItemContent(
     }
 }
 
-/*@Composable
-private fun ScannedItemDismissBackground(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.error)
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.Delete,
-            tint = Color.White,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.CenterEnd)
-        )
-    }
-}*/
-
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun ScannedItemPreview() {

@@ -68,10 +68,6 @@ class BookOutViewModel @Inject constructor(
 
         try {
             val scannedItem = bookOutUiState.value.allBookOutItems.find { it.epc == id }
-            Log.d(
-                TAG,
-                "addScannedItem: $scannedItem ${bookOutUiState.value.allBookOutItems.map { it.epc == id }} \n $id"
-            )
             if (!hasExisted) {
                 if (scannedItem != null) {
                     _bookOutUiState.update {
