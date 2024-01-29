@@ -86,6 +86,7 @@ fun WarningDialog(
 
                         Row(modifier = Modifier.align(Alignment.End)) {
                             TextButton(onClick = {
+                                show = false
                                 onPositiveButtonClick()
                                 onDismiss()
                             }) {
@@ -94,6 +95,7 @@ fun WarningDialog(
 
                             if (negativeButtonTitle.isNotEmpty()) {
                                 TextButton(onClick = {
+                                    show = false
                                     onNegativeButtonClick()
                                     onDismiss()
                                 }) {

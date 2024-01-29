@@ -10,7 +10,6 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
-import com.tzh.retrofit_module.data.network.BaseUrlProvider
 import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
@@ -22,8 +21,6 @@ import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -243,6 +240,7 @@ class LoginViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
+        Log.d("TAG", "onReceivedTagId: $id")
         _loginUiState.update { it.copy(rfidId = id) }
         getUserByRfidId(id)
     }

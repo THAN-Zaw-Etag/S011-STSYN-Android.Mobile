@@ -1,49 +1,93 @@
 package com.etag.stsyn.ui.screen.book_out.book_out
 
+import android.util.Log
+import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
+import com.tzh.retrofit_module.data.settings.AppConfiguration
+import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
+import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
+import com.tzh.retrofit_module.domain.repository.BookOutRepository
+import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BookOutViewModel @Inject constructor(
-    rfidHandler: ZebraRfidHandler
+    rfidHandler: ZebraRfidHandler,
+    private val bookOutRepository: BookOutRepository,
+    private val appConfiguration: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
-
     val TAG = "BookOut ViewModel"
 
     private val _bookOutUiState = MutableStateFlow(BookOutUiState())
     val bookOutUiState: StateFlow<BookOutUiState> = _bookOutUiState.asStateFlow()
 
-    /*private val _items = MutableStateFlow(mutableListOf<String>())
-    val items: StateFlow<List<String>> = _items.asStateFlow()
+    private val _getAllBookOutItemResponse =
+        MutableStateFlow<ApiResponse<BookOutResponse>>(ApiResponse.Default)
+    val getAllBookOutItemResponse: StateFlow<ApiResponse<BookOutResponse>> =
+        _getAllBookOutItemResponse.asStateFlow()
 
-    private fun addItem(item: String) {
-        val currentItems = _items.value.toMutableList()
+    val settings = appConfiguration.appConfig
 
-        isScanning
+    init {
+        getAllBookOutItems()
+    }
 
-        val hasExisted = item in currentItems
-        if (!hasExisted) {
-            currentItems.add(item)
-            _items.value = currentItems // Update the StateFlow with the new list
+    private fun getAllBookOutItems() {
+        viewModelScope.launch {
+            _getAllBookOutItemResponse.value = bookOutRepository.getAllBookOutItems()
+            when (_getAllBookOutItemResponse.value) {
+                is ApiResponse.Success -> {
+                    val allItems =
+                        (_getAllBookOutItemResponse.value as ApiResponse.Success<BookOutResponse>).data?.items
+                            ?: emptyList()
+                    _bookOutUiState.update { it.copy(allBookOutItems = allItems) }
+                    Log.d(
+                        TAG,
+                        "getAllBookOutItems: ${bookOutUiState.value.allBookOutItems.map { it.epc }}"
+                    )
+                }
+
+                else -> {}
+            }
         }
     }
 
-    fun removeItem(item: String) {
-        val currentItems = _items.value.toMutableList()
-        currentItems.remove(item)
-        _items.value = currentItems
-    }*/
-
-
     override fun onReceivedTagId(id: String) {
+        addScannedItem(id)
+    }
+
+    private fun addScannedItem(id: String) {
+        val hasExisted = id in bookOutUiState.value.scannedItems.map { it.epc }
+
+        try {
+            val scannedItem = bookOutUiState.value.allBookOutItems.find { it.epc == id }
+            Log.d(
+                TAG,
+                "addScannedItem: $scannedItem ${bookOutUiState.value.allBookOutItems.map { it.epc == id }} \n $id"
+            )
+            if (!hasExisted) {
+                if (scannedItem != null) {
+                    _bookOutUiState.update {
+                        val updatedItems = it.scannedItems.toMutableList()
+                        updatedItems.add(scannedItem!!)
+                        it.copy(scannedItems = updatedItems)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     data class BookOutUiState(
-        val scannedItems: MutableList<String> = mutableListOf()
+        val allBookOutItems: List<BookInItem> = listOf(),
+        val scannedItems: List<BookInItem> = listOf()
     )
 }

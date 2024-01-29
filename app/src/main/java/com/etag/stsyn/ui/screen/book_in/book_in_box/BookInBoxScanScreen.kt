@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.ui.screen.base.BaseBoxScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
@@ -53,14 +54,20 @@ fun BookInBoxScanScreen(
         bookItems = bookInBoxUiState.allItemsOfBox,
         scannedItemList = scannedItemList,
         boxes = boxes,
-        onReset = { bookInBoxViewModel.resetScannedItems() },
-        onScan = { bookInBoxViewModel.toggle() },
+        onReset = bookInBoxViewModel::resetScannedItems,
+        onScan = {
+            bookInBoxViewModel.apply {
+                updateScanType(BaseViewModel.ScanType.Single)
+                updateBookInBoxScanStatus(if (bookInBoxUiState.scannedBox.epc.isEmpty()) BookInBoxViewModel.BookInBoxScanType.BOX else BookInBoxViewModel.BookInBoxScanType.ITEMS)
+                toggle()
+            }
+        },
         onRefresh = { bookInBoxViewModel.refreshScannedBox() },
         isScanning = rfidUiState.isScanning,
         scannedBox = scannedBox,
         modifier = modifier,
         checked = bookInBoxUiState.isChecked,
-        onCheckChange = { bookInBoxViewModel.toggleVisualCheck(it) },
+        onCheckChange = bookInBoxViewModel::toggleVisualCheck,
         showBoxBookOutButton = true,
         boxOutTitle = "Box booked out (${boxes.size})",
     )

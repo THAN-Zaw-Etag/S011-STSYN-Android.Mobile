@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.book_in.book_in_box
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -76,6 +77,10 @@ class BookInBoxViewModel @Inject constructor(
         }
     }
 
+    fun updateBookInBoxScanStatus(bookInBoxScanType: BookInBoxScanType) {
+        _bookInBoxUiState.update { it.copy(bookInBoxScanType = bookInBoxScanType) }
+    }
+
     fun saveBookInBox() {
         viewModelScope.launch {
 
@@ -134,8 +139,7 @@ class BookInBoxViewModel @Inject constructor(
                 )
             )
             val saveBookInBoxRequest = SaveBookInRequest(
-                itemMovementLogs = itemMovementLogs,
-                printJob = PrintJob(
+                itemMovementLogs = itemMovementLogs, printJob = PrintJob(
                     date = currentDate,
                     handheldId = readerId.toInt(),
                     reportType = ItemStatus.BookIn.title,
@@ -149,8 +153,7 @@ class BookInBoxViewModel @Inject constructor(
 
     private fun checkUsCaseByBoxName(boxName: String) {
         viewModelScope.launch {
-            val response = bookInRepository.checkUSCaseByBox(boxName)
-            when (response) {
+            when (val response = bookInRepository.checkUSCaseByBox(boxName)) {
                 is ApiResponse.Success -> {
                     _bookInBoxUiState.update {
                         it.copy(
@@ -167,8 +170,7 @@ class BookInBoxViewModel @Inject constructor(
 
     fun getIssuerByEPC(epc: String) {
         viewModelScope.launch {
-            val response = userRepository.getIssuerByEPC(epc)
-            when (response) {
+            when (val response = userRepository.getIssuerByEPC(epc)) {
                 is ApiResponse.Success -> {
                     _bookInBoxUiState.update { it.copy(issuerUser = response.data?.userModel) }
                 }
@@ -180,41 +182,39 @@ class BookInBoxViewModel @Inject constructor(
 
     override fun onReceivedTagId(id: String) {
 
-        // stop scan when all items are scanned
-        if (scannedItemsList.value.size == _bookInBoxUiState.value.allItemsOfBox.size) stopScan()
-
         if (_boxItemsForBookInResponse.value is ApiResponse.Success) {
-            boxItems.value =
-                (_boxItemsForBookInResponse.value as ApiResponse.Success<SelectBoxForBookInResponse>).data!!.items
-            val scannedBoxItem = boxItems.value.find { it.epc == id }
-
-            if (scannedBoxItem != null) {
-                _bookInBoxUiState.update { it.copy(scannedBox = scannedBoxItem) }
-                getAllBookInItemsOfBox(
-                    box = scannedBoxItem.box,
-                    status = scannedBoxItem.itemStatus
-                )
-
-                // check box is us case
-                checkUsCaseByBoxName(scannedBoxItem.box)
-            }
-
-            when (_getAllItemsOfBox.value) {
-                is ApiResponse.Success -> {
-                    val boxesOfItem = _bookInBoxUiState.value.allItemsOfBox
-                    if (boxesOfItem.isNotEmpty()) updateScanType(ScanType.Multi) else updateScanType(
-                        ScanType.Single
-                    )
-
-                    val hasCurrentItemScanned = id in boxesOfItem.map { it.epc }
-                    if (hasCurrentItemScanned) addScannedItemToList(id)
-
-                    if (scannedItemsList.value.isNotEmpty()) {
-                        getIssuerByEPC(id)
+            Log.d("TAG", "onReceivedTagId: ${bookInBoxUiState.value.bookInBoxScanType} - $id")
+            when (bookInBoxUiState.value.bookInBoxScanType) {
+                BookInBoxScanType.BOX -> {
+                    boxItems.value =
+                        (_boxItemsForBookInResponse.value as ApiResponse.Success<SelectBoxForBookInResponse>).data!!.items
+                    val scannedBoxItem = boxItems.value.find { it.epc == id }
+                    if (scannedBoxItem != null) {
+                        _bookInBoxUiState.update { it.copy(scannedBox = scannedBoxItem) }
+                        getAllBookInItemsOfBox(
+                            box = scannedBoxItem.box,
+                            status = scannedBoxItem.itemStatus
+                        )
+                        // check box is us case
+                        checkUsCaseByBoxName(scannedBoxItem.box)
                     }
                 }
 
-                else -> {}
+                BookInBoxScanType.ITEMS -> {
+                    when (_getAllItemsOfBox.value) {
+                        is ApiResponse.Success -> {
+                            val boxesOfItem = _bookInBoxUiState.value.allItemsOfBox
+                            val hasCurrentItemScanned = id in boxesOfItem.map { it.epc }
+                            if (hasCurrentItemScanned) addScannedItemToList(id)
+                        }
+
+                        else -> {}
+                    }
+                }
+
+                BookInBoxScanType.BUDDY -> {
+                    getIssuerByEPC(id)
+                }
             }
 
         }
@@ -274,9 +274,7 @@ class BookInBoxViewModel @Inject constructor(
             user.collect {
                 _getAllItemsOfBox.value = ApiResponse.Loading
                 _getAllItemsOfBox.value = bookInRepository.getAllBookItemsOfBox(
-                    box = box,
-                    status = status,
-                    loginUserId = it.userId
+                    box = box, status = status, loginUserId = it.userId
                 )
 
                 when (_getAllItemsOfBox.value) {
@@ -299,11 +297,16 @@ class BookInBoxViewModel @Inject constructor(
         }
     }
 
+    enum class BookInBoxScanType {
+        BOX, ITEMS, BUDDY
+    }
+
     data class BookInBoxUiState(
         val scannedBox: BoxItem = BoxItem(),
         val issuerUser: UserModel? = null,
         val isUsCase: Boolean = false,
         val isChecked: Boolean = false,
+        val bookInBoxScanType: BookInBoxScanType = BookInBoxScanType.BOX,
         val allBoxes: List<BoxItem> = listOf(),
         val allItemsOfBox: MutableList<BoxItem> = mutableListOf()
     )

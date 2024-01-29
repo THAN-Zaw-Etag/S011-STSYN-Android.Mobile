@@ -61,16 +61,6 @@ abstract class BaseViewModel(
         }
     }
 
-    /*private fun addItem(item: String) {
-        val currentItems = _rfidUiState.value.scannedItems.toMutableList()
-
-        val hasExisted = item in currentItems
-        if (!hasExisted) {
-            currentItems.add(item)
-            _rfidUiState.update { it.copy(scannedItems = currentItems) } // Update the StateFlow with the new list
-        }
-    }*/
-
     fun removeItem(item: String) {
         val currentItems = _rfidUiState.value.scannedItems.toMutableList()
         currentItems.remove(item)
@@ -142,31 +132,31 @@ abstract class BaseViewModel(
     private fun startScan() {
         viewModelScope.launch {
             // only able to scan when isScannable is true
-            rfidHandler.performInventory()
             if (_rfidUiState.value.isScannable) {
                 updateIsScanningStatus(true)
+                rfidHandler.performInventory()
             }
         }
     }
 
     fun stopScan() {
         viewModelScope.launch {
-            rfidHandler.stopInventory()
             updateIsScanningStatus(false)
+            rfidHandler.stopInventory()
         }
     }
 
     /**
      * Disable reader scan*/
     fun disableScan() {
-        updateScannableStatus(false)
+        updateIsScannableStatus(false)
     }
 
     fun enableScan() {
-        updateScannableStatus(true)
+        updateIsScannableStatus(true)
     }
 
-    private fun updateScannableStatus(isScannable: Boolean) {
+    private fun updateIsScannableStatus(isScannable: Boolean) {
         _rfidUiState.update {
             it.copy(isScannable = isScannable)
         }
@@ -197,10 +187,8 @@ abstract class BaseViewModel(
     abstract fun onReceivedTagId(id: String)
     override fun handleTagData(tagData: Array<TagData>) {
         if (_rfidUiState.value.scanType == ScanType.Single) {
-            updateSingleScannedItem(tagData.get(0).tagID)
-            stopScan()
+            if (tagData.get(0).tagID.isNotEmpty()) stopScan()
         }
-        //addItem(tagData.get(0).tagID)
         onReceivedTagId(tagData.get(0).tagID)
     }
 

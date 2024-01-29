@@ -135,6 +135,7 @@ fun HomeNavigationGraph(
             }
 
             DetailScreen(
+                isConnected = rfidUiState.isConnected,
                 optionType = optionType,
                 logOut = {
                     loginViewModel.logOut()

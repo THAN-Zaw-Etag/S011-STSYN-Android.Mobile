@@ -161,7 +161,6 @@ class BookInViewModel @Inject constructor(
                 when (_bookInItems.value) {
                     is ApiResponse.ApiError -> {
                         updateErrorMessage((_bookInItems.value as ApiResponse.ApiError).message)
-                        println("error: ${(_bookInItems.value as ApiResponse.ApiError).message}")
                     }
 
                     else -> {}

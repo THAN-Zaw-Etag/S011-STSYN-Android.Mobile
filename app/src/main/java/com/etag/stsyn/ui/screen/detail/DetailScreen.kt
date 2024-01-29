@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DetailScreen(
+    isConnected: Boolean,
     optionType: OptionType,
     modifier: Modifier = Modifier,
     logOut: () -> Unit,
@@ -63,6 +64,10 @@ fun DetailScreen(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModelByOptionType(optionType = optionType)
+
+    // share reader connection status to other viewmodels
+    viewModel.updateIsConnectedStatus(isConnected)
+
     val screens = getScreensByOptionType(optionType = optionType, viewModel = viewModel)
     var isSaved by remember { mutableStateOf(false) }
     val detailUiState by viewModel.detailUiState.collectAsState()

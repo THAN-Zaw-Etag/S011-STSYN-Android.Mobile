@@ -5,9 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,7 +18,6 @@ import com.etag.stsyn.ui.screen.main.SplashScreen
 import com.etag.stsyn.util.AppUtil.logout
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.domain.model.user.UserModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun NavigationGraph(
@@ -33,7 +29,6 @@ fun NavigationGraph(
     val loginUiState by loginViewModel.loginUiState.collectAsState()
     val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
     val epcModelUserName by loginViewModel.epcModelUser.collectAsState(UserModel())
-    var startDestination by remember { mutableStateOf(Routes.LoginScreen.name) }
 
     LaunchedEffect(navController.currentDestination) {
         if ((navController.currentDestination ?: "") == Routes.LoginScreen.name) {
@@ -41,18 +36,16 @@ fun NavigationGraph(
         }
     }
 
-    LaunchedEffect(savedUser.isLoggedIn) {
-        startDestination =
-            if (savedUser.isLoggedIn) Routes.HomeContentScreen.name else Routes.LoginScreen.name
-        delay(1000) // not to show splash screen in a short period of time
-    }
+    /*LaunchedEffect(true) {
+        startDestination = if (savedUser.isLoggedIn) Routes.HomeContentScreen.name else Routes.LoginScreen.name
+        delay(1000) // not to show splash screen for a short period of time if user is already logged in
+    }*/
 
     NavHost(
         navController = navController,
         modifier = modifier,
-        startDestination = startDestination
+        startDestination = if (savedUser.isLoggedIn) Routes.HomeContentScreen.name else Routes.LoginScreen.name
     ) {
-
         composable(route = Routes.SplashScreen.name) {
             SplashScreen(
                 onTimeOut = {
