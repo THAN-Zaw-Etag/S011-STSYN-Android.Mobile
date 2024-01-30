@@ -9,9 +9,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navigation
 import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.screen.detail.DetailScreen
@@ -21,6 +23,8 @@ import com.etag.stsyn.ui.screen.main.BookOutScreen
 import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.screen.settings.SettingsScreen
+import com.etag.stsyn.ui.update_navigation_flow.Graph
+import com.etag.stsyn.ui.update_navigation_flow.authNavGraph
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.AppUtil.logout
 
@@ -38,6 +42,7 @@ fun HomeNavigationGraph(
     val context = LocalContext.current
 
     NavHost(
+        route = Graph.HOME,
         navController = navController,
         startDestination = Routes.HomeScreen.name,
         modifier = modifier
@@ -120,11 +125,66 @@ fun HomeNavigationGraph(
                     navController.navigate(Routes.DetailScreen.name + "/$optionType")
                 })
         }
+        composable(route = Routes.SettingsScreen.name) {
+            sharedUiViewModel.apply {
+                updateTopBarTitle(Routes.SettingsScreen.title)
+                updateTopAppBarStatus(true)
+                updateAppBarNavigationIcon(Icons.Default.ArrowBack)
+                updateBottomNavigationBarStatus(false)
+            }
 
+            SettingsScreen()
+        }
+        detailsNavGraph(navController,sharedUiViewModel,loginViewModel)
+        authNavGraph(
+            navController = navController,
+            loginViewModel = loginViewModel,
+            context)
+
+
+//TODO delete when all navigation resolve and fine
+
+//        composable(route = Routes.DetailScreen.name + "/{type}") {
+//            val optionType = OptionType.valueOf(
+//                it.arguments?.getString("type") ?: OptionType.BookOut.toString()
+//            )
+//
+//            sharedUiViewModel.apply {
+//                updateTopBarTitle(Routes.OtherOperationsScreen.title)
+//                updateTopAppBarStatus(false)
+//                updateAppBarNavigationIcon(Icons.Default.Menu)
+//                updateBottomNavigationBarStatus(false)
+//            }
+//
+//            DetailScreen(
+//                isConnected = rfidUiState.isConnected,
+//                optionType = optionType,
+//                logOut = {
+//                    loginViewModel.logOut()
+//                    logout(navController)
+//                },
+//                navigateToHomeScreen = {
+//                    navController.navigate(Routes.HomeScreen.name)
+//                }
+//            )
+//        }
+    }
+}
+
+fun NavGraphBuilder.detailsNavGraph(
+    navController: NavHostController,
+    sharedUiViewModel:SharedUiViewModel,
+    loginViewModel: LoginViewModel
+    ) {
+    navigation(
+        route = Graph.DETAILS,
+        startDestination = Routes.DetailScreen.name
+    ) {
         composable(route = Routes.DetailScreen.name + "/{type}") {
             val optionType = OptionType.valueOf(
                 it.arguments?.getString("type") ?: OptionType.BookOut.toString()
             )
+            val rfidUiState by loginViewModel.rfidUiState.collectAsState()
 
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)
@@ -138,7 +198,11 @@ fun HomeNavigationGraph(
                 optionType = optionType,
                 logOut = {
                     loginViewModel.logOut()
-                    logout(navController, Routes.LoginScreen.name)
+                    navController.navigate(Graph.AUTHENTICATION) {
+                        popUpTo(Routes.DetailScreen.name) {
+                            inclusive = true
+                        }
+                    }
                 },
                 navigateToHomeScreen = {
                     navController.navigate(Routes.HomeScreen.name)
@@ -146,27 +210,5 @@ fun HomeNavigationGraph(
             )
         }
 
-        composable(route = Routes.SettingsScreen.name) {
-            sharedUiViewModel.apply {
-                updateTopBarTitle(Routes.SettingsScreen.title)
-                updateTopAppBarStatus(true)
-                updateAppBarNavigationIcon(Icons.Default.ArrowBack)
-                updateBottomNavigationBarStatus(false)
-            }
-
-            SettingsScreen()
-        }
-
-//                composable(route = Routes.LoginScreen.name){
-//            BackHandler(enabled = true) {
-//                ExitApp(context)
-//            }
-//            LoginScreen(
-//                loginViewModel = loginViewModel,
-//                navigateToLoginContentScreen = {
-//                    navController.navigate(Routes.LoginContentScreen.name)
-//                }
-//            )
-//        }
     }
 }

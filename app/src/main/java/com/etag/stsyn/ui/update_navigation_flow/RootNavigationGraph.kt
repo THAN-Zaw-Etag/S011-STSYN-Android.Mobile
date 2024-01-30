@@ -10,8 +10,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.etag.stsyn.ui.navigation.Routes
+import com.etag.stsyn.ui.navigation.detailsNavGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.HomeScreen
+import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.AppUtil
 
 @Composable
@@ -29,8 +31,9 @@ fun RootNavigationGraph(
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            context
-        )
+            context,
+
+            )
         composable(route = Graph.HOME) {
             // disable scan
             loginViewModel.disableScan()
@@ -45,9 +48,6 @@ fun RootNavigationGraph(
                             inclusive = true
                         }
                     }
-
-
-                    AppUtil.logout(navController, Routes.LoginScreen.name)
                 },
                 onSettingsClick = {},
             )

@@ -10,10 +10,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.navigation.Routes
+import com.etag.stsyn.ui.navigation.detailsNavGraph
 import com.etag.stsyn.ui.screen.login.LoginContentScreen
 import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.SplashScreen
+import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 
 
 fun NavGraphBuilder.authNavGraph(
@@ -93,5 +95,6 @@ fun NavGraphBuilder.authNavGraph(
             }
         }
     }
+
 }
 
