@@ -40,7 +40,6 @@ fun BookOutSaveScreen(
     bookOutViewModel: BookOutViewModel, modifier: Modifier = Modifier
 ) {
     var location by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
     val settings by bookOutViewModel.settings.collectAsState(initial = AppConfigModel())
     val bookOutUiState by bookOutViewModel.bookOutUiState.collectAsState()
     val saveBookOutBoxesResponse by bookOutViewModel.saveBookOutBoxesResponse.collectAsState()
