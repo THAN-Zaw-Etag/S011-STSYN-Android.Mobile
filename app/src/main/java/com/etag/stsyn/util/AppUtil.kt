@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
 import com.etag.stsyn.enums.DeviceSize
+import com.etag.stsyn.ui.update_navigation_flow.Graph
 
 object AppUtil {
     fun getVersionCode(context: Context): String {
@@ -17,14 +18,15 @@ object AppUtil {
         }
     }
 
-    fun logout(navController: NavController, loginScreen: String) {
-        navController.navigate(loginScreen) {
+    fun logout(navController: NavController) {
+        navController.navigate(Graph.AUTHENTICATION) {
             // Clear the entire back stack
             popUpTo(0) {
                 inclusive = true
             }
         }
     }
+
 
     @Composable
     fun getDeviceSize(): DeviceSize {

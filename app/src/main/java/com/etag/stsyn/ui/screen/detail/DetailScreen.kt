@@ -73,6 +73,10 @@ fun DetailScreen(
     val detailUiState by viewModel.detailUiState.collectAsState()
 
     val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsState()
+    //TODO delete it later
+//    val showAuthorizationFailedDialog by remember {
+//        mutableStateOf(true)
+//    }
     var showErrorDialog by remember { mutableStateOf(false) }
 
     ReaderLifeCycle(viewModel = viewModel)
