@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.work.WorkInfo
@@ -22,10 +23,11 @@ import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
 import com.etag.stsyn.core.receiver.BluetoothState
 import com.etag.stsyn.data.worker.TokenRefresher
-import com.etag.stsyn.ui.navigation.NavigationGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.theme.STSYNTheme
+import com.etag.stsyn.ui.update_navigation_flow.RootNavigationGraph
 import com.etag.stsyn.util.PermissionUtil
+import com.tzh.retrofit_module.data.model.LocalUser
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -46,7 +48,12 @@ class MainActivity : ComponentActivity() {
             val loginUiState by loginViewModel.loginUiState.collectAsState()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
+            val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
             val context = LocalContext.current
+
+            installSplashScreen().setKeepOnScreenCondition {
+                loginViewModel.loading.value
+            }
 
             workManager.getWorkInfosByTagLiveData("refreshWorkName")
                 .observe(LocalLifecycleOwner.current) {
@@ -77,9 +84,19 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    NavigationGraph(
+//                    NavigationGraph(
+//                        navController = navController,
+//                        loginViewModel = loginViewModel,
+//                    )
+
+                    Log.d("@inMain", "MainActivity: savedUser: ${savedUser.isLoggedIn}")
+                    val isLoggedIn = savedUser.isLoggedIn
+
+                    RootNavigationGraph(
+                        isLoggedIn = isLoggedIn,
                         navController = navController,
-                        loginViewModel = loginViewModel,
+                        loginViewModel = loginViewModel
+
                     )
                 }
             }

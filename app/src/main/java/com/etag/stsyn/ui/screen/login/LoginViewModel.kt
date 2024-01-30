@@ -71,6 +71,8 @@ class LoginViewModel @Inject constructor(
     private val _shouldShowEmptyBaseUrlDialog = MutableLiveData(false)
     val shouldShowEmptyBaseUrlDialog: LiveData<Boolean> = _shouldShowEmptyBaseUrlDialog
 
+    private val _loading = MutableStateFlow(true)
+    val loading = _loading.asStateFlow()
     init {
         updateScanType(ScanType.Single)
         // if user is already logged in, fetch menu access rights from api
@@ -89,6 +91,10 @@ class LoginViewModel @Inject constructor(
             }
 
             launch {  baseUrlStatus() }
+            launch {
+                delay(1000)
+                _loading.value = false
+            }
 
         }
     }
@@ -116,7 +122,7 @@ class LoginViewModel @Inject constructor(
     }
 
 
-      private fun getUserByRfidId(rfidId: String) {
+       fun getUserByRfidId(rfidId: String) {
         viewModelScope.launch {
             _getUserResponse.emit(ApiResponse.Loading)
             val response = userRepository.getUserByEPC(rfidId)

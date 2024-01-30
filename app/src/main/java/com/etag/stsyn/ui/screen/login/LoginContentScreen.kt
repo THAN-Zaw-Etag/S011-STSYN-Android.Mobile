@@ -53,6 +53,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun LoginContentScreen(
+    goToHome:() ->Unit,
     loginAttemptCount: Int,
     isSuccessful: Boolean,
     userName: String,
@@ -93,6 +94,7 @@ fun LoginContentScreen(
                     token = loginResponse.data?.token ?: ""
                 )
                 onSuccess(localUser)
+                goToHome()
             }
 
             is ApiResponse.ApiError -> {

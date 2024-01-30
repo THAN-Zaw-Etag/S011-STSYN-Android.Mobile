@@ -98,6 +98,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
     implementation ("androidx.compose.runtime:runtime-livedata:1.5.3")
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(project(":retrofit_module"))
 }
 

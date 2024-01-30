@@ -176,8 +176,8 @@ fun LoginScreen(
         Spacer(modifier = Modifier.weight(1f))
         MainLowerContent(onScan = {
             //TODO delete this loginViewModel.getUserByRfidId("455341303030303030303130") when app release
-//            loginViewModel.getUserByRfidId("455341303030303030303130")
-           loginViewModel.toggle()
+           loginViewModel.getUserByRfidId("455341303030303030303130")
+      //     loginViewModel.toggle()
         })
     }
 }
