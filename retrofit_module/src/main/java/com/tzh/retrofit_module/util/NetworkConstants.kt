@@ -10,6 +10,8 @@ const val CHECK_U_S_CASE_BY_BOX_ROUTE = "BookInOut/CheckUSCaseByBox"
 const val GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE = "BookInOut/SelectItemsInCTKBoxForBookIn"
 
 const val GET_ALL_BOOK_OUT_ITEMS_ROUTE = "BookInOut/SelectItemWhereIn"
+const val GET_ALL_BOOK_OUT_BOXES_ROUTE = "BookInOut/SelectBoxForBookOut"
+const val GET_ALL_ITEMS_IN_BOX = "BookInOut/SelectItemsInCTKBoxForBookOut"
 
 const val UPDATE_PASSWORD_ROUTE = "User/ChangePassword"
 const val GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH = "User/GetUserAccessRightByRoleId"

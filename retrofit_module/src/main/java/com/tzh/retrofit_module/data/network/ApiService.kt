@@ -10,6 +10,7 @@ import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxRespons
 import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
+import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.user.GetIssuerUserResponse
@@ -18,7 +19,9 @@ import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdRespons
 import com.tzh.retrofit_module.util.BOOK_IN_GET_ITEM_ROUTE
 import com.tzh.retrofit_module.util.CHECK_U_S_CASE_BY_BOX_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE
+import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_BOXES_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_ITEMS_ROUTE
+import com.tzh.retrofit_module.util.GET_ALL_ITEMS_IN_BOX
 import com.tzh.retrofit_module.util.GET_ISSUER_BY_EPC
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
@@ -84,6 +87,12 @@ interface ApiService {
         @Query("Store") store: String,
         @Query("CsNo") csNo: String
     ): Response<BookOutResponse>
+
+    @GET(GET_ALL_BOOK_OUT_BOXES_ROUTE)
+    suspend fun getAllBookOutBoxes(): Response<GetAllBookOutBoxesResponse>
+
+    @GET(GET_ALL_ITEMS_IN_BOX)
+    suspend fun getAllItemsInBookOutBox(box: String)
 
     @GET(CHECK_U_S_CASE_BY_BOX_ROUTE)
     suspend fun checkUSCaseByBox(
