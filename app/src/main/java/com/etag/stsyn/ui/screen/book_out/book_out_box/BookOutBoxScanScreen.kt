@@ -23,7 +23,7 @@ fun BookOutBoxScanScreen(
         scannedItemList = scannedItemList,
         scannedBox = boxUiState.scannedBox,
         onCheckChange = bookOutBoxViewModel::toggleVisualCheck,
-        onRefresh = {},
+        onRefresh = bookOutBoxViewModel::refreshScannedBox,
         onScan = bookOutBoxViewModel::toggle,
         onReset = bookOutBoxViewModel::resetAllItemsInBox
     )

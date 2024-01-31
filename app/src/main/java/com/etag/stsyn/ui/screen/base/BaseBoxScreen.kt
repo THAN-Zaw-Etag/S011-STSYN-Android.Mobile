@@ -296,7 +296,6 @@ private fun BoxScanSection(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
     ) {
         ScannedBoxItem(
             boxTitle = "Box",

@@ -67,6 +67,15 @@ class BookInBoxViewModel @Inject constructor(
         getAllBoxesForBookInItem()
     }
 
+    fun doTasksAfterSavingItems() {
+        viewModelScope.launch {
+            updateSuccessDialogVisibility(false)
+            getAllBoxesForBookInItem()
+            // clear all scanned items
+            scannedItemsList.value = emptyList()
+        }
+    }
+
     private fun addScannedItemToList(id: String) {
         scannedItemsList.update { currentList ->
             if (id in currentList) {
@@ -167,7 +176,7 @@ class BookInBoxViewModel @Inject constructor(
         }
     }
 
-    fun getIssuerByEPC(epc: String) {
+    private fun getIssuerByEPC(epc: String) {
         viewModelScope.launch {
             when (val response = userRepository.getIssuerByEPC(epc)) {
                 is ApiResponse.Success -> {

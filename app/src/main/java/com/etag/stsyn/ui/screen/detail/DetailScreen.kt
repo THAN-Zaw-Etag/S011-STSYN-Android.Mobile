@@ -42,6 +42,7 @@ import com.etag.stsyn.ui.components.SuccessDialog
 import com.etag.stsyn.ui.components.TabBarLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.book_in.book_in.BookInViewModel
+import com.etag.stsyn.ui.screen.book_in.book_in_box.BookInBoxViewModel
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
 import com.etag.stsyn.util.datasource.getScreensByOptionType
@@ -112,10 +113,18 @@ fun DetailScreen(
 
     // show success dialog when saving items is done
     SuccessDialog(showDialog = showSuccessDialog, title = "SUCCESS!", onDoneClick = {
-        if (viewModel is BookInViewModel) {
-            scope.launch { pagerState.animateScrollToPage(0) }
-            viewModel.apply {
-                doTasksAfterSavingItems()
+        when (viewModel) {
+            is BookInViewModel -> {
+                scope.launch { pagerState.animateScrollToPage(0) }
+                viewModel.apply {
+                    doTasksAfterSavingItems()
+                }
+            }
+            is BookInBoxViewModel -> {
+                scope.launch { pagerState.animateScrollToPage(0) }
+                viewModel.apply {
+                    doTasksAfterSavingItems()
+                }
             }
         }
     })

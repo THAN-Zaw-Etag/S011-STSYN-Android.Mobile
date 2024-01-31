@@ -43,8 +43,10 @@ fun BookInBoxSaveScreen(
             onDismiss = { })
 
         is ApiResponse.Success -> {
-            bookInBoxViewModel.updateIsSavedStatus(true)
-            SuccessDialog(showDialog = true, title = "SUCCESS!", onDoneClick = { })
+            bookInBoxViewModel.apply {
+                updateIsSavedStatus(true)
+                updateSuccessDialogVisibility(true)
+            }
         }
 
         is ApiResponse.ApiError -> WarningDialog(

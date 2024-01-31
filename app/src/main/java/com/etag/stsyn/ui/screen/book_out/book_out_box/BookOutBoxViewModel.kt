@@ -6,6 +6,7 @@ import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.ui.screen.book_in.book_in_box.BoxUiState
 import com.tzh.retrofit_module.data.settings.AppConfiguration
+import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,6 +65,15 @@ class BookOutBoxViewModel @Inject constructor(
                     shouldShowAuthorizationFailedDialog(true)
                 }
                 else -> {}
+            }
+        }
+    }
+
+    fun refreshScannedBox() {
+        viewModelScope.launch {
+            scannedItemList.update { emptyList() }
+            _boxUiState.update {
+                it.copy(scannedBox = BoxItem(), allBoxes = emptyList(), allItemsOfBox = mutableListOf())
             }
         }
     }
