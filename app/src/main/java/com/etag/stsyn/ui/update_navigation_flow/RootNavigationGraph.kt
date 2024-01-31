@@ -9,12 +9,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.etag.stsyn.ui.navigation.Routes
-import com.etag.stsyn.ui.navigation.detailsNavGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.HomeScreen
-import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
-import com.etag.stsyn.util.AppUtil
+
 
 @Composable
 fun RootNavigationGraph(
@@ -44,7 +41,7 @@ fun RootNavigationGraph(
                 onLogOutClick = {
                     loginViewModel.logOut()
                     navController.navigate(Graph.AUTHENTICATION) {
-                        popUpTo(Graph.HOME) {
+                        popUpTo(0) {
                             inclusive = true
                         }
                     }
@@ -52,7 +49,6 @@ fun RootNavigationGraph(
                 onSettingsClick = {},
             )
         }
-
     }
     LaunchedEffect(isLoggedIn) {
         Log.d("@InRoot", "MainActivity: savedUser: $isLoggedIn")

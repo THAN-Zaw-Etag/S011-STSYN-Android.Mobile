@@ -55,7 +55,6 @@ import com.tzh.retrofit_module.util.ApiResponse
 fun LoginContentScreen(
     goToHome:() ->Unit,
     loginAttemptCount: Int,
-    isSuccessful: Boolean,
     userName: String,
     loginResponse: ApiResponse<LoginResponse>,
     modifier: Modifier = Modifier,
@@ -67,6 +66,9 @@ fun LoginContentScreen(
     var showWarningDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var showLoadingDialog by remember {
+        mutableStateOf(false)
+    }
+    var showLoginSuccessToast by remember {
         mutableStateOf(false)
     }
 
@@ -81,7 +83,12 @@ fun LoginContentScreen(
 
     LaunchedEffect(loginResponse) {
         when (loginResponse) {
-            is ApiResponse.Loading -> showLoadingDialog = true
+            is ApiResponse.Loading -> {
+                showLoginSuccessToast = false
+                showLoadingDialog = true
+            }
+
+
 
             is ApiResponse.Success -> {
                 showLoadingDialog = false
@@ -94,17 +101,21 @@ fun LoginContentScreen(
                     token = loginResponse.data?.token ?: ""
                 )
                 onSuccess(localUser)
+                showLoginSuccessToast = true
                 goToHome()
+
             }
 
             is ApiResponse.ApiError -> {
                 showLoadingDialog = false
+                showLoginSuccessToast = false
                 Log.d("TAG", "LoginContentScreen: ${loginResponse.message}")
                 onFailed()
                 error = loginResponse.message
             }
 
             else -> {
+                showLoginSuccessToast = false
                 showLoadingDialog = false
             }
         }
@@ -116,11 +127,9 @@ fun LoginContentScreen(
         positiveButtonTitle = "exit",
         onPositiveButtonClick = { ExitApp(context) })
 
-    LaunchedEffect(isSuccessful) {
-        if (isSuccessful) Toast.makeText(
-            context, "Login successful!", Toast.LENGTH_SHORT
-        ).show()
-    }
+    if (showLoginSuccessToast) Toast.makeText(
+        context, "Login successful!", Toast.LENGTH_SHORT
+    ).show()
 
     Column(modifier = modifier.fillMaxSize()) {
         LoginUpperSection()
