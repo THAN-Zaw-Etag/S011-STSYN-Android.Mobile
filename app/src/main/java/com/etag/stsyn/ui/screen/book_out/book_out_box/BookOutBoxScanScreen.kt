@@ -13,13 +13,18 @@ fun BookOutBoxScanScreen(
 ) {
     val rfidUiState by bookOutBoxViewModel.rfidUiState.collectAsState()
     val boxUiState by bookOutBoxViewModel.boxUiState.collectAsState()
+    val scannedItemList by bookOutBoxViewModel.scannedItemList.collectAsState()
 
     BaseBoxScreen(
-        bookItems = emptyList(),
+        bookItems = boxUiState.allItemsOfBox,
         isScanning = rfidUiState.isScanning,
         modifier = modifier,
+        checked = boxUiState.isChecked,
+        scannedItemList = scannedItemList,
         scannedBox = boxUiState.scannedBox,
+        onCheckChange = bookOutBoxViewModel::toggleVisualCheck,
+        onRefresh = {},
         onScan = bookOutBoxViewModel::toggle,
-        onReset = { bookOutBoxViewModel.removeScannedItems() }
+        onReset = bookOutBoxViewModel::resetAllItemsInBox
     )
 }

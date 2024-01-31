@@ -23,11 +23,15 @@ class BookOutBoxViewModel @Inject constructor(
     private val appConfiguration: AppConfiguration,
     private val bookOutRepository: BookOutRepository
 ) : BaseViewModel(rfidHandler) {
+    val TAG = "BookOutBoxViewModel"
+
     private val _boxUiState = MutableStateFlow(BoxUiState())
     val boxUiState: StateFlow<BoxUiState> = _boxUiState.asStateFlow()
 
     private val _needLocation = MutableStateFlow(false)
     val needLocation: StateFlow<Boolean> = _needLocation.asStateFlow()
+
+    val scannedItemList = MutableStateFlow<List<String>>(emptyList())
 
     private val settings = appConfiguration.appConfig
 
@@ -64,10 +68,24 @@ class BookOutBoxViewModel @Inject constructor(
         }
     }
 
+    fun resetAllItemsInBox() {
+        scannedItemList.update { emptyList() }
+        _boxUiState.update { it.copy(isChecked = false) }
+    }
+
+    fun toggleVisualCheck(enable: Boolean) {
+        _boxUiState.update { it.copy(isChecked = enable) }
+        if (enable) {
+            scannedItemList.update { _boxUiState.value.allItemsOfBox.map { it.epc } }
+        } else scannedItemList.update { emptyList() }
+    }
+
     private fun getAllItemsInBox(box: String) {
         viewModelScope.launch {
             when (val response = bookOutRepository.getAllItemsInBookOutBox(box)) {
-                is ApiResponse.Success -> {_boxUiState.update { it.copy(allItemsOfBox = response.data?.items ?: emptyList()) }}
+                is ApiResponse.Success -> {
+                    _boxUiState.update { it.copy(allItemsOfBox = response.data?.items ?: emptyList()) }
+                }
                 else -> {}
             }
         }
@@ -82,6 +100,5 @@ class BookOutBoxViewModel @Inject constructor(
             getAllItemsInBox(scannedBox.box)
         }
     }
-
 
 }

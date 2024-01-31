@@ -45,6 +45,10 @@ abstract class BaseViewModel(
         }
     }
 
+    fun updateSuccessDialogVisibility(visible: Boolean){
+        _detailUiState.update { it.copy(showSuccessDialog = visible) }
+    }
+
     fun toggleLoadingVisibility(visible: Boolean) {
         _detailUiState.update {
             it.copy(showLoadingDialog = visible)
@@ -203,6 +207,7 @@ abstract class BaseViewModel(
 
     data class DetailUiState(
         val showLoadingDialog: Boolean = false,
+        val showSuccessDialog: Boolean = false,
         val isSaved: Boolean = false,
         val message: String = ""
     )

@@ -39,9 +39,9 @@ fun LoadingDialog(
 ) {
     var openDialog by remember { mutableStateOf(true) }
 
-    /*LaunchedEffect(showDialog) {
+    LaunchedEffect(showDialog) {
         openDialog = showDialog
-    }*/
+    }
 
     if (openDialog) {
         Dialog(

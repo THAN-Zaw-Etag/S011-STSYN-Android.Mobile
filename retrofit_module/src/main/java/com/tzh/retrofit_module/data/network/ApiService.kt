@@ -92,7 +92,7 @@ interface ApiService {
     suspend fun getAllBookOutBoxes(): Response<GetAllBookOutBoxesResponse>
 
     @GET(GET_ALL_ITEMS_IN_BOX)
-    suspend fun getAllItemsInBookOutBox(box: String): Response<GetAllItemsOfBoxResponse>
+    suspend fun getAllItemsInBookOutBox(@Query("box") box: String): Response<GetAllItemsOfBoxResponse>
 
     @GET(CHECK_U_S_CASE_BY_BOX_ROUTE)
     suspend fun checkUSCaseByBox(

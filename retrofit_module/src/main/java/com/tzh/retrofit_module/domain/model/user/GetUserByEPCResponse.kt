@@ -1,9 +1,9 @@
 package com.tzh.retrofit_module.domain.model.user
 
 data class GetUserByEPCResponse(
-    val error: String?,
-    val isSuccess: Boolean,
-    val userModel: UserModel
+    val error: String? = null,
+    val isSuccess: Boolean = false,
+    val userModel: UserModel = UserModel()
 )
 data class UserModel(
     val airbase: String ="",

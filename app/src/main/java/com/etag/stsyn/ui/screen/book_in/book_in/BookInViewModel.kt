@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,7 +49,7 @@ class BookInViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            localDataStore.getUser.collect {
+            user.collect {
                 getBookInItems(userId = it.userId)
             }
         }
@@ -59,6 +60,16 @@ class BookInViewModel @Inject constructor(
         Log.d("TAG", "onReceivedTagId: $id")
         // handled scanned tags here
         addScannedItem(id)
+    }
+
+    fun doTasksAfterSavingItems() {
+        viewModelScope.launch {
+            updateSuccessDialogVisibility(false)
+            val userId = user.first().userId
+            getBookInItems(userId)
+            // clear all scanned items
+            _scannedBookInItems.value = emptyList()
+        }
     }
 
     private fun addOutstandingItem() {

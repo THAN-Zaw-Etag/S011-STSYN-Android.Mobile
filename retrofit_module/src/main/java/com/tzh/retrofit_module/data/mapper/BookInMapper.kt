@@ -97,7 +97,7 @@ fun List<BoxItem>.toItemMovementLogs(
 
 fun BookInItem.toExpandedScannedItems(): ExpandedScannedItemModel {
     return ExpandedScannedItemModel(
-        serialNo = "${this.serialNo} - ${this.partNo}",
+        serialNo = "${this.id} - ${this.partNo}",
         description = this.description,
         code = this.unit,
         location = this.itemLocation,

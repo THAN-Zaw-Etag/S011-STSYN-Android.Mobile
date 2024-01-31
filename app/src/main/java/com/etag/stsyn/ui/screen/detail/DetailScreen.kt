@@ -1,12 +1,14 @@
 @file:OptIn(
-    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class
 )
 
 package com.etag.stsyn.ui.screen.detail
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -36,8 +38,10 @@ import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.DisableBackPress
 import com.etag.stsyn.ui.components.LoadingDialog
+import com.etag.stsyn.ui.components.SuccessDialog
 import com.etag.stsyn.ui.components.TabBarLayout
 import com.etag.stsyn.ui.components.WarningDialog
+import com.etag.stsyn.ui.screen.book_in.book_in.BookInViewModel
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
 import com.etag.stsyn.util.datasource.getScreensByOptionType
@@ -54,6 +58,8 @@ fun DetailScreen(
     logOut: () -> Unit,
     navigateToHomeScreen: () -> Unit,
 ) {
+    val TAG = "DetailScreen"
+
     var showTabBar by remember { mutableStateOf(false) }
     var options = TabUtil.getTabDetails(optionType)
     var exitTitle = options.get(options.size - 1).title
@@ -75,37 +81,44 @@ fun DetailScreen(
 
     val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsState()
     var showErrorDialog by remember { mutableStateOf(false) }
+    var showSuccessDialog by remember { mutableStateOf(false) }
 
     ReaderLifeCycle(viewModel = viewModel)
 
     if (showAuthorizationFailedDialog) AuthorizationTokenExpiredDialog(
-        message = AUTHORIZATION_FAILED_MESSAGE,
-        onLogOut = logOut
+        message = AUTHORIZATION_FAILED_MESSAGE, onLogOut = logOut
     )
 
-    LaunchedEffect(detailUiState.showLoadingDialog) {
-        Log.d("TAG", "DetailScreen: ${detailUiState.showLoadingDialog}")
+    LaunchedEffect(detailUiState) {
         isSaved = detailUiState.isSaved
         showErrorDialog = detailUiState.message.isNotEmpty()
+        showSuccessDialog = detailUiState.showSuccessDialog
     }
 
     // show loading while data is fetching
     if (detailUiState.showLoadingDialog) LoadingDialog(
         title = "Loading...",
         showDialog = detailUiState.showLoadingDialog,
-        onDismiss = { }
-    )
+        onDismiss = { })
 
     // show error when error message is not empty
-    WarningDialog(
-        icon = CustomIcon.Vector(Icons.Default.Error),
+    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
         message = detailUiState.message,
         showDialog = showErrorDialog,
         positiveButtonTitle = "Ok",
         onDismiss = {
             showErrorDialog = false
+        })
+
+    // show success dialog when saving items is done
+    SuccessDialog(showDialog = showSuccessDialog, title = "SUCCESS!", onDoneClick = {
+        if (viewModel is BookInViewModel) {
+            scope.launch { pagerState.animateScrollToPage(0) }
+            viewModel.apply {
+                doTasksAfterSavingItems()
+            }
         }
-    )
+    })
 
     LaunchedEffect(pagerState.currentPage) {
         val option = options.get(pagerState.currentPage)
@@ -131,8 +144,7 @@ fun DetailScreen(
             exit = TransitionUtil.slideOutVerticallyToTop
         ) {
 
-            ConfirmationDialog(
-                showDialog = showConfirmationDialog,
+            ConfirmationDialog(showDialog = showConfirmationDialog,
                 title = if (isSaved) "Exit?" else "Exit without save?",
                 cancelTitle = "Cancel",
                 confirmTitle = "Exit",
@@ -145,12 +157,10 @@ fun DetailScreen(
                     showConfirmationDialog = false
                     canBeSelected = true
                     navigateToHomeScreen()
-                }
-            )
+                })
 
             Column {
-                TabBarLayout(
-                    options = screens,
+                TabBarLayout(options = screens,
                     selected = canBeSelected,
                     pagerState = pagerState,
                     oldSelectedIndex = oldSelectedIndex,
@@ -162,8 +172,7 @@ fun DetailScreen(
                         if (title.equals(options.get(options.size - 1).title)) {
                             showConfirmationDialog = true
                         }
-                    }
-                )
+                    })
 
                 HorizontalPager(state = pagerState, userScrollEnabled = false) {
                     /** Check current screen is scan screen or not
@@ -180,8 +189,7 @@ fun DetailScreen(
                     } else {
                         // If the screen is null, display a default screen or handle the scenario
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
                             Text("No screen available")
                         }
