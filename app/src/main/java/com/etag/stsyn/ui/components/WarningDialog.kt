@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,7 +45,6 @@ fun WarningDialog(
     modifier: Modifier = Modifier
 ) {
     var show by remember { mutableStateOf(false) }
-
     LaunchedEffect(showDialog) {
         show = showDialog
     }
@@ -110,9 +111,91 @@ fun WarningDialog(
     }
 }
 
-
 @Composable
+fun WarningDialog(
+    attemptAccount: Int,
+    message: String,
+    onProcess: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    var showDialog by remember {
+        mutableStateOf(true)
+    }
+
+    Log.d("WarningDialog", "attemptCount: $attemptAccount")
+    var messageStatus = ""
+    messageStatus = if (attemptAccount > 3){
+        "Too many attempts,please check your internet connection or try again later"
+    } else {
+        message
+    }
+
+    if (showDialog) {
+        Dialog(onDismissRequest = {
+            showDialog = false
+            onDismiss()
+        }) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .clip(RoundedCornerShape(16.dp)),
+                color = Color.White
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            StsynIcon(
+                                icon = Icons.Default.Warning,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = messageStatus,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+
+                        Row(modifier = Modifier.align(Alignment.End)) {
+                            // TODO adjust show and hide according to business requirement
+                            TextButton(onClick = {
+                                showDialog = false
+                                onProcess()
+                            }) {
+                                Text(text = "try again".uppercase())
+                            }
+
+                          if (attemptAccount > 3) {
+                              TextButton(onClick = {
+                                  showDialog = false
+                                  onDismiss()
+                              }) {
+                                  Text(text = "Cancel".uppercase())
+                              }
+                          }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+}
+
+
+
+
+
+
 @Preview(showBackground = true)
+@Composable
 fun WarningDialogPreview() {
     WarningDialog(
         positiveButtonTitle = "Yes",
