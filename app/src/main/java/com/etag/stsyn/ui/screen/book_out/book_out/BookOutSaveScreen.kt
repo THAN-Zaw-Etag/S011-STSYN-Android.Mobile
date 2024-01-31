@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.book_out.book_out
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,30 +46,66 @@ fun BookOutSaveScreen(
     val bookOutUiState by bookOutViewModel.bookOutUiState.collectAsState()
     val saveBookOutBoxesResponse by bookOutViewModel.saveBookOutBoxesResponse.collectAsState()
 
+    var shouldShowWarningDialog by remember {
+        mutableStateOf(false)
+    }
+    var errorMessage by remember {
+        mutableStateOf("")
+    }
+
+    var attemptCount by remember { mutableStateOf(0) }
+
+
     when (saveBookOutBoxesResponse) {
         is ApiResponse.Loading -> {
+            shouldShowWarningDialog = false
+            Log.d("BookOutSaveScreen", "Loading")
             LoadingDialog(
                 title = "Please wait while SMS is processing your request...\n",
                 showDialog = true,
                 onDismiss = {})
         }
-        
-        is ApiResponse.Success -> SuccessDialog(
-            showDialog = true,
-            title = "SUCCESS!",
-            onDoneClick = { /*TODO*/ })
-        
-        is ApiResponse.ApiError -> WarningDialog(
-            icon = CustomIcon.Vector(Icons.Default.Error),
-            message = (saveBookOutBoxesResponse as ApiResponse.ApiError).message,
-            showDialog = true,
-            positiveButtonTitle = "try again",
-            onPositiveButtonClick = bookOutViewModel::saveBookOutItems
-        )
 
-        is ApiResponse.AuthorizationError -> bookOutViewModel.updateAuthorizationFailedDialogVisibility(true)
-        else -> {}
+        is ApiResponse.Success -> {
+
+            shouldShowWarningDialog = false
+            Log.d("BookOutSaveScreen", "Success")
+            SuccessDialog(
+                showDialog = true,
+                title = "SUCCESS!",
+                onDoneClick = { /*TODO*/ })
+        }
+
+        is ApiResponse.ApiError -> {
+            shouldShowWarningDialog = true
+            errorMessage = (saveBookOutBoxesResponse as ApiResponse.ApiError).message
+        }
+
+        is ApiResponse.AuthorizationError -> {
+            shouldShowWarningDialog = false
+            bookOutViewModel.updateAuthorizationFailedDialogVisibility(true)
+        }
+
+        else -> {
+            shouldShowWarningDialog = false
+            Log.d("BookOutSaveScreen", "Default")
+        }
     }
+
+
+    if (shouldShowWarningDialog) {
+        WarningDialog(
+            attemptAccount = attemptCount,
+            message = errorMessage,
+            onProcess = {
+                attemptCount++
+                bookOutViewModel.saveBookOutItems()
+
+            }, onDismiss = { attemptCount = 0})
+    }
+
+
+
 
     LaunchedEffect(bookOutUiState) {
         if (bookOutUiState.scannedItems.isEmpty()) bookOutViewModel.updateBookOutErrorMessage("Please read an item first.")
@@ -77,7 +115,7 @@ fun BookOutSaveScreen(
     BaseSaveScreen(
         isError = bookOutUiState.errorMessage != null && bookOutUiState.scannedItems.isEmpty(),
         errorMessage = bookOutUiState.errorMessage ?: "",
-        onSave = bookOutViewModel::saveBookOutItems
+        onSave = bookOutViewModel::saveBookOutItems,
     ) {
 
         Column(
