@@ -83,7 +83,6 @@ fun BookOutSaveScreen(
             bookOutViewModel.shouldShowAuthorizationFailedDialog(true)
         }
 
-
         else -> {
             shouldShowWarningDialog = false
             Log.d("BookOutSaveScreen", "Default")
@@ -98,12 +97,8 @@ fun BookOutSaveScreen(
             onProcess = {
                 attemptCount++
                 bookOutViewModel.saveBookOutItems()
-
             }, onDismiss = { attemptCount = 0})
     }
-
-
-
 
     LaunchedEffect(bookOutUiState) {
         if (bookOutUiState.scannedItems.isEmpty()) bookOutViewModel.updateBookOutErrorMessage("Please read an item first.")
