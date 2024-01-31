@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.ui.screen.book_in.book_in_box.BoxUiState
+import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class BookOutBoxViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
     private val appConfiguration: AppConfiguration,
+    private val localDataStore: LocalDataStore,
     private val bookOutRepository: BookOutRepository
 ) : BaseViewModel(rfidHandler) {
     val TAG = "BookOutBoxViewModel"
@@ -29,11 +31,15 @@ class BookOutBoxViewModel @Inject constructor(
     private val _boxUiState = MutableStateFlow(BoxUiState())
     val boxUiState: StateFlow<BoxUiState> = _boxUiState.asStateFlow()
 
+    private val _bookOutBoxUiState = MutableStateFlow(BookOutBoxUiState())
+    val bookOutBoxUiState: StateFlow<BookOutBoxUiState> = _bookOutBoxUiState.asStateFlow()
+
     private val _needLocation = MutableStateFlow(false)
     val needLocation: StateFlow<Boolean> = _needLocation.asStateFlow()
 
     val scannedItemList = MutableStateFlow<List<String>>(emptyList())
 
+    val user = localDataStore.getUser
     private val settings = appConfiguration.appConfig
 
     init {
@@ -43,6 +49,14 @@ class BookOutBoxViewModel @Inject constructor(
                 _needLocation.value = it.needLocation
             }
         }
+    }
+
+    fun saveBookOutBoxItems() {
+
+    }
+
+    fun updateBookOutBoxErrorMessage(message: String?) {
+        _bookOutBoxUiState.update { it.copy(errorMessage = message) }
     }
 
     private fun getAllBookOutBoxes() {
@@ -110,5 +124,9 @@ class BookOutBoxViewModel @Inject constructor(
             getAllItemsInBox(scannedBox.box)
         }
     }
+
+    data class BookOutBoxUiState(
+        val errorMessage: String? = null,
+    )
 
 }
