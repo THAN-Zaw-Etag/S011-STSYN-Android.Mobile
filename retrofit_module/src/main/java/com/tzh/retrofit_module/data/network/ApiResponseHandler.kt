@@ -5,6 +5,7 @@ import com.tzh.retrofit_module.data.exception.NetworkException
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
+import kotlinx.coroutines.delay
 import org.json.JSONException
 import retrofit2.HttpException
 import retrofit2.Response
@@ -24,7 +25,6 @@ object ApiResponseHandler {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.d("TAG", "doWork: ${e.localizedMessage}")
             ApiResponse.ApiError(e.localizedMessage ?: "Unknown error")
             handleError<T>(e)
         }

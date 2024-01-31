@@ -6,6 +6,7 @@
 
 package com.etag.stsyn.ui.screen.detail
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -73,10 +74,6 @@ fun DetailScreen(
     val detailUiState by viewModel.detailUiState.collectAsState()
 
     val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsState()
-    //TODO delete it later
-//    val showAuthorizationFailedDialog by remember {
-//        mutableStateOf(true)
-//    }
     var showErrorDialog by remember { mutableStateOf(false) }
 
     ReaderLifeCycle(viewModel = viewModel)
@@ -86,13 +83,14 @@ fun DetailScreen(
         onLogOut = logOut
     )
 
-    LaunchedEffect(detailUiState) {
+    LaunchedEffect(detailUiState.showLoadingDialog) {
+        Log.d("TAG", "DetailScreen: ${detailUiState.showLoadingDialog}")
         isSaved = detailUiState.isSaved
         showErrorDialog = detailUiState.message.isNotEmpty()
     }
 
     // show loading while data is fetching
-    LoadingDialog(
+    if (detailUiState.showLoadingDialog) LoadingDialog(
         title = "Loading...",
         showDialog = detailUiState.showLoadingDialog,
         onDismiss = { }

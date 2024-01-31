@@ -5,6 +5,7 @@ import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.network.ApiResponseHandler
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.settings.AppConfiguration
+import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -28,6 +29,12 @@ class BookOutRepositoryImpl @Inject constructor(
     override suspend fun getAllBookOutBoxes(): ApiResponse<GetAllBookOutBoxesResponse> {
         return ApiResponseHandler.processResponse {
             apiService.getAllBookOutBoxes()
+        }
+    }
+
+    override suspend fun getAllItemsInBookOutBox(box: String): ApiResponse<GetAllItemsOfBoxResponse> {
+        return ApiResponseHandler.processResponse {
+            apiService.getAllItemsInBookOutBox(box)
         }
     }
 

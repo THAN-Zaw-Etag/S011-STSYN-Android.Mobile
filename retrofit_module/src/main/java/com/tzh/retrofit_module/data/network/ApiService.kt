@@ -6,7 +6,7 @@ import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
-import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
+import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
@@ -79,7 +79,7 @@ interface ApiService {
         @Query("box") box: String,
         @Query("status") status: String,
         @Query("loginUserId") loginUserId: String,
-    ): Response<GetAllBookInItemsOfBoxResponse>
+    ): Response<GetAllItemsOfBoxResponse>
 
     /* BOOK OUT*/
     @GET(GET_ALL_BOOK_OUT_ITEMS_ROUTE)
@@ -92,7 +92,7 @@ interface ApiService {
     suspend fun getAllBookOutBoxes(): Response<GetAllBookOutBoxesResponse>
 
     @GET(GET_ALL_ITEMS_IN_BOX)
-    suspend fun getAllItemsInBookOutBox(box: String)
+    suspend fun getAllItemsInBookOutBox(box: String): Response<GetAllItemsOfBoxResponse>
 
     @GET(CHECK_U_S_CASE_BY_BOX_ROUTE)
     suspend fun checkUSCaseByBox(

@@ -11,6 +11,7 @@ const val GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE = "BookInOut/SelectItemsInCTKBoxFor
 
 const val GET_ALL_BOOK_OUT_ITEMS_ROUTE = "BookInOut/SelectItemWhereIn"
 const val GET_ALL_BOOK_OUT_BOXES_ROUTE = "BookInOut/SelectBoxForBookOut"
+const val GET_ALL_ITEMS_IN_BOOK_OUT_BOX_ROUTE = "BookInOut/SelectItemsInCTKBoxForBookOut"
 const val GET_ALL_ITEMS_IN_BOX = "BookInOut/SelectItemsInCTKBoxForBookOut"
 
 const val UPDATE_PASSWORD_ROUTE = "User/ChangePassword"

@@ -35,7 +35,7 @@ abstract class BaseViewModel(
         updateScanType(ScanType.Multi)
     }
 
-    fun updateAuthorizationFailedDialogVisibility(isVisible: Boolean) {
+    fun shouldShowAuthorizationFailedDialog(isVisible: Boolean) {
         _showAuthorizationFailedDialog.update { isVisible }
     }
 

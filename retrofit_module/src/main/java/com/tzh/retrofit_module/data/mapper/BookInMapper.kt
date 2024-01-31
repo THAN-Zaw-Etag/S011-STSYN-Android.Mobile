@@ -35,7 +35,7 @@ fun List<BookInItem>.toItemMovementLog(
     }
 }
 
-fun List<BookInItem>.toItemMovementLogs(
+fun List<BoxItem>.toItemMovementLogs(
     handleHeldId: Int,
     currentDate: String,
     userId: String,
@@ -44,12 +44,12 @@ fun List<BookInItem>.toItemMovementLogs(
 ): List<ItemMovementLog> {
     return map {
         ItemMovementLog(
-            itemId = it.id,
+            itemId = it.id.toInt(),
             description = it.description,
             itemStatus = itemStatus,
             workLoc = workLocation,
             issuerId = userId.toInt(),
-            receiverId = it.receiverId,
+            receiverId = it.receiverId.toInt(),
             approverId = 0,
             date = currentDate,
             handheldReaderId = handleHeldId,

@@ -65,7 +65,7 @@ fun BookOutSaveScreen(
             onPositiveButtonClick = bookOutViewModel::saveBookOutItems
         )
 
-        is ApiResponse.AuthorizationError -> bookOutViewModel.updateAuthorizationFailedDialogVisibility(true)
+        is ApiResponse.AuthorizationError -> bookOutViewModel.shouldShowAuthorizationFailedDialog(true)
         else -> {}
     }
 

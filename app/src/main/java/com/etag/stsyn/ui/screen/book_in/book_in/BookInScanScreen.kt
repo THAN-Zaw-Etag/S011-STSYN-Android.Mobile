@@ -27,10 +27,6 @@ fun BookInScanScreen(
     val bookInItemsResponse by bookInViewModel.bookInItemsResponse.collectAsState()
     val bookInItems by bookInViewModel.scannedBookInItems.collectAsState()
 
-    LaunchedEffect(bookInItems) {
-        Log.d("TAG", "BookInScanScreen: $bookInItems")
-    }
-
     when (bookInItemsResponse) {
         is ApiResponse.Loading -> {
             bookInViewModel.toggleLoadingVisibility(true)

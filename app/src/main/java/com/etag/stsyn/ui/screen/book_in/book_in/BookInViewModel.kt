@@ -156,7 +156,7 @@ class BookInViewModel @Inject constructor(
                     csNo = it.csNo,
                     userId = userId
                 )
-                updateAuthorizationFailedDialogVisibility(_bookInItems.value is ApiResponse.AuthorizationError)
+                shouldShowAuthorizationFailedDialog(_bookInItems.value is ApiResponse.AuthorizationError)
 
                 when (_bookInItems.value) {
                     is ApiResponse.ApiError -> {

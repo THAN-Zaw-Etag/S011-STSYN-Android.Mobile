@@ -25,7 +25,7 @@ fun BookInBoxScanScreen(
     val rfidUiState by bookInBoxViewModel.rfidUiState.collectAsState()
     val getAllBoxesResponse by bookInBoxViewModel.boxItemsForBookInResponse.collectAsState()
     val allItemsOfBoxResponse by bookInBoxViewModel.getAllItemsOfBox.collectAsState()
-    val bookInBoxUiState by bookInBoxViewModel.bookInBoxUiState.collectAsState()
+    val bookInBoxUiState by bookInBoxViewModel.boxUiState.collectAsState()
     var scannedBox by remember { mutableStateOf(BoxItem()) }
     var boxes by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
     val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsState()
@@ -58,7 +58,7 @@ fun BookInBoxScanScreen(
         onScan = {
             bookInBoxViewModel.apply {
                 updateScanType(BaseViewModel.ScanType.Single)
-                updateBookInBoxScanStatus(if (bookInBoxUiState.scannedBox.epc.isEmpty()) BookInBoxViewModel.BookInBoxScanType.BOX else BookInBoxViewModel.BookInBoxScanType.ITEMS)
+                updateBookInBoxScanStatus(if (bookInBoxUiState.scannedBox.epc.isEmpty()) BoxScanType.BOX else BoxScanType.ITEMS)
                 toggle()
             }
         },
