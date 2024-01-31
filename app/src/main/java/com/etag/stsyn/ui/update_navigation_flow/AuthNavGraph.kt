@@ -61,26 +61,22 @@ fun NavGraphBuilder.authNavGraph(
             }
 
             val logInState = loginViewModel.loginUiState.collectAsState()
-//            LaunchedEffect(logInState) {
-//                if (logInState.value.isLoginSuccessful)
-//                    navController.navigate(Graph.HOME)
-//            }
-
             val loginResponse by loginViewModel.loginResponse.collectAsState()
 
             val epcModelUserName= loginViewModel.epcModelUser.collectAsState()
             LoginContentScreen(
                 goToHome = {
                     navController.navigate(Graph.HOME) {
-                        popUpTo(Routes.LoginContentScreen.name) {
+                        popUpTo(0) {
                             inclusive = true
                         }
                     }
+                    loginViewModel.resetLoginResponseState()
+
                 },
                 loginAttemptCount = logInState.value.attemptCount,
                 userName = epcModelUserName.value.userName ,
                 loginResponse = loginResponse,
-                isSuccessful = logInState.value.isLoginSuccessful,
                 onLogInClick = { loginViewModel.login(it.toCharArray()) },
                 onSuccess = loginViewModel::saveUserToLocalStorage,
                 onFailed = {

@@ -62,8 +62,6 @@ fun LoginScreen(
     loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier.fillMaxSize(),
 ) {
-
-    val loginUiState by loginViewModel.loginUiState.collectAsState()
     val rfidUiState by loginViewModel.rfidUiState.collectAsState()
     val context = LocalContext.current
 
@@ -85,7 +83,7 @@ fun LoginScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val emptyBaseUrlStatus = loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
     val appConfiguration by loginViewModel.appConfig.collectAsState(initial = AppConfigModel())
-    Log.d("@baseUrl",emptyBaseUrlStatus.value.toString())
+
     if (emptyBaseUrlStatus.value){
         ShowBaseUrlAlertDialog(
             onConfirm = {
