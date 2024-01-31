@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 fun BookInBoxCountScreen(
     bookInBoxViewModel: BookInBoxViewModel, modifier: Modifier = Modifier
 ) {
-    val bookInBoxUiState by bookInBoxViewModel.bookInBoxUiState.collectAsState()
+    val bookInBoxUiState by bookInBoxViewModel.boxUiState.collectAsState()
     var boxes by remember { mutableStateOf(bookInBoxUiState.allItemsOfBox) }
     var controlType by remember { mutableStateOf(ControlType.All) }
     val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsState()

@@ -1,10 +1,9 @@
 package com.etag.stsyn.ui.screen.book_out.book_out
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
@@ -21,7 +20,6 @@ import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
-import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
@@ -46,11 +44,7 @@ fun BookOutScanScreen(
             onDismiss = { /*TODO*/ })
 
         is ApiResponse.Success -> {
-            Toast.makeText(
-                context,
-                "${(getAllBookOutItemsResponse as ApiResponse.Success<BookOutResponse>).data?.items!!.size} of items are fetched.",
-                Toast.LENGTH_SHORT
-            ).show()
+            // TODO do something here...
         }
 
         is ApiResponse.ApiError -> WarningDialog(
@@ -61,7 +55,7 @@ fun BookOutScanScreen(
             onPositiveButtonClick = {}
         )
 
-        is ApiResponse.AuthorizationError -> bookOutViewModel.updateAuthorizationFailedDialogVisibility(
+        is ApiResponse.AuthorizationError -> bookOutViewModel.shouldShowAuthorizationFailedDialog(
             true
         )
 
@@ -69,23 +63,23 @@ fun BookOutScanScreen(
     }
 
     BaseScanScreen(
-        scannedItemCount = rfidUiState.scannedItems.size,
+        scannedItemCount = bookOutUiState.scannedItems.size,
         modifier = modifier,
         isScanning = rfidUiState.isScanning,
-        onScan = { bookOutViewModel.toggle() },
-        onClear = { rfidUiState.scannedItems.toMutableList().clear() }) {
+        onScan = bookOutViewModel::toggle,
+        onClear = bookOutViewModel::clearAllScannedItems) {
         LazyColumn(
             state = listState,
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(bookOutUiState.scannedItems) {
-                key(it) {
+            itemsIndexed(bookOutUiState.scannedItems) {index,item ->
+                key(item.epc) {
                     ScannedItem(
-                        id = it.epc, name = it.description,
+                        id = item.epc, name = item.description,
                         isSwipeable = true,
                         onSwipeToDismiss = {
-                            //bookOutViewModel.removeItem(it)
+                            bookOutViewModel.removeScannedItem(index)
                         }
                     )
                 }

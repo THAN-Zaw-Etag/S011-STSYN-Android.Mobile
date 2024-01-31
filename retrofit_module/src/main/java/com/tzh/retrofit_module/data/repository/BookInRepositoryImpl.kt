@@ -6,13 +6,11 @@ import com.tzh.retrofit_module.data.network.ApiResponseHandler
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
-import com.tzh.retrofit_module.domain.model.bookIn.GetAllBookInItemsOfBoxResponse
+import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.util.ApiResponse
-import com.tzh.retrofit_module.util.toToken
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class BookInRepositoryImpl @Inject constructor(
@@ -42,7 +40,7 @@ class BookInRepositoryImpl @Inject constructor(
 
     override suspend fun getAllBookItemsOfBox(
         box: String, status: String, loginUserId: String
-    ): ApiResponse<GetAllBookInItemsOfBoxResponse> {
+    ): ApiResponse<GetAllItemsOfBoxResponse> {
         return ApiResponseHandler.processResponse {
             apiService.getAllBookInItemsOfBox( box, status, loginUserId)
         }

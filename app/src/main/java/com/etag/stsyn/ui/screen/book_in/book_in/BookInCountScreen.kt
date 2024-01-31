@@ -36,8 +36,7 @@ fun BookInCountScreen(
         when (controlType) {
             ControlType.All -> {
                 if (bookInItemsResponse is ApiResponse.Success) {
-                    items =
-                        (bookInItemsResponse as ApiResponse.Success<BookInResponse>).data!!.items
+                    items = (bookInItemsResponse as ApiResponse.Success<BookInResponse>).data!!.items
                 }
             }
 

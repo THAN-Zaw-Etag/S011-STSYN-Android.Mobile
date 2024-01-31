@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.book_out.book_out
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -10,7 +9,7 @@ import com.tzh.retrofit_module.data.mapper.toItemMovementLogs
 import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
-import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
+import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.lang.Thread.State
 import java.time.Instant
 import javax.inject.Inject
 
@@ -88,6 +86,16 @@ class BookOutViewModel @Inject constructor(
 
     fun updateLocation(location: String) {
         _bookOutUiState.update { it.copy(location = location) }
+    }
+
+    fun clearAllScannedItems() {
+        _bookOutUiState.update { it.copy(scannedItems = emptyList()) }
+    }
+
+    fun removeScannedItem(index: Int){
+        val currentList = bookOutUiState.value.scannedItems
+        currentList.toMutableList().removeAt(index)
+        _bookOutUiState.update { it.copy(scannedItems = currentList) }
     }
 
     fun saveBookOutItems() {
@@ -156,10 +164,10 @@ class BookOutViewModel @Inject constructor(
     }
 
     data class BookOutUiState(
-        val allBookOutItems: List<BookInItem> = listOf(),
+        val allBookOutItems: List<BoxItem> = listOf(),
         val purpose: String = "",
         val location: String = "",
         val errorMessage: String? = null,
-        val scannedItems: List<BookInItem> = listOf(BookInItem())
+        val scannedItems: List<BoxItem> = listOf(BoxItem())
     )
 }

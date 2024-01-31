@@ -27,7 +27,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 fun BookInBoxSaveScreen(
     bookInBoxViewModel: BookInBoxViewModel, modifier: Modifier = Modifier
 ) {
-    val bookInBoxUiState by bookInBoxViewModel.bookInBoxUiState.collectAsState()
+    val bookInBoxUiState by bookInBoxViewModel.boxUiState.collectAsState()
     val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsState()
     val user by bookInBoxViewModel.user.collectAsState(initial = LocalUser())
     val saveBookInBoxResponse by bookInBoxViewModel.saveBookInBoxResponse.collectAsState()
@@ -43,8 +43,10 @@ fun BookInBoxSaveScreen(
             onDismiss = { })
 
         is ApiResponse.Success -> {
-            bookInBoxViewModel.updateIsSavedStatus(true)
-            SuccessDialog(showDialog = true, title = "SUCCESS!", onDoneClick = { })
+            bookInBoxViewModel.apply {
+                updateIsSavedStatus(true)
+                updateSuccessDialogVisibility(true)
+            }
         }
 
         is ApiResponse.ApiError -> WarningDialog(
@@ -55,7 +57,7 @@ fun BookInBoxSaveScreen(
             onPositiveButtonClick = bookInBoxViewModel::saveBookInBox
         )
 
-        is ApiResponse.AuthorizationError -> bookInBoxViewModel.updateAuthorizationFailedDialogVisibility(
+        is ApiResponse.AuthorizationError -> bookInBoxViewModel.shouldShowAuthorizationFailedDialog(
             true
         )
 

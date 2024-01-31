@@ -56,10 +56,7 @@ fun BookInSaveScreen(
             showConfirmationDialog = false
             showSuccessDialog = true
             viewModel.updateIsSavedStatus(true)
-            SuccessDialog(
-                showDialog = showSuccessDialog,
-                title = "SUCCESS!",
-                onDoneClick = { showSuccessDialog = false })
+            viewModel.updateSuccessDialogVisibility(true)
         }
 
         is ApiResponse.ApiError -> {

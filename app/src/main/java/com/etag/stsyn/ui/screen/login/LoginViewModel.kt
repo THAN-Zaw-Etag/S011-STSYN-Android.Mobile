@@ -157,7 +157,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun login(passwordCharArray: CharArray) {
-        updateAuthorizationFailedDialogVisibility(false)
+        shouldShowAuthorizationFailedDialog(false)
         viewModelScope.launch {
             _loginResponse.value = ApiResponse.Loading
             delay(1000) // set delay for loading
@@ -183,7 +183,7 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is ApiResponse.AuthorizationError -> {
-                    updateAuthorizationFailedDialogVisibility(true)
+                    shouldShowAuthorizationFailedDialog(true)
                 }
 
                 else -> {}
@@ -199,7 +199,7 @@ class LoginViewModel @Inject constructor(
         val oldPassword = String(oldPasswordCharArr)
         val newPassword = String(newPasswordChar)
         //TODO remove unused lines of code and encrypt password if required
-        updateAuthorizationFailedDialogVisibility(false)
+        shouldShowAuthorizationFailedDialog(false)
         viewModelScope.launch {
             _updatePasswordResponse.value = ApiResponse.Loading
             delay(1000)
@@ -213,7 +213,7 @@ class LoginViewModel @Inject constructor(
                 )
 
                 // show authorization error dialog if error is authorization failed error
-                updateAuthorizationFailedDialogVisibility(_updatePasswordResponse.value is ApiResponse.AuthorizationError)
+                shouldShowAuthorizationFailedDialog(_updatePasswordResponse.value is ApiResponse.AuthorizationError)
             }
         }
         oldPasswordCharArr.fill('0')
@@ -233,7 +233,7 @@ class LoginViewModel @Inject constructor(
                         (userMenuAccessRightsByIdResponse.value as ApiResponse.Success).data?.rolePermission!!.handheldMenuAccessRight
                 }
 
-                is ApiResponse.AuthorizationError -> updateAuthorizationFailedDialogVisibility(true)
+                is ApiResponse.AuthorizationError -> shouldShowAuthorizationFailedDialog(true)
                 else -> {}
             }
         }

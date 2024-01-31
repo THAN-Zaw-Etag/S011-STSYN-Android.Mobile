@@ -23,7 +23,7 @@ object DateUtil {
 
     fun getCurrentDate(): String {
         val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
 
         val formattedDateTime = currentDateTime.format(formatter)
 

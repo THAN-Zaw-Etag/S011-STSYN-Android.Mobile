@@ -81,6 +81,8 @@ fun BookOutSaveScreen(
             errorMessage = (saveBookOutBoxesResponse as ApiResponse.ApiError).message
         }
 
+        is ApiResponse.AuthorizationError -> bookOutViewModel.shouldShowAuthorizationFailedDialog(true)
+        else -> {}
         is ApiResponse.AuthorizationError -> {
             shouldShowWarningDialog = false
             bookOutViewModel.updateAuthorizationFailedDialogVisibility(true)

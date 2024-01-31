@@ -35,7 +35,7 @@ abstract class BaseViewModel(
         updateScanType(ScanType.Multi)
     }
 
-    fun updateAuthorizationFailedDialogVisibility(isVisible: Boolean) {
+    fun shouldShowAuthorizationFailedDialog(isVisible: Boolean) {
         _showAuthorizationFailedDialog.update { isVisible }
     }
 
@@ -43,6 +43,10 @@ abstract class BaseViewModel(
         _detailUiState.update {
             it.copy(isSaved = isSaved)
         }
+    }
+
+    fun updateSuccessDialogVisibility(visible: Boolean){
+        _detailUiState.update { it.copy(showSuccessDialog = visible) }
     }
 
     fun toggleLoadingVisibility(visible: Boolean) {
@@ -203,6 +207,7 @@ abstract class BaseViewModel(
 
     data class DetailUiState(
         val showLoadingDialog: Boolean = false,
+        val showSuccessDialog: Boolean = false,
         val isSaved: Boolean = false,
         val message: String = ""
     )

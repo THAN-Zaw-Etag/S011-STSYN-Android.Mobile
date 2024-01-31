@@ -8,6 +8,7 @@
 
 package com.etag.stsyn.ui.screen.base
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -147,11 +149,13 @@ fun BaseBoxScreen(
             }
 
             itemsIndexed(bookItems) { index, item ->
-                ScannedItem(
-                    id = "${item.serialNo} - ${item.partNo}",
-                    name = item.description,
-                    isScanned = item.epc in scannedItemList,
-                )
+                key(item.epc) {
+                    ScannedItem(
+                        id = "${item.serialNo} - ${item.partNo}",
+                        name = item.description,
+                        isScanned = item.epc in scannedItemList,
+                    )
+                }
             }
         }
         BottomScannedButtonLayout(
@@ -210,18 +214,21 @@ fun BottomScannedButtonLayout(
 ) {
     Row(
         modifier = modifier
+            .animateContentSize()
             .fillMaxWidth()
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Os: ${outStandingItemCount - scannedItemsCount}"
+            text = "Os: ${outStandingItemCount - scannedItemsCount}",
+            modifier = Modifier.animateContentSize()
         )
         ScanIconButton(onScan = onScan, isScanning = isScanning)
 
         Text(
-            text = "Done: $scannedItemsCount"
+            text = "Done: $scannedItemsCount",
+            modifier = Modifier.animateContentSize()
         )
     }
 }
@@ -289,7 +296,6 @@ private fun BoxScanSection(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
     ) {
         ScannedBoxItem(
             boxTitle = "Box",

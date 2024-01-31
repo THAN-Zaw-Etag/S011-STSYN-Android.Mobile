@@ -101,7 +101,7 @@ fun LoginScreen(
                     showErrorDialog = false
                     Log.d("TAGUser", "LoginScreen: Loading")
                 }
-
+                                                                                                                    
                 is ApiResponse.Success -> {
                     Log.d("TAGUser", "LoginScreen: Success")
                     showLoadingDialog = false
@@ -149,8 +149,7 @@ fun LoginScreen(
     )
 
     LaunchedEffect(rfidUiState.isConnected) {
-        if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT)
-            .show()
+        if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT).show()
     }
 
     Column(modifier = modifier) {
