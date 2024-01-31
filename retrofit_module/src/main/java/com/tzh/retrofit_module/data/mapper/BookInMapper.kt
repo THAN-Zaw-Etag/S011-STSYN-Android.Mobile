@@ -35,6 +35,35 @@ fun List<BookInItem>.toItemMovementLog(
     }
 }
 
+fun List<BookInItem>.toItemMovementLogs(
+    handleHeldId: Int,
+    currentDate: String,
+    userId: String,
+    workLocation: String,
+    itemStatus: String,
+): List<ItemMovementLog> {
+    return map {
+        ItemMovementLog(
+            itemId = it.id,
+            description = it.description,
+            itemStatus = itemStatus,
+            workLoc = workLocation,
+            issuerId = userId.toInt(),
+            receiverId = it.receiverId,
+            approverId = 0,
+            date = currentDate,
+            handheldReaderId = handleHeldId,
+            calDate = it.calDate, //TODO it.calDate
+            iS_ONSITE_TRANSFER = "0",
+            remarks = it.remarks,
+            receiverName = "",
+            buddyId = "0",
+            itemType = it.itemType
+        )
+    }
+}
+
+
 /**
  * For Book in box
  * */

@@ -22,8 +22,11 @@ object DateUtil {
     }
 
     fun getCurrentDate(): String {
-        val calendar = LocalDateTime.now()
-        val dateFormat = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        return calendar.format(dateFormat)
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")
+
+        val formattedDateTime = currentDateTime.format(formatter)
+
+        return formattedDateTime
     }
 }
