@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.ErrorText
 import com.etag.stsyn.ui.components.LoadingDialog
@@ -45,6 +46,13 @@ fun CheckInOutScreen(
     val scannedItemList by onsiteCheckInOutViewModel.scannedItemList.collectAsState()
 
     val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        onsiteCheckInOutViewModel.apply{
+            updateScanType(BaseViewModel.ScanType.Multi)
+            updateOnsiteScanType(OnsiteCheckInOutViewModel.OnSiteScanType.ITEMS)
+        }
+    }
 
     when (getItemsForOnsiteResponse) {
         is ApiResponse.Loading -> LoadingDialog(title = "Loading...",

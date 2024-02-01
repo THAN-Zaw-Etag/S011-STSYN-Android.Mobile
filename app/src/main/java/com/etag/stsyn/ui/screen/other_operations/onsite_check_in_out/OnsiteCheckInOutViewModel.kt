@@ -8,6 +8,7 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.onsiteCheckInOut.GetItemsForOnsiteResponse
+import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.CheckIn.CheckInOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,6 +62,10 @@ class OnsiteCheckInOutViewModel @Inject constructor(
         }
     }
 
+    fun updateOnsiteScanType(scanType: OnSiteScanType) {
+        _onSiteCheckInOutUiState.update { it.copy(scanType = scanType) }
+    }
+
     fun removeScannedItem(id: String) {
         _scannedItemList.update { it - id }
     }
@@ -73,27 +78,45 @@ class OnsiteCheckInOutViewModel @Inject constructor(
         _onSiteCheckInOutUiState.update { it.copy(shouldShowWarningDialog = visible) }
     }
 
+    fun updateOnsiteCheckInOutErrorMessage(errorMessage: String?){
+        _onSiteCheckInOutUiState.update { it.copy(errorMessage = errorMessage) }
+    }
+
     override fun onReceivedTagId(id: String) {
         viewModelScope.launch {
-            val allItems = onSiteCheckInOutUiState.value.allItemsForOnsite
-            val scannedItem = allItems.find { it.epc == id }
+            when (onSiteCheckInOutUiState.value.scanType) {
+                OnSiteScanType.ITEMS -> {
+                    val allItems = onSiteCheckInOutUiState.value.allItemsForOnsite
+                    val scannedItem = allItems.find { it.epc == id }
+                    if (scannedItem != null) {
+                        val hasExisted = (id in scannedItemList.value)
+                        if (!hasExisted) {
+                            if (scannedItem.receiverId == "0" && scannedItem.issuerId != user.first().userId) {
+                                updateWarningDialogVisibility(true)
+                                return@launch
+                            } else updateWarningDialogVisibility(false)
 
-            if (scannedItem != null) {
-                val hasExisted = (id in scannedItemList.value)
-                if (!hasExisted) {
-                    if (scannedItem.receiverId == "0" && scannedItem.issuerId != user.first().userId) {
-                        updateWarningDialogVisibility(true)
-                        return@launch
-                    } else updateWarningDialogVisibility(false)
+                            if (scannedItem.receiverId != "0" && scannedItem.receiverId != user.first().userId) {
+                                updateWarningDialogVisibility(true)
+                                return@launch
+                            } else updateWarningDialogVisibility(false)
 
-                    if (scannedItem.receiverId != "0" && scannedItem.receiverId != user.first().userId) {
-                        updateWarningDialogVisibility(true)
-                        return@launch
-                    } else updateWarningDialogVisibility(false)
-
-                    _scannedItemList.update { it + id }
-                } else {
-                    updateWarningDialogVisibility(false)
+                            _scannedItemList.update { it + id }
+                        } else {
+                            updateWarningDialogVisibility(false)
+                        }
+                    }
+                }
+                OnSiteScanType.RECEIVER -> {
+                    // get receiver by id from api
+                    val response = repository.getReceiverByEpc(id)
+                    when (response) {
+                        is ApiResponse.Success -> {
+                            _onSiteCheckInOutUiState.update { it.copy(receiver = response.data?.userModel) }
+                        }
+                        is ApiResponse.AuthorizationError -> shouldShowAuthorizationFailedDialog(true)
+                        else -> {}
+                    }
                 }
             }
         }
@@ -102,5 +125,10 @@ class OnsiteCheckInOutViewModel @Inject constructor(
     data class OnsiteCheckInOutUiState(
         val allItemsForOnsite: List<BoxItem> = emptyList(),
         val shouldShowWarningDialog: Boolean = false,
+        val errorMessage: String? = null,
+        val receiver: UserModel? = null,
+        val scanType: OnSiteScanType = OnSiteScanType.ITEMS
     )
+
+    enum class OnSiteScanType {ITEMS,RECEIVER}
 }

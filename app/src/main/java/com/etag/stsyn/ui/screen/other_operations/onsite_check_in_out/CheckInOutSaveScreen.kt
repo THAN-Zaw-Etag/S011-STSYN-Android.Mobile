@@ -4,33 +4,56 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
+import com.tzh.retrofit_module.data.model.LocalUser
 
 @Composable
 fun CheckInOutSaveScreen(
-    onsiteCheckInOutViewModel: OnsiteCheckInOutViewModel,
-    modifier: Modifier = Modifier
+    onsiteCheckInOutViewModel: OnsiteCheckInOutViewModel, modifier: Modifier = Modifier
 ) {
     val hasScannedItems by remember { mutableStateOf(false) }
+    val scannedItemList by onsiteCheckInOutViewModel.scannedItemList.collectAsState()
+    val onsiteCheckInOutUiState by onsiteCheckInOutViewModel.onSiteCheckInOutUiState.collectAsState()
+    val user by onsiteCheckInOutViewModel.user.collectAsState(initial = LocalUser())
 
-    BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {
+    LaunchedEffect(Unit) {
+        onsiteCheckInOutViewModel.updateOnsiteScanType(OnsiteCheckInOutViewModel.OnSiteScanType.RECEIVER)
+    }
+
+    LaunchedEffect(scannedItemList) {
+        if (scannedItemList.isEmpty()) onsiteCheckInOutViewModel.updateOnsiteCheckInOutErrorMessage("Please read an item first!")
+    }
+
+    BaseSaveScreen(
+        isError = scannedItemList.isEmpty(),
+        errorMessage = onsiteCheckInOutUiState.errorMessage ?: "",
+        isUsCase = onsiteCheckInOutUiState.receiver == null,
+        onScan = {
+            onsiteCheckInOutViewModel.apply {
+                updateScanType(BaseViewModel.ScanType.Single)
+                enableScan()
+                toggle()
+            }
+        },
+        onSave = { }) {
         SaveItemLayout(
             icon = Icons.Default.Person,
             itemTitle = "Issuer",
         ) {
-            Text(text = "Admin-123S")
+            Text(text = "${user.name}-${user.userId}")
         }
         SaveItemLayout(
-            icon = Icons.Default.Person,
-            itemTitle = "Receiver",
-            showRefreshIcon = hasScannedItems
+            icon = Icons.Default.Person, itemTitle = "Receiver", showRefreshIcon = hasScannedItems
         ) {
-            Text(text = "-")
+            Text(text = "${onsiteCheckInOutUiState.receiver?.userName}-${onsiteCheckInOutUiState.receiver?.userId}")
         }
     }
 }
