@@ -163,7 +163,7 @@ fun WarningDialog(
                         }
 
                         Row(modifier = Modifier.align(Alignment.End)) {
-                            if (attemptAccount <= 3){
+                            if (attemptAccount <= 2){
                                 TextButton(onClick = {
                                     showDialog = false
                                     onProcess()
