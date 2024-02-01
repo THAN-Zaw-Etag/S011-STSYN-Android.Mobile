@@ -13,6 +13,7 @@ import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.model.onsiteCheckInOut.GetItemsForOnsiteResponse
 import com.tzh.retrofit_module.domain.model.user.GetIssuerUserResponse
 import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
@@ -23,6 +24,7 @@ import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_BOXES_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_ITEMS_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_ITEMS_IN_BOX
 import com.tzh.retrofit_module.util.GET_ISSUER_BY_EPC
+import com.tzh.retrofit_module.util.GET_ITEMS_FOR_ONSITE_ROUTE
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
@@ -111,4 +113,10 @@ interface ApiService {
         @Query("loginUserId") loginUserId: String,
     ): Response<GetIssuerUserResponse>
 
+    /* ONSITE CHECK IN / OUT */
+    @GET(GET_ITEMS_FOR_ONSITE_ROUTE)
+    suspend fun getItemsForOnSite(
+        @Query("Store") store: String,
+        @Query("CsNo") csNo: String
+    ): Response<GetItemsForOnsiteResponse>
 }

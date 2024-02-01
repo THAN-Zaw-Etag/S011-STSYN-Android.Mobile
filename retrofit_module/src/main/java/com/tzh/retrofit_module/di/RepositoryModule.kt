@@ -4,11 +4,13 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.repository.BookInRepositoryImpl
 import com.tzh.retrofit_module.data.repository.BookOutRepositoryImpl
+import com.tzh.retrofit_module.data.repository.CheckInOutRepositoryImpl
 import com.tzh.retrofit_module.data.repository.TokenRepository
 import com.tzh.retrofit_module.data.repository.UserRepositoryImpl
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
+import com.tzh.retrofit_module.domain.repository.CheckIn.CheckInOutRepository
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -45,6 +47,16 @@ object RepositoryModule {
         appConfiguration: AppConfiguration
     ): BookOutRepository {
         return BookOutRepositoryImpl(apiService, localDataStore, appConfiguration)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCheckInOutRepository(
+        apiService: ApiService,
+        localDataStore: LocalDataStore,
+        appConfiguration: AppConfiguration
+    ): CheckInOutRepository {
+        return CheckInOutRepositoryImpl(apiService,localDataStore,appConfiguration)
     }
 
     @Provides

@@ -22,3 +22,6 @@ const val AUTHORIZATION_FAILED_MESSAGE =
 
 const val GET_USER_BY_EPC_ROUTE = "User/GetUserByEPC"
 const val GET_ISSUER_BY_EPC = "User/GetUserNotIssuerByEPC"
+
+/************* ONSITE CHECK IN OUT ******************/
+const val GET_ITEMS_FOR_ONSITE_ROUTE = "BookInOut/SelectItemForOnsite"
