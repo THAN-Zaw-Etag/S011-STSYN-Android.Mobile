@@ -1,4 +1,4 @@
-package com.etag.stsyn.ui.update_navigation_flow
+package com.etag.stsyn.ui.navigation
 
 
 object Graph {

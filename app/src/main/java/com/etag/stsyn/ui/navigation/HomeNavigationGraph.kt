@@ -23,10 +23,7 @@ import com.etag.stsyn.ui.screen.main.BookOutScreen
 import com.etag.stsyn.ui.screen.main.MainScreen
 import com.etag.stsyn.ui.screen.main.OtherOperationsScreen
 import com.etag.stsyn.ui.screen.settings.SettingsScreen
-import com.etag.stsyn.ui.update_navigation_flow.Graph
-import com.etag.stsyn.ui.update_navigation_flow.authNavGraph
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
-import com.etag.stsyn.util.AppUtil.logout
 
 
 @Composable
@@ -140,34 +137,6 @@ fun HomeNavigationGraph(
             navController = navController,
             loginViewModel = loginViewModel,
             context)
-
-
-//TODO delete when all navigation resolve and fine
-
-//        composable(route = Routes.DetailScreen.name + "/{type}") {
-//            val optionType = OptionType.valueOf(
-//                it.arguments?.getString("type") ?: OptionType.BookOut.toString()
-//            )
-//
-//            sharedUiViewModel.apply {
-//                updateTopBarTitle(Routes.OtherOperationsScreen.title)
-//                updateTopAppBarStatus(false)
-//                updateAppBarNavigationIcon(Icons.Default.Menu)
-//                updateBottomNavigationBarStatus(false)
-//            }
-//
-//            DetailScreen(
-//                isConnected = rfidUiState.isConnected,
-//                optionType = optionType,
-//                logOut = {
-//                    loginViewModel.logOut()
-//                    logout(navController)
-//                },
-//                navigateToHomeScreen = {
-//                    navController.navigate(Routes.HomeScreen.name)
-//                }
-//            )
-//        }
     }
 }
 

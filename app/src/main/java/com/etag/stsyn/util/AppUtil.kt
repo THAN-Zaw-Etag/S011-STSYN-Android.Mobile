@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
 import com.etag.stsyn.enums.DeviceSize
-import com.etag.stsyn.ui.update_navigation_flow.Graph
+import com.etag.stsyn.ui.navigation.Graph
 
 object AppUtil {
     fun getVersionCode(context: Context): String {

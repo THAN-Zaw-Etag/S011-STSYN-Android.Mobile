@@ -33,37 +33,63 @@ fun BookInBoxSaveScreen(
     val saveBookInBoxResponse by bookInBoxViewModel.saveBookInBoxResponse.collectAsState()
     var shouldShowRefreshIcon by remember { mutableStateOf(false) }
 
+    var shouldShowWarningDialog by remember {
+        mutableStateOf(false)
+    }
+    var errorMessage by remember {
+        mutableStateOf("")
+    }
+
+    var attemptCount by remember { mutableStateOf(0) }
+
     LaunchedEffect(bookInBoxUiState.issuerUser) {
         shouldShowRefreshIcon = bookInBoxUiState.issuerUser != null
     }
 
     when (saveBookInBoxResponse) {
-        is ApiResponse.Loading -> LoadingDialog(title = "Please wait while SMS is processing your request...",
-            showDialog = true,
-            onDismiss = { })
+        is ApiResponse.Loading -> {
+            shouldShowWarningDialog = false
+            LoadingDialog(title = "Please wait while SMS is processing your request...",
+                showDialog = true,
+                onDismiss = { })
+        }
 
         is ApiResponse.Success -> {
+            shouldShowWarningDialog = false
             bookInBoxViewModel.apply {
                 updateIsSavedStatus(true)
                 updateSuccessDialogVisibility(true)
             }
         }
 
-        is ApiResponse.ApiError -> WarningDialog(
-            icon = CustomIcon.Vector(Icons.Default.Error),
-            message = (saveBookInBoxResponse as ApiResponse.ApiError).message,
-            showDialog = true,
-            positiveButtonTitle = "try again",
-            onPositiveButtonClick = bookInBoxViewModel::saveBookInBox
-        )
+        is ApiResponse.ApiError -> {
+            shouldShowWarningDialog = true
+            errorMessage = (saveBookInBoxResponse as ApiResponse.ApiError).message
 
-        is ApiResponse.AuthorizationError -> bookInBoxViewModel.shouldShowAuthorizationFailedDialog(
-            true
-        )
+        }
 
-        else -> {}
+        is ApiResponse.AuthorizationError -> {
+            shouldShowWarningDialog = false
+            bookInBoxViewModel.shouldShowAuthorizationFailedDialog(
+                true
+            )
+        }
+
+        else -> {
+            shouldShowWarningDialog = false
+        }
     }
 
+
+    if (shouldShowWarningDialog) {
+        WarningDialog(
+            attemptAccount = attemptCount,
+            message = errorMessage,
+            onProcess = {
+                attemptCount++
+                bookInBoxViewModel.saveBookInBox()
+            }, onDismiss = { attemptCount = 0})
+    }
     BaseSaveScreen(
         isError = scannedItemList.isEmpty(),
         isUsCase = bookInBoxUiState.issuerUser == null,
