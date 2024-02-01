@@ -163,22 +163,22 @@ fun WarningDialog(
                         }
 
                         Row(modifier = Modifier.align(Alignment.End)) {
-                            // TODO adjust show and hide according to business requirement
-                            TextButton(onClick = {
-                                showDialog = false
-                                onProcess()
-                            }) {
-                                Text(text = "try again".uppercase())
-                            }
+                            if (attemptAccount <= 3){
+                                TextButton(onClick = {
+                                    showDialog = false
+                                    onProcess()
+                                }) {
+                                    Text(text = "try again".uppercase())
+                                }
+                            }else{
+                                TextButton(onClick = {
+                                    showDialog = false
+                                    onDismiss()
+                                }) {
+                                    Text(text = "Ok".uppercase())
+                                }
 
-                          if (attemptAccount > 3) {
-                              TextButton(onClick = {
-                                  showDialog = false
-                                  onDismiss()
-                              }) {
-                                  Text(text = "Cancel".uppercase())
-                              }
-                          }
+                            }
                         }
                     }
                 }
