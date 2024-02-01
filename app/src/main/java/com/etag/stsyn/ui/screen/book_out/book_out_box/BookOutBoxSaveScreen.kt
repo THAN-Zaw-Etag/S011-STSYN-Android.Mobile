@@ -38,8 +38,8 @@ fun BookOutBoxSaveScreen(
         showError = bookOutBoxUiState.errorMessage == null
     }
 
-    LaunchedEffect(boxUiState.scannedBox,scannedItemList) {
-        if (boxUiState.scannedBox == null) bookOutBoxViewModel.updateBookOutBoxErrorMessage("Please scan a box tag first!")
+    LaunchedEffect(boxUiState.scannedBox,scannedItemList,Unit) {
+        if (boxUiState.scannedBox.epc.isEmpty()) bookOutBoxViewModel.updateBookOutBoxErrorMessage("Please scan a box tag first!")
         else if (scannedItemList.isEmpty()) bookOutBoxViewModel.updateBookOutBoxErrorMessage("Pleas read an item first!")
         else bookOutBoxViewModel.updateBookOutBoxErrorMessage(null)
     }
@@ -52,7 +52,11 @@ fun BookOutBoxSaveScreen(
         onPositiveButtonClick = {}
     )
 
-    BaseSaveScreen(isError = showError, onSave = bookOutBoxViewModel::saveBookOutBoxItems) {
+    BaseSaveScreen(
+        isError = bookOutBoxUiState.errorMessage != null,
+        errorMessage = bookOutBoxUiState.errorMessage ?: "",
+        onSave = bookOutBoxViewModel::saveBookOutBoxItems
+    ) {
         Column(
             modifier = modifier.fillMaxSize()
         ) {
@@ -64,7 +68,7 @@ fun BookOutBoxSaveScreen(
                     items = Purpose.entries.map { it.toString() },
                     defaultValue = "Choose a purpose",
                     onSelected = { item ->
-
+                        bookOutBoxViewModel.updatePurpose(item)
                     }
                 )
             }

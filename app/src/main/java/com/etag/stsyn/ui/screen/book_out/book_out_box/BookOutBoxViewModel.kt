@@ -4,19 +4,25 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
+import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.screen.book_in.book_in_box.BoxUiState
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.DateUtil
+import com.tzh.retrofit_module.util.isBefore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import javax.inject.Inject
 
 @HiltViewModel
@@ -83,12 +89,54 @@ class BookOutBoxViewModel @Inject constructor(
         }
     }
 
+    fun updateLocation (location: String) {
+        _bookOutBoxUiState.update { it.copy(location = location) }
+    }
+
+    fun saveBookOutBoxRequest() {
+        viewModelScope.launch {
+            val scannedBox = boxUiState.value.scannedBox
+            val purpose = bookOutBoxUiState.value.purpose
+            val needLocation = settings.first().needLocation
+            val location = bookOutBoxUiState.value.location
+            val currentDate = DateUtil.getCurrentDate()
+
+            if (scannedBox.calDate.isNotEmpty() && scannedBox.calDate != Instant.MIN.toString()) {
+                if (scannedBox.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
+                    updateBookOutBoxErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
+                    return@launch
+                } else updateBookOutBoxErrorMessage(null)
+            }
+
+            if (needLocation) {
+                if (location.isEmpty() && purpose.isEmpty()) {
+                    updateBookOutBoxErrorMessage("Please Key In Location!")
+                    return@launch
+                }else updateBookOutBoxErrorMessage(null)
+            }
+
+            boxUiState.value.allItemsOfBox.forEach {box ->
+                if (box.calDate.isNotEmpty() && box.calDate != Instant.MIN.toString()) {
+                    if (box.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
+                        updateBookOutBoxErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
+                    }
+                }
+            }
+        }
+    }
+
     fun refreshScannedBox() {
         viewModelScope.launch {
             scannedItemList.update { emptyList() }
             _boxUiState.update {
                 it.copy(scannedBox = BoxItem(), allBoxes = emptyList(), allItemsOfBox = mutableListOf())
             }
+        }
+    }
+
+    fun updatePurpose (purpose: String) {
+        viewModelScope.launch {
+            _bookOutBoxUiState.update { it.copy(purpose = purpose) }
         }
     }
 
@@ -127,6 +175,8 @@ class BookOutBoxViewModel @Inject constructor(
 
     data class BookOutBoxUiState(
         val errorMessage: String? = null,
+        val purpose: String = "",
+        val location: String = ""
     )
 
 }
