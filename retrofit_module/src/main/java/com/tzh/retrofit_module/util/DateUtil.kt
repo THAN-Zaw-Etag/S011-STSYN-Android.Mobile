@@ -35,10 +35,10 @@ object DateUtil {
 }
 
 fun String.isBefore(date: String): Boolean {
-    val date1 = LocalDateTime.parse(this, FORMATTER)
-    val date2 = LocalDateTime.parse(date, FORMATTER)
+    /*val date1 = LocalDateTime.parse(this, FORMATTER)
+    val date2 = LocalDateTime.parse(date, FORMATTER)*/
 
-    val comparison = date1.compareTo(date2)
+    val comparison = this.compareTo(date)
 
     return comparison < 0
 }

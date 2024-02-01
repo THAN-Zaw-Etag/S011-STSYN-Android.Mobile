@@ -196,6 +196,10 @@ abstract class BaseViewModel(
         onReceivedTagId(tagData.get(0).tagID)
     }
 
+    fun updateEvent(event: UiEvent) {
+        _detailUiState.update { it.copy(event = event) }
+    }
+
     override fun handleReaderConnected(isConnected: Boolean) {
         updateIsConnectedStatus(isConnected)
         if (isConnected) getReaderBatteryLevel()
@@ -209,6 +213,7 @@ abstract class BaseViewModel(
         val showLoadingDialog: Boolean = false,
         val showSuccessDialog: Boolean = false,
         val isSaved: Boolean = false,
+        val event: UiEvent? = null,
         val message: String = ""
     )
 
@@ -226,4 +231,8 @@ abstract class BaseViewModel(
     enum class ScanType {
         Single, Multi
     }
+
+}
+sealed class UiEvent {
+    object ClickAfterSave : UiEvent()
 }

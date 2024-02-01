@@ -51,17 +51,12 @@ fun ScannedBoxItem(
                 text = boxTitle,
                 color = Color.Gray
             )
-            AnimatedVisibility(
-                modifier = Modifier,
-                visible = boxDescription.isNotEmpty() && showRefreshIcon
-            ) {
-                IconButton(onClick = onRefresh) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        tint = Color.Gray,
-                        contentDescription = null
-                    )
-                }
+            IconButton(onClick = onRefresh) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    tint = if(boxDescription.isNotEmpty() && showRefreshIcon) Color.Gray else Color.Transparent,
+                    contentDescription = null
+                )
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
