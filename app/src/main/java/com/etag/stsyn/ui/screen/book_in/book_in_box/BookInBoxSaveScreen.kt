@@ -112,7 +112,7 @@ fun BookInBoxSaveScreen(
             Text(text = "${user.name}-${user.userId}")
         }
 
-        if (true) { //TODO replace true with bookInBoxUiState.isUsCase
+        if (bookInBoxUiState.isUsCase) { //TODO replace true with bookInBoxUiState.isUsCase
             SaveItemLayout(icon = Icons.Default.People,
                 itemTitle = "Buddy",
                 showRefreshIcon = shouldShowRefreshIcon,

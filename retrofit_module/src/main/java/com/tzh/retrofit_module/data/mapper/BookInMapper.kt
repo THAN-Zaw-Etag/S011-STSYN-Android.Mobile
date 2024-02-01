@@ -63,6 +63,34 @@ fun List<BoxItem>.toItemMovementLogs(
     }
 }
 
+fun BoxItem.toBookOutBoxItemMovementLogs(
+    itemStatus: String,
+    workLocation: String,
+    issuerId: String,
+    date: String,
+    readerId: String,
+    visualChecked: Boolean,
+
+): ItemMovementLog {
+    return ItemMovementLog(
+            itemId = this.id.toInt(),
+            description = this.description,
+            itemStatus = itemStatus,
+            workLoc = workLocation,
+            issuerId = issuerId.toInt(),
+            receiverId = this.receiverId.toInt(),
+            approverId = 0,
+            date = date,
+            handheldReaderId = readerId.toInt(),
+            calDate = this.calDate, //TODO it.calDate
+            iS_ONSITE_TRANSFER = "0",
+            remarks = if (visualChecked) "Visual Check" else "",
+            receiverName = "",
+            buddyId = "0",
+            itemType = this.itemType
+        )
+}
+
 
 /**
  * For Book in box

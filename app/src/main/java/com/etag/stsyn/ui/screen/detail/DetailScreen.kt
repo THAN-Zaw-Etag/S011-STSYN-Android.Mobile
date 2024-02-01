@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.ReaderLifeCycle
+import com.etag.stsyn.core.UiEvent
 import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.AuthorizationTokenExpiredDialog
 import com.etag.stsyn.ui.components.ConfirmationDialog
@@ -113,20 +114,8 @@ fun DetailScreen(
 
     // show success dialog when saving items is done
     SuccessDialog(showDialog = showSuccessDialog, title = "SUCCESS!", onDoneClick = {
-        when (viewModel) {
-            is BookInViewModel -> {
-                scope.launch { pagerState.animateScrollToPage(0) }
-                viewModel.apply {
-                    doTasksAfterSavingItems()
-                }
-            }
-            is BookInBoxViewModel -> {
-                scope.launch { pagerState.animateScrollToPage(0) }
-                viewModel.apply {
-                    doTasksAfterSavingItems()
-                }
-            }
-        }
+        scope.launch { pagerState.animateScrollToPage(0) }
+        viewModel.updateEvent(UiEvent.ClickAfterSave)
     })
 
     LaunchedEffect(pagerState.currentPage) {

@@ -168,6 +168,6 @@ class BookOutViewModel @Inject constructor(
         val purpose: String = "",
         val location: String = "",
         val errorMessage: String? = null,
-        val scannedItems: List<BoxItem> = listOf(BoxItem())
+        val scannedItems: List<BoxItem> = emptyList()
     )
 }

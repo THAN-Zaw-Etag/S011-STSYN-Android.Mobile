@@ -2,10 +2,12 @@ package com.tzh.retrofit_module.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
 object DateUtil {
     fun getCurrentFormattedDate(): String {
         val calendar = Calendar.getInstance()
@@ -23,10 +25,24 @@ object DateUtil {
 
     fun getCurrentDate(): String {
         val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
 
-        val formattedDateTime = currentDateTime.format(formatter)
+        val formattedDateTime = currentDateTime.format(FORMATTER)
 
         return formattedDateTime
     }
+
+
+}
+
+fun String.isBefore(date: String): Boolean {
+    /*val date1 = LocalDateTime.parse(this, FORMATTER)
+    val date2 = LocalDateTime.parse(date, FORMATTER)*/
+
+    val comparison = this.compareTo(date)
+
+    return comparison < 0
+}
+
+fun main() {
+    println(Instant.MIN)
 }

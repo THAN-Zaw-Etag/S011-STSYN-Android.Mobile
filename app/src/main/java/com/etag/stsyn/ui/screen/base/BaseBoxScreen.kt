@@ -305,7 +305,7 @@ private fun BoxScanSection(
                 .fillMaxHeight()
                 .weight(0.3f)
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         ScannedBoxItem(
             boxTitle = "Description",
             boxDescription = boxDescription,
