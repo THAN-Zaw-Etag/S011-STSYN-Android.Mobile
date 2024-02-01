@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,8 +32,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun CheckInOutScreen(
-    onsiteCheckInOutViewModel: OnsiteCheckInOutViewModel,
-    modifier: Modifier = Modifier
+    onsiteCheckInOutViewModel: OnsiteCheckInOutViewModel, modifier: Modifier = Modifier
 ) {
     val TAG = "CheckInOutScreen" //TODO might delete later
 
@@ -49,26 +47,30 @@ fun CheckInOutScreen(
     val listState = rememberLazyListState()
 
     when (getItemsForOnsiteResponse) {
-        is ApiResponse.Loading -> LoadingDialog(
-            title = "Loading...",
+        is ApiResponse.Loading -> LoadingDialog(title = "Loading...",
             showDialog = true,
             onDismiss = { /*TODO*/ })
-        is ApiResponse.Success -> {showErrorDialog = false}
+
+        is ApiResponse.Success -> {
+            showErrorDialog = false
+        }
+
         is ApiResponse.ApiError -> {
             attemptCount++
             showErrorDialog = true
             errorMessage = (getItemsForOnsiteResponse as ApiResponse.ApiError).message
         }
+
         is ApiResponse.AuthorizationError -> {
             showErrorDialog = false
             onsiteCheckInOutViewModel.shouldShowAuthorizationFailedDialog(true)
         }
+
         else -> showErrorDialog = false
     }
 
-    WarningDialog(
-        icon = CustomIcon.Vector(Icons.Default.Error),
-        message = if(attemptCount >= 3) "You've tried many times. Check your connection and try again." else errorMessage,
+    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
+        message = if (attemptCount >= 3) "You've tried many times. Check your connection and try again." else errorMessage,
         showDialog = showErrorDialog,
         positiveButtonTitle = "try again",
         onPositiveButtonClick = {
@@ -76,16 +78,14 @@ fun CheckInOutScreen(
                 attemptCount = 0
                 // handle something
             } else onsiteCheckInOutViewModel.getAllItemsForOnsite()
-        }
-    )
+        })
 
-    WarningDialog(
-        icon = CustomIcon.Vector(Icons.Default.Error),
+    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
         message = "All items must be from same user",
         color = errorColor,
-        showDialog = onsiteCheckInOutUiState.shouldShowWarningDialog, positiveButtonTitle = "Ok" ,
-        onPositiveButtonClick = {onsiteCheckInOutViewModel.updateWarningDialogVisibility(false)}
-    )
+        showDialog = onsiteCheckInOutUiState.shouldShowWarningDialog,
+        positiveButtonTitle = "Ok",
+        onPositiveButtonClick = { onsiteCheckInOutViewModel.updateWarningDialogVisibility(false) })
 
     LaunchedEffect(scannedItemList) {
         if (scannedItemList.size > 1) listState.animateScrollToItem(scannedItemList.size - 1)
@@ -98,8 +98,7 @@ fun CheckInOutScreen(
                 .padding(horizontal = 16.dp),
             text = "Note: Issuer and receiver must be from the same flight"
         )
-        BaseScanScreen(
-            scannedItemCount = scannedItemList.size,
+        BaseScanScreen(scannedItemCount = scannedItemList.size,
             onScan = { onsiteCheckInOutViewModel.toggle() },
             isScanning = rfidUiState.isScanning,
             onClear = { onsiteCheckInOutViewModel.removeAllScannedItems() }) {
@@ -110,13 +109,11 @@ fun CheckInOutScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(onsiteCheckInOutUiState.allItemsForOnsite.filter { it.epc in scannedItemList }) {
-                    key (it.epc){
-                        ScannedItem(
-                            id = "${it.id} - ${it.partNo}",
+                    key(it.epc) {
+                        ScannedItem(id = "${it.id} - ${it.partNo}",
                             isSwipeable = true,
                             name = it.description,
-                            onSwipeToDismiss = {onsiteCheckInOutViewModel.removeScannedItem(it.epc)}
-                        )
+                            onSwipeToDismiss = { onsiteCheckInOutViewModel.removeScannedItem(it.epc) })
                     }
                 }
             }
