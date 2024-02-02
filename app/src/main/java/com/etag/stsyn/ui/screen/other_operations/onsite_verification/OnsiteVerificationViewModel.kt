@@ -4,10 +4,6 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.tzh.retrofit_module.data.local_storage.LocalDataStore
-import com.tzh.retrofit_module.data.settings.AppConfiguration
-import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
-import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookOut.ItemWhereNotInResponse
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
@@ -48,22 +44,34 @@ class OnsiteVerificationViewModel @Inject constructor(
     private val _currentScannedItem = MutableStateFlow<BoxItem?>(null)
     val currentScannedItem: StateFlow<BoxItem?> = _currentScannedItem.asStateFlow()
 
+    private val _scannedItemIndex = MutableStateFlow(-1)
+    val scannedItemIndex: StateFlow<Int> = _scannedItemIndex.asStateFlow()
 
     override fun onReceivedTagId(id: String) {
-        addScanItemToUiState("455341483030303030303036")
+      //  addScanItemToUiState("455341483030303030303036")
     }
 
-    fun test() {
+    fun onReceivedTagIdTest() {
         val dummyEpc = listOf<String>(
             "020200000112",
             "020200000111",
             "4553413030303030303032",
             "020200000113",
             "020200000110",
-            "455341483030303030303133"
+            "455341483030303030303133",
+            "020200001762",
+            "020200004389",
+            "020200002389",
+            "020200004055",
+            "020200004058",
+            "020200004107",
+            "020200002349",
+            "020200002351",
+            "020200004665",
+            "020200004667",
+            "020200004669"
         )
         updateScannedStatus(dummyEpc.random())
-
         addScannedItem(dummyEpc.random())
 
 
@@ -112,7 +120,6 @@ class OnsiteVerificationViewModel @Inject constructor(
                     if (!hasExisted) {
                         if (scannedItem != null) {
                             currentItems.add(scannedItem)
-                            _currentScannedItem.value = scannedItem
                             _scannedItems.update {
                                 it + scannedItem
                             }
@@ -123,6 +130,23 @@ class OnsiteVerificationViewModel @Inject constructor(
                 }
             }
         }
+    }
+    fun updateScannedStatus(epc: String) {
+        val items = onsiteVerificationUiState.value.allItemsFromApi.toMutableList()
+        val index = items.indexOfFirst { it.epc == epc }
+        if (index != -1) {
+            _scannedItemIndex.value = index
+            _currentScannedItem.value = items[index]
+            items[index].isScanned =  !items[index].isScanned
+        }
+        Log.d(TAG, "updateScannedStatus: $index")
+    }
+
+    fun resetCurrentScannedItem() {
+        _currentScannedItem.value = null
+        _scannedItemIndex.value = -1
+        removeAllScannedItems()
+        removeAllOutstandingItems()
     }
 
     fun removeScannedBookInItem(currentItem: BoxItem) {
@@ -140,9 +164,13 @@ class OnsiteVerificationViewModel @Inject constructor(
         }
     }
 
-    fun removeAllScannedItems() {
+    private fun removeAllScannedItems() {
         _scannedItems.value = emptyList()
         addOutstandingItem()
+    }
+
+    private fun removeAllOutstandingItems() {
+        _outstandingItems.value = emptyList()
     }
 
     private fun addScanItemToUiState(id: String) {
@@ -158,14 +186,7 @@ class OnsiteVerificationViewModel @Inject constructor(
         }
     }
 
-    fun updateScannedStatus(epc: String) {
-        val items = onsiteVerificationUiState.value.allItemsFromApi.toMutableList()
-        val index = items.indexOfFirst { it.epc == epc }
-        if (index != -1) {
-            items[index].isScanned = true
-        }
-        Log.d(TAG, "updateScannedStatus: $index")
-    }
+
 
     fun removeItemFromReader(index: Int) {
         val items = onsiteVerificationUiState.value.itemsFromReader.toMutableList()
