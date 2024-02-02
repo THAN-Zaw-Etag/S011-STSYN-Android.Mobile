@@ -3,12 +3,11 @@ package com.etag.stsyn.ui.screen.book_out.book_out_box
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
-import com.etag.stsyn.core.UiEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.screen.book_in.book_in_box.BoxUiState
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
-import com.tzh.retrofit_module.data.mapper.toBookOutBoxItemMovementLogs
+import com.tzh.retrofit_module.data.mapper.toBookOutBoxItemMovementLog
 import com.tzh.retrofit_module.data.model.book_in.ItemMovementLog
 import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
@@ -25,7 +24,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -66,13 +64,13 @@ class BookOutBoxViewModel @Inject constructor(
             }
 
             launch {
-                detailUiState.collect {
+                /*detailUiState.collect {
                     Log.d(TAG, "UiEvent: ${it.event}")
                     when (it.event) {
                         is UiEvent.ClickAfterSave -> doTasksAfterSavingItems()
                         else -> {}
                     }
-                }
+                }*/
             }
         }
     }
@@ -169,7 +167,7 @@ class BookOutBoxViewModel @Inject constructor(
             // add scanned items
             itemMovementLogs.addAll(boxUiState.value.allItemsOfBox.filter { it.epc in scannedItemList.value }
                 .map {
-                    it.toBookOutBoxItemMovementLogs(
+                    it.toBookOutBoxItemMovementLog(
                         readerId = settings.first().handheldReaderId,
                         date = currentDate,
                         issuerId = user.first().userId,
@@ -182,7 +180,7 @@ class BookOutBoxViewModel @Inject constructor(
             // add outstanding items
             itemMovementLogs.addAll(boxUiState.value.allItemsOfBox.filter { it.epc !in scannedItemList.value }
                 .map {
-                    it.toBookOutBoxItemMovementLogs(
+                    it.toBookOutBoxItemMovementLog(
                         readerId = settings.first().handheldReaderId,
                         date = currentDate,
                         issuerId = user.first().userId,
@@ -194,7 +192,7 @@ class BookOutBoxViewModel @Inject constructor(
 
             if (boxUiState.value.allItemsOfBox.find { it.epc == scannedBox.epc } == null) {
                 itemMovementLogs.add(
-                    scannedBox.toBookOutBoxItemMovementLogs(
+                    scannedBox.toBookOutBoxItemMovementLog(
                         readerId = settings.first().handheldReaderId,
                         date = currentDate,
                         issuerId = user.first().userId,

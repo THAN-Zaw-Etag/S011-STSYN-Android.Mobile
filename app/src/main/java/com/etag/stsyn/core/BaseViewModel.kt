@@ -7,8 +7,11 @@ import com.etag.stsyn.core.reader.RfidResponseHandlerInterface
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.zebra.rfid.api3.TagData
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,8 +28,10 @@ abstract class BaseViewModel(
     val detailUiState: StateFlow<DetailUiState> = _detailUiState.asStateFlow()
 
     private val _showAuthorizationFailedDialog = MutableStateFlow(false)
-    val showAuthorizationFailedDialog: StateFlow<Boolean> =
-        _showAuthorizationFailedDialog.asStateFlow()
+    val showAuthorizationFailedDialog: StateFlow<Boolean> = _showAuthorizationFailedDialog.asStateFlow()
+
+    private val _eventFlow = MutableSharedFlow<UiEvent>()
+    val eventFlow: SharedFlow<UiEvent> = _eventFlow.asSharedFlow()
 
     private var reconnectingJob: Job? = null
 
@@ -72,7 +77,6 @@ abstract class BaseViewModel(
     }
 
     fun removeScannedItems() {
-        //_scannedItems.value = mutableListOf()
 
         _rfidUiState.update {
             it.copy(scannedItems = mutableListOf())
@@ -182,12 +186,6 @@ abstract class BaseViewModel(
         )
     }
 
-    private fun updateSingleScannedItem(itemId: String) {
-        _rfidUiState.update {
-            it.copy(singleScannedItem = itemId)
-        }
-    }
-
     abstract fun onReceivedTagId(id: String)
     override fun handleTagData(tagData: Array<TagData>) {
         if (_rfidUiState.value.scanType == ScanType.Single) {
@@ -197,7 +195,9 @@ abstract class BaseViewModel(
     }
 
     fun updateEvent(event: UiEvent) {
-        _detailUiState.update { it.copy(event = event) }
+        viewModelScope.launch {
+            _eventFlow.emit(event)
+        }
     }
 
     override fun handleReaderConnected(isConnected: Boolean) {
@@ -213,7 +213,6 @@ abstract class BaseViewModel(
         val showLoadingDialog: Boolean = false,
         val showSuccessDialog: Boolean = false,
         val isSaved: Boolean = false,
-        val event: UiEvent? = null,
         val message: String = ""
     )
 
@@ -235,4 +234,5 @@ abstract class BaseViewModel(
 }
 sealed class UiEvent {
     object ClickAfterSave : UiEvent()
+    object Default: UiEvent()
 }

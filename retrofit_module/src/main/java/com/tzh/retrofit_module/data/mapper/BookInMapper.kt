@@ -63,7 +63,7 @@ fun List<BoxItem>.toItemMovementLogs(
     }
 }
 
-fun BoxItem.toBookOutBoxItemMovementLogs(
+fun BoxItem.toBookOutBoxItemMovementLog(
     itemStatus: String,
     workLocation: String,
     issuerId: String,
