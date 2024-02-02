@@ -22,3 +22,4 @@ const val AUTHORIZATION_FAILED_MESSAGE =
 
 const val GET_USER_BY_EPC_ROUTE = "User/GetUserByEPC"
 const val GET_ISSUER_BY_EPC = "User/GetUserNotIssuerByEPC"
+const val SELECT_ITEM_WHERE_NOT_In = "BookInOut/SelectItemWhereAllNotIn"

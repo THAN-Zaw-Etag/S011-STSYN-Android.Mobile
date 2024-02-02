@@ -11,6 +11,7 @@ import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
+import com.tzh.retrofit_module.domain.model.bookOut.ItemWhereNotInResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.user.GetIssuerUserResponse
@@ -29,6 +30,7 @@ import com.tzh.retrofit_module.util.LOGIN_ROUTE
 import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.SELECT_BOX_FOR_BOOK_IN_ROUTE
+import com.tzh.retrofit_module.util.SELECT_ITEM_WHERE_NOT_In
 import com.tzh.retrofit_module.util.UPDATE_PASSWORD_ROUTE
 import retrofit2.Response
 import retrofit2.http.Body
@@ -110,5 +112,14 @@ interface ApiService {
         @Query("epc") epc: String,
         @Query("loginUserId") loginUserId: String,
     ): Response<GetIssuerUserResponse>
+
+
+
+    @GET(SELECT_ITEM_WHERE_NOT_In)
+    suspend fun getAllNotInItems(
+        @Query("Store") store: String,
+        @Query("CsNo") csNo: String,
+        @Query("LoginUserId") loginUserId: String,
+    ): Response<ItemWhereNotInResponse>
 
 }

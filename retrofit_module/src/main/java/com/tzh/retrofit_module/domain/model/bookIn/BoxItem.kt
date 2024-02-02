@@ -53,5 +53,6 @@ data class BoxItem(
     val unitId: String = "",
     val updatedVersion: String = "",
     val vendor: String = "",
-    val workLocation: String = ""
+    val workLocation: String = "",
+    var isScanned:Boolean = false
 )
