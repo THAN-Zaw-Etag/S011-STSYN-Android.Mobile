@@ -30,6 +30,7 @@ import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
 import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_BOOK_IN_ROUTE
+import com.tzh.retrofit_module.util.SAVE_ONSITE_CHECK_IN_OUT_IN_ROUTE
 import com.tzh.retrofit_module.util.SELECT_BOX_FOR_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.UPDATE_PASSWORD_ROUTE
 import retrofit2.Response
@@ -70,6 +71,7 @@ interface ApiService {
     suspend fun getUserAccessRightsByRoleId(
         @Query("roleId") id: String
     ): Response<UserMenuAccessRightsByIdResponse>
+
     @GET(SELECT_BOX_FOR_BOOK_IN_ROUTE)
     suspend fun getBoxItemsForBookIn(
         @Query("issuerId") issuerId: String
@@ -119,4 +121,9 @@ interface ApiService {
         @Query("Store") store: String,
         @Query("CsNo") csNo: String
     ): Response<GetItemsForOnsiteResponse>
+
+    @POST(SAVE_ONSITE_CHECK_IN_OUT_IN_ROUTE)
+    suspend fun saveOnsiteCheckInOut(
+        @Body saveBookInRequest: SaveBookInRequest
+    ): Response<NormalResponse>
 }

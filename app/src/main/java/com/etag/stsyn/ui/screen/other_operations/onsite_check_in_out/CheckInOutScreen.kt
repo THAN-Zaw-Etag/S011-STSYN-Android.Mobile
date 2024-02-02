@@ -64,7 +64,6 @@ fun CheckInOutScreen(
         }
 
         is ApiResponse.ApiError -> {
-            attemptCount++
             showErrorDialog = true
             errorMessage = (getItemsForOnsiteResponse as ApiResponse.ApiError).message
         }
@@ -77,17 +76,21 @@ fun CheckInOutScreen(
         else -> showErrorDialog = false
     }
 
+    // show this dialog when api error occurs
     WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
         message = if (attemptCount >= 3) "You've tried many times. Check your connection and try again." else errorMessage,
         showDialog = showErrorDialog,
         positiveButtonTitle = "try again",
         onPositiveButtonClick = {
+            attemptCount++
+
             if (attemptCount >= 3) {
                 attemptCount = 0
                 // handle something
             } else onsiteCheckInOutViewModel.getAllItemsForOnsite()
         })
 
+    // show this dialog when reader error occurs
     WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
         message = "All items must be from same user",
         color = errorColor,

@@ -1,9 +1,11 @@
 package com.tzh.retrofit_module.data.repository
 
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
+import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.network.ApiResponseHandler
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.settings.AppConfiguration
+import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.onsiteCheckInOut.GetItemsForOnsiteResponse
 import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.repository.CheckIn.CheckInOutRepository
@@ -27,6 +29,12 @@ class CheckInOutRepositoryImpl @Inject constructor(
     override suspend fun getReceiverByEpc(epc: String): ApiResponse<GetUserByEPCResponse> {
         return ApiResponseHandler.processResponse {
             apiService.getUserByEPC(epc)
+        }
+    }
+
+    override suspend fun saveOnsiteCheckInOut(bookInRequest: SaveBookInRequest): ApiResponse<NormalResponse> {
+        return ApiResponseHandler.processResponse {
+            apiService.saveBookIn(bookInRequest)
         }
     }
 }
