@@ -13,5 +13,5 @@ interface BookOutRepository {
     suspend fun getAllBookOutBoxes(): ApiResponse<GetAllBookOutBoxesResponse>
     suspend fun getAllItemsInBookOutBox(box: String): ApiResponse<GetAllItemsOfBoxResponse>
     suspend fun saveBookOutItems(saveBookInRequest: SaveBookInRequest): ApiResponse<NormalResponse>
-    suspend fun getAllNotInItems(): ApiResponse<ItemWhereNotInResponse>
+    suspend fun getOnSiteVerifyItem(): ApiResponse<ItemWhereNotInResponse>
 }

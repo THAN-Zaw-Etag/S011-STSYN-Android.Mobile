@@ -14,10 +14,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,8 +27,6 @@ import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.BottomSheetContent
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
-import com.etag.stsyn.util.datasource.DataSource
-import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.launch
@@ -42,8 +38,8 @@ fun OnsiteVerificationCountScreen(
     modifier: Modifier = Modifier
 ) {
 
-    val scannedItems by onsiteVerificationViewModel.scannedItems.collectAsState()
-    val itemsResponse by onsiteVerificationViewModel.getItemsWhereNotIn.collectAsState()
+    val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
+    val itemsResponse by onsiteVerificationViewModel.getOnSiteVerifyItems.collectAsState()
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
     var items by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
 

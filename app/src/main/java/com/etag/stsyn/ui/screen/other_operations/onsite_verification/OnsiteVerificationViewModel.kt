@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.other_operations.onsite_verification
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -24,10 +23,10 @@ class OnsiteVerificationViewModel @Inject constructor(
 ) : BaseViewModel(rfidHandler) {
     val TAG = "OnsiteVerificationViewModel"
 
-    private val _getItemsWhereNotIn =
+    private val _getOnSiteVerifyItems =
         MutableStateFlow<ApiResponse<ItemWhereNotInResponse>>(ApiResponse.Default)
-    val getItemsWhereNotIn: StateFlow<ApiResponse<ItemWhereNotInResponse>> =
-        _getItemsWhereNotIn.asStateFlow()
+    val getOnSiteVerifyItems: StateFlow<ApiResponse<ItemWhereNotInResponse>> =
+        _getOnSiteVerifyItems.asStateFlow()
 
 
     private val _onsiteVerificationUiState = MutableStateFlow(OnsiteVerificationUiState())
@@ -35,8 +34,8 @@ class OnsiteVerificationViewModel @Inject constructor(
         _onsiteVerificationUiState.asStateFlow()
 
 
-    private val _scannedItems = MutableStateFlow<List<BoxItem?>>(emptyList())
-    val scannedItems: StateFlow<List<BoxItem?>> = _scannedItems.asStateFlow()
+    private val _totalScannedItems = MutableStateFlow<List<BoxItem?>>(emptyList())
+    val totalScannedItems: StateFlow<List<BoxItem?>> = _totalScannedItems.asStateFlow()
 
     private val _outstandingItems = MutableStateFlow<List<BoxItem?>>(emptyList())
     val outstandingItems: StateFlow<List<BoxItem?>> = _outstandingItems.asStateFlow()
@@ -71,26 +70,27 @@ class OnsiteVerificationViewModel @Inject constructor(
             "020200004667",
             "020200004669"
         )
-        updateScannedStatus(dummyEpc.random())
         addScannedItem(dummyEpc.random())
 
 
     }
 
-    fun getItemsWhereNotIn() {
+    fun getOnSiteVerifyItems() {
         viewModelScope.launch {
-            _getItemsWhereNotIn.value = ApiResponse.Loading
+            _getOnSiteVerifyItems.value = ApiResponse.Loading
             delay(1000)
-            _getItemsWhereNotIn.value = bookOutRepository.getAllNotInItems()
+            _getOnSiteVerifyItems.value = bookOutRepository.getOnSiteVerifyItem()
 
-            shouldShowAuthorizationFailedDialog(_getItemsWhereNotIn.value is ApiResponse.AuthorizationError)
-            when (_getItemsWhereNotIn.value) {
-
+            shouldShowAuthorizationFailedDialog(_getOnSiteVerifyItems.value is ApiResponse.AuthorizationError)
+            when (_getOnSiteVerifyItems.value) {
                 is ApiResponse.Success -> {
-                    val items = (_getItemsWhereNotIn.value as ApiResponse.Success).data?.items
+                    val items = (_getOnSiteVerifyItems.value as ApiResponse.Success).data?.items
                         ?: emptyList()
                     _onsiteVerificationUiState.update {
                         it.copy(allItemsFromApi = items)
+                    }
+                    _outstandingItems.update {
+                        items
                     }
 
                 }
@@ -98,49 +98,48 @@ class OnsiteVerificationViewModel @Inject constructor(
 
                 is ApiResponse.ApiError -> {
                     _onsiteVerificationUiState.value =
-                        OnsiteVerificationUiState(errorMessage = (_getItemsWhereNotIn.value as ApiResponse.ApiError).message)
+                        OnsiteVerificationUiState(errorMessage = (_getOnSiteVerifyItems.value as ApiResponse.ApiError).message)
                 }
 
                 else -> {}
             }
         }
     }
-
     private fun addScannedItem(id: String) {
         viewModelScope.launch {
-            if (_getItemsWhereNotIn.value is ApiResponse.Success) {
-                val bookInItems =
-                    (_getItemsWhereNotIn.value as ApiResponse.Success).data!!.items
+            val allExistingItems = _onsiteVerificationUiState.value.allItemsFromApi
+            val currentTotalScanItem = _totalScannedItems.value.toMutableList()
+            val hasExist = id in currentTotalScanItem.map { it?.epc }
 
-                val currentItems = _scannedItems.value.toMutableList()
-                val hasExisted = id in currentItems.map { it?.epc }
+            try {
+                val scannedItemResult = allExistingItems.find { it.epc == id}
+                /**Index for use current scanned item's background color*/
+                val index = allExistingItems.indexOfFirst { it.epc == id }
+                if(!hasExist){
+                    if(scannedItemResult !=null && index != -1){
+                        currentTotalScanItem.add(scannedItemResult)
+                        /**for use current scanned item's background color*/
+                        _scannedItemIndex.value = index
+                        _currentScannedItem.value = allExistingItems[index]
+                        allExistingItems[index].isScanned =true
 
-                try {
-                    val scannedItem = bookInItems.find { it.epc == id }
-                    if (!hasExisted) {
-                        if (scannedItem != null) {
-                            currentItems.add(scannedItem)
-                            _scannedItems.update {
-                                it + scannedItem
-                            }
+                        /*Optional for future*/
+                        _onsiteVerificationUiState.update {
+                            it.copy(itemsFromReader = it.itemsFromReader + scannedItemResult)
                         }
+
+                        _totalScannedItems.update {
+                            it + scannedItemResult
+                        }
+                        addOutstandingItem()
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
+            }catch (e:Exception){
+                e.printStackTrace()
             }
         }
     }
-    fun updateScannedStatus(epc: String) {
-        val items = onsiteVerificationUiState.value.allItemsFromApi.toMutableList()
-        val index = items.indexOfFirst { it.epc == epc }
-        if (index != -1) {
-            _scannedItemIndex.value = index
-            _currentScannedItem.value = items[index]
-            items[index].isScanned =  !items[index].isScanned
-        }
-        Log.d(TAG, "updateScannedStatus: $index")
-    }
+
 
     fun resetCurrentScannedItem() {
         _currentScannedItem.value = null
@@ -152,12 +151,12 @@ class OnsiteVerificationViewModel @Inject constructor(
     fun removeScannedBookInItem(currentItem: BoxItem) {
         viewModelScope.launch {
 
-            val currentList = _scannedItems.value
+            val currentList = _totalScannedItems.value
             val indexToRemove = currentList.indexOf(currentItem)
             val updatedList = currentList.toMutableList().apply {
                 removeAt(indexToRemove)
             }
-            _scannedItems.value = updatedList
+            _totalScannedItems.value = updatedList
 
             // update outstanding when scanned items change
             addOutstandingItem()
@@ -165,7 +164,7 @@ class OnsiteVerificationViewModel @Inject constructor(
     }
 
     private fun removeAllScannedItems() {
-        _scannedItems.value = emptyList()
+        _totalScannedItems.value = emptyList()
         addOutstandingItem()
     }
 
@@ -200,16 +199,12 @@ class OnsiteVerificationViewModel @Inject constructor(
         viewModelScope.launch {
             rfidUiState.collect {
                 if (!it.isScanning) {
-                    if (_getItemsWhereNotIn.value is ApiResponse.Success) {
-                        val bookInItems =
-                            (_getItemsWhereNotIn.value as ApiResponse.Success).data!!.items.toMutableList()
-
-                        _scannedItems.collect { items ->
-                            items.forEach { bookInItem ->
-                                bookInItems.remove(bookInItem)
-                            }
-                            _outstandingItems.update { bookInItems }
+                    val allExistingItems = _onsiteVerificationUiState.value.allItemsFromApi.toMutableList()
+                    _totalScannedItems.collect { items ->
+                        items.forEach { bookInItem ->
+                            allExistingItems.remove(bookInItem)
                         }
+                        _outstandingItems.update { allExistingItems }
                     }
                 }
             }
@@ -217,7 +212,7 @@ class OnsiteVerificationViewModel @Inject constructor(
     }
 
     init {
-        getItemsWhereNotIn()
+        getOnSiteVerifyItems()
         addOutstandingItem()
     }
 

@@ -45,12 +45,12 @@ class BookOutRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllNotInItems(): ApiResponse<ItemWhereNotInResponse> {
+    override suspend fun getOnSiteVerifyItem(): ApiResponse<ItemWhereNotInResponse> {
         val loginUserId = localDataStore.getUser.first().userId
 
         val settings = appConfiguration.appConfig.first()
         return ApiResponseHandler.processResponse {
-            apiService.getAllNotInItems(settings.store.name, settings.csNo, loginUserId)
+            apiService.getOnSiteVerifyItems(settings.store.name, settings.csNo, loginUserId)
         }
     }
 }

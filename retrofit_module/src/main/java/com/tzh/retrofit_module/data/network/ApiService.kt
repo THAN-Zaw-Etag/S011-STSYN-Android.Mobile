@@ -33,7 +33,7 @@ import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_ONSITE_CHECK_IN_OUT_IN_ROUTE
 import com.tzh.retrofit_module.util.SELECT_BOX_FOR_BOOK_IN_ROUTE
-import com.tzh.retrofit_module.util.SELECT_ITEM_WHERE_NOT_In
+import com.tzh.retrofit_module.util.SELECT_ONSITE_VERIFY_ITEMS
 import com.tzh.retrofit_module.util.UPDATE_PASSWORD_ROUTE
 import retrofit2.Response
 import retrofit2.http.Body
@@ -119,8 +119,8 @@ interface ApiService {
 
 
 
-    @GET(SELECT_ITEM_WHERE_NOT_In)
-    suspend fun getAllNotInItems(
+    @GET(SELECT_ONSITE_VERIFY_ITEMS)
+    suspend fun getOnSiteVerifyItems(
         @Query("Store") store: String,
         @Query("CsNo") csNo: String,
         @Query("LoginUserId") loginUserId: String,

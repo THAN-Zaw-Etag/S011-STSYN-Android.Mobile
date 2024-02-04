@@ -74,18 +74,16 @@ fun OnsiteVerifyScreen(
         )
     )
 
-    val testList = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
-
-
-    val scannedItems by onsiteVerificationViewModel.scannedItems.collectAsState()
+    val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
 
-    val getItemWhereNotInResponseStat by onsiteVerificationViewModel.getItemsWhereNotIn.collectAsState()
+    val getItemWhereNotInResponseStat by onsiteVerificationViewModel.getOnSiteVerifyItems.collectAsState()
     val onsiteVerificationUiState by onsiteVerificationViewModel.onsiteVerificationUiState.collectAsState()
 
     val currentScanItem by onsiteVerificationViewModel.currentScannedItem.collectAsState()
 
     val scannedItemIndex by onsiteVerificationViewModel.scannedItemIndex.collectAsState()
+
 
     var boxItemsFromApi by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
@@ -103,10 +101,6 @@ fun OnsiteVerifyScreen(
         mutableStateOf("")
     }
 
-    Log.d(
-        "@Hmntest",
-        "OnsiteVerifyScreen: getItemWhereNotInResponseStat: ${onsiteVerificationUiState.allItemsFromApi.size}"
-    )
 
     when (getItemWhereNotInResponseStat) {
         is ApiResponse.Loading -> {
@@ -149,7 +143,7 @@ fun OnsiteVerifyScreen(
             message = apiErrorMessage,
             onProcess = {
                 retryCount++
-                onsiteVerificationViewModel.getItemsWhereNotIn()
+                onsiteVerificationViewModel.getOnSiteVerifyItems()
             }, onDismiss = { retryCount = 0 })
     }
 
@@ -172,10 +166,14 @@ fun OnsiteVerifyScreen(
             )
             if (hasScanned) {
                 ScannedContent(
+                    onSwipeToDelete = {
+                        // It is not good for UX, Because it can just delete for Item from API
+                        //   onsiteVerificationViewModel.removeScannedBookInItem(it)
+                    },
                     listState = listState,
                     boxItem = boxItemsFromApi,
                     onReset = {
-                        onsiteVerificationViewModel.getItemsWhereNotIn()
+                        onsiteVerificationViewModel.getOnSiteVerifyItems()
                         onsiteVerificationViewModel.resetCurrentScannedItem()
                         coroutineScope.launch {
                             listState.animateScrollToItem(0)
@@ -204,19 +202,20 @@ fun OnsiteVerifyScreen(
                     isScanning = rfidUiState.isScanning,
                     onScan = {
                         //  onsiteVerificationViewModel.toggle()
-                        Log.d("@click", "OnsiteVerifyScreen: Clicked")
-                        onsiteVerificationViewModel.onReceivedTagIdTest()
+                        Log.d("@click", "OnsiteVerifyScreen: Clicked ${boxItemsFromApi.size}")
 
-                        coroutineScope.launch {
-                            if (scannedItemIndex != -1) listState.animateScrollToItem(
-                                scannedItemIndex
-                            )
-                            //  listState.scrollToItem(index = 0)
+                        //TODO setup empty message dialog
+
+                        if (boxItemsFromApi.isNotEmpty()) {
+
+                            onsiteVerificationViewModel.onReceivedTagIdTest()
+
+                            coroutineScope.launch {
+                                if (scannedItemIndex != -1) listState.animateScrollToItem(
+                                    scannedItemIndex
+                                )
+                            }
                         }
-//                        CoroutineScope(Dispatchers.Main).launch {
-//
-//                        }
-
                     })
                 Text(
                     text = "Done: ${scannedItems.size}",
@@ -230,6 +229,7 @@ fun OnsiteVerifyScreen(
 @Composable
 private fun ScannedContent(
     // pass item list here
+    onSwipeToDelete: (BoxItem) -> Unit,
     listState: LazyListState,
     boxItem: List<BoxItem>?,
     scannedItems: List<String>,
@@ -281,10 +281,14 @@ private fun ScannedContent(
                     ScannedItem(
                         isScanned = it.isScanned,
                         id = it.epc,
+                        isSwipeable = true,
                         name = it.description,
                         showTrailingIcon = true,
                         onItemClick = {
                             onItemClick(it.epc, it.isScanned, it)
+                        },
+                        onSwipeToDismiss = {
+                            onSwipeToDelete(it)
                         }
                     )
                 }
