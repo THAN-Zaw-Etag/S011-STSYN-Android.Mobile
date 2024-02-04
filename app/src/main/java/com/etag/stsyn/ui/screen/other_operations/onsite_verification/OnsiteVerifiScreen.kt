@@ -6,6 +6,7 @@
 package com.etag.stsyn.ui.screen.other_operations.onsite_verification
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +65,7 @@ fun OnsiteVerifyScreen(
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
-
+    val context = LocalContext.current
 
     var hasScanned by remember { mutableStateOf(true) }
     val scaffoldState = rememberBottomSheetScaffoldState(
@@ -88,6 +90,9 @@ fun OnsiteVerifyScreen(
     var boxItemsFromApi by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
     val rfidUiState by onsiteVerificationViewModel.rfidUiState.collectAsState()
+    val itemResultMessage by onsiteVerificationViewModel.filterStatusMessage.collectAsState()
+
+
     var currentBoxItem by remember {
         mutableStateOf(BoxItem())
     }
@@ -137,6 +142,12 @@ fun OnsiteVerifyScreen(
         }
     }
 
+    LaunchedEffect(itemResultMessage) {
+        if (!itemResultMessage.isNullOrEmpty()) {
+            Toast.makeText(context, "$itemResultMessage", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     if (isApiError) {
         WarningDialog(
             attemptAccount = retryCount,
@@ -173,7 +184,7 @@ fun OnsiteVerifyScreen(
                     listState = listState,
                     boxItem = boxItemsFromApi,
                     onReset = {
-                        onsiteVerificationViewModel.getOnSiteVerifyItems()
+                        onsiteVerificationViewModel.resetAllScannedStatus()
                         onsiteVerificationViewModel.resetCurrentScannedItem()
                         coroutineScope.launch {
                             listState.animateScrollToItem(0)
