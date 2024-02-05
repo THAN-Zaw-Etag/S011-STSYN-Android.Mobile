@@ -123,8 +123,6 @@ fun OnsiteVerifyScreen(
 
             Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Success...")
             isApiError = false
-            val items =
-                (getItemWhereNotInResponseStat as ApiResponse.Success).data?.items ?: emptyList()
             //onsiteVerificationViewModel.updateUiState(items)
             boxItemsFromApi = onsiteVerificationUiState.allItemsFromApi
         }
@@ -216,7 +214,8 @@ fun OnsiteVerifyScreen(
 
                         if (boxItemsFromApi.isNotEmpty()) {
 
-                            onsiteVerificationViewModel.onReceivedTagIdTest()
+                           // onsiteVerificationViewModel.onReceivedTagIdTest()
+                            onsiteVerificationViewModel.toggle()
 
                             coroutineScope.launch {
                                 if (scannedItemIndex != -1) listState.animateScrollToItem(
@@ -285,22 +284,6 @@ private fun ScannedContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (boxItem != null) {
-//                items(items = boxItem) {
-//                    ScannedItem(
-//                        isScanned = it.isScanned,
-//                        id = it.epc,
-//                        isSwipeable = true,
-//                        name = it.description,
-//                        showTrailingIcon = true,
-//                        onItemClick = {
-//                            onItemClick(it.epc, it.isScanned, it)
-//                        },
-//                        onSwipeToDismiss = {
-//
-//                            onSwipeToDelete(it)
-//                        }
-//                    )
-//                }
                 itemsIndexed(items = boxItem) { index, item ->
                     ScannedItem(
                         isScanned = item.isScanned,
@@ -351,7 +334,7 @@ fun ScannedBoxSection(
                 append("Item Description: ")
             }
             withStyle(style = SpanStyle(color = Color.Black)) {
-                append(if (description.isEmpty()) "-" else description.toUpperCase())
+                append(if (description.isEmpty()) "-" else description.uppercase())
             }
         })
 
@@ -360,7 +343,7 @@ fun ScannedBoxSection(
                 append("ID: ")
             }
             withStyle(style = SpanStyle(color = Color.Black)) {
-                append(if (id.isEmpty()) "-" else id.toUpperCase())
+                append(if (id.isEmpty()) "-" else id.uppercase())
             }
         })
     }

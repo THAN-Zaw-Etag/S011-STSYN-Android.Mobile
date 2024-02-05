@@ -29,7 +29,7 @@ import javax.inject.Inject
 class OnsiteVerificationViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
     private val bookOutRepository: BookOutRepository,
-    private val appConfiguration: AppConfiguration,
+    appConfiguration: AppConfiguration,
     private val localDataStore: LocalDataStore,
 ) : BaseViewModel(rfidHandler) {
     val TAG = "OnsiteVerificationViewModel"
@@ -68,7 +68,7 @@ class OnsiteVerificationViewModel @Inject constructor(
     private val settingsFlow = appConfiguration.appConfig
 
     override fun onReceivedTagId(id: String) {
-        //  addScannedItemAndMoveToTop(id)
+          addScannedItemAndMoveToTop(id)
     }
 
     fun onReceivedTagIdTest() {

@@ -5,6 +5,8 @@
 
 package com.etag.stsyn.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +43,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ScannedItem(
+    modifier: Modifier = Modifier,
     id: String,
     name: String,
     showTrailingIcon: Boolean = false,
@@ -48,7 +52,7 @@ fun ScannedItem(
     showError: Boolean = false,
     onItemClick: () -> Unit = {},
     onSwipeToDismiss: () -> Unit = {},
-    modifier: Modifier = Modifier
+
 ) {
     val coroutineScope = rememberCoroutineScope()
     if (isSwipeable) {
@@ -99,26 +103,32 @@ private fun ScannedItemContent(
     onItemClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isScanned) LightGreen else Color.Transparent,
+        animationSpec = tween(durationMillis = 2000),
+        label = "" // Adjust the duration to control the speed
+    )
+
+    val borderColor by animateColorAsState(
+        targetValue = if (isScanned) DarkGreen else Color.LightGray,
+        animationSpec = tween(durationMillis = 2000),
+        label = "" // This duration controls the border color animation
+    )
+
     Card(
         onClick = onItemClick,
         shape = RoundedCornerShape(0.dp),
         modifier = Modifier
             .background(Color.White)
-            .border(
-                width = 1.dp,
-                color = if (isScanned) DarkGreen else Color.LightGray,
-                shape = RoundedCornerShape(0.dp)
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isScanned) LightGreen else Color.Transparent
-        )
+            .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(0.dp)),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = modifier.padding(16.dp)
             ) {
-                Text(text = id.toUpperCase())
-                Text(text = name.toUpperCase())
+                Text(text = id.uppercase())
+                Text(text = name.uppercase())
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -126,7 +136,7 @@ private fun ScannedItemContent(
             if (showError) {
                 Icon(
                     imageVector = Icons.Default.Info,
-                    tint = errorColor,
+                    tint = errorColor, // Make sure you have defined errorColor
                     modifier = Modifier.padding(horizontal = 16.dp),
                     contentDescription = null,
                 )
@@ -145,6 +155,7 @@ private fun ScannedItemContent(
         }
     }
 }
+
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
