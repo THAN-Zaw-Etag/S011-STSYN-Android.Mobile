@@ -2,6 +2,7 @@ package com.tzh.retrofit_module.data.repository
 
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
+import com.tzh.retrofit_module.data.model.onsiteverification.SaveOnSiteVerificationRq
 import com.tzh.retrofit_module.data.network.ApiResponseHandler
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.settings.AppConfiguration
@@ -18,7 +19,7 @@ import javax.inject.Inject
 class BookOutRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val localDataStore: LocalDataStore,
-    private val appConfiguration: AppConfiguration
+    private val appConfiguration: AppConfiguration,
 ) : BookOutRepository {
     override suspend fun getAllBookOutItems(): ApiResponse<BookOutResponse> {
         val settings = appConfiguration.appConfig.first()
@@ -51,6 +52,12 @@ class BookOutRepositoryImpl @Inject constructor(
         val settings = appConfiguration.appConfig.first()
         return ApiResponseHandler.processResponse {
             apiService.getOnSiteVerifyItems(settings.store.name, settings.csNo, loginUserId)
+        }
+    }
+
+    override suspend fun saveOnSiteVerification(saveOnSiteVerificationRq: SaveOnSiteVerificationRq): ApiResponse<NormalResponse> {
+        return ApiResponseHandler.processResponse {
+            apiService.saveOnSiteVerificationItems(saveOnSiteVerificationRq)
         }
     }
 }
