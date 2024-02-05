@@ -5,5 +5,6 @@ data class LoginResponse(
     val token: String?,
     val error: String?,
     val user: UserResponse?,
-    val rolePermission: RolePermission?
+    val rolePermission: RolePermission?,
+    val checkStatus: CheckStatus?
 )
