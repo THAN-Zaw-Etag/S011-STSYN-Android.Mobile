@@ -6,6 +6,7 @@
 package com.etag.stsyn.ui.screen.other_operations.onsite_verification
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +66,7 @@ fun OnsiteVerifyScreen(
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
-
+    val context = LocalContext.current
 
     var hasScanned by remember { mutableStateOf(true) }
     val scaffoldState = rememberBottomSheetScaffoldState(
@@ -88,6 +91,9 @@ fun OnsiteVerifyScreen(
     var boxItemsFromApi by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
     val rfidUiState by onsiteVerificationViewModel.rfidUiState.collectAsState()
+    val itemResultMessage by onsiteVerificationViewModel.filterStatusMessage.collectAsState()
+
+
     var currentBoxItem by remember {
         mutableStateOf(BoxItem())
     }
@@ -137,6 +143,12 @@ fun OnsiteVerifyScreen(
         }
     }
 
+    LaunchedEffect(itemResultMessage) {
+        if (!itemResultMessage.isNullOrEmpty()) {
+            Toast.makeText(context, "$itemResultMessage", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     if (isApiError) {
         WarningDialog(
             attemptAccount = retryCount,
@@ -169,11 +181,12 @@ fun OnsiteVerifyScreen(
                     onSwipeToDelete = {
                         // It is not good for UX, Because it can just delete for Item from API
                         //   onsiteVerificationViewModel.removeScannedBookInItem(it)
+                                      onsiteVerificationViewModel.removeScannedBookInItemByIndex(it)
                     },
                     listState = listState,
                     boxItem = boxItemsFromApi,
                     onReset = {
-                        onsiteVerificationViewModel.getOnSiteVerifyItems()
+                        onsiteVerificationViewModel.resetAllScannedStatus()
                         onsiteVerificationViewModel.resetCurrentScannedItem()
                         coroutineScope.launch {
                             listState.animateScrollToItem(0)
@@ -229,7 +242,7 @@ fun OnsiteVerifyScreen(
 @Composable
 private fun ScannedContent(
     // pass item list here
-    onSwipeToDelete: (BoxItem) -> Unit,
+    onSwipeToDelete: (Int) -> Unit,
     listState: LazyListState,
     boxItem: List<BoxItem>?,
     scannedItems: List<String>,
@@ -277,18 +290,34 @@ private fun ScannedContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (boxItem != null) {
-                items(items = boxItem) {
+//                items(items = boxItem) {
+//                    ScannedItem(
+//                        isScanned = it.isScanned,
+//                        id = it.epc,
+//                        isSwipeable = true,
+//                        name = it.description,
+//                        showTrailingIcon = true,
+//                        onItemClick = {
+//                            onItemClick(it.epc, it.isScanned, it)
+//                        },
+//                        onSwipeToDismiss = {
+//
+//                            onSwipeToDelete(it)
+//                        }
+//                    )
+//                }
+                itemsIndexed(items = boxItem) { index, item ->
                     ScannedItem(
-                        isScanned = it.isScanned,
-                        id = it.epc,
+                        isScanned = item.isScanned,
+                        id = item.epc,
                         isSwipeable = true,
-                        name = it.description,
+                        name = item.description,
                         showTrailingIcon = true,
                         onItemClick = {
-                            onItemClick(it.epc, it.isScanned, it)
+                            onItemClick(item.epc, item.isScanned, item)
                         },
                         onSwipeToDismiss = {
-                            onSwipeToDelete(it)
+                            onSwipeToDelete(index)
                         }
                     )
                 }

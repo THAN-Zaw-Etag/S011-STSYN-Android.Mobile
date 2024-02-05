@@ -1,9 +1,11 @@
 package com.etag.stsyn.ui.screen.other_operations.onsite_verification
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
+import com.tzh.retrofit_module.domain.model.bookIn.safeCopy
 import com.tzh.retrofit_module.domain.model.bookOut.ItemWhereNotInResponse
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
@@ -12,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,8 +49,11 @@ class OnsiteVerificationViewModel @Inject constructor(
     private val _scannedItemIndex = MutableStateFlow(-1)
     val scannedItemIndex: StateFlow<Int> = _scannedItemIndex.asStateFlow()
 
+    private val _filterStatusMessage = MutableStateFlow<String?>(null)
+    val filterStatusMessage: StateFlow<String?> = _filterStatusMessage
+
     override fun onReceivedTagId(id: String) {
-      //  addScanItemToUiState("455341483030303030303036")
+        //  addScanItemToUiState("455341483030303030303036")
     }
 
     fun onReceivedTagIdTest() {
@@ -68,11 +74,59 @@ class OnsiteVerificationViewModel @Inject constructor(
             "020200002351",
             "020200004665",
             "020200004667",
-            "020200004669"
+            "020200004669",
+            "76r5e45675645"
         )
-        addScannedItem(dummyEpc.random())
+
+        val dummyListTwo = listOf<String>(
+            "020200000112",
+            "020200000112"
+        )
+        addScannedItemAndMoveToTop(dummyEpc.random())
 
 
+    }
+
+    private fun addScannedItemAndMoveToTop(epc: String) {
+        viewModelScope.launch {
+
+            val allExistingItems = _onsiteVerificationUiState.value.allItemsFromApi
+            val currentItems = allExistingItems.toMutableList()
+
+
+            val foundIndex = currentItems.indexOfFirst { it.epc == epc }
+
+            if (foundIndex != -1) {
+
+                if (currentItems[foundIndex].isScanned) {
+                    _filterStatusMessage.value = "Item Already found"
+                } else {
+                    _filterStatusMessage.value = null
+
+                    val foundItem = currentItems.removeAt(foundIndex).safeCopy(isScanned = true)
+
+                    // Move found item to the top, just below the last found item (if any)
+                    currentItems.add(0, foundItem)
+                    _currentScannedItem.value = foundItem
+                    _totalScannedItems.update {
+                        it + foundItem
+                    }
+                    _onsiteVerificationUiState.update {
+                        it.copy(allItemsFromApi = currentItems)
+                    }
+
+                    /*Optional for future*/
+                    _onsiteVerificationUiState.update {
+                        it.copy(itemsFromReader = it.itemsFromReader + foundItem)
+                    }
+
+                    addOutstandingItem()
+                }
+
+            } else {
+                _filterStatusMessage.value = "Item not found in the list."
+            }
+        }
     }
 
     fun getOnSiteVerifyItems() {
@@ -105,41 +159,6 @@ class OnsiteVerificationViewModel @Inject constructor(
             }
         }
     }
-    private fun addScannedItem(id: String) {
-        viewModelScope.launch {
-            val allExistingItems = _onsiteVerificationUiState.value.allItemsFromApi
-            val currentTotalScanItem = _totalScannedItems.value.toMutableList()
-            val hasExist = id in currentTotalScanItem.map { it?.epc }
-
-            try {
-                val scannedItemResult = allExistingItems.find { it.epc == id}
-                /**Index for use current scanned item's background color*/
-                val index = allExistingItems.indexOfFirst { it.epc == id }
-                if(!hasExist){
-                    if(scannedItemResult !=null && index != -1){
-                        currentTotalScanItem.add(scannedItemResult)
-                        /**for use current scanned item's background color*/
-                        _scannedItemIndex.value = index
-                        _currentScannedItem.value = allExistingItems[index]
-                        allExistingItems[index].isScanned =true
-
-                        /*Optional for future*/
-                        _onsiteVerificationUiState.update {
-                            it.copy(itemsFromReader = it.itemsFromReader + scannedItemResult)
-                        }
-
-                        _totalScannedItems.update {
-                            it + scannedItemResult
-                        }
-                        addOutstandingItem()
-                    }
-                }
-            }catch (e:Exception){
-                e.printStackTrace()
-            }
-        }
-    }
-
 
     fun resetCurrentScannedItem() {
         _currentScannedItem.value = null
@@ -148,18 +167,24 @@ class OnsiteVerificationViewModel @Inject constructor(
         removeAllOutstandingItems()
     }
 
-    fun removeScannedBookInItem(currentItem: BoxItem) {
+    fun removeScannedBookInItemByIndex(index: Int) {
         viewModelScope.launch {
+            val currentList = _onsiteVerificationUiState.value.allItemsFromApi
+            if (index >= 0 && index < currentList.size) {
+                val removedItemEpc = currentList[index].epc
+                val updatedList = currentList.toMutableList().apply {
+                    removeAt(index)
+                }
+                _onsiteVerificationUiState.update {
+                    it.copy(allItemsFromApi = updatedList)
+                }
 
-            val currentList = _totalScannedItems.value
-            val indexToRemove = currentList.indexOf(currentItem)
-            val updatedList = currentList.toMutableList().apply {
-                removeAt(indexToRemove)
+                val updatedScannedItems = _totalScannedItems.value.filterNot { it?.epc == removedItemEpc }
+                _totalScannedItems.value = updatedScannedItems
+
+                val updateOutstandingItems = _outstandingItems.value.filterNot { it?.epc == removedItemEpc }
+                _outstandingItems.value = updateOutstandingItems
             }
-            _totalScannedItems.value = updatedList
-
-            // update outstanding when scanned items change
-            addOutstandingItem()
         }
     }
 
@@ -168,38 +193,27 @@ class OnsiteVerificationViewModel @Inject constructor(
         addOutstandingItem()
     }
 
+    fun resetAllScannedStatus() {
+        viewModelScope.launch {
+            val updatedItems =
+                _onsiteVerificationUiState.value.allItemsFromApi.map { it.safeCopy(isScanned = false) }
+            _onsiteVerificationUiState.update {
+                it.copy(allItemsFromApi = updatedItems)
+            }
+            _filterStatusMessage.value = "All items have been reset."
+        }
+    }
+
     private fun removeAllOutstandingItems() {
         _outstandingItems.value = emptyList()
-    }
-
-    private fun addScanItemToUiState(id: String) {
-        val hasExist = id in onsiteVerificationUiState.value.itemsFromReader.map { it.epc }
-        if (hasExist) {
-            return
-        }
-        val item = onsiteVerificationUiState.value.allItemsFromApi.find { it.epc == id }
-        if (item != null) {
-            _onsiteVerificationUiState.update {
-                it.copy(itemsFromReader = it.itemsFromReader + item)
-            }
-        }
-    }
-
-
-
-    fun removeItemFromReader(index: Int) {
-        val items = onsiteVerificationUiState.value.itemsFromReader.toMutableList()
-        items.removeAt(index)
-        _onsiteVerificationUiState.update {
-            it.copy(itemsFromReader = items)
-        }
     }
 
     private fun addOutstandingItem() {
         viewModelScope.launch {
             rfidUiState.collect {
                 if (!it.isScanning) {
-                    val allExistingItems = _onsiteVerificationUiState.value.allItemsFromApi.toMutableList()
+                    val allExistingItems =
+                        _onsiteVerificationUiState.value.allItemsFromApi.toMutableList()
                     _totalScannedItems.collect { items ->
                         items.forEach { bookInItem ->
                             allExistingItems.remove(bookInItem)
@@ -211,11 +225,11 @@ class OnsiteVerificationViewModel @Inject constructor(
         }
     }
 
+
     init {
         getOnSiteVerifyItems()
         addOutstandingItem()
     }
-
 
 }
 
