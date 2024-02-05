@@ -71,6 +71,14 @@ class OnsiteCheckInOutViewModel @Inject constructor(
         }
     }
 
+    /**
+     * This function is invoked after clicking done button in save success dialog
+     *
+     * 1.clear scanned id list
+     *
+     * 2.onSiteCheckInOutUiState set default values to UI state
+     *
+     * 3.delay 1 second to reload data again.*/
     private suspend fun doTasksAfterSaved() {
         _scannedItemList.value = emptyList()
         _onSiteCheckInOutUiState.update { it.copy(allItemsForOnsite = emptyList(), receiver = null) }

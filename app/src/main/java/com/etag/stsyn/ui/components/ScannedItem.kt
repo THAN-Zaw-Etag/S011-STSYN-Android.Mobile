@@ -1,6 +1,8 @@
 @file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterialApi::class, ExperimentalMaterialApi::class
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterialApi::class,
+    ExperimentalMaterialApi::class
 )
 
 package com.etag.stsyn.ui.components
@@ -9,6 +11,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -53,11 +57,10 @@ fun ScannedItem(
     onItemClick: () -> Unit = {},
     onSwipeToDismiss: () -> Unit = {},
 
-) {
+    ) {
     val coroutineScope = rememberCoroutineScope()
     if (isSwipeable) {
-        SwipeBox(
-            modifier = Modifier.fillMaxWidth(),
+        SwipeBox(modifier = Modifier.fillMaxWidth(),
             swipeDirection = SwipeDirection.EndToStart,
             endContentWidth = 60.dp,
             endContent = { swipeableState, endSwipeProgress ->
@@ -70,8 +73,7 @@ fun ScannedItem(
                     onSwipeToDismiss()
                     coroutineScope.launch { swipeableState.animateTo(0) }
                 }
-            }
-        ) { _, _, _ ->
+            }) { _, _, _ ->
             ScannedItemContent(
                 isScanned = isScanned,
                 id = id,
@@ -125,32 +127,32 @@ private fun ScannedItemContent(
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
-                modifier = modifier.padding(16.dp)
+                modifier = modifier
+                    .weight(1f)
+                    .padding(16.dp)
             ) {
                 Text(text = id.uppercase())
                 Text(text = name.uppercase())
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                if (showError) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        tint = errorColor, // Make sure you have defined errorColor
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        contentDescription = null,
+                    )
+                }
 
-            if (showError) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    tint = errorColor, // Make sure you have defined errorColor
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    contentDescription = null,
-                )
-            }
-
-            if (showTrailingIcon) {
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .align(Alignment.CenterVertically),
-                    tint = Color.Gray
-                )
+                if (showTrailingIcon) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        tint = Color.Gray
+                    )
+                }
             }
         }
     }
@@ -165,7 +167,8 @@ fun ScannedItemPreview() {
         isScanned = false,
         isSwipeable = false,
         id = "SN000001 - DLJC11111",
-        name = "DATA LINK JUMPER CABLE",
+        name = "DATA LINK JUMPER CABLE DATA LINK JUMPER CABLE DATA LINK JUMPER CABLE DATA LINK JUMPER CABLE",
         showError = true,
+        showTrailingIcon = false
     )
 }

@@ -222,6 +222,13 @@ abstract class BaseViewModel(
         onReceivedTagId(tagData.get(0).tagID)
     }
 
+    /**
+     * @param event is type of click event.
+     *
+     * For general function for its children.
+     * This function is used in detail screen where is general screen for all screens.
+     * When we invoke this function, we will do corresponding task in child viewmodel.
+     * */
     fun updateClickEvent(event: ClickEvent) {
         viewModelScope.launch {
             _eventFlow.emit(event)
