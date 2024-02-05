@@ -35,7 +35,10 @@ class BookOutViewModel @Inject constructor(
     private val localDataStore: LocalDataStore,
     private val appConfiguration: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
-    val TAG = "BookOutViewModel"
+
+    companion object {
+        private const val TAG = "BookOutViewModel"
+    }
 
     private val _bookOutUiState = MutableStateFlow(BookOutUiState())
     val bookOutUiState: StateFlow<BookOutUiState> = _bookOutUiState.asStateFlow()
@@ -76,21 +79,19 @@ class BookOutViewModel @Inject constructor(
         viewModelScope.launch {
             updateSuccessDialogVisibility(false)
             getAllBookOutItems()
-            _bookOutUiState.update { it.copy(allBookOutItems = emptyList(), scannedItems = emptyList()) }
+            _bookOutUiState.update { it.copy(allBookOutItems = emptyList(), scannedItems = emptyList(), purpose = "", location = "") }
         }
     }
 
     private fun observeBookOutItemsResponse() {
         viewModelScope.launch {
             getAllBookOutItemResponse.collect {
-                Log.d(TAG, "observeBookOutItemsResponse: $it")
                 handleDialogStatesByResponse(it)
             }
         }
     }
 
     private fun getAllBookOutItems() {
-        Log.d(TAG, "getAllBookOutItems: blah")
         viewModelScope.launch {
             _getAllBookOutItemResponse.value = ApiResponse.Loading
             _getAllBookOutItemResponse.value = bookOutRepository.getAllBookOutItems()
@@ -112,21 +113,23 @@ class BookOutViewModel @Inject constructor(
         addScannedItem(id)
     }
 
-    fun updatePurpose (purpose: String) {
+    fun setPurpose (purpose: String) {
         _bookOutUiState.update { it.copy(purpose = purpose) }
     }
 
-    fun updateBookOutErrorMessage(errorMessage: String?) {
+    fun setBookOutErrorMessage(errorMessage: String?) {
         _bookOutUiState.update { it.copy(errorMessage = errorMessage) }
     }
 
-    fun updateLocation(location: String) {
+    fun setLocation(location: String) {
         _bookOutUiState.update { it.copy(location = location) }
     }
 
     fun clearAllScannedItems() {
         _bookOutUiState.update { it.copy(scannedItems = emptyList()) }
     }
+
+    fun isUnderCalibrationAlert(calDate: String) = DateUtil.isUnderCalibrationAlert(calDate)
 
     fun removeScannedItem(item: BoxItem){
         val currentList = bookOutUiState.value.scannedItems.toMutableList()
@@ -140,25 +143,21 @@ class BookOutViewModel @Inject constructor(
             val user = user.first()
             val currentDate = DateUtil.getCurrentDate()
             bookOutUiState.value.scannedItems.forEach {
-                if (it.calDate != null && it.calDate != Instant.MIN.toString()) {
+                if (it.calDate != null && it.calDate.isNotEmpty() && it.calDate != Instant.MIN.toString()) {
                     if (it.calDate!! < currentDate && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
-                        updateBookOutErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
-                        Log.d(TAG, "saveBookOutItems: exit")
+                        setBookOutErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
                         return@launch
                     }
                 }
             }
 
-            Log.d(TAG, "saveBookOutItems: doesn't exit")
             if (settings.first().needLocation) {
                 if (bookOutUiState.value.location.isEmpty() && bookOutUiState.value.purpose.isEmpty()) {
-                    updateBookOutErrorMessage("Please Key In Location")
-                    Log.d(TAG, "saveBookOutItems: exit")
+                    setBookOutErrorMessage("Please Key In Location")
                     return@launch
                 }
             }
 
-            Log.d(TAG, "saveBookOutItems: doesn't exit")
             _saveBookOutBoxesResponse.value = ApiResponse.Loading
             val printJob = PrintJob(
                 date = currentDate,

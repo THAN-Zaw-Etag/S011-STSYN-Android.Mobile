@@ -155,6 +155,6 @@ fun ScannedItemPreview() {
         isSwipeable = false,
         id = "SN000001 - DLJC11111",
         name = "DATA LINK JUMPER CABLE",
-        showTrailingIcon = true
+        showError = true,
     )
 }

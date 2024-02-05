@@ -37,8 +37,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun BookOutBoxSaveScreen(
-    bookOutBoxViewModel: BookOutBoxViewModel,
-    modifier: Modifier = Modifier
+    bookOutBoxViewModel: BookOutBoxViewModel, modifier: Modifier = Modifier
 ) {
     val user by bookOutBoxViewModel.user.collectAsState(initial = LocalUser())
     val boxUiState by bookOutBoxViewModel.boxUiState.collectAsState()
@@ -53,7 +52,7 @@ fun BookOutBoxSaveScreen(
         showError = bookOutBoxUiState.errorMessage == null
     }
 
-    LaunchedEffect(boxUiState.scannedBox,scannedItemList,Unit) {
+    LaunchedEffect(boxUiState.scannedBox, scannedItemList, Unit) {
         if (boxUiState.scannedBox.epc.isEmpty()) bookOutBoxViewModel.updateBookOutBoxErrorMessage("Please scan a box tag first!")
         else if (scannedItemList.isEmpty()) bookOutBoxViewModel.updateBookOutBoxErrorMessage("Pleas read an item first!")
         else bookOutBoxViewModel.updateBookOutBoxErrorMessage(null)
@@ -62,30 +61,35 @@ fun BookOutBoxSaveScreen(
     when (saveBookOutBoxesResponse) {
         is ApiResponse.Loading -> {
             showError = false
-            LoadingDialog(title = "Please wait while SMS is processing your request...",
+            LoadingDialog(
+                title = "Please wait while SMS is processing your request...",
                 showDialog = true,
-                onDismiss = { })
+                onDismiss = { }
+            )
         }
+
         is ApiResponse.Success -> {
             showError = false
             bookOutBoxViewModel.updateIsSavedStatus(true)
             bookOutBoxViewModel.updateSuccessDialogVisibility(true)
         }
+
         is ApiResponse.ApiError -> showError = true
-        is ApiResponse.AuthorizationError -> bookOutBoxViewModel.shouldShowAuthorizationFailedDialog(true)
+        is ApiResponse.AuthorizationError -> bookOutBoxViewModel.shouldShowAuthorizationFailedDialog(
+            true
+        )
+
         else -> showError = false
     }
 
 
-    WarningDialog(
-        icon = CustomIcon.Vector(Icons.Default.Error),
+    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
         message = bookOutBoxUiState.errorMessage ?: "",
         showDialog = showError,
         positiveButtonTitle = "try again",
         onPositiveButtonClick = {
             showError = false
-        }
-    )
+        })
 
     BaseSaveScreen(
         isError = bookOutBoxUiState.errorMessage != null,
@@ -99,13 +103,11 @@ fun BookOutBoxSaveScreen(
                 Text(text = "${user.name} - ${user.nric}")
             }
             SaveItemLayout(icon = Icons.Default.TrackChanges, itemTitle = "Purpose") {
-                DropDown(
-                    items = Purpose.entries.map { it.toString() },
+                DropDown(items = Purpose.entries.map { it.toString() },
                     defaultValue = "Choose a purpose",
                     onSelected = { item ->
                         bookOutBoxViewModel.updatePurpose(item)
-                    }
-                )
+                    })
             }
             if (needLocation) {
                 SaveItemLayout(icon = Icons.Default.AddLocation, itemTitle = "Location") {

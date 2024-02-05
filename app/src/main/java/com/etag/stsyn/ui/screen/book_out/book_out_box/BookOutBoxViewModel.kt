@@ -3,6 +3,7 @@ package com.etag.stsyn.ui.screen.book_out.book_out_box
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
+import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.screen.book_in.book_in_box.BoxUiState
@@ -13,6 +14,7 @@ import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
+import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.enum.ItemStatus
@@ -24,6 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,14 +45,17 @@ class BookOutBoxViewModel @Inject constructor(
     private val _boxUiState = MutableStateFlow(BoxUiState())
     val boxUiState: StateFlow<BoxUiState> = _boxUiState.asStateFlow()
 
+    private val _getAllBookOutBoxesResponse = MutableStateFlow<ApiResponse<GetAllBookOutBoxesResponse>>(ApiResponse.Default)
+    val getAllBookOutBoxesResponse: StateFlow<ApiResponse<GetAllBookOutBoxesResponse>> = _getAllBookOutBoxesResponse.asStateFlow()
+
     private val _bookOutBoxUiState = MutableStateFlow(BookOutBoxUiState())
     val bookOutBoxUiState: StateFlow<BookOutBoxUiState> = _bookOutBoxUiState.asStateFlow()
 
     private val _needLocation = MutableStateFlow(false)
     val needLocation: StateFlow<Boolean> = _needLocation.asStateFlow()
 
-    private val _saveBookOutBoxResponse = MutableStateFlow<ApiResponse<NormalResponse>> (ApiResponse.Default)
-    val saveBookOutBoxResponse : StateFlow<ApiResponse<NormalResponse>> = _saveBookOutBoxResponse.asStateFlow()
+    private val _saveBookOutBoxResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveBookOutBoxResponse: StateFlow<ApiResponse<NormalResponse>> = _saveBookOutBoxResponse.asStateFlow()
 
     val scannedItemList = MutableStateFlow<List<String>>(emptyList())
 
@@ -58,19 +64,35 @@ class BookOutBoxViewModel @Inject constructor(
 
     init {
         getAllBookOutBoxes()
+        observeLocation()
+        observeApiResponse()
+        handleClickEvent()
+    }
+
+    private fun handleClickEvent() {
+        viewModelScope.launch {
+            eventFlow.collect {
+                when (it) {
+                    is ClickEvent.RetryClick -> getAllBookOutBoxes()
+                    is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun observeApiResponse() {
+        viewModelScope.launch {
+            getAllBookOutBoxesResponse.collect {
+                handleDialogStatesByResponse(it)
+            }
+        }
+    }
+
+    private fun observeLocation() {
         viewModelScope.launch {
             settings.collect {
                 _needLocation.value = it.needLocation
-            }
-
-            launch {
-                /*detailUiState.collect {
-                    Log.d(TAG, "UiEvent: ${it.event}")
-                    when (it.event) {
-                        is UiEvent.ClickAfterSave -> doTasksAfterSavingItems()
-                        else -> {}
-                    }
-                }*/
             }
         }
     }
@@ -81,26 +103,13 @@ class BookOutBoxViewModel @Inject constructor(
 
     private fun getAllBookOutBoxes() {
         viewModelScope.launch {
-            val response = bookOutRepository.getAllBookOutBoxes()
-            toggleLoadingVisibility(true)
+            _getAllBookOutBoxesResponse.value = ApiResponse.Loading
+            _getAllBookOutBoxesResponse.value = bookOutRepository.getAllBookOutBoxes()
             delay(1000)
-            when (response) {
-                is ApiResponse.Loading -> {}
+            when (getAllBookOutBoxesResponse.value) {
                 is ApiResponse.Success -> {
-                    toggleLoadingVisibility(false)
-                    _boxUiState.update { it.copy(allBoxes = response.data?.items ?: emptyList()) }
+                    _boxUiState.update { it.copy(allBoxes = (getAllBookOutBoxesResponse.value as ApiResponse.Success<GetAllBookOutBoxesResponse>).data?.items ?: emptyList()) }
                 }
-
-                is ApiResponse.ApiError -> {
-                    toggleLoadingVisibility(false)
-                    updateErrorMessage(response.message)
-                }
-
-                is ApiResponse.AuthorizationError -> {
-                    toggleLoadingVisibility(false)
-                    shouldShowAuthorizationFailedDialog(true)
-                }
-
                 else -> {}
             }
         }
@@ -205,7 +214,12 @@ class BookOutBoxViewModel @Inject constructor(
 
             _saveBookOutBoxResponse.value = ApiResponse.Loading
 
-            _saveBookOutBoxResponse.value = bookOutRepository.saveBookOutItems(SaveBookInRequest(printJob = printJob, itemMovementLogs = itemMovementLogs))
+            _saveBookOutBoxResponse.value = bookOutRepository.saveBookOutItems(
+                SaveBookInRequest(
+                    printJob = printJob,
+                    itemMovementLogs = itemMovementLogs
+                )
+            )
 
         }
     }

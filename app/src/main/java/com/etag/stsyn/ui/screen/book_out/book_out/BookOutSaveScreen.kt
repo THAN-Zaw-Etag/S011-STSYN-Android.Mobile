@@ -27,7 +27,6 @@ import com.etag.stsyn.ui.components.DropDown
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.STSYNTExtField
 import com.etag.stsyn.ui.components.SaveItemLayout
-import com.etag.stsyn.ui.components.SuccessDialog
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.ui.theme.Purple80
@@ -46,25 +45,17 @@ fun BookOutSaveScreen(
     val user by bookOutViewModel.user.collectAsState(initial = LocalUser())
     val saveBookOutBoxesResponse by bookOutViewModel.saveBookOutBoxesResponse.collectAsState()
     var isError by remember { mutableStateOf(false) }
-
-    var shouldShowWarningDialog by remember {
-        mutableStateOf(false)
-    }
-    var errorMessage by remember {
-        mutableStateOf("")
-    }
-
+    var shouldShowWarningDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     var attemptCount by remember { mutableStateOf(0) }
 
     LaunchedEffect(bookOutUiState.errorMessage) {
-        Log.d(TAG, "BookOutSaveScreen: ${bookOutUiState.errorMessage}")
         isError = bookOutUiState.errorMessage != null && bookOutUiState.errorMessage!!.isNotEmpty()
     }
 
     when (saveBookOutBoxesResponse) {
         is ApiResponse.Loading -> {
             shouldShowWarningDialog = false
-            Log.d(TAG, "Loading")
             LoadingDialog(
                 title = "Please wait while SMS is processing your request...\n",
                 showDialog = true,
@@ -72,14 +63,8 @@ fun BookOutSaveScreen(
         }
 
         is ApiResponse.Success -> {
-
             shouldShowWarningDialog = false
             bookOutViewModel.updateSuccessDialogVisibility(true)
-            /*Log.d("BookOutSaveScreen", "Success")
-            SuccessDialog(
-                showDialog = true,
-                title = "SUCCESS!",
-                onDoneClick = { *//*TODO*//* })*/
         }
 
         is ApiResponse.ApiError -> {
@@ -109,9 +94,10 @@ fun BookOutSaveScreen(
             }, onDismiss = { attemptCount = 0})
     }
 
-    LaunchedEffect(bookOutUiState.scannedItems) {
-        if (bookOutUiState.scannedItems.isEmpty()) bookOutViewModel.updateBookOutErrorMessage("Please read an item first.")
-        else bookOutViewModel.updateBookOutErrorMessage(null)
+    LaunchedEffect(bookOutUiState.scannedItems, bookOutUiState.location) {
+        if (bookOutUiState.location.isNotEmpty()) bookOutViewModel.setBookOutErrorMessage(null)
+        if (bookOutUiState.scannedItems.isEmpty()) bookOutViewModel.setBookOutErrorMessage("Please read an item first.")
+        else bookOutViewModel.setBookOutErrorMessage(null)
     }
 
     BaseSaveScreen(
@@ -131,7 +117,7 @@ fun BookOutSaveScreen(
                 DropDown(items = Purpose.entries.map { it.toString() },
                     defaultValue = "Choose a purpose",
                     onSelected = { item ->
-                        bookOutViewModel.updatePurpose(item)
+                        bookOutViewModel.setPurpose(item)
                     })
             }
 
@@ -142,7 +128,7 @@ fun BookOutSaveScreen(
                         label = {},
                         onValueChange = {
                             location = it
-                            bookOutViewModel.updateLocation(location)
+                            bookOutViewModel.setLocation(location)
                         },
                         modifier = Modifier
                             .fillMaxWidth()

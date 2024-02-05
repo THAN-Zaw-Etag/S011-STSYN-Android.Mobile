@@ -51,6 +51,7 @@ fun BookOutScanScreen(
                     ScannedItem(
                         id = item.epc, name = item.description,
                         isSwipeable = true,
+                        showError = bookOutViewModel.isUnderCalibrationAlert(item.calDate),
                         onSwipeToDismiss = {
                             bookOutViewModel.removeScannedItem(item)
                         }
