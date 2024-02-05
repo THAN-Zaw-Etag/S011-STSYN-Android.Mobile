@@ -33,9 +33,10 @@ fun BookInBoxScanScreen(
 
     LaunchedEffect(bookInBoxUiState) {
         scannedBox = bookInBoxUiState.scannedBox
+        boxes = bookInBoxUiState.allBoxes
     }
 
-    when (getAllBoxesResponse) {
+    /*when (getAllBoxesResponse) {
         is ApiResponse.Loading -> bookInBoxViewModel.toggleLoadingVisibility(true)
         is ApiResponse.Success -> {
             bookInBoxViewModel.toggleLoadingVisibility(false)
@@ -49,7 +50,7 @@ fun BookInBoxScanScreen(
         }
 
         else -> {}
-    }
+    }*/
 
     BaseBoxScreen(
         bookItems = bookInBoxUiState.allItemsOfBox,

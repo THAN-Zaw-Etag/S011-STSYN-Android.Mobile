@@ -1,7 +1,9 @@
 package com.etag.stsyn.ui.screen.book_in.book_in_box
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
+import com.etag.stsyn.core.UiEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.mapper.toItemMovementLogs
@@ -24,6 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,6 +40,7 @@ class BookInBoxViewModel @Inject constructor(
     private val appConfiguration: AppConfiguration,
     private val userRepository: UserRepository
 ) : BaseViewModel(rfidHandler) {
+    private val TAG = "BookInBoxViewModel"
 
     private val _boxItemsForBookInResponse =
         MutableStateFlow<ApiResponse<SelectBoxForBookInResponse>>(ApiResponse.Default)
@@ -64,14 +68,33 @@ class BookInBoxViewModel @Inject constructor(
 
     init {
         updateScanType(ScanType.Single)
+        handleUiEvent()
         getAllBoxesForBookInItem()
+        observeBookInItemsResponse()
     }
 
-    fun doTasksAfterSavingItems() {
+    private fun observeBookInItemsResponse() {
+        viewModelScope.launch {
+            delay(1000)
+            boxItemsForBookInResponse.collect { handleDialogStatesByResponse(it) }
+        }
+    }
+
+    private fun handleUiEvent() {
+        viewModelScope.launch {
+            eventFlow.collect {
+                when(it) {
+                    is UiEvent.ClickAfterSave -> doTasksAfterSavingItems()
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun doTasksAfterSavingItems() {
         viewModelScope.launch {
             updateSuccessDialogVisibility(false)
             getAllBoxesForBookInItem()
-            // clear all scanned items
             scannedItemsList.value = emptyList()
         }
     }
@@ -189,7 +212,7 @@ class BookInBoxViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
-
+        Log.d(TAG, "onReceivedTagId: $id")
         if (_boxItemsForBookInResponse.value is ApiResponse.Success) {
             when (boxUiState.value.boxScanType) {
                 BoxScanType.BOX -> {
@@ -223,7 +246,6 @@ class BookInBoxViewModel @Inject constructor(
                     getIssuerByEPC(id)
                 }
             }
-
         }
     }
 
@@ -283,9 +305,7 @@ class BookInBoxViewModel @Inject constructor(
         viewModelScope.launch {
             user.collect {
                 _getAllItemsOfBox.value = ApiResponse.Loading
-                _getAllItemsOfBox.value = bookInRepository.getAllBookItemsOfBox(
-                    box = box, status = status, loginUserId = it.userId
-                )
+                _getAllItemsOfBox.value = bookInRepository.getAllBookItemsOfBox(box = box, status = status)
 
                 when (_getAllItemsOfBox.value) {
                     is ApiResponse.Success -> {
@@ -295,10 +315,6 @@ class BookInBoxViewModel @Inject constructor(
                                 _boxUiState.update { it.copy(allItemsOfBox = allItems.toMutableList()) }
                             }
                         }
-                    }
-
-                    is ApiResponse.AuthorizationError -> {
-                        shouldShowAuthorizationFailedDialog(true)
                     }
 
                     else -> {}

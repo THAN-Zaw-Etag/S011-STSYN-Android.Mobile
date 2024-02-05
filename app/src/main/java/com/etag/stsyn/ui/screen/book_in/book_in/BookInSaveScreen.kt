@@ -5,7 +5,6 @@ import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,18 +14,12 @@ import androidx.compose.ui.Modifier
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SaveItemLayout
-import com.etag.stsyn.ui.components.SuccessDialog
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
-import com.tzh.retrofit_module.data.mapper.toItemMovementLog
 import com.tzh.retrofit_module.data.model.LocalUser
-import com.tzh.retrofit_module.data.model.book_in.PrintJob
-import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
-import com.tzh.retrofit_module.data.settings.AppConfigModel
-import com.tzh.retrofit_module.enum.ItemStatus
+import com.tzh.retrofit_module.util.API_MULTI_ATTEMPT_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
-import com.tzh.retrofit_module.util.DateUtil
-import kotlinx.coroutines.delay
+import com.tzh.retrofit_module.util.SAVING_MESSAGE
 
 @Composable
 fun BookInSaveScreen(
@@ -34,65 +27,52 @@ fun BookInSaveScreen(
     modifier: Modifier = Modifier,
 ) {
 
-    var showConfirmationDialog by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
-    val user by viewModel.user.collectAsState(initial = LocalUser())
-    val setting by viewModel.appConfiguration.collectAsState(initial = AppConfigModel())
-    val scannedBookInItems by viewModel.scannedBookInItems.collectAsState()
+    val user by viewModel.userFlow.collectAsState(initial = LocalUser())
     val saveBookInResponse by viewModel.savedBookInResponse.collectAsState()
-
-    LaunchedEffect(showConfirmationDialog) {
-        delay(3000)
-        showConfirmationDialog = false
-    }
+    val scannedItemIdList by viewModel.scannedItemIdList.collectAsState()
+    var attemptCount by remember { mutableStateOf(0) }
+    var showErrorDialog by remember { mutableStateOf(false) }
 
     when (saveBookInResponse) {
-        is ApiResponse.Loading -> LoadingDialog(
-            title = "Please wait while SMS is processing your request...\n",
-            showDialog = showConfirmationDialog,
-            onDismiss = { showConfirmationDialog = false })
+        is ApiResponse.Loading -> LoadingDialog(title = SAVING_MESSAGE,
+            showDialog = true,
+            onDismiss = { })
 
         is ApiResponse.Success -> {
-            showConfirmationDialog = false
             showSuccessDialog = true
             viewModel.updateIsSavedStatus(true)
             viewModel.updateSuccessDialogVisibility(true)
         }
 
-        is ApiResponse.ApiError -> {
-            WarningDialog(
-                icon = CustomIcon.Vector(Icons.Default.Error),
-                message = (saveBookInResponse as ApiResponse.ApiError).message,
-                showDialog = true,
-                positiveButtonTitle = "exit",
-                onDismiss = {},
-                onPositiveButtonClick = {
-
-                }
-            )
-        }
+        is ApiResponse.ApiError -> showErrorDialog = true
 
         else -> {}
     }
 
+    // show error dialog when error occurs in saving book in items
+    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
+        message = if (attemptCount >= 3) API_MULTI_ATTEMPT_FAILED_MESSAGE else (saveBookInResponse as? ApiResponse.ApiError)?.message ?: "",
+        showDialog = showErrorDialog,
+        positiveButtonTitle = "exit",
+        onDismiss = {},
+        onPositiveButtonClick = {
+            attemptCount++
+
+            if (attemptCount < 3) {
+                viewModel.saveBookIn()
+            } else {
+                showErrorDialog = false
+                attemptCount = 0
+            }
+        })
+
     BaseSaveScreen(
-        isError = scannedBookInItems.isEmpty(),
+        isError = scannedItemIdList.isEmpty(),
         errorMessage = "Please read an item first.",
         modifier = modifier,
-        onSave = {
-            viewModel.saveBookIn(
-                SaveBookInRequest(
-                    itemMovementLogs = scannedBookInItems.map { it!! }.toItemMovementLog(0),
-                    printJob = PrintJob(
-                        date = DateUtil.getCurrentDate(),
-                        handheldId = setting.handheldReaderId.toInt(),
-                        reportType = ItemStatus.BookIn.title, //TODO Need to add report type
-                        userId = user.userId.toInt()
-                    )
-                )
-            )
-            showConfirmationDialog = true
-        }) {
+        onSave = viewModel::saveBookIn
+    ) {
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User") {
             Text(text = "${user.name} - ${user.nric}")
         }

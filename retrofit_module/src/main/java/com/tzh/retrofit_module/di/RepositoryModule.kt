@@ -34,9 +34,10 @@ object RepositoryModule {
     @Singleton
     fun providesBookInRepository(
         apiService: ApiService,
-        localDataStore: LocalDataStore
+        localDataStore: LocalDataStore,
+        appConfiguration: AppConfiguration,
     ): BookInRepository {
-        return BookInRepositoryImpl(apiService, localDataStore)
+        return BookInRepositoryImpl(apiService, localDataStore, appConfiguration)
     }
 
     @Provides

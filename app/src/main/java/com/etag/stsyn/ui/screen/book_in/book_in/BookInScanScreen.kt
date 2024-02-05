@@ -22,12 +22,13 @@ fun BookInScanScreen(
     bookInViewModel: BookInViewModel,
     modifier: Modifier = Modifier
 ) {
+    val TAG = "BookInScanScreen"
     val rfidUiState by bookInViewModel.rfidUiState.collectAsState()
     val listState = rememberLazyListState()
-    val bookInItemsResponse by bookInViewModel.bookInItemsResponse.collectAsState()
-    val bookInItems by bookInViewModel.scannedBookInItems.collectAsState()
+    val bookInState by bookInViewModel.bookInState.collectAsState()
+    val scannedItemIdList by bookInViewModel.scannedItemIdList.collectAsState()
 
-    when (bookInItemsResponse) {
+    /*when (bookInItemsResponse) {
         is ApiResponse.Loading -> {
             bookInViewModel.toggleLoadingVisibility(true)
         }
@@ -43,30 +44,34 @@ fun BookInScanScreen(
         else -> {
             bookInViewModel.toggleLoadingVisibility(false)
         }
-    }
+    }*/
 
-    LaunchedEffect(rfidUiState.scannedItems) {
+    /*LaunchedEffect(rfidUiState.scannedItems) {
         if (rfidUiState.scannedItems.size > 1) listState.animateScrollToItem(rfidUiState.scannedItems.size - 1)
+    }*/
+    
+    LaunchedEffect(scannedItemIdList) {
+        Log.d(TAG, "BookInScanScreen: $scannedItemIdList")
     }
 
     BaseScanScreen(
         modifier = modifier,
-        scannedItemCount = bookInItems.size,
+        scannedItemCount = scannedItemIdList.size,
         isScanning = rfidUiState.isScanning,
-        onScan = { bookInViewModel.toggle() },
-        onClear = { bookInViewModel.removeAllScannedItems() }) {
+        onScan = bookInViewModel::toggle,
+        onClear = bookInViewModel::removeAllScannedItems) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             state = listState,
             contentPadding = PaddingValues(16.dp)
         ) {
-            items(bookInItems) {
-                key(it?.epc) {
+            items(bookInState.allBookInItems.filter { it.epc in scannedItemIdList }) {
+                key(it.epc) {
                     ScannedItem(
-                        id = it?.epc ?: "",
-                        name = it?.description ?: "",
+                        id = it.epc ?: "",
+                        name = it.description ?: "",
                         isSwipeable = true,
-                        onSwipeToDismiss = { bookInViewModel.removeScannedBookInItem(it!!) }
+                        onSwipeToDismiss = { bookInViewModel.removeScannedBookInItem(it.epc) }
                     )
                 }
             }

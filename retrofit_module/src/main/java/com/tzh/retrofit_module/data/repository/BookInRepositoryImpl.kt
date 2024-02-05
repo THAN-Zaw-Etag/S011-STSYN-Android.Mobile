@@ -4,6 +4,7 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.network.ApiResponseHandler
 import com.tzh.retrofit_module.data.network.ApiService
+import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
@@ -11,17 +12,24 @@ import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.util.ApiResponse
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class BookInRepositoryImpl @Inject constructor(
-    private val apiService: ApiService, private val localDataStore: LocalDataStore
+    private val apiService: ApiService,
+    localDataStore: LocalDataStore,
+    appConfiguration: AppConfiguration
 ) : BookInRepository {
-    override suspend fun getBookInItems(
-        store: String, csNo: String, userId: String
-    ): ApiResponse<BookInResponse> {
+        private val userFlow = localDataStore.getUser
+        private val settingsFlow = appConfiguration.appConfig
+    override suspend fun getBookInItems(): ApiResponse<BookInResponse> {
+        val settings = settingsFlow.first()
+        val userId = userFlow.first().userId
+
         return ApiResponseHandler.processResponse {
             apiService.getBookInItems(
-                store = store, csNo = csNo, userID = userId
+                store = settings.store.name, csNo = settings.csNo, userID = userId
             )
         }
     }
@@ -39,8 +47,9 @@ class BookInRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllBookItemsOfBox(
-        box: String, status: String, loginUserId: String
+        box: String, status: String
     ): ApiResponse<GetAllItemsOfBoxResponse> {
+        val loginUserId = userFlow.first().userId
         return ApiResponseHandler.processResponse {
             apiService.getAllBookInItemsOfBox( box, status, loginUserId)
         }

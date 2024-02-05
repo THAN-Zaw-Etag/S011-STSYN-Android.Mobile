@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -20,43 +21,41 @@ import com.tzh.retrofit_module.data.mapper.toExpandedScannedItems
 import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.util.ApiResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 @Composable
 fun BookInCountScreen(
     viewModel: BookInViewModel,
     modifier: Modifier = Modifier
 ) {
-    val scannedItems by viewModel.scannedBookInItems.collectAsState()
-    val bookInItemsResponse by viewModel.bookInItemsResponse.collectAsState()
-    val outstandingItems by viewModel.outstandingItems.collectAsState()
+    val scannedItemIdList by viewModel.scannedItemIdList.collectAsState()
+    val bookInState by viewModel.bookInState.collectAsState()
+    var bookInAllItems by remember { mutableStateOf(bookInState.allBookInItems) }
+    var controlType by remember { mutableStateOf(ControlType.All) }
 
-    var items by remember { mutableStateOf<List<BookInItem>>(emptyList()) }
-
-    BaseCountScreen(modifier = modifier, itemCount = items.size, onTabSelected = { controlType ->
-        when (controlType) {
-            ControlType.All -> {
-                if (bookInItemsResponse is ApiResponse.Success) {
-                    items = (bookInItemsResponse as ApiResponse.Success<BookInResponse>).data!!.items
-                }
-            }
-
-            ControlType.Done -> {
-                items = scannedItems.map { it!! }
-            }
-
-            ControlType.Outstanding -> {
-                items = outstandingItems.map { it!! }
+    LaunchedEffect(controlType) {
+        withContext(Dispatchers.IO) {
+            val items = bookInState.allBookInItems
+            bookInAllItems = when (controlType) {
+                ControlType.All -> items
+                ControlType.Done -> items.filter { it.epc in scannedItemIdList}
+                ControlType.Outstanding -> items.filter { it.epc !in scannedItemIdList }
             }
         }
-
     }
+
+    BaseCountScreen(modifier = modifier, itemCount = bookInAllItems.size, onTabSelected = { control -> controlType = control}
     ) {
         LazyColumn(
             modifier = Modifier,
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(items) {
+            items(bookInAllItems) {
                 key(it.epc) {
                     ExpandedScannedItem(
                         bookInItem = it.toExpandedScannedItems()
