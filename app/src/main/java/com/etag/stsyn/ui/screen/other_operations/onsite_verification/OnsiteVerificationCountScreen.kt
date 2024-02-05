@@ -43,21 +43,12 @@ fun OnsiteVerificationCountScreen(
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
     var items by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
 
+    val onsiteVerificationUiState by onsiteVerificationViewModel.onsiteVerificationUiState.collectAsState()
 
-
-
-
-    Log.d("TAG", "OnsiteVerificationCountScreen: ${scannedItems.size}")
-//    val items = remember { mutableStateListOf<String>() }
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = SheetState(skipPartiallyExpanded = true, skipHiddenState = false)
     )
     val coroutineScope = rememberCoroutineScope()
-
-//    LaunchedEffect(Unit) {
-//        DataSource.dummyDataList.forEach { items.add(it) }
-//    }
-
     DetailBottomSheetScaffold(
         state = scaffoldState,
         sheetContent = { BottomSheetContent(itemList = listOf()) }) {
@@ -67,7 +58,7 @@ fun OnsiteVerificationCountScreen(
                 when (controlType) {
                     ControlType.All -> {
                         if (itemsResponse is ApiResponse.Success) {
-                            items = (itemsResponse as ApiResponse.Success).data!!.items
+                            items = onsiteVerificationUiState.allItemsFromApi
                         }
                     }
 

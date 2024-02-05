@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -180,6 +181,7 @@ fun OnsiteVerifyScreen(
                     onSwipeToDelete = {
                         // It is not good for UX, Because it can just delete for Item from API
                         //   onsiteVerificationViewModel.removeScannedBookInItem(it)
+                                      onsiteVerificationViewModel.removeScannedBookInItemByIndex(it)
                     },
                     listState = listState,
                     boxItem = boxItemsFromApi,
@@ -240,7 +242,7 @@ fun OnsiteVerifyScreen(
 @Composable
 private fun ScannedContent(
     // pass item list here
-    onSwipeToDelete: (BoxItem) -> Unit,
+    onSwipeToDelete: (Int) -> Unit,
     listState: LazyListState,
     boxItem: List<BoxItem>?,
     scannedItems: List<String>,
@@ -288,18 +290,34 @@ private fun ScannedContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (boxItem != null) {
-                items(items = boxItem) {
+//                items(items = boxItem) {
+//                    ScannedItem(
+//                        isScanned = it.isScanned,
+//                        id = it.epc,
+//                        isSwipeable = true,
+//                        name = it.description,
+//                        showTrailingIcon = true,
+//                        onItemClick = {
+//                            onItemClick(it.epc, it.isScanned, it)
+//                        },
+//                        onSwipeToDismiss = {
+//
+//                            onSwipeToDelete(it)
+//                        }
+//                    )
+//                }
+                itemsIndexed(items = boxItem) { index, item ->
                     ScannedItem(
-                        isScanned = it.isScanned,
-                        id = it.epc,
+                        isScanned = item.isScanned,
+                        id = item.epc,
                         isSwipeable = true,
-                        name = it.description,
+                        name = item.description,
                         showTrailingIcon = true,
                         onItemClick = {
-                            onItemClick(it.epc, it.isScanned, it)
+                            onItemClick(item.epc, item.isScanned, item)
                         },
                         onSwipeToDismiss = {
-                            onSwipeToDelete(it)
+                            onSwipeToDelete(index)
                         }
                     )
                 }
