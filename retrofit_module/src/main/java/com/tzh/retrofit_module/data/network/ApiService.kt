@@ -8,6 +8,7 @@ import com.tzh.retrofit_module.data.model.onsiteverification.SaveOnSiteVerificat
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
+import com.tzh.retrofit_module.domain.model.bookIn.GetItemsCountNotInBox
 import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
@@ -26,6 +27,7 @@ import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_BOXES_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_ITEMS_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_ITEMS_IN_BOX
 import com.tzh.retrofit_module.util.GET_ISSUER_BY_EPC
+import com.tzh.retrofit_module.util.GET_ITEMS_COUNT_NOT_IN_BOX
 import com.tzh.retrofit_module.util.GET_ITEMS_FOR_ONSITE_ROUTE
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
@@ -88,6 +90,13 @@ interface ApiService {
         @Query("status") status: String,
         @Query("loginUserId") loginUserId: String,
     ): Response<GetAllItemsOfBoxResponse>
+
+    @GET(GET_ITEMS_COUNT_NOT_IN_BOX)
+    suspend fun getItemsCountNotInBox(
+        @Query("box") box: String,
+        @Query("loginUserId") loginUserId: String
+    ): Response<GetItemsCountNotInBox>
+
 
     /* BOOK OUT*/
     @GET(GET_ALL_BOOK_OUT_ITEMS_ROUTE)

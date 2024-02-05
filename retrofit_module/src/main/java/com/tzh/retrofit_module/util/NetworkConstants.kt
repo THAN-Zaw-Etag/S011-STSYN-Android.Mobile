@@ -8,6 +8,7 @@ const val SAVE_BOOK_IN_ROUTE = "BookInOut/SaveBookInOut"
 const val SELECT_BOX_FOR_BOOK_IN_ROUTE = "BookInOut/SelectBoxForBookIn"
 const val CHECK_U_S_CASE_BY_BOX_ROUTE = "BookInOut/CheckUSCaseByBox"
 const val GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE = "BookInOut/SelectItemsInCTKBoxForBookIn"
+const val GET_ITEMS_COUNT_NOT_IN_BOX = "BookInOut/SelectItemsNotInCTKBox"
 
 const val GET_ALL_BOOK_OUT_ITEMS_ROUTE = "BookInOut/SelectItemWhereIn"
 const val GET_ALL_BOOK_OUT_BOXES_ROUTE = "BookInOut/SelectBoxForBookOut"

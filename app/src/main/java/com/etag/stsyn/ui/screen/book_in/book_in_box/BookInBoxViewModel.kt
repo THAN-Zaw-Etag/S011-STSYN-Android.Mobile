@@ -13,6 +13,7 @@ import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
+import com.tzh.retrofit_module.domain.model.bookIn.GetItemsCountNotInBox
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.user.UserModel
@@ -56,6 +57,8 @@ class BookInBoxViewModel @Inject constructor(
     private var boxItems = MutableStateFlow<List<BoxItem>>(emptyList())  // items from api
     val scannedItemsList = MutableStateFlow<List<String>>(emptyList()) // scanned tag list
 
+    private val getItemsCountNotInBoxResponse = MutableStateFlow<ApiResponse<GetItemsCountNotInBox>>(ApiResponse.Default)
+
     val user = localDataStore.getUser
     private val appConfig = appConfiguration.appConfig
 
@@ -64,6 +67,20 @@ class BookInBoxViewModel @Inject constructor(
         handleUiEvent()
         getAllBoxesForBookInItem()
         observeBookInItemsResponse()
+    }
+
+    private fun getItemsCountNotInBox(box: String) {
+        viewModelScope.launch {
+
+            when (val response = bookInRepository.getItemsCountNotInBox(box)) {
+                is ApiResponse.Success -> {
+                    _boxUiState.update { it.copy(
+                        itemsCountNotInBox = (response as GetItemsCountNotInBox).itemCount
+                    ) }
+                }
+                else -> {}
+            }
+        }
     }
 
     private fun observeBookInItemsResponse() {
@@ -256,6 +273,7 @@ class BookInBoxViewModel @Inject constructor(
         _boxUiState.update { it.copy(isChecked = enable) }
         if (enable) {
             scannedItemsList.update { _boxUiState.value.allItemsOfBox.map { it.epc } }
+            getItemsCountNotInBox(boxUiState.value.scannedBox.box)
         } else scannedItemsList.update { emptyList() }
     }
 
@@ -326,6 +344,7 @@ data class BoxUiState(
     val scannedBox: BoxItem = BoxItem(),
     val issuerUser: UserModel? = null,
     val isUsCase: Boolean = false,
+    val itemsCountNotInBox : Int = 0,
     val isChecked: Boolean = false,
     val boxScanType: BoxScanType = BoxScanType.BOX,
     val allBoxes: List<BoxItem> = listOf(),
