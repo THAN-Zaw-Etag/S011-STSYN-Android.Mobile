@@ -4,6 +4,7 @@ import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
+import com.tzh.retrofit_module.data.model.onsiteverification.SaveOnSiteVerificationRq
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
@@ -32,6 +33,7 @@ import com.tzh.retrofit_module.util.LOGIN_ROUTE
 import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_ONSITE_CHECK_IN_OUT_IN_ROUTE
+import com.tzh.retrofit_module.util.SAVE_ONSITE_VERIFICATION
 import com.tzh.retrofit_module.util.SELECT_BOX_FOR_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.SELECT_ONSITE_VERIFY_ITEMS
 import com.tzh.retrofit_module.util.UPDATE_PASSWORD_ROUTE
@@ -125,6 +127,14 @@ interface ApiService {
         @Query("CsNo") csNo: String,
         @Query("LoginUserId") loginUserId: String,
     ): Response<ItemWhereNotInResponse>
+
+
+    @POST(SAVE_ONSITE_VERIFICATION)
+    suspend fun saveOnSiteVerificationItems(
+        @Body saveOnSiteVerificationRq: SaveOnSiteVerificationRq
+    ): Response<NormalResponse>
+
+
 
     /* ONSITE CHECK IN / OUT */
     @GET(GET_ITEMS_FOR_ONSITE_ROUTE)

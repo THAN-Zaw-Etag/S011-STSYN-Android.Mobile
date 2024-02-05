@@ -27,3 +27,5 @@ const val SELECT_ONSITE_VERIFY_ITEMS = "BookInOut/SelectItemWhereAllNotIn"
 
 /************* ONSITE CHECK IN OUT ******************/
 const val GET_ITEMS_FOR_ONSITE_ROUTE = "BookInOut/SelectItemForOnsite"
+
+const val SAVE_ONSITE_VERIFICATION = "BookInOut/SaveOnsiteVerification"

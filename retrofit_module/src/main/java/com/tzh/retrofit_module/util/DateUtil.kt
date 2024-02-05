@@ -2,8 +2,9 @@ package com.tzh.retrofit_module.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import java.time.Instant
+import com.tzh.retrofit_module.util.DateUtil.getCurrentDateTimeFormattedWithZone
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -31,6 +32,12 @@ object DateUtil {
         return formattedDateTime
     }
 
+    fun getCurrentDateTimeFormattedWithZone(): String {
+        val currentDateTime = ZonedDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        return currentDateTime.format(formatter)
+    }
+
 
 }
 
@@ -44,5 +51,6 @@ fun String.isBefore(date: String): Boolean {
 }
 
 fun main() {
-    println(Instant.MIN)
+    println(getCurrentDateTimeFormattedWithZone())
 }
+

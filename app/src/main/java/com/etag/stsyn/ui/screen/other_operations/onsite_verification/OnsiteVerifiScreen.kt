@@ -181,17 +181,12 @@ fun OnsiteVerifyScreen(
                     onSwipeToDelete = {
                         // It is not good for UX, Because it can just delete for Item from API
                         //   onsiteVerificationViewModel.removeScannedBookInItem(it)
-                                      onsiteVerificationViewModel.removeScannedBookInItemByIndex(it)
+                        onsiteVerificationViewModel.removeScannedBookInItemByIndex(it)
                     },
                     listState = listState,
                     boxItem = boxItemsFromApi,
                     onReset = {
-                        onsiteVerificationViewModel.resetAllScannedStatus()
-                        onsiteVerificationViewModel.resetCurrentScannedItem()
-                        coroutineScope.launch {
-                            listState.animateScrollToItem(0)
-
-                        }
+                        onsiteVerificationViewModel.resetAll()
                     },
                     scannedItems = rfidUiState.scannedItems,
                     modifier = Modifier.weight(1f),

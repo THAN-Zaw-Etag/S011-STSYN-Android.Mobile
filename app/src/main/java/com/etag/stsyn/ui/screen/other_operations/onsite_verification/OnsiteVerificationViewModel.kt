@@ -4,17 +4,23 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
+import com.tzh.retrofit_module.data.local_storage.LocalDataStore
+import com.tzh.retrofit_module.data.model.onsiteverification.SaveOnSiteVerificationRq
+import com.tzh.retrofit_module.data.model.onsiteverification.StockTake
+import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookIn.safeCopy
 import com.tzh.retrofit_module.domain.model.bookOut.ItemWhereNotInResponse
+import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,13 +29,20 @@ import javax.inject.Inject
 class OnsiteVerificationViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
     private val bookOutRepository: BookOutRepository,
+    private val appConfiguration: AppConfiguration,
+    private val localDataStore: LocalDataStore,
 ) : BaseViewModel(rfidHandler) {
     val TAG = "OnsiteVerificationViewModel"
 
+    //TODO if all other testing are passed, implement override function of OnReceivedTagId of BaseViewModel
     private val _getOnSiteVerifyItems =
         MutableStateFlow<ApiResponse<ItemWhereNotInResponse>>(ApiResponse.Default)
     val getOnSiteVerifyItems: StateFlow<ApiResponse<ItemWhereNotInResponse>> =
         _getOnSiteVerifyItems.asStateFlow()
+
+    private val _saveOnSiteVerification =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveOnSiteVerification: StateFlow<ApiResponse<NormalResponse>> =_saveOnSiteVerification.asStateFlow()
 
 
     private val _onsiteVerificationUiState = MutableStateFlow(OnsiteVerificationUiState())
@@ -52,8 +65,10 @@ class OnsiteVerificationViewModel @Inject constructor(
     private val _filterStatusMessage = MutableStateFlow<String?>(null)
     val filterStatusMessage: StateFlow<String?> = _filterStatusMessage
 
+    private val settingsFlow = appConfiguration.appConfig
+
     override fun onReceivedTagId(id: String) {
-        //  addScanItemToUiState("455341483030303030303036")
+        //  addScannedItemAndMoveToTop(id)
     }
 
     fun onReceivedTagIdTest() {
@@ -160,11 +175,71 @@ class OnsiteVerificationViewModel @Inject constructor(
         }
     }
 
-    fun resetCurrentScannedItem() {
-        _currentScannedItem.value = null
-        _scannedItemIndex.value = -1
-        removeAllScannedItems()
-        removeAllOutstandingItems()
+    fun saveOnSiteVerification() {
+        val date = DateUtil.getCurrentDateTimeFormattedWithZone()
+        viewModelScope.launch {
+            val settings = settingsFlow.first()
+            val loginUserId = localDataStore.getUser.first().userId
+            val stokeList = arrayListOf<StockTake>()
+
+            val allDoneItems = _totalScannedItems.value
+            val allOutstandingItems = _outstandingItems.value
+
+        if (allDoneItems.isNotEmpty()) {
+            allDoneItems.forEach { boxItem ->
+                val stockTake = StockTake(
+                    chkStatusId = 1,
+                    date = date,
+                    handheldReaderId = settings.handheldReaderId.toInt(),
+                    isDone = true,
+                    isStockTake = false,
+                    itemId = boxItem?.id?.toInt() ?: 0,
+                    shift = "ONSITE",
+                    userId = loginUserId.toInt()
+                )
+                stokeList.add(stockTake)
+            }
+        }
+
+            if(allOutstandingItems.isNotEmpty()){
+                allOutstandingItems.forEach { boxItem ->
+                    val stockTake = StockTake(
+                        chkStatusId = 1,
+                        date = date,
+                        handheldReaderId = settings.handheldReaderId.toInt(),
+                        isDone = false,
+                        isStockTake = false,
+                        itemId = boxItem?.id?.toInt() ?: 0,
+                        shift = "ONSITE",
+                        userId = loginUserId.toInt()
+                    )
+                    stokeList.add(stockTake)
+                }
+            }
+            Log.d("@LsTest", "saveOnSiteVerification: $stokeList")
+            val saveOnSiteVerificationRq = SaveOnSiteVerificationRq(
+                stockTakes = stokeList
+            )
+
+
+
+            _saveOnSiteVerification.value = ApiResponse.Loading
+            delay(1000)
+            _saveOnSiteVerification.value = bookOutRepository.saveOnSiteVerification(saveOnSiteVerificationRq)
+            shouldShowAuthorizationFailedDialog(_saveOnSiteVerification.value is ApiResponse.AuthorizationError)
+            when (_saveOnSiteVerification.value) {
+                is ApiResponse.Success -> {
+                    _filterStatusMessage.value = "Items saved successfully"
+                   // resetCurrentScannedItem()
+                }
+
+                is ApiResponse.ApiError -> {
+                    _filterStatusMessage.value = (_saveOnSiteVerification.value as ApiResponse.ApiError).message
+                }
+
+                else -> {}
+            }
+        }
     }
 
     fun removeScannedBookInItemByIndex(index: Int) {
@@ -193,7 +268,7 @@ class OnsiteVerificationViewModel @Inject constructor(
         addOutstandingItem()
     }
 
-    fun resetAllScannedStatus() {
+    fun resetAll() {
         viewModelScope.launch {
             val updatedItems =
                 _onsiteVerificationUiState.value.allItemsFromApi.map { it.safeCopy(isScanned = false) }
@@ -201,6 +276,10 @@ class OnsiteVerificationViewModel @Inject constructor(
                 it.copy(allItemsFromApi = updatedItems)
             }
             _filterStatusMessage.value = "All items have been reset."
+            _currentScannedItem.value = null
+            _scannedItemIndex.value = -1
+            removeAllScannedItems()
+            removeAllOutstandingItems()
         }
     }
 
