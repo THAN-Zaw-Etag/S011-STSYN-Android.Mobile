@@ -43,6 +43,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ScannedItem(
+    modifier: Modifier = Modifier,
     id: String,
     name: String,
     showTrailingIcon: Boolean = false,
@@ -51,7 +52,7 @@ fun ScannedItem(
     showError: Boolean = false,
     onItemClick: () -> Unit = {},
     onSwipeToDismiss: () -> Unit = {},
-    modifier: Modifier = Modifier
+
 ) {
     val coroutineScope = rememberCoroutineScope()
     if (isSwipeable) {
@@ -126,8 +127,8 @@ private fun ScannedItemContent(
             Column(
                 modifier = modifier.padding(16.dp)
             ) {
-                Text(text = id.toUpperCase())
-                Text(text = name.toUpperCase())
+                Text(text = id.uppercase())
+                Text(text = name.uppercase())
             }
 
             Spacer(modifier = Modifier.weight(1f))

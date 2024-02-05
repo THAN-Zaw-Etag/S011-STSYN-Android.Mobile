@@ -123,8 +123,6 @@ fun OnsiteVerifyScreen(
 
             Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Success...")
             isApiError = false
-            val items =
-                (getItemWhereNotInResponseStat as ApiResponse.Success).data?.items ?: emptyList()
             //onsiteVerificationViewModel.updateUiState(items)
             boxItemsFromApi = onsiteVerificationUiState.allItemsFromApi
         }
@@ -336,7 +334,7 @@ fun ScannedBoxSection(
                 append("Item Description: ")
             }
             withStyle(style = SpanStyle(color = Color.Black)) {
-                append(if (description.isEmpty()) "-" else description.toUpperCase())
+                append(if (description.isEmpty()) "-" else description.uppercase())
             }
         })
 
@@ -345,7 +343,7 @@ fun ScannedBoxSection(
                 append("ID: ")
             }
             withStyle(style = SpanStyle(color = Color.Black)) {
-                append(if (id.isEmpty()) "-" else id.toUpperCase())
+                append(if (id.isEmpty()) "-" else id.uppercase())
             }
         })
     }

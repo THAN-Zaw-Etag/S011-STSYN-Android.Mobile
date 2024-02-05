@@ -29,7 +29,7 @@ import javax.inject.Inject
 class OnsiteVerificationViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
     private val bookOutRepository: BookOutRepository,
-    private val appConfiguration: AppConfiguration,
+    appConfiguration: AppConfiguration,
     private val localDataStore: LocalDataStore,
 ) : BaseViewModel(rfidHandler) {
     val TAG = "OnsiteVerificationViewModel"
