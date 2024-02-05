@@ -9,11 +9,7 @@ import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
 interface BookInRepository {
-    suspend fun getBookInItems(
-        store: String,
-        csNo: String,
-        userId: String
-    ): ApiResponse<BookInResponse>
+    suspend fun getBookInItems(): ApiResponse<BookInResponse>
 
     suspend fun saveBookIn(saveBookInRequest: SaveBookInRequest): ApiResponse<NormalResponse>
     suspend fun getBoxItemsForBookIn(issuerId: String): ApiResponse<SelectBoxForBookInResponse>
@@ -22,8 +18,7 @@ interface BookInRepository {
 
     suspend fun getAllBookItemsOfBox(
         box: String,
-        status: String,
-        loginUserId: String
+        status: String
     ): ApiResponse<GetAllItemsOfBoxResponse>
 
 }

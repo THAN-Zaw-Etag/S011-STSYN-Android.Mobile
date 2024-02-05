@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.UiEvent
@@ -57,7 +58,10 @@ class OnsiteCheckInOutViewModel @Inject constructor(
 
     init {
         getAllItemsForOnsite()
+        handleUiEvent()
+    }
 
+    private fun handleUiEvent() {
         viewModelScope.launch {
             eventFlow.collect {event ->
                 when (event) {

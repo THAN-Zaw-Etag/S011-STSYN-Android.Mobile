@@ -6,6 +6,7 @@ import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.json.JSONException
 import retrofit2.HttpException
 import retrofit2.Response
@@ -15,6 +16,7 @@ object ApiResponseHandler {
     suspend fun <T> processResponse(makeApiCall: suspend () -> Response<T>): ApiResponse<T> {
         return try {
             val response = makeApiCall()
+            delay(1000)
             if (response.isSuccessful) {
                 val normalResponse = getNormalResponseFromApiResponse(response.body().toString())
                 val normalResponseError = normalResponse.error ?: "Unknown error"

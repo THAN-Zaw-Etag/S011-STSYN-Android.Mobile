@@ -31,23 +31,24 @@ fun CheckInOutSaveScreen(
     val onsiteCheckInOutUiState by onsiteCheckInOutViewModel.onSiteCheckInOutUiState.collectAsState()
     val saveOnsiteCheckInOutResponse by onsiteCheckInOutViewModel.saveOnSiteCheckInOutResponse.collectAsState()
     val user by onsiteCheckInOutViewModel.userFlow.collectAsState(initial = LocalUser())
-    var showErrorDialog by remember { mutableStateOf(false) }
     
     when(saveOnsiteCheckInOutResponse) {
         is ApiResponse.Loading -> LoadingDialog(
             title = "Please wait while SMS is processing your request...\n",
             showDialog = true,
-            onDismiss = {})
+            onDismiss = {}
+        )
 
         is ApiResponse.Success -> {
             onsiteCheckInOutViewModel.updateSuccessDialogVisibility(true)
         }
 
         is ApiResponse.ApiError -> {
-
+            onsiteCheckInOutViewModel.updateOnsiteCheckInOutErrorMessage((saveOnsiteCheckInOutResponse as ApiResponse.ApiError).message)
         }
 
         is ApiResponse.AuthorizationError -> onsiteCheckInOutViewModel.shouldShowAuthorizationFailedDialog(true)
+
         else -> {}
     }
 

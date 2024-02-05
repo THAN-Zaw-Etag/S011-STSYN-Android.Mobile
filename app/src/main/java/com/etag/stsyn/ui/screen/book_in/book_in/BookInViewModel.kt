@@ -3,21 +3,27 @@ package com.etag.stsyn.ui.screen.book_in.book_in
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
+import com.etag.stsyn.core.UiEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
+import com.tzh.retrofit_module.data.mapper.toBookOutBoxItemMovementLog
+import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
-import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
+import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookInRepository
+import com.tzh.retrofit_module.enum.ItemStatus
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,127 +31,120 @@ import javax.inject.Inject
 @HiltViewModel
 class BookInViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler,
-    private val bookInRepository: BookInRepository,
-    private val localDataStore: LocalDataStore,
-    private val appConfig: AppConfiguration
+    localDataStore: LocalDataStore,
+    appConfig: AppConfiguration,
+    private val bookInRepository: BookInRepository
 ) : BaseViewModel(rfidHandler) {
+    val TAG = "BookInViewModel"
 
-    private val _bookInItems = MutableStateFlow<ApiResponse<BookInResponse>>(ApiResponse.Default)
-    val bookInItemsResponse: StateFlow<ApiResponse<BookInResponse>> = _bookInItems.asStateFlow()
-
-    private val _scannedBookInItems = MutableStateFlow<List<BookInItem?>>(emptyList())
-    val scannedBookInItems: StateFlow<List<BookInItem?>> = _scannedBookInItems.asStateFlow()
+    private val _bookInItemsResponse =
+        MutableStateFlow<ApiResponse<BookInResponse>>(ApiResponse.Default)
+    val bookInItemsResponse: StateFlow<ApiResponse<BookInResponse>> = _bookInItemsResponse
 
     private val _savedBookInResponse =
         MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
-    val savedBookInResponse: StateFlow<ApiResponse<NormalResponse>> =
-        _savedBookInResponse.asStateFlow()
+    val savedBookInResponse: StateFlow<ApiResponse<NormalResponse>> = _savedBookInResponse
 
-    private val _outstandingItems = MutableStateFlow<List<BookInItem?>>(emptyList())
-    val outstandingItems: StateFlow<List<BookInItem?>> = _outstandingItems.asStateFlow()
+    private val _scannedItemIdList = MutableStateFlow<List<String>>(emptyList())
+    val scannedItemIdList: StateFlow<List<String>> = _scannedItemIdList.asStateFlow()
 
-    val user = localDataStore.getUser
-    val appConfiguration = appConfig.appConfig
+    private val _bookInState = MutableStateFlow(BookInState())
+    val bookInState: StateFlow<BookInState> = _bookInState.asStateFlow()
+
+    val userFlow = localDataStore.getUser
+    val appConfigFlow = appConfig.appConfig
 
     init {
+        getBookInItems()
+        observeBookInItemsResponse()
+        handleUiEvent()
+    }
+
+    private fun observeBookInItemsResponse() {
         viewModelScope.launch {
-            user.collect {
-                getBookInItems(userId = it.userId)
+            delay(1000)
+            bookInItemsResponse.collect { handleDialogStatesByResponse(it) }
+        }
+    }
+
+    private fun handleUiEvent() {
+        viewModelScope.launch {
+            eventFlow.collect {
+                when (it) {
+                    is UiEvent.ClickAfterSave -> doTasksAfterSavingItems()
+                    else -> {}
+                }
             }
         }
-        addOutstandingItem()
     }
 
     override fun onReceivedTagId(id: String) {
-        Log.d("TAG", "onReceivedTagId: $id")
-        // handled scanned tags here
-        addScannedItem(id)
+        Log.d(TAG, "onReceivedTagId: $id")
+        handleScannedItem(id)
     }
 
-    fun doTasksAfterSavingItems() {
+    private fun doTasksAfterSavingItems() {
         viewModelScope.launch {
             updateSuccessDialogVisibility(false)
-            val userId = user.first().userId
-            getBookInItems(userId)
-            // clear all scanned items
-            _scannedBookInItems.value = emptyList()
+            getBookInItems()
+            _scannedItemIdList.update { emptyList() }
+            _bookInState.update { it.copy(allBookInItems = emptyList()) }
         }
     }
 
-    private fun addOutstandingItem() {
+    private fun handleScannedItem(id: String) {
         viewModelScope.launch {
-            rfidUiState.collect {
-                if (!it.isScanning) {
-                    if (_bookInItems.value is ApiResponse.Success) {
-                        val bookInItems =
-                            (_bookInItems.value as ApiResponse.Success<BookInResponse>).data!!.items.toMutableList()
-
-                        _scannedBookInItems.collect { items ->
-                            items.forEach { bookInItem ->
-                                bookInItems.remove(bookInItem)
-                            }
-                            _outstandingItems.update { bookInItems }
-                        }
-                    }
+            val hasExisted = id in scannedItemIdList.value
+            val scannedItem = bookInState.value.allBookInItems.find { it.epc == id }
+            if (!hasExisted) {
+                if (scannedItem != null) {
+                    _scannedItemIdList.update { it + id }
                 }
             }
         }
     }
 
-    private fun addScannedItem(id: String) {
+    fun removeScannedBookInItem(id: String) {
         viewModelScope.launch {
-            if (_bookInItems.value is ApiResponse.Success) {
-                val bookInItems =
-                    (_bookInItems.value as ApiResponse.Success<BookInResponse>).data!!.items
-
-                val currentItems = _scannedBookInItems.value.toMutableList()
-                val hasExisted = id in currentItems.map { it?.epc }
-
-                try {
-                    val scannedItem = bookInItems.find { it.epc == id }
-                    if (!hasExisted) {
-                        if (scannedItem != null) {
-                            currentItems.add(scannedItem)
-                            _scannedBookInItems.update {
-                                it + scannedItem
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
-
-    fun removeScannedBookInItem(currentItem: BookInItem) {
-        viewModelScope.launch {
-
-            val currentList = _scannedBookInItems.value
-            val indexToRemove = currentList.indexOf(currentItem)
-            val updatedList = currentList.toMutableList().apply {
-                removeAt(indexToRemove)
-            }
-            _scannedBookInItems.value = updatedList
-
-            // update outstanding when scanned items change
-            addOutstandingItem()
+            _scannedItemIdList.update { it - id }
         }
     }
 
     fun removeAllScannedItems() {
-        _scannedBookInItems.value = emptyList()
-
-        // update outstanding when scanned items change
-        addOutstandingItem()
+        _bookInState.update { it.copy(allBookInItems = emptyList()) }
     }
 
-    fun saveBookIn(saveBookInRequest: SaveBookInRequest) {
+    fun saveBookIn() {
         viewModelScope.launch {
+            val currentDate = DateUtil.getCurrentDate()
+            val setting = appConfigFlow.first()
+            val userId = userFlow.map { it.userId }.first()
+
+            val printJob = PrintJob(
+                date = currentDate,
+                handheldId = setting.handheldReaderId.toInt(),
+                reportType = ItemStatus.BookIn.name,
+                userId = userId.toInt()
+            )
+
+            val itemMovementLogs = bookInState.value.allBookInItems.map { item ->
+                item.toBookOutBoxItemMovementLog(
+                    itemStatus = ItemStatus.BookIn.name,
+                    workLocation = "",
+                    issuerId = item.issuerId,
+                    date = currentDate,
+                    readerId = setting.handheldReaderId,
+                    visualChecked = false
+                )
+            }
+
             _savedBookInResponse.value = ApiResponse.Loading
             delay(1000)
-            _savedBookInResponse.value =
-                bookInRepository.saveBookIn(saveBookInRequest = saveBookInRequest)
+            _savedBookInResponse.value = bookInRepository.saveBookIn(
+                saveBookInRequest = SaveBookInRequest(
+                    printJob = printJob, itemMovementLogs = itemMovementLogs
+                )
+            )
         }
     }
 
@@ -155,28 +154,25 @@ class BookInViewModel @Inject constructor(
         }
     }
 
-    private fun getBookInItems(
-        userId: String
-    ) {
+    private fun getBookInItems() {
         viewModelScope.launch {
-            _bookInItems.value = ApiResponse.Loading
+            _bookInItemsResponse.value = ApiResponse.Loading
             delay(1000)
-            appConfiguration.collect {
-                _bookInItems.value = bookInRepository.getBookInItems(
-                    store = it.store.name,
-                    csNo = it.csNo,
-                    userId = userId
-                )
-                shouldShowAuthorizationFailedDialog(_bookInItems.value is ApiResponse.AuthorizationError)
+            _bookInItemsResponse.value = bookInRepository.getBookInItems()
 
-                when (_bookInItems.value) {
-                    is ApiResponse.ApiError -> {
-                        updateErrorMessage((_bookInItems.value as ApiResponse.ApiError).message)
+            when (bookInItemsResponse.value) {
+                is ApiResponse.Success -> {
+                    _bookInState.update {
+                        it.copy(allBookInItems = (bookInItemsResponse.value as ApiResponse.Success<BookInResponse>).data?.items!!)
                     }
-
-                    else -> {}
                 }
+
+                else -> {}
             }
         }
     }
+
+    data class BookInState(
+        val allBookInItems: List<BoxItem> = emptyList(),
+    )
 }

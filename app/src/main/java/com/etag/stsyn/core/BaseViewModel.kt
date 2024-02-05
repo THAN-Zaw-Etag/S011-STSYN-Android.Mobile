@@ -1,10 +1,12 @@
 package com.etag.stsyn.core
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.reader.RfidBatteryLevelListener
 import com.etag.stsyn.core.reader.RfidResponseHandlerInterface
 import com.etag.stsyn.core.reader.ZebraRfidHandler
+import com.tzh.retrofit_module.util.ApiResponse
 import com.zebra.rfid.api3.TagData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,6 +59,29 @@ abstract class BaseViewModel(
     fun toggleLoadingVisibility(visible: Boolean) {
         _detailUiState.update {
             it.copy(showLoadingDialog = visible)
+        }
+    }
+
+    protected fun <T> handleDialogStatesByResponse(response: ApiResponse<T>) {
+        Log.d(TAG, "handleDialogStatesByResponse: $response")
+        when (response) {
+            is ApiResponse.Loading -> {
+                toggleLoadingVisibility(true)
+                disableScan()
+            }
+            is ApiResponse.Success -> {
+                toggleLoadingVisibility(false)
+                enableScan()
+            }
+            is ApiResponse.ApiError -> {
+                toggleLoadingVisibility(false)
+                updateErrorMessage(response.message)
+            }
+            is ApiResponse.AuthorizationError -> {
+                toggleLoadingVisibility(false)
+                shouldShowAuthorizationFailedDialog(true)
+            }
+            else -> {}
         }
     }
 
