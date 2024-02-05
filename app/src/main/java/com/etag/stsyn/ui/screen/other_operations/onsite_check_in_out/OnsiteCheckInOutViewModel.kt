@@ -1,9 +1,8 @@
 package com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
-import com.etag.stsyn.core.UiEvent
+import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.mapper.toBookOutBoxItemMovementLog
@@ -65,7 +64,7 @@ class OnsiteCheckInOutViewModel @Inject constructor(
         viewModelScope.launch {
             eventFlow.collect {event ->
                 when (event) {
-                    is UiEvent.ClickAfterSave -> doTasksAfterSaved()
+                    is ClickEvent.ClickAfterSave -> doTasksAfterSaved()
                     else -> {}
                 }
             }

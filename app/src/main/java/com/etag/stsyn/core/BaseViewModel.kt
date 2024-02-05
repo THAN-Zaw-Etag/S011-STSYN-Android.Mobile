@@ -1,6 +1,5 @@
 package com.etag.stsyn.core
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.reader.RfidBatteryLevelListener
@@ -9,6 +8,7 @@ import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.util.ApiResponse
 import com.zebra.rfid.api3.TagData
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -32,8 +32,8 @@ abstract class BaseViewModel(
     private val _showAuthorizationFailedDialog = MutableStateFlow(false)
     val showAuthorizationFailedDialog: StateFlow<Boolean> = _showAuthorizationFailedDialog.asStateFlow()
 
-    private val _eventFlow = MutableSharedFlow<UiEvent>()
-    val eventFlow: SharedFlow<UiEvent> = _eventFlow.asSharedFlow()
+    private val _eventFlow = MutableSharedFlow<ClickEvent>()
+    val eventFlow: SharedFlow<ClickEvent> = _eventFlow.asSharedFlow()
 
     private var reconnectingJob: Job? = null
 
@@ -56,16 +56,20 @@ abstract class BaseViewModel(
         _detailUiState.update { it.copy(showSuccessDialog = visible) }
     }
 
-    fun toggleLoadingVisibility(visible: Boolean) {
+    protected fun toggleLoadingVisibility(visible: Boolean) {
         _detailUiState.update {
             it.copy(showLoadingDialog = visible)
         }
     }
 
-    protected fun <T> handleDialogStatesByResponse(response: ApiResponse<T>) {
-        Log.d(TAG, "handleDialogStatesByResponse: $response")
+    /** @param response is a response from api.
+     * Handle api response state and update loading , error dialogs states.
+     * @see delay not to show loading dialog immediately
+     * @see disableScan disable scan while loading*/
+    protected suspend fun <T> handleDialogStatesByResponse(response: ApiResponse<T>) {
         when (response) {
             is ApiResponse.Loading -> {
+                delay(500)
                 toggleLoadingVisibility(true)
                 disableScan()
             }
@@ -102,7 +106,6 @@ abstract class BaseViewModel(
     }
 
     fun removeScannedItems() {
-
         _rfidUiState.update {
             it.copy(scannedItems = mutableListOf())
         }
@@ -219,7 +222,7 @@ abstract class BaseViewModel(
         onReceivedTagId(tagData.get(0).tagID)
     }
 
-    fun updateEvent(event: UiEvent) {
+    fun updateClickEvent(event: ClickEvent) {
         viewModelScope.launch {
             _eventFlow.emit(event)
         }
@@ -257,7 +260,8 @@ abstract class BaseViewModel(
     }
 
 }
-sealed class UiEvent {
-    object ClickAfterSave : UiEvent()
-    object Default: UiEvent()
+sealed class ClickEvent {
+    object ClickAfterSave : ClickEvent()
+    object RetryClick: ClickEvent()
+    object Default: ClickEvent()
 }

@@ -24,8 +24,6 @@ fun BookInBoxScanScreen(
     modifier: Modifier = Modifier
 ) {
     val rfidUiState by bookInBoxViewModel.rfidUiState.collectAsState()
-    val getAllBoxesResponse by bookInBoxViewModel.boxItemsForBookInResponse.collectAsState()
-    val allItemsOfBoxResponse by bookInBoxViewModel.getAllItemsOfBox.collectAsState()
     val bookInBoxUiState by bookInBoxViewModel.boxUiState.collectAsState()
     var scannedBox by remember { mutableStateOf(BoxItem()) }
     var boxes by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
@@ -35,22 +33,6 @@ fun BookInBoxScanScreen(
         scannedBox = bookInBoxUiState.scannedBox
         boxes = bookInBoxUiState.allBoxes
     }
-
-    /*when (getAllBoxesResponse) {
-        is ApiResponse.Loading -> bookInBoxViewModel.toggleLoadingVisibility(true)
-        is ApiResponse.Success -> {
-            bookInBoxViewModel.toggleLoadingVisibility(false)
-            boxes =
-                (getAllBoxesResponse as ApiResponse.Success<SelectBoxForBookInResponse>).data!!.items
-        }
-
-        is ApiResponse.ApiError -> {
-            bookInBoxViewModel.toggleLoadingVisibility(false)
-            bookInBoxViewModel.updateErrorMessage((getAllBoxesResponse as ApiResponse.ApiError).message)
-        }
-
-        else -> {}
-    }*/
 
     BaseBoxScreen(
         bookItems = bookInBoxUiState.allItemsOfBox,

@@ -8,6 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,11 +30,17 @@ fun BaseSaveScreen(
     onScan: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
+    var error by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isError) {
+        error = isError
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(1f)) {
             content()
         }
-        if (isError) {
+        if (error) {
             ErrorText(text = errorMessage)
             Spacer(modifier = Modifier.height(16.dp))
         } else {

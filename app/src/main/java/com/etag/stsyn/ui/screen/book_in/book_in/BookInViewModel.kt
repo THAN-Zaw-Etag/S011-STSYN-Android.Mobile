@@ -3,7 +3,7 @@ package com.etag.stsyn.ui.screen.book_in.book_in
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
-import com.etag.stsyn.core.UiEvent
+import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.mapper.toBookOutBoxItemMovementLog
@@ -52,7 +52,7 @@ class BookInViewModel @Inject constructor(
     val bookInState: StateFlow<BookInState> = _bookInState.asStateFlow()
 
     val userFlow = localDataStore.getUser
-    val appConfigFlow = appConfig.appConfig
+    private val appConfigFlow = appConfig.appConfig
 
     init {
         getBookInItems()
@@ -62,7 +62,7 @@ class BookInViewModel @Inject constructor(
 
     private fun observeBookInItemsResponse() {
         viewModelScope.launch {
-            delay(1000)
+            delay(500)
             bookInItemsResponse.collect { handleDialogStatesByResponse(it) }
         }
     }
@@ -71,7 +71,7 @@ class BookInViewModel @Inject constructor(
         viewModelScope.launch {
             eventFlow.collect {
                 when (it) {
-                    is UiEvent.ClickAfterSave -> doTasksAfterSavingItems()
+                    is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
                     else -> {}
                 }
             }

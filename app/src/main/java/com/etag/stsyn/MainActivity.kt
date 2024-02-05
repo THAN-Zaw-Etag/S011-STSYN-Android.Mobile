@@ -23,9 +23,9 @@ import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
 import com.etag.stsyn.core.receiver.BluetoothState
 import com.etag.stsyn.data.worker.TokenRefresher
+import com.etag.stsyn.ui.navigation.RootNavigationGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.theme.STSYNTheme
-import com.etag.stsyn.ui.navigation.RootNavigationGraph
 import com.etag.stsyn.util.PermissionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
 import dagger.hilt.android.AndroidEntryPoint

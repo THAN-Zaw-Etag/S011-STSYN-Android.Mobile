@@ -9,6 +9,7 @@
 
 package com.etag.stsyn.ui.screen.detail
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.ReaderLifeCycle
-import com.etag.stsyn.core.UiEvent
+import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.AuthorizationTokenExpiredDialog
 import com.etag.stsyn.ui.components.ConfirmationDialog
@@ -42,8 +43,6 @@ import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SuccessDialog
 import com.etag.stsyn.ui.components.TabBarLayout
 import com.etag.stsyn.ui.components.WarningDialog
-import com.etag.stsyn.ui.screen.book_in.book_in.BookInViewModel
-import com.etag.stsyn.ui.screen.book_in.book_in_box.BookInBoxViewModel
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
 import com.etag.stsyn.util.datasource.getScreensByOptionType
@@ -110,12 +109,13 @@ fun DetailScreen(
         positiveButtonTitle = "Ok",
         onDismiss = {
             showErrorDialog = false
+            viewModel.updateClickEvent(ClickEvent.RetryClick)
         })
 
     // show success dialog when saving items is done
     SuccessDialog(showDialog = showSuccessDialog, title = "SUCCESS!", onDoneClick = {
         scope.launch { pagerState.animateScrollToPage(0) }
-        viewModel.updateEvent(UiEvent.ClickAfterSave)
+        viewModel.updateClickEvent(ClickEvent.ClickAfterSave)
     })
 
     LaunchedEffect(pagerState.currentPage) {

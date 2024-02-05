@@ -30,36 +30,9 @@ fun BookOutScanScreen(
     val rfidUiState by bookOutViewModel.rfidUiState.collectAsState()
     val listState = rememberLazyListState()
     val bookOutUiState by bookOutViewModel.bookOutUiState.collectAsState()
-    val getAllBookOutItemsResponse by bookOutViewModel.getAllBookOutItemResponse.collectAsState()
-    val context = LocalContext.current
 
     LaunchedEffect(rfidUiState.scannedItems) {
         if (rfidUiState.scannedItems.size > 1) listState.animateScrollToItem(rfidUiState.scannedItems.size - 1)
-    }
-
-    when (getAllBookOutItemsResponse) {
-        is ApiResponse.Loading -> LoadingDialog(
-            title = "Loading book out items...",
-            showDialog = true,
-            onDismiss = { /*TODO*/ })
-
-        is ApiResponse.Success -> {
-            // TODO do something here...
-        }
-
-        is ApiResponse.ApiError -> WarningDialog(
-            icon = CustomIcon.Vector(Icons.Default.Error),
-            message = (getAllBookOutItemsResponse as ApiResponse.ApiError).message,
-            showDialog = true,
-            positiveButtonTitle = "Try again",
-            onPositiveButtonClick = {}
-        )
-
-        is ApiResponse.AuthorizationError -> bookOutViewModel.shouldShowAuthorizationFailedDialog(
-            true
-        )
-
-        else -> {}
     }
 
     BaseScanScreen(
@@ -79,7 +52,7 @@ fun BookOutScanScreen(
                         id = item.epc, name = item.description,
                         isSwipeable = true,
                         onSwipeToDismiss = {
-                            bookOutViewModel.removeScannedItem(index)
+                            bookOutViewModel.removeScannedItem(item)
                         }
                     )
                 }

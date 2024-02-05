@@ -1,7 +1,9 @@
 package com.etag.stsyn.ui.screen.book_out.book_out
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
+import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.enums.Purpose
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
@@ -33,7 +35,7 @@ class BookOutViewModel @Inject constructor(
     private val localDataStore: LocalDataStore,
     private val appConfiguration: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
-    val TAG = "BookOut ViewModel"
+    val TAG = "BookOutViewModel"
 
     private val _bookOutUiState = MutableStateFlow(BookOutUiState())
     val bookOutUiState: StateFlow<BookOutUiState> = _bookOutUiState.asStateFlow()
@@ -54,10 +56,43 @@ class BookOutViewModel @Inject constructor(
 
     init {
         getAllBookOutItems()
+        handleClickEvent()
+        observeBookOutItemsResponse()
+    }
+
+    private fun handleClickEvent() {
+        viewModelScope.launch {
+            eventFlow.collect {
+                when (it) {
+                    is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
+                    is ClickEvent.RetryClick -> getAllBookOutItems()
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun doTasksAfterSavingItems() {
+        viewModelScope.launch {
+            updateSuccessDialogVisibility(false)
+            getAllBookOutItems()
+            _bookOutUiState.update { it.copy(allBookOutItems = emptyList(), scannedItems = emptyList()) }
+        }
+    }
+
+    private fun observeBookOutItemsResponse() {
+        viewModelScope.launch {
+            getAllBookOutItemResponse.collect {
+                Log.d(TAG, "observeBookOutItemsResponse: $it")
+                handleDialogStatesByResponse(it)
+            }
+        }
     }
 
     private fun getAllBookOutItems() {
+        Log.d(TAG, "getAllBookOutItems: blah")
         viewModelScope.launch {
+            _getAllBookOutItemResponse.value = ApiResponse.Loading
             _getAllBookOutItemResponse.value = bookOutRepository.getAllBookOutItems()
             when (_getAllBookOutItemResponse.value) {
                 is ApiResponse.Success -> {
@@ -73,6 +108,7 @@ class BookOutViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
+        Log.d(TAG, "onReceivedTagId: $id")
         addScannedItem(id)
     }
 
@@ -92,9 +128,9 @@ class BookOutViewModel @Inject constructor(
         _bookOutUiState.update { it.copy(scannedItems = emptyList()) }
     }
 
-    fun removeScannedItem(index: Int){
-        val currentList = bookOutUiState.value.scannedItems
-        currentList.toMutableList().removeAt(index)
+    fun removeScannedItem(item: BoxItem){
+        val currentList = bookOutUiState.value.scannedItems.toMutableList()
+        currentList.remove(item)
         _bookOutUiState.update { it.copy(scannedItems = currentList) }
     }
 
@@ -107,18 +143,22 @@ class BookOutViewModel @Inject constructor(
                 if (it.calDate != null && it.calDate != Instant.MIN.toString()) {
                     if (it.calDate!! < currentDate && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
                         updateBookOutErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
+                        Log.d(TAG, "saveBookOutItems: exit")
                         return@launch
                     }
                 }
             }
 
+            Log.d(TAG, "saveBookOutItems: doesn't exit")
             if (settings.first().needLocation) {
                 if (bookOutUiState.value.location.isEmpty() && bookOutUiState.value.purpose.isEmpty()) {
                     updateBookOutErrorMessage("Please Key In Location")
+                    Log.d(TAG, "saveBookOutItems: exit")
                     return@launch
                 }
             }
 
+            Log.d(TAG, "saveBookOutItems: doesn't exit")
             _saveBookOutBoxesResponse.value = ApiResponse.Loading
             val printJob = PrintJob(
                 date = currentDate,
@@ -141,6 +181,11 @@ class BookOutViewModel @Inject constructor(
                     itemMovementLogs = itemMovementLogs
                 )
             )
+
+            when (_saveBookOutBoxesResponse.value) {
+                is ApiResponse.Success -> updateSuccessDialogVisibility(true)
+                else -> {}
+            }
         }
     }
 

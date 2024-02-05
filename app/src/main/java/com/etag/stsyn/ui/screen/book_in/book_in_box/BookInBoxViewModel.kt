@@ -3,7 +3,7 @@ package com.etag.stsyn.ui.screen.book_in.book_in_box
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
-import com.etag.stsyn.core.UiEvent
+import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.mapper.toItemMovementLogs
@@ -26,7 +26,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,20 +41,14 @@ class BookInBoxViewModel @Inject constructor(
 ) : BaseViewModel(rfidHandler) {
     private val TAG = "BookInBoxViewModel"
 
-    private val _boxItemsForBookInResponse =
-        MutableStateFlow<ApiResponse<SelectBoxForBookInResponse>>(ApiResponse.Default)
-    val boxItemsForBookInResponse: StateFlow<ApiResponse<SelectBoxForBookInResponse>> =
-        _boxItemsForBookInResponse.asStateFlow()
+    private val _boxItemsForBookInResponse = MutableStateFlow<ApiResponse<SelectBoxForBookInResponse>>(ApiResponse.Default)
+    val boxItemsForBookInResponse: StateFlow<ApiResponse<SelectBoxForBookInResponse>> = _boxItemsForBookInResponse.asStateFlow()
 
-    private val _getAllItemsOfBox =
-        MutableStateFlow<ApiResponse<GetAllItemsOfBoxResponse>>(ApiResponse.Default)
-    val getAllItemsOfBox: StateFlow<ApiResponse<GetAllItemsOfBoxResponse>> =
-        _getAllItemsOfBox.asStateFlow()
+    private val _getAllItemsOfBox = MutableStateFlow<ApiResponse<GetAllItemsOfBoxResponse>>(ApiResponse.Default)
+    val getAllItemsOfBox: StateFlow<ApiResponse<GetAllItemsOfBoxResponse>> = _getAllItemsOfBox.asStateFlow()
 
-    private val _saveBookInBoxResponse =
-        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
-    val saveBookInBoxResponse: StateFlow<ApiResponse<NormalResponse>> =
-        _saveBookInBoxResponse.asStateFlow()
+    private val _saveBookInBoxResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveBookInBoxResponse: StateFlow<ApiResponse<NormalResponse>> = _saveBookInBoxResponse.asStateFlow()
 
     private val _boxUiState = MutableStateFlow(BoxUiState())
     val boxUiState: StateFlow<BoxUiState> = _boxUiState.asStateFlow()
@@ -75,7 +68,7 @@ class BookInBoxViewModel @Inject constructor(
 
     private fun observeBookInItemsResponse() {
         viewModelScope.launch {
-            delay(1000)
+            delay(500)
             boxItemsForBookInResponse.collect { handleDialogStatesByResponse(it) }
         }
     }
@@ -84,7 +77,7 @@ class BookInBoxViewModel @Inject constructor(
         viewModelScope.launch {
             eventFlow.collect {
                 when(it) {
-                    is UiEvent.ClickAfterSave -> doTasksAfterSavingItems()
+                    is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
                     else -> {}
                 }
             }
