@@ -216,7 +216,8 @@ fun OnsiteVerifyScreen(
 
                         if (boxItemsFromApi.isNotEmpty()) {
 
-                            onsiteVerificationViewModel.onReceivedTagIdTest()
+                           // onsiteVerificationViewModel.onReceivedTagIdTest()
+                            onsiteVerificationViewModel.toggle()
 
                             coroutineScope.launch {
                                 if (scannedItemIndex != -1) listState.animateScrollToItem(
@@ -285,22 +286,6 @@ private fun ScannedContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             if (boxItem != null) {
-//                items(items = boxItem) {
-//                    ScannedItem(
-//                        isScanned = it.isScanned,
-//                        id = it.epc,
-//                        isSwipeable = true,
-//                        name = it.description,
-//                        showTrailingIcon = true,
-//                        onItemClick = {
-//                            onItemClick(it.epc, it.isScanned, it)
-//                        },
-//                        onSwipeToDismiss = {
-//
-//                            onSwipeToDelete(it)
-//                        }
-//                    )
-//                }
                 itemsIndexed(items = boxItem) { index, item ->
                     ScannedItem(
                         isScanned = item.isScanned,

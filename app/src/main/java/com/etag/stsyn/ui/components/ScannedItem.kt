@@ -5,6 +5,8 @@
 
 package com.etag.stsyn.ui.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -24,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -99,19 +102,25 @@ private fun ScannedItemContent(
     onItemClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isScanned) LightGreen else Color.Transparent,
+        animationSpec = tween(durationMillis = 2000),
+        label = "" // Adjust the duration to control the speed
+    )
+
+    val borderColor by animateColorAsState(
+        targetValue = if (isScanned) DarkGreen else Color.LightGray,
+        animationSpec = tween(durationMillis = 2000),
+        label = "" // This duration controls the border color animation
+    )
+
     Card(
         onClick = onItemClick,
         shape = RoundedCornerShape(0.dp),
         modifier = Modifier
             .background(Color.White)
-            .border(
-                width = 1.dp,
-                color = if (isScanned) DarkGreen else Color.LightGray,
-                shape = RoundedCornerShape(0.dp)
-            ),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isScanned) LightGreen else Color.Transparent
-        )
+            .border(width = 1.dp, color = borderColor, shape = RoundedCornerShape(0.dp)),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Column(
@@ -126,7 +135,7 @@ private fun ScannedItemContent(
             if (showError) {
                 Icon(
                     imageVector = Icons.Default.Info,
-                    tint = errorColor,
+                    tint = errorColor, // Make sure you have defined errorColor
                     modifier = Modifier.padding(horizontal = 16.dp),
                     contentDescription = null,
                 )
@@ -145,6 +154,7 @@ private fun ScannedItemContent(
         }
     }
 }
+
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)

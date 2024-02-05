@@ -68,7 +68,7 @@ class OnsiteVerificationViewModel @Inject constructor(
     private val settingsFlow = appConfiguration.appConfig
 
     override fun onReceivedTagId(id: String) {
-        //  addScannedItemAndMoveToTop(id)
+          addScannedItemAndMoveToTop(id)
     }
 
     fun onReceivedTagIdTest() {
