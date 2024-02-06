@@ -19,7 +19,7 @@ import com.etag.stsyn.ui.screen.main.SplashScreen
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavHostController,
-    loginViewModel:LoginViewModel,
+    loginViewModel: LoginViewModel,
     context: Context
 ) {
 
@@ -43,10 +43,10 @@ fun NavGraphBuilder.authNavGraph(
         }
 
         composable(route = Routes.SODInitiateScreen.name) {
-            SODInitiateScreen(onSodInitiate = {
-                Log.d("TAG", "authNavGraph: onClick")
-                navController.navigate("${Graph.HOME}/${true}")
-            }
+            SODInitiateScreen(
+                onSodInitiate = {
+                    navController.navigate("${Graph.HOME}/${true}")
+                }
             )
         }
 
@@ -71,7 +71,7 @@ fun NavGraphBuilder.authNavGraph(
             val logInState = loginViewModel.loginUiState.collectAsState()
             val loginResponse by loginViewModel.loginResponse.collectAsState()
             val loginUiState by loginViewModel.loginUiState.collectAsState()
-            val epcModelUserName= loginViewModel.epcModelUser.collectAsState()
+            val epcModelUserName = loginViewModel.epcModelUser.collectAsState()
 
             LoginContentScreen(
                 goToHome = {
@@ -84,7 +84,7 @@ fun NavGraphBuilder.authNavGraph(
                     loginViewModel.resetLoginResponseState()
                 },
                 loginAttemptCount = logInState.value.attemptCount,
-                userName = epcModelUserName.value.userName ,
+                userName = epcModelUserName.value.userName,
                 loginResponse = loginResponse,
                 onLogInClick = { loginViewModel.login(it.toCharArray()) },
                 onSuccess = loginViewModel::saveUserToLocalStorage,
