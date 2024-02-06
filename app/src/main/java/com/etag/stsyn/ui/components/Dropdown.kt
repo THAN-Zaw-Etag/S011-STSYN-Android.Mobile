@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -60,7 +61,7 @@ fun DropDown(
                     )
                     .padding(vertical = 8.dp, horizontal = 16.dp)
             ) {
-                Text(text = selectedText)
+                Text(text = selectedText, maxLines = 1, modifier = Modifier.weight(1f), overflow = TextOverflow.Ellipsis)
                 TrailingIcon(expanded = expanded)
             }
 
@@ -91,7 +92,7 @@ fun DropDown(
             ) {
                 items.forEach { item ->
                     DropdownMenuItem(
-                        text = { Text(text = item.toString()) },
+                        text = { Text(text = item,  maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         onClick = {
                             onSelected(item)
                             selectedText = item.toString()

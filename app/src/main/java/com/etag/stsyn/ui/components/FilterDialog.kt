@@ -39,7 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.etag.stsyn.ui.screen.acct_check.FilterItem
+import com.tzh.retrofit_module.domain.model.FilterItem
 
 @Composable
 fun FilterDialog(
@@ -107,7 +107,7 @@ private fun FilterDialogContent(
 
         LazyColumn(modifier = Modifier.weight(1f)) {
             itemsIndexed(filters.toList()) { index, item ->
-                FilterItemLayout(title = item.title, isClear = isClear, onSelected = { option ->
+                FilterItemLayout(title = item.title, isClear = isClear, options = filters.get(index).options, onSelected = { option ->
                     selectedItems.put(index, option)
                 })
             }
@@ -152,6 +152,7 @@ private fun FilterDialogContent(
 private fun FilterItemLayout(
     title: String,
     isClear: Boolean,
+    options: List<String>,
     onSelected: (String) -> Unit,
     modifier: Modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
 ) {
@@ -162,7 +163,7 @@ private fun FilterItemLayout(
 
     LaunchedEffect(isClear) {
         Log.d("TAG", "FilterItemLayout: $isClear")
-        if (isClear) defaultValue = "All"
+        if (isClear) defaultValue = options.get(0)
     }
 
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -170,7 +171,7 @@ private fun FilterItemLayout(
         Spacer(modifier = Modifier.width(8.dp))
         DropDown(
             modifier = Modifier.weight(0.6f),
-            items = listOf("One", "Two", "Three"),
+            items = options,
             defaultValue = defaultValue,
             onSelected = {
                 defaultValue = it

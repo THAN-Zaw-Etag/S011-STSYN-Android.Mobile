@@ -6,9 +6,12 @@ import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.ui.screen.login.Shift
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
+import com.tzh.retrofit_module.data.mapper.toFilterList
 import com.tzh.retrofit_module.data.model.account_check.AccountCheckOutstandingItemsRequest
 import com.tzh.retrofit_module.data.model.account_check.SaveAccountabilityCheckRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
+import com.tzh.retrofit_module.domain.model.FilterItem
+import com.tzh.retrofit_module.domain.model.accountabilityCheck.DropdownSet
 import com.tzh.retrofit_module.domain.model.accountabilityCheck.GetAllAccountabilityCheckItemsResponse
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -20,7 +23,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -50,6 +52,7 @@ class AccountCheckViewModel @Inject constructor(
     init {
         updateScanType(ScanType.Single)
         getAllAccountabilityCheckItems()
+        getAllFilterOptions()
         observeAccountabilityCheckResponse()
         handleUiEvent()
     }
@@ -74,6 +77,19 @@ class AccountCheckViewModel @Inject constructor(
         viewModelScope.launch {
             accountabilityCheckItemsResponse.collect {
                 handleDialogStatesByResponse(it)
+            }
+        }
+    }
+
+    private fun getAllFilterOptions() {
+        viewModelScope.launch {
+            when (val response = accountCheckRepository.getAllFilterOptions()) {
+                is ApiResponse.Success -> {
+                    _acctCheckUiState.update {
+                        it.copy(filterOptions = response.data?.dropdownSet?.toFilterList() ?: emptyList())
+                    }
+                }
+                else -> {}
             }
         }
     }
@@ -123,6 +139,7 @@ class AccountCheckViewModel @Inject constructor(
     data class AcctCheckUiState(
         val shiftType: Shift = Shift.START,
         val allItems: List<BoxItem> = emptyList(),
+        val filterOptions: List<FilterItem> = emptyList(),
         val acctCheckRequest: AccountCheckOutstandingItemsRequest = AccountCheckOutstandingItemsRequest()
     )
 }

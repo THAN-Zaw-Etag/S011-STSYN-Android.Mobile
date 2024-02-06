@@ -12,8 +12,8 @@ import com.etag.stsyn.R
 import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.navigation.Routes
-import com.etag.stsyn.ui.screen.acct_check.FilterItem
 import com.etag.stsyn.util.TabOption
+import com.tzh.retrofit_module.domain.model.FilterItem
 
 data class OptionButtonModel(
     val title: String,

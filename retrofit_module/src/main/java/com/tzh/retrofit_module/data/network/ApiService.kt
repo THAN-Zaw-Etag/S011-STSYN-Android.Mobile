@@ -8,6 +8,7 @@ import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.data.model.onsiteverification.SaveOnSiteVerificationRq
 import com.tzh.retrofit_module.domain.model.accountabilityCheck.GetAllAccountabilityCheckItemsResponse
+import com.tzh.retrofit_module.domain.model.accountabilityCheck.GetAllFilterOptionsResponse
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
@@ -29,6 +30,7 @@ import com.tzh.retrofit_module.util.GET_ALL_ACCOUNTABILITY_CHECK_ITEMS_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_BOXES_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_ITEMS_ROUTE
+import com.tzh.retrofit_module.util.GET_ALL_FILTER_OPTIONS_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_ITEMS_IN_BOX
 import com.tzh.retrofit_module.util.GET_ISSUER_BY_EPC
 import com.tzh.retrofit_module.util.GET_ITEMS_COUNT_NOT_IN_BOX
@@ -166,6 +168,9 @@ interface ApiService {
     suspend fun getAllAccountabilityCheckItems(
         @Body accountabilityCheckRequest: AccountCheckOutstandingItemsRequest
     ): Response<GetAllAccountabilityCheckItemsResponse>
+
+    @GET(GET_ALL_FILTER_OPTIONS_ROUTE)
+    suspend fun getAllFilterOptions(): Response<GetAllFilterOptionsResponse>
 
     @POST(SAVE_ACCOUNTABILITY_CHECK_ROUTE)
     suspend fun saveAccountabilityCheck(

@@ -37,11 +37,7 @@ import com.etag.stsyn.ui.components.FilterDialog
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.datasource.DataSource
-
-data class FilterItem(
-    val title: String,
-    val option: String
-)
+import com.tzh.retrofit_module.domain.model.FilterItem
 
 @Composable
 fun AcctCheckScanScreen(
@@ -71,7 +67,7 @@ fun AcctCheckScanScreen(
     fun clearAllValues() {
         val temp = filters.toMutableList()
         temp.forEachIndexed { index, item ->
-            filters[index] = item.copy(option = "-")
+            filters[index] = item.copy(selectedOption = "-")
         }
     }
 
@@ -86,7 +82,7 @@ fun AcctCheckScanScreen(
         ) {
             FilterDialog(
                 show = showFilterDialog,
-                filters = filters,
+                filters = acctCheckUiState.filterOptions,
                 onDismiss = { showFilterDialog = false },
                 onDone = {
                     filterCount = it.size
@@ -95,7 +91,7 @@ fun AcctCheckScanScreen(
 
                     it.onEachIndexed { index, entry ->
                         mutableFilters[entry.key] =
-                            mutableFilters[entry.key].copy(option = entry.value)
+                            mutableFilters[entry.key].copy(selectedOption = entry.value)
                     }
                     filters.clear()
                     filters.addAll(mutableFilters)
@@ -130,7 +126,7 @@ private fun AcctCheckContent(
     selectedFilters.forEach {
         DetailItem(
             title = it.title,
-            value = it.option
+            value = it.selectedOption
         )
     }
     ScanBoxSection("", "")

@@ -19,6 +19,7 @@ const val SAVE_ONSITE_CHECK_IN_OUT_IN_ROUTE = "BookInOut/SaveOnsiteCheckInOut"
 /******************************** ACCOUNTABILITY CHECK *****************************************/
 const val SAVE_ACCOUNTABILITY_CHECK_ROUTE = "AccountabilityCheck/SaveAccountabilityCheck"
 const val GET_ALL_ACCOUNTABILITY_CHECK_ITEMS_ROUTE = "AccountabilityCheck/GetOutstandingItems"
+const val GET_ALL_FILTER_OPTIONS_ROUTE = "AccountabilityCheck/GetFilterOptions"
 
 const val UPDATE_PASSWORD_ROUTE = "User/ChangePassword"
 const val GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH = "User/GetUserAccessRightByRoleId"
