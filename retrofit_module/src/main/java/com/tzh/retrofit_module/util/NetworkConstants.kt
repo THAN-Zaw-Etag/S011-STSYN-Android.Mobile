@@ -16,6 +16,10 @@ const val GET_ALL_ITEMS_IN_BOOK_OUT_BOX_ROUTE = "BookInOut/SelectItemsInCTKBoxFo
 const val GET_ALL_ITEMS_IN_BOX = "BookInOut/SelectItemsInCTKBoxForBookOut"
 const val SAVE_ONSITE_CHECK_IN_OUT_IN_ROUTE = "BookInOut/SaveOnsiteCheckInOut"
 
+/******************************** ACCOUNTABILITY CHECK *****************************************/
+const val SAVE_ACCOUNTABILITY_CHECK_ROUTE = "AccountabilityCheck/SaveAccountabilityCheck"
+const val GET_ALL_ACCOUNTABILITY_CHECK_ITEMS_ROUTE = "AccountabilityCheck/GetOutstandingItems"
+
 const val UPDATE_PASSWORD_ROUTE = "User/ChangePassword"
 const val GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH = "User/GetUserAccessRightByRoleId"
 

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
 import com.etag.stsyn.enums.OptionType
 import com.etag.stsyn.ui.navigation.Routes
+import com.etag.stsyn.ui.screen.login.Shift
 import com.etag.stsyn.util.ReaderBatteryUtil
 import com.etag.stsyn.util.datasource.DataSource
 import com.etag.stsyn.util.datasource.OptionButtonModel
@@ -47,6 +48,7 @@ import com.etag.stsyn.util.datasource.OptionButtonModel
 @Composable
 fun MainScreen(
     isSodInitiate: Boolean,
+    shiftType: Shift,
     isReaderConnected: Boolean,
     batteryPercentage: Int,
     onCategoryItemClick: (String) -> Unit,

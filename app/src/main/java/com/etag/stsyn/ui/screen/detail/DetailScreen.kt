@@ -43,6 +43,8 @@ import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SuccessDialog
 import com.etag.stsyn.ui.components.TabBarLayout
 import com.etag.stsyn.ui.components.WarningDialog
+import com.etag.stsyn.ui.screen.acct_check.AccountCheckViewModel
+import com.etag.stsyn.ui.screen.login.Shift
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
 import com.etag.stsyn.util.datasource.getScreensByOptionType
@@ -55,6 +57,7 @@ import kotlinx.coroutines.launch
 fun DetailScreen(
     isConnected: Boolean,
     optionType: OptionType,
+    shiftType: Shift,
     modifier: Modifier = Modifier,
     logOut: () -> Unit,
     navigateToHomeScreen: () -> Unit,
@@ -72,6 +75,8 @@ fun DetailScreen(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModelByOptionType(optionType = optionType)
+
+    if (viewModel is AccountCheckViewModel) viewModel.setShiftType(shiftType)
 
     // share reader connection status to other viewmodels
     viewModel.updateIsConnectedStatus(isConnected)

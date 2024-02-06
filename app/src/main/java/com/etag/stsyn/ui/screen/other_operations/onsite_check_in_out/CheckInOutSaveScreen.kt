@@ -16,6 +16,7 @@ import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.SAVING_MESSAGE
 
 @Composable
 fun CheckInOutSaveScreen(
@@ -31,7 +32,7 @@ fun CheckInOutSaveScreen(
     
     when(saveOnsiteCheckInOutResponse) {
         is ApiResponse.Loading -> LoadingDialog(
-            title = "Please wait while SMS is processing your request...\n",
+            title = SAVING_MESSAGE,
             showDialog = true,
             onDismiss = {}
         )

@@ -13,7 +13,7 @@ import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.screen.acct_check.AccountCheckViewModel
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckCountScreen
 import com.etag.stsyn.ui.screen.acct_check.AcctCheckSaveScreen
-import com.etag.stsyn.ui.screen.acct_check.AcctCheckScreen
+import com.etag.stsyn.ui.screen.acct_check.AcctCheckScanScreen
 import com.etag.stsyn.ui.screen.book_in.book_in.BookInCountScreen
 import com.etag.stsyn.ui.screen.book_in.book_in.BookInSaveScreen
 import com.etag.stsyn.ui.screen.book_in.book_in.BookInScanScreen
@@ -247,7 +247,7 @@ object ScreensDataSource {
         TabScreen(
             title = "acct check",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
-            screen = { AcctCheckScreen(viewModel) }),
+            screen = { AcctCheckScanScreen(viewModel) }),
         TabScreen(
             title = "Count",
             icon = CustomIcon.Resource(R.drawable.tally),

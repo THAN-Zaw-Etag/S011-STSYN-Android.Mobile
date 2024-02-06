@@ -63,6 +63,7 @@ fun HomeNavigationGraph(
             MainScreen(
                 isReaderConnected = rfidUiState.isConnected,
                 batteryPercentage = rfidUiState.batteryLevel,
+                shiftType = loginUiState.shift,
                 isSodInitiate = isSodInitiate,
                 onCategoryItemClick = {
                     // save current selected bottom navigation route
@@ -156,6 +157,7 @@ fun NavGraphBuilder.detailsNavGraph(
                 it.arguments?.getString("type") ?: OptionType.BookOut.toString()
             )
             val rfidUiState by loginViewModel.rfidUiState.collectAsState()
+            val loginUiState by loginViewModel.loginUiState.collectAsState()
 
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)
@@ -167,6 +169,7 @@ fun NavGraphBuilder.detailsNavGraph(
             DetailScreen(
                 isConnected = rfidUiState.isConnected,
                 optionType = optionType,
+                shiftType = loginUiState.shift,
                 logOut = {
                     loginViewModel.logOut()
                     navController.navigate(Graph.AUTHENTICATION) {

@@ -2,12 +2,14 @@ package com.tzh.retrofit_module.di
 
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.network.ApiService
+import com.tzh.retrofit_module.data.repository.AccountCheckRepositoryImpl
 import com.tzh.retrofit_module.data.repository.BookInRepositoryImpl
 import com.tzh.retrofit_module.data.repository.BookOutRepositoryImpl
 import com.tzh.retrofit_module.data.repository.CheckInOutRepositoryImpl
 import com.tzh.retrofit_module.data.repository.TokenRepository
 import com.tzh.retrofit_module.data.repository.UserRepositoryImpl
 import com.tzh.retrofit_module.data.settings.AppConfiguration
+import com.tzh.retrofit_module.domain.repository.AccountCheckRepository
 import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.domain.repository.CheckIn.CheckInOutRepository
@@ -64,5 +66,11 @@ object RepositoryModule {
     @Singleton
     fun provideTokenRepository(localDataStore: LocalDataStore): TokenRepository {
         return TokenRepository(localDataStore)
+    }
+
+    @Provides
+    @Singleton
+    fun providesAccountabilityCheckRepository(apiService: ApiService, localDataStore: LocalDataStore, appConfiguration: AppConfiguration): AccountCheckRepository{
+        return AccountCheckRepositoryImpl(apiService,localDataStore, appConfiguration)
     }
 }

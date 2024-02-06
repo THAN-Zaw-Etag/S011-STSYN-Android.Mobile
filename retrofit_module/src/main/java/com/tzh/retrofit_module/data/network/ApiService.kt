@@ -1,10 +1,13 @@
 package com.tzh.retrofit_module.data.network
 
+import com.tzh.retrofit_module.data.model.account_check.AccountCheckOutstandingItemsRequest
+import com.tzh.retrofit_module.data.model.account_check.SaveAccountabilityCheckRequest
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
 import com.tzh.retrofit_module.data.model.onsiteverification.SaveOnSiteVerificationRq
+import com.tzh.retrofit_module.domain.model.accountabilityCheck.GetAllAccountabilityCheckItemsResponse
 import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
 import com.tzh.retrofit_module.domain.model.bookIn.CheckUSCaseResponse
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
@@ -22,6 +25,7 @@ import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.util.BOOK_IN_GET_ITEM_ROUTE
 import com.tzh.retrofit_module.util.CHECK_U_S_CASE_BY_BOX_ROUTE
+import com.tzh.retrofit_module.util.GET_ALL_ACCOUNTABILITY_CHECK_ITEMS_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_IN_ITEMS_OF_BOX_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_BOXES_ROUTE
 import com.tzh.retrofit_module.util.GET_ALL_BOOK_OUT_ITEMS_ROUTE
@@ -33,6 +37,7 @@ import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
 import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
+import com.tzh.retrofit_module.util.SAVE_ACCOUNTABILITY_CHECK_ROUTE
 import com.tzh.retrofit_module.util.SAVE_BOOK_IN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_ONSITE_CHECK_IN_OUT_IN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_ONSITE_VERIFICATION
@@ -143,8 +148,6 @@ interface ApiService {
         @Body saveOnSiteVerificationRq: SaveOnSiteVerificationRq
     ): Response<NormalResponse>
 
-
-
     /* ONSITE CHECK IN / OUT */
     @GET(GET_ITEMS_FOR_ONSITE_ROUTE)
     suspend fun getItemsForOnSite(
@@ -155,5 +158,17 @@ interface ApiService {
     @POST(SAVE_ONSITE_CHECK_IN_OUT_IN_ROUTE)
     suspend fun saveOnsiteCheckInOut(
         @Body saveBookInRequest: SaveBookInRequest
+    ): Response<NormalResponse>
+
+    /* ACCOUNTABILITY CHECK */
+
+    @POST(GET_ALL_ACCOUNTABILITY_CHECK_ITEMS_ROUTE)
+    suspend fun getAllAccountabilityCheckItems(
+        @Body accountabilityCheckRequest: AccountCheckOutstandingItemsRequest
+    ): Response<GetAllAccountabilityCheckItemsResponse>
+
+    @POST(SAVE_ACCOUNTABILITY_CHECK_ROUTE)
+    suspend fun saveAccountabilityCheck(
+        @Body saveAccountabilityCheckRequest: SaveAccountabilityCheckRequest
     ): Response<NormalResponse>
 }

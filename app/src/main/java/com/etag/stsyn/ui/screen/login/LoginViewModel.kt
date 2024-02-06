@@ -146,6 +146,10 @@ class LoginViewModel @Inject constructor(
         _loginUiState.update { it.copy(isSodInitiate = isSodInitiate) }
     }
 
+    private fun updateShiftType(shift: Shift) {
+        _loginUiState.update { it.copy(shift = shift) }
+    }
+
     fun saveToken(token: String) {
         viewModelScope.launch { localDataStore.saveToken(token) }
     }
@@ -183,7 +187,11 @@ class LoginViewModel @Inject constructor(
                     _userMenuAccessRights.value =
                         (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.rolePermission!!.handheldMenuAccessRight
 
-                    updateSODInitiateStatus((_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.checkStatus?.isStart ?: false)
+                    val checkStatus = (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.checkStatus!!
+                    val isSodInitiate = (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
+                    if (checkStatus.isStart) updateShiftType(Shift.START)
+                    if (checkStatus.isAdhoc) updateShiftType(Shift.ADHOC)
+                    updateSODInitiateStatus(isSodInitiate)
                 }
 
                 is ApiResponse.AuthorizationError -> {
@@ -264,7 +272,10 @@ class LoginViewModel @Inject constructor(
         var attemptCount: Int = 0,
         val rfidId: String = "",
         val isSodInitiate: Boolean = false,
+        val shift: Shift = Shift.START,
         val errorMessage: String = "",
         val user: LocalUser? = LocalUser("", "", "1234", "")
     )
 }
+
+enum class Shift {START,ADHOC}

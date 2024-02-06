@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.acct_check
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,15 +44,22 @@ data class FilterItem(
 )
 
 @Composable
-fun AcctCheckScreen(
+fun AcctCheckScanScreen(
     accountCheckViewModel: AccountCheckViewModel,
     modifier: Modifier = Modifier
 ) {
+    val TAG = "AccountCheckScanScreen"
+
     var filterCount by remember { mutableStateOf(0) }
     var isScanned by remember { mutableStateOf(false) }
     var filters = remember { mutableStateListOf<FilterItem>() }
     var showFilterDialog by remember { mutableStateOf(false) }
     val rfidUiState by accountCheckViewModel.rfidUiState.collectAsState()
+    val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsState()
+
+    LaunchedEffect(acctCheckUiState) {
+        Log.d(TAG, "AcctCheckScanScreen: ${acctCheckUiState.shiftType}")
+    }
 
     LaunchedEffect(Unit) {
         DataSource.filters.onEachIndexed { index, entry ->
