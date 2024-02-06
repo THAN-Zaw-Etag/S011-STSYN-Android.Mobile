@@ -39,8 +39,10 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
 import com.etag.stsyn.enums.DeviceSize
@@ -234,4 +236,10 @@ private fun MainLowerContent(
                 .align(Alignment.BottomEnd)
         )
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun LoginScreenPreview(modifier: Modifier = Modifier) {
+    LoginScreen(navigateToLoginContentScreen = { /*TODO*/ }, loginViewModel = hiltViewModel())
 }

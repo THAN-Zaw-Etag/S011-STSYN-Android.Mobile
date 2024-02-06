@@ -39,12 +39,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
 import com.etag.stsyn.enums.OptionType
+import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.util.ReaderBatteryUtil
 import com.etag.stsyn.util.datasource.DataSource
 import com.etag.stsyn.util.datasource.OptionButtonModel
 
 @Composable
 fun MainScreen(
+    isSodInitiate: Boolean,
     isReaderConnected: Boolean,
     batteryPercentage: Int,
     onCategoryItemClick: (String) -> Unit,
@@ -70,8 +72,22 @@ fun MainScreen(
                 style = MaterialTheme.typography.titleMedium
             )
         }
-        items(DataSource.categories) {
-            CategoryItem(category = it, onCategoryItemClick = onCategoryItemClick)
+        if (isSodInitiate) {
+            item {
+                CategoryItem(
+                    category = OptionButtonModel(
+                        title = "Accountability Check",
+                        icon = R.drawable.accountability_check_icon,
+                        route = Routes.DetailScreen.name + "/${OptionType.AccountCheck}"
+                    ),
+                    onCategoryItemClick = onCategoryItemClick
+                )
+            }
+        }
+        else {
+            items(DataSource.categories) {
+                CategoryItem(category = it, onCategoryItemClick = onCategoryItemClick)
+            }
         }
     }
 }

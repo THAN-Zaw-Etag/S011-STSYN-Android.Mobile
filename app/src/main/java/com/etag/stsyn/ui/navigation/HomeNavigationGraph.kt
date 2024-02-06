@@ -28,6 +28,7 @@ import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 
 @Composable
 fun HomeNavigationGraph(
+    isSodInitiate: Boolean,
     loginViewModel: LoginViewModel,
     sharedUiViewModel: SharedUiViewModel,
     navController: NavHostController,
@@ -62,6 +63,7 @@ fun HomeNavigationGraph(
             MainScreen(
                 isReaderConnected = rfidUiState.isConnected,
                 batteryPercentage = rfidUiState.batteryLevel,
+                isSodInitiate = isSodInitiate,
                 onCategoryItemClick = {
                     // save current selected bottom navigation route
                     navController.navigate(it)

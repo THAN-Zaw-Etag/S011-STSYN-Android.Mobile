@@ -88,8 +88,6 @@ fun LoginContentScreen(
                 showLoadingDialog = true
             }
 
-
-
             is ApiResponse.Success -> {
                 showLoadingDialog = false
                 val user = loginResponse.data?.user

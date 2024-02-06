@@ -3,6 +3,7 @@ package com.etag.stsyn.ui.navigation
 sealed class Routes(val name: String, val title: String = "") {
     data object SplashScreen : Routes("/splash_screen")
     data object LoginScreen : Routes("/main_screen")
+    data object SODInitiateScreen: Routes("/sod_initiate_screen")
     data object LoginContentScreen : Routes("/login_screen")
     data object HomeScreen : Routes("/home_screen", "Home")
     data object HomeContentScreen : Routes("/home_content_screen")

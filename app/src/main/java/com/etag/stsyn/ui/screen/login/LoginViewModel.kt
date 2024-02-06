@@ -108,7 +108,6 @@ class LoginViewModel @Inject constructor(
     private fun baseUrlStatus() {
         viewModelScope.launch {
             appConfiguration.appConfig.collect { appConfigModel ->
-                Log.d("BaseUrlProvider", "appConfigModel: ${appConfigModel.apiUrl}")
                 val  baseUrl = appConfigModel.apiUrl
                 if (baseUrl.isEmpty()){
                     _shouldShowEmptyBaseUrlDialog.postValue(true)
@@ -141,6 +140,10 @@ class LoginViewModel @Inject constructor(
             localDataStore.saveUser(localUser)
             updateLoginStatus(true)
         }
+    }
+
+    private fun updateSODInitiateStatus(isSodInitiate: Boolean) {
+        _loginUiState.update { it.copy(isSodInitiate = isSodInitiate) }
     }
 
     fun saveToken(token: String) {
@@ -180,6 +183,7 @@ class LoginViewModel @Inject constructor(
                     _userMenuAccessRights.value =
                         (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.rolePermission!!.handheldMenuAccessRight
 
+                    updateSODInitiateStatus((_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.checkStatus?.isStart ?: false)
                 }
 
                 is ApiResponse.AuthorizationError -> {
@@ -259,6 +263,7 @@ class LoginViewModel @Inject constructor(
         val isLoginSuccessful: Boolean = false,
         var attemptCount: Int = 0,
         val rfidId: String = "",
+        val isSodInitiate: Boolean = false,
         val errorMessage: String = "",
         val user: LocalUser? = LocalUser("", "", "1234", "")
     )

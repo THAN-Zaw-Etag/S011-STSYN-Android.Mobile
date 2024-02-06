@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.navigation
 
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,6 +13,7 @@ import com.etag.stsyn.ui.components.ExitApp
 import com.etag.stsyn.ui.screen.login.LoginContentScreen
 import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
+import com.etag.stsyn.ui.screen.login.SODInitiateScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
 
 
@@ -39,6 +41,15 @@ fun NavGraphBuilder.authNavGraph(
                 }
             )
         }
+
+        composable(route = Routes.SODInitiateScreen.name) {
+            SODInitiateScreen(onSodInitiate = {
+                Log.d("TAG", "authNavGraph: onClick")
+                navController.navigate("${Graph.HOME}/${true}")
+            }
+            )
+        }
+
         composable(route = Routes.LoginScreen.name) {
             loginViewModel.enableScan()
             LoginScreen(
@@ -50,7 +61,7 @@ fun NavGraphBuilder.authNavGraph(
             }
         }
         composable(route = Routes.LoginContentScreen.name) {
-            loginViewModel.removeListener() // remove listener when
+            loginViewModel.removeListener() // remove listener
 
             BackHandler(true) {
                 loginViewModel.navigateToScanScreen()
@@ -59,17 +70,18 @@ fun NavGraphBuilder.authNavGraph(
 
             val logInState = loginViewModel.loginUiState.collectAsState()
             val loginResponse by loginViewModel.loginResponse.collectAsState()
-
+            val loginUiState by loginViewModel.loginUiState.collectAsState()
             val epcModelUserName= loginViewModel.epcModelUser.collectAsState()
+
             LoginContentScreen(
                 goToHome = {
-                    navController.navigate(Graph.HOME) {
+                    // if sod initiate is true, go to sod initiate screen else home screen
+                    navController.navigate(if (true) Routes.SODInitiateScreen.name else Graph.HOME) {
                         popUpTo(0) {
                             inclusive = true
                         }
                     }
                     loginViewModel.resetLoginResponseState()
-
                 },
                 loginAttemptCount = logInState.value.attemptCount,
                 userName = epcModelUserName.value.userName ,

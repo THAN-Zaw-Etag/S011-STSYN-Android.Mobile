@@ -68,6 +68,7 @@ import kotlin.reflect.KFunction2
 
 @Composable
 fun HomeScreen(
+    isSodInitiate: Boolean,
     onChangePassword: KFunction2<CharArray, CharArray, Unit>,
     onLogOutClick: () -> Unit,
     onSettingsClick: () -> Unit,
@@ -163,6 +164,7 @@ fun HomeScreen(
             },
         ) {
             HomeNavigationGraph(
+                isSodInitiate = isSodInitiate,
                 loginViewModel = loginViewModel,
                 sharedUiViewModel = sharedUiViewModel,
                 navController = navController,
