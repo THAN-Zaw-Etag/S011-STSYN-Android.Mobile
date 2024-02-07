@@ -83,10 +83,9 @@ fun LoginScreen(
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    val emptyBaseUrlStatus = loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
     val appConfiguration by loginViewModel.appConfig.collectAsState(initial = AppConfigModel())
 
-    if (emptyBaseUrlStatus.value){
+    if (appConfiguration.apiUrl.isEmpty()) {
         ShowBaseUrlAlertDialog(
             onConfirm = {
                 loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = "https://18.139.63.32/SMS-STSYN-Dev/api/"))   //TODO change this when app release
