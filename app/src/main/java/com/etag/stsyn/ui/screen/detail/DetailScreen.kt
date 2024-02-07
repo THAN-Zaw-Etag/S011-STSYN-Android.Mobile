@@ -96,6 +96,7 @@ fun DetailScreen(
     )
 
     LaunchedEffect(detailUiState) {
+        Log.d(TAG, "DetailScreen: $detailUiState")
         isSaved = detailUiState.isSaved
         showErrorDialog = detailUiState.message.isNotEmpty()
         showSuccessDialog = detailUiState.showSuccessDialog

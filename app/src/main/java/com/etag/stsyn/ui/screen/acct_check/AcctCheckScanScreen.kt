@@ -65,6 +65,10 @@ fun AcctCheckScanScreen(
     var outstanding by remember { mutableStateOf(0) }
     var showUnknownEpcDialog by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        accountCheckViewModel.hideUnknownEpcDialog()
+    }
+
     LaunchedEffect(scannedItemIdList, acctCheckUiState.allItems) {
         withContext(Dispatchers.IO) {
             total = acctCheckUiState.allItems.size
@@ -94,10 +98,6 @@ fun AcctCheckScanScreen(
 
     LaunchedEffect(acctCheckUiState.filterOptions) {
         filters = acctCheckUiState.filterOptions
-        Log.d(
-            TAG,
-            "AcctCheckScanScreen: ${acctCheckUiState.filterOptions.map { it.selectedOption }}"
-        )
     }
 
     Column(

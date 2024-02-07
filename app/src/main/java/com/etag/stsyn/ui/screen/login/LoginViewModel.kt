@@ -193,6 +193,7 @@ class LoginViewModel @Inject constructor(
                     val isSodInitiate = (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
                     if (checkStatus.isStart) updateShiftType(Shift.START)
                     if (checkStatus.isAdhoc) updateShiftType(Shift.ADHOC)
+                    localDataStore.saveCheckStatusId(checkStatus.id.toString())
                     updateSODInitiateStatus(isSodInitiate)
                 }
 

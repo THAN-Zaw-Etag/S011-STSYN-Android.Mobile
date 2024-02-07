@@ -9,6 +9,7 @@ import com.etag.stsyn.ui.screen.login.Shift
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.mapper.toAccountabilityCheckRequest
 import com.tzh.retrofit_module.data.mapper.toFilterList
+import com.tzh.retrofit_module.data.mapper.toStockTake
 import com.tzh.retrofit_module.data.model.account_check.AccountCheckOutstandingItemsRequest
 import com.tzh.retrofit_module.data.model.account_check.SaveAccountabilityCheckRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
@@ -25,6 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -48,7 +50,8 @@ class AccountCheckViewModel @Inject constructor(
     private val _accountabilityCheckItemsResponse = MutableStateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>>(ApiResponse.Default)
     val accountabilityCheckItemsResponse: StateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>> = _accountabilityCheckItemsResponse.asStateFlow()
 
-    private val saveAcctCheckResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    private val _saveAcctCheckResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveAcctCheckResponse : StateFlow<ApiResponse<NormalResponse>> = _saveAcctCheckResponse.asStateFlow()
 
     private val _scannedItemIdList = MutableStateFlow<List<String>>(emptyList())
     val scannedItemIdList: StateFlow<List<String>> = _scannedItemIdList.asStateFlow()
@@ -62,7 +65,16 @@ class AccountCheckViewModel @Inject constructor(
         getAllAccountabilityCheckItems()
         getAllFilterOptions()
         observeAccountabilityCheckResponse()
+        observeAccountabilityCheckSaveResponse()
         handleUiEvent()
+    }
+
+    private fun observeAccountabilityCheckSaveResponse() {
+        viewModelScope.launch {
+            saveAcctCheckResponse.collect {
+                handleDialogStatesByResponse(it,true)
+            }
+        }
     }
 
     private fun handleUiEvent() {
@@ -90,13 +102,15 @@ class AccountCheckViewModel @Inject constructor(
     }
 
     private fun doTasksAfterSaving() {
+        getAllAccountabilityCheckItems()
         _scannedItemIdList.update { emptyList() }
         _acctCheckUiState.update { uiState ->
             uiState.copy(
                 scannedItem = BoxItem(),
                 allItems = emptyList(),
                 filterOptions = uiState.filterOptions.map { it.copy(selectedOption = "") }
-            ) }
+            )
+        }
     }
 
     private fun observeAccountabilityCheckResponse() {
@@ -146,10 +160,20 @@ class AccountCheckViewModel @Inject constructor(
             val shift = acctCheckUiState.value.shiftType.toString()
             val checkStatusId = checkUserIdFlow.first()
 
-            saveAcctCheckResponse.value = ApiResponse.Loading
+            _saveAcctCheckResponse.value = ApiResponse.Loading
             delay(500)
-            saveAcctCheckResponse.value = accountCheckRepository.saveAccountabilityCheck(
-                SaveAccountabilityCheckRequest(emptyList())
+            _saveAcctCheckResponse.value = accountCheckRepository.saveAccountabilityCheck(
+                SaveAccountabilityCheckRequest(
+                    acctCheckUiState.value.allItems
+                        .filter { it.epc in scannedItemIdList.value }
+                        .map { it.toStockTake(
+                        readerId = readerId,
+                        userId = userId,
+                        date = currentDate,
+                        shift = shift,
+                        checkStatusId = checkStatusId.toString()
+                    ) }
+                )
             )
         }
     }
@@ -164,6 +188,10 @@ class AccountCheckViewModel @Inject constructor(
             }
             else _acctCheckUiState.update { it.copy(unknownEpc = id) }
         }
+    }
+
+    fun hideUnknownEpcDialog() {
+        _acctCheckUiState.update { it.copy(unknownEpc = null) }
     }
 
     fun resetScannedItems() {

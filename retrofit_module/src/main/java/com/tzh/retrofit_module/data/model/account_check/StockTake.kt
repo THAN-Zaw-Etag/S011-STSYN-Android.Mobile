@@ -1,12 +1,12 @@
 package com.tzh.retrofit_module.data.model.account_check
 
 data class StockTake(
-    val chkStatusId: Int,
+    val chkStatusId: String,
     val date: String,
-    val handheldReaderId: Int,
+    val handheldReaderId: String,
     val isDone: Boolean,
     val isStockTake: Boolean,
-    val itemId: Int,
+    val itemId: String,
     val shift: String,
-    val userId: Int
+    val userId: String
 )
