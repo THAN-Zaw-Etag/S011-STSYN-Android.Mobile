@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,11 +47,9 @@ import com.etag.stsyn.R
 import com.etag.stsyn.enums.DeviceSize
 import com.etag.stsyn.ui.components.ErrorDialog
 import com.etag.stsyn.ui.components.LoadingDialog
-import com.etag.stsyn.ui.components.LoginProgressDialog
 import com.etag.stsyn.ui.components.ShowBaseUrlAlertDialog
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.theme.Purple80
-import com.etag.stsyn.util.AppUtil
 import com.etag.stsyn.util.AppUtil.getDeviceSize
 import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.util.ApiResponse
@@ -62,7 +59,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 fun LoginScreen(
     navigateToLoginContentScreen: () -> Unit,
     loginViewModel: LoginViewModel,
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier = Modifier,
 ) {
     val rfidUiState by loginViewModel.rfidUiState.collectAsState()
     val context = LocalContext.current
