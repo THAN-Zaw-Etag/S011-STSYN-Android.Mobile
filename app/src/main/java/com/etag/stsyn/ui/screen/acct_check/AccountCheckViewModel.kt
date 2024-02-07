@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.acct_check
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.ClickEvent
@@ -36,6 +37,9 @@ class AccountCheckViewModel @Inject constructor(
     private val localDataStore: LocalDataStore,
     private val appConfiguration: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
+    companion object {
+        const val TAG = "AccountCheckViewModel"
+    }
 
     private val _acctCheckUiState = MutableStateFlow(AcctCheckUiState())
     val acctCheckUiState: StateFlow<AcctCheckUiState> = _acctCheckUiState.asStateFlow()
@@ -70,6 +74,17 @@ class AccountCheckViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun clearFilters(){
+        _acctCheckUiState.update {uiState ->
+            val updatedList = uiState.filterOptions.map { it.copy(selectedOption = "-") }
+            uiState.copy(filterOptions = updatedList)
+        }
+    }
+
+    fun updateFilterOptions(filterOptions: List<FilterItem>) {
+        _acctCheckUiState.update { it.copy(filterOptions = filterOptions) }
     }
 
     private fun doTasksAfterSaving() {

@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.screen.acct_check
 
 import android.util.Log
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,58 +49,39 @@ fun AcctCheckScanScreen(
 
     var filterCount by remember { mutableStateOf(0) }
     var isScanned by remember { mutableStateOf(false) }
-    var filters = remember { mutableStateListOf<FilterItem>() }
+    var filters by remember { mutableStateOf<List<FilterItem>>(emptyList()) }
     var showFilterDialog by remember { mutableStateOf(false) }
     val rfidUiState by accountCheckViewModel.rfidUiState.collectAsState()
     val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsState()
 
-    LaunchedEffect(acctCheckUiState) {
-        Log.d(TAG, "AcctCheckScanScreen: ${acctCheckUiState.shiftType}")
-    }
-
-    LaunchedEffect(Unit) {
-        DataSource.filters.onEachIndexed { index, entry ->
-            filters.add(entry)
-        }
-    }
-
-    // clear all selected filter values before another filter dialog starts
-    fun clearAllValues() {
-        val temp = filters.toMutableList()
-        temp.forEachIndexed { index, item ->
-            filters[index] = item.copy(selectedOption = "-")
-        }
+    LaunchedEffect(acctCheckUiState.filterOptions) {
+        filters = acctCheckUiState.filterOptions
+        Log.d(TAG, "AcctCheckScanScreen: ${acctCheckUiState.filterOptions.map { it.selectedOption }}")
     }
 
     Column(
-        modifier = modifier
+        modifier = modifier.animateContentSize()
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
+                .animateContentSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
             FilterDialog(
                 show = showFilterDialog,
-                filters = acctCheckUiState.filterOptions,
+                filters = filters,
                 onDismiss = { showFilterDialog = false },
+                onClear = {accountCheckViewModel.clearFilters()},
                 onDone = {
-                    filterCount = it.size
-                    clearAllValues()
-                    val mutableFilters = filters.toMutableList() // Create a mutable copy
-
-                    it.onEachIndexed { index, entry ->
-                        mutableFilters[entry.key] =
-                            mutableFilters[entry.key].copy(selectedOption = entry.value)
-                    }
-                    filters.clear()
-                    filters.addAll(mutableFilters)
+                    accountCheckViewModel.updateFilterOptions(it)
+                    filterCount = it.filter { it.selectedOption != "-" }.size
                 }
             )
             AcctCheckContent(
                 onFilterButtonClick = { showFilterDialog = true },
-                selectedFilters = filters,
+                selectedFilters = acctCheckUiState.filterOptions,
                 filterCount = filterCount,
                 isScanned = isScanned
             )
@@ -182,7 +164,7 @@ private fun DetailItem(
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = title, modifier = Modifier.weight(0.3f))
-        Text(text = value, modifier = Modifier.weight(0.7f))
+        Text(text = if (value.isEmpty()) "-" else value, modifier = Modifier.weight(0.7f))
     }
 }
 
