@@ -2,7 +2,7 @@ package com.tzh.retrofit_module.data.model.account_check
 
 data class AccountCheckOutstandingItemsRequest(
     val box: String = "",
-    val csNo: Int = 0,
+    val csNo: String = "0",
     val flight: String = "",
     val itemLocation: String = "",
     val itemType: String = "",

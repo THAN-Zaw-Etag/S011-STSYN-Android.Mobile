@@ -39,6 +39,7 @@ import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.datasource.DataSource
 import com.tzh.retrofit_module.domain.model.FilterItem
+import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -64,7 +65,7 @@ fun AcctCheckScanScreen(
         withContext(Dispatchers.IO) {
             total = acctCheckUiState.allItems.size
             done = acctCheckUiState.allItems.filter { it.epc in scannedItemIdList }.size
-            outstanding = acctCheckUiState.allItems.filter { it.epc !in scannedItemIdList }.size
+            outstanding = total - done
         }
     }
 
@@ -90,7 +91,7 @@ fun AcctCheckScanScreen(
                 onClear = accountCheckViewModel::clearFilters,
                 onDone = { filterItems ->
                     accountCheckViewModel.updateFilterOptions(filterItems)
-                    filterCount = filterItems.filter { it.selectedOption != "-" }.size
+                    filterCount = filterItems.filter { it.selectedOption.isNotEmpty() }.size
                 }
             )
             AcctCheckContent(
@@ -100,7 +101,8 @@ fun AcctCheckScanScreen(
                 done = done,
                 outstanding = outstanding,
                 filterCount = filterCount,
-                isScanned = isScanned
+                boxItem = acctCheckUiState.scannedItem,
+                onReset = accountCheckViewModel::resetScannedItems
             )
         }
         ScanIconButton(
@@ -118,10 +120,11 @@ private fun AcctCheckContent(
     filterCount: Int,
     total : Int,
     done: Int,
+    boxItem: BoxItem,
     outstanding: Int,
     onFilterButtonClick: () -> Unit,
-    selectedFilters: List<FilterItem>,
-    isScanned: Boolean
+    onReset: () -> Unit,
+    selectedFilters: List<FilterItem>
 ) {
     FilterButton(filterCount, onClick = onFilterButtonClick)
     Spacer(modifier = Modifier.height(16.dp))
@@ -131,17 +134,17 @@ private fun AcctCheckContent(
             value = it.selectedOption
         )
     }
-    ScanBoxSection("", "")
+    ScanBoxSection(boxItem.id ?: "", boxItem.description ?: "")
     Row(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.weight(1f)) {
             DetailItem(title = "Total", value = total.toString())
             DetailItem(title = "Done", value = done.toString())
             DetailItem(title = "Outstanding", value = outstanding.toString())
         }
-        TextButton(onClick = { }, modifier = Modifier) {
+        TextButton(onClick = onReset, modifier = Modifier) {
             Text(
                 text = "Reset",
-                color = if (isScanned) Purple80 else Color.Gray,
+                color = if (done > 0) Purple80 else Color.Gray,
                 modifier = Modifier,
                 textDecoration = TextDecoration.Underline
             )

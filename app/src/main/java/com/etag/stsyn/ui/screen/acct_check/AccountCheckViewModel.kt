@@ -7,6 +7,7 @@ import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.ui.screen.login.Shift
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
+import com.tzh.retrofit_module.data.mapper.toAccountabilityCheckRequest
 import com.tzh.retrofit_module.data.mapper.toFilterList
 import com.tzh.retrofit_module.data.model.account_check.AccountCheckOutstandingItemsRequest
 import com.tzh.retrofit_module.data.model.account_check.SaveAccountabilityCheckRequest
@@ -78,17 +79,24 @@ class AccountCheckViewModel @Inject constructor(
 
     fun clearFilters(){
         _acctCheckUiState.update {uiState ->
-            val updatedList = uiState.filterOptions.map { it.copy(selectedOption = "-") }
+            val updatedList = uiState.filterOptions.map { it.copy(selectedOption = "") }
             uiState.copy(filterOptions = updatedList)
         }
     }
 
     fun updateFilterOptions(filterOptions: List<FilterItem>) {
-        _acctCheckUiState.update { it.copy(filterOptions = filterOptions) }
+        _acctCheckUiState.update { it.copy(filterOptions = filterOptions, acctCheckRequest = filterOptions.toAccountabilityCheckRequest()) }
+        getAllAccountabilityCheckItems()
     }
 
     private fun doTasksAfterSaving() {
-
+        _scannedItemIdList.update { emptyList() }
+        _acctCheckUiState.update { uiState ->
+            uiState.copy(
+                scannedItem = BoxItem(),
+                allItems = emptyList(),
+                filterOptions = uiState.filterOptions.map { it.copy(selectedOption = "") }
+            ) }
     }
 
     private fun observeAccountabilityCheckResponse() {
@@ -147,7 +155,23 @@ class AccountCheckViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
+        viewModelScope.launch {
+            val scannedItem = acctCheckUiState.value.allItems.find { id == it.epc }
+            val hasExisted = id in scannedItemIdList.value
+            if (scannedItem != null && !hasExisted) {
+                _acctCheckUiState.update { it.copy(scannedItem = scannedItem) }
+                addScannedItemId(id)
+            }
+        }
+    }
 
+    fun resetScannedItems() {
+        _scannedItemIdList.update { emptyList() }
+        _acctCheckUiState.update { it.copy(scannedItem = BoxItem()) }
+    }
+
+    private fun addScannedItemId(id: String) {
+        _scannedItemIdList.update { it + id }
     }
 
     fun setShiftType(shiftType: Shift) {
@@ -157,6 +181,7 @@ class AccountCheckViewModel @Inject constructor(
     data class AcctCheckUiState(
         val shiftType: Shift = Shift.START,
         val allItems: List<BoxItem> = emptyList(),
+        val scannedItem: BoxItem = BoxItem(),
         val filterOptions: List<FilterItem> = emptyList(),
         val acctCheckRequest: AccountCheckOutstandingItemsRequest = AccountCheckOutstandingItemsRequest()
     )
