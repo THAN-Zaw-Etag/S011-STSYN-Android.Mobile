@@ -81,8 +81,8 @@ fun NavGraphBuilder.authNavGraph(
 //                            inclusive = true
 //                        }
 //                    }
-                    //TODO to check from kzl
-                    navController.navigate(if (true) Routes.SODInitiateScreen.name else "${Graph.HOME}/${loginUiState.isSodInitiate}") {
+
+                    navController.navigate(if (loginUiState.isSodInitiate) Routes.SODInitiateScreen.name else "${Graph.HOME}/${loginUiState.isSodInitiate}") {
                         popUpTo(0) {
                             inclusive = true
                         }
