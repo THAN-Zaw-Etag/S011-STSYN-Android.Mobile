@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.screen.acct_check
 
 import android.util.Log
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,8 @@ import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.datasource.DataSource
 import com.tzh.retrofit_module.domain.model.FilterItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AcctCheckScanScreen(
@@ -48,65 +51,61 @@ fun AcctCheckScanScreen(
 
     var filterCount by remember { mutableStateOf(0) }
     var isScanned by remember { mutableStateOf(false) }
-    var filters = remember { mutableStateListOf<FilterItem>() }
+    var filters by remember { mutableStateOf<List<FilterItem>>(emptyList()) }
     var showFilterDialog by remember { mutableStateOf(false) }
     val rfidUiState by accountCheckViewModel.rfidUiState.collectAsState()
     val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsState()
+    val scannedItemIdList by accountCheckViewModel.scannedItemIdList.collectAsState()
+    var total by remember { mutableStateOf(0) }
+    var done by remember { mutableStateOf(0) }
+    var outstanding by remember { mutableStateOf(0) }
 
-    LaunchedEffect(acctCheckUiState) {
-        Log.d(TAG, "AcctCheckScanScreen: ${acctCheckUiState.shiftType}")
-    }
-
-    LaunchedEffect(Unit) {
-        DataSource.filters.onEachIndexed { index, entry ->
-            filters.add(entry)
+    LaunchedEffect(scannedItemIdList,acctCheckUiState.allItems) {
+        withContext(Dispatchers.IO) {
+            total = acctCheckUiState.allItems.size
+            done = acctCheckUiState.allItems.filter { it.epc in scannedItemIdList }.size
+            outstanding = acctCheckUiState.allItems.filter { it.epc !in scannedItemIdList }.size
         }
     }
 
-    // clear all selected filter values before another filter dialog starts
-    fun clearAllValues() {
-        val temp = filters.toMutableList()
-        temp.forEachIndexed { index, item ->
-            filters[index] = item.copy(selectedOption = "-")
-        }
+    LaunchedEffect(acctCheckUiState.filterOptions) {
+        filters = acctCheckUiState.filterOptions
+        Log.d(TAG, "AcctCheckScanScreen: ${acctCheckUiState.filterOptions.map { it.selectedOption }}")
     }
 
     Column(
-        modifier = modifier
+        modifier = modifier.animateContentSize()
     ) {
         Column(
             modifier = Modifier
                 .weight(1f)
+                .animateContentSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
             FilterDialog(
                 show = showFilterDialog,
-                filters = acctCheckUiState.filterOptions,
+                filters = filters,
                 onDismiss = { showFilterDialog = false },
-                onDone = {
-                    filterCount = it.size
-                    clearAllValues()
-                    val mutableFilters = filters.toMutableList() // Create a mutable copy
-
-                    it.onEachIndexed { index, entry ->
-                        mutableFilters[entry.key] =
-                            mutableFilters[entry.key].copy(selectedOption = entry.value)
-                    }
-                    filters.clear()
-                    filters.addAll(mutableFilters)
+                onClear = accountCheckViewModel::clearFilters,
+                onDone = { filterItems ->
+                    accountCheckViewModel.updateFilterOptions(filterItems)
+                    filterCount = filterItems.filter { it.selectedOption != "-" }.size
                 }
             )
             AcctCheckContent(
                 onFilterButtonClick = { showFilterDialog = true },
-                selectedFilters = filters,
+                selectedFilters = acctCheckUiState.filterOptions,
+                total = total,
+                done = done,
+                outstanding = outstanding,
                 filterCount = filterCount,
                 isScanned = isScanned
             )
         }
         ScanIconButton(
             isScanning = rfidUiState.isScanning,
-            onScan = { accountCheckViewModel.toggle() },
+            onScan = accountCheckViewModel::toggle,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(16.dp)
@@ -117,6 +116,9 @@ fun AcctCheckScanScreen(
 @Composable
 private fun AcctCheckContent(
     filterCount: Int,
+    total : Int,
+    done: Int,
+    outstanding: Int,
     onFilterButtonClick: () -> Unit,
     selectedFilters: List<FilterItem>,
     isScanned: Boolean
@@ -131,12 +133,12 @@ private fun AcctCheckContent(
     }
     ScanBoxSection("", "")
     Row(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.weight(0.8f)) {
-            DetailItem(title = "Total", value = "0")
-            DetailItem(title = "Done", value = "0")
-            DetailItem(title = "Outstanding", value = "0")
+        Column(modifier = Modifier.weight(1f)) {
+            DetailItem(title = "Total", value = total.toString())
+            DetailItem(title = "Done", value = done.toString())
+            DetailItem(title = "Outstanding", value = outstanding.toString())
         }
-        TextButton(onClick = { }, modifier = Modifier.weight(0.2f)) {
+        TextButton(onClick = { }, modifier = Modifier) {
             Text(
                 text = "Reset",
                 color = if (isScanned) Purple80 else Color.Gray,
@@ -181,8 +183,8 @@ private fun DetailItem(
     modifier: Modifier = Modifier.padding(vertical = 4.dp)
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = title, modifier = Modifier.weight(0.3f))
-        Text(text = value, modifier = Modifier.weight(0.7f))
+        Text(text = title, modifier = Modifier.weight(0.4f))
+        Text(text = if (value.isEmpty()) "-" else value, modifier = Modifier.weight(0.6f))
     }
 }
 

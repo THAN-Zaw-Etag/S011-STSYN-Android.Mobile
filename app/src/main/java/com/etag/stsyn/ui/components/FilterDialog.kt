@@ -44,9 +44,12 @@ import com.tzh.retrofit_module.domain.model.FilterItem
 @Composable
 fun FilterDialog(
     filters: List<FilterItem>,
-    show: Boolean, onDismiss: () -> Unit,
-    onDone: (HashMap<Int, String>) -> Unit
+    show: Boolean,
+    onClear: () -> Unit,
+    onDismiss: () -> Unit,
+    onDone: (List<FilterItem>) -> Unit
 ) {
+    val TAG = "FilterDialog"
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(show) {
@@ -66,6 +69,7 @@ fun FilterDialog(
                     onDismiss()
                 },
                 filters = filters,
+                onClear = onClear,
                 onDone = {
                     onDone(it)
                     showDialog = false
@@ -80,7 +84,8 @@ fun FilterDialog(
 private fun FilterDialogContent(
     filters: List<FilterItem>,
     onDismiss: () -> Unit,
-    onDone: (HashMap<Int, String>) -> Unit
+    onClear: () -> Unit,
+    onDone: (List<FilterItem>) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -88,10 +93,15 @@ private fun FilterDialogContent(
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
-        var selectedItems = hashMapOf<Int, String>()
-        var isClear by remember {
-            mutableStateOf(false)
+        var selectedItems = mutableListOf<FilterItem>()
+        var isClear by remember { mutableStateOf(false) }
+        var defaultValue by remember { mutableStateOf("All") }
+
+        LaunchedEffect(filters) {
+            selectedItems.clear()
+            selectedItems.addAll(filters)
         }
+
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -106,18 +116,33 @@ private fun FilterDialogContent(
         }
 
         LazyColumn(modifier = Modifier.weight(1f)) {
-            itemsIndexed(filters.toList()) { index, item ->
-                FilterItemLayout(title = item.title, isClear = isClear, options = filters.get(index).options, onSelected = { option ->
-                    selectedItems.put(index, option)
-                })
+            itemsIndexed(filters) { index, item ->
+                defaultValue = if (item.selectedOption.trim().isEmpty()) "All" else item.selectedOption
+                FilterItemLayout(
+                    title = item.title,
+                    isClear = isClear,
+                    defaultValue = defaultValue,
+                    options = filters[index].options,
+                    onCleared = { isClear = false },
+                    onSelected = { option ->
+                        val updatedItem = item.copy(selectedOption = if (option == "All") "" else option)
+                        selectedItems[index] = updatedItem
+                    }
+                )
             }
         }
 
         Column {
             Button(
                 onClick = {
+
+                    val temp = mutableListOf<FilterItem>()
+                    temp.addAll(selectedItems)
                     selectedItems.clear()
+                    selectedItems.addAll(temp.map { it.copy(selectedOption = "") })
+
                     isClear = true
+                    onClear()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -152,18 +177,22 @@ private fun FilterDialogContent(
 private fun FilterItemLayout(
     title: String,
     isClear: Boolean,
+    defaultValue: String,
     options: List<String>,
     onSelected: (String) -> Unit,
+    onCleared: () -> Unit,
     modifier: Modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
 ) {
 
     var defaultValue by remember {
-        mutableStateOf("All")
+        mutableStateOf(defaultValue)
     }
 
     LaunchedEffect(isClear) {
-        Log.d("TAG", "FilterItemLayout: $isClear")
-        if (isClear) defaultValue = options.get(0)
+        if (isClear) {
+            defaultValue = options.get(0)
+            onCleared()
+        }
     }
 
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {

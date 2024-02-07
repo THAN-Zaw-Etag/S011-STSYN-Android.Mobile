@@ -65,27 +65,6 @@ fun DropDown(
                 TrailingIcon(expanded = expanded)
             }
 
-            /*TextField(
-                value = selectedText,
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                ),
-                modifier = Modifier
-                    .menuAnchor()
-                    .border(
-                        width = 1.dp,
-                        color = Purple80,
-                        shape = RoundedCornerShape(5.dp)
-                    ),
-                trailingIcon = { TrailingIcon(expanded = expanded) },
-            )*/
-
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
@@ -95,7 +74,7 @@ fun DropDown(
                         text = { Text(text = item,  maxLines = 1, overflow = TextOverflow.Ellipsis) },
                         onClick = {
                             onSelected(item)
-                            selectedText = item.toString()
+                            selectedText = item
                             expanded = false
                         }
                     )
