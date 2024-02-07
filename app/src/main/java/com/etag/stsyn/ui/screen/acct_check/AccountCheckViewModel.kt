@@ -54,7 +54,7 @@ class AccountCheckViewModel @Inject constructor(
     val scannedItemIdList: StateFlow<List<String>> = _scannedItemIdList.asStateFlow()
 
     private val checkUserIdFlow = localDataStore.checkStatusId
-    private val userFlow = localDataStore.getUser
+    val userFlow = localDataStore.getUser
     private val settingFlow = appConfiguration.appConfig
 
     init {
@@ -159,9 +159,10 @@ class AccountCheckViewModel @Inject constructor(
             val scannedItem = acctCheckUiState.value.allItems.find { id == it.epc }
             val hasExisted = id in scannedItemIdList.value
             if (scannedItem != null && !hasExisted) {
-                _acctCheckUiState.update { it.copy(scannedItem = scannedItem) }
+                _acctCheckUiState.update { it.copy(scannedItem = scannedItem, unknownEpc = null) }
                 addScannedItemId(id)
             }
+            else _acctCheckUiState.update { it.copy(unknownEpc = id) }
         }
     }
 
@@ -181,6 +182,7 @@ class AccountCheckViewModel @Inject constructor(
     data class AcctCheckUiState(
         val shiftType: Shift = Shift.START,
         val allItems: List<BoxItem> = emptyList(),
+        val unknownEpc: String? = null,
         val scannedItem: BoxItem = BoxItem(),
         val filterOptions: List<FilterItem> = emptyList(),
         val acctCheckRequest: AccountCheckOutstandingItemsRequest = AccountCheckOutstandingItemsRequest()

@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.etag.stsyn.R
 import com.tzh.retrofit_module.domain.model.FilterItem
 
 @Composable
@@ -50,30 +52,50 @@ fun FilterDialog(
     onDone: (List<FilterItem>) -> Unit
 ) {
     val TAG = "FilterDialog"
+    var showFilterDialog by remember { mutableStateOf(false) }
+    var filterItems by remember { mutableStateOf<MutableList<FilterItem>>(mutableListOf()) }
     var showDialog by remember { mutableStateOf(false) }
+    var dialogMessage by remember { mutableStateOf("") }
 
     LaunchedEffect(show) {
-        showDialog = show
+        showFilterDialog = show
     }
 
-    if (showDialog) {
+    WarningDialog(
+        icon = CustomIcon.Resource(R.drawable.warning_dialog),
+        message = dialogMessage,
+        showDialog = showDialog,
+        positiveButtonTitle = "Ok",
+        onPositiveButtonClick = {
+            showDialog = false
+            onDone(filterItems)
+
+            showFilterDialog = false
+            onDismiss()
+        }
+    )
+
+    if (showFilterDialog) {
         Dialog(
             properties = DialogProperties(usePlatformDefaultWidth = false),
             onDismissRequest = {
-                showDialog = false
+                showFilterDialog = false
                 onDismiss()
             }) {
             FilterDialogContent(
                 onDismiss = {
-                    showDialog = false
+                    showFilterDialog = false
                     onDismiss()
                 },
                 filters = filters,
                 onClear = onClear,
-                onDone = {
-                    onDone(it)
-                    showDialog = false
-                    onDismiss()
+                onDone = { items ->
+                    dialogMessage = if (items.filter { it.selectedOption.isEmpty() || it.selectedOption == "All" }.size != items.size) "You're not able to scan unknown EPC" else "You're able to scan unknown EPC"
+                    showDialog = true
+
+                    filterItems.clear()
+                    filterItems.addAll(items)
+
                 }
             )
         }
@@ -118,17 +140,19 @@ private fun FilterDialogContent(
         LazyColumn(modifier = Modifier.weight(1f)) {
             itemsIndexed(filters) { index, item ->
                 defaultValue = if (item.selectedOption.trim().isEmpty()) "All" else item.selectedOption
-                FilterItemLayout(
-                    title = item.title,
-                    isClear = isClear,
-                    defaultValue = defaultValue,
-                    options = filters[index].options,
-                    onCleared = { isClear = false },
-                    onSelected = { option ->
-                        val updatedItem = item.copy(selectedOption = if (option == "All") "" else option)
-                        selectedItems[index] = updatedItem
-                    }
-                )
+                key (item.selectedOption) {
+                    FilterItemLayout(
+                        title = item.title,
+                        isClear = isClear,
+                        defaultValue = defaultValue,
+                        options = filters[index].options,
+                        onCleared = { isClear = false },
+                        onSelected = { option ->
+                            val updatedItem = item.copy(selectedOption = if (option == "All") "" else option)
+                            selectedItems[index] = updatedItem
+                        }
+                    )
+                }
             }
         }
 

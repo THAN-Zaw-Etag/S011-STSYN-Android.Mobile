@@ -34,9 +34,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.etag.stsyn.R
+import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.FilterDialog
 import com.etag.stsyn.ui.components.ScanIconButton
+import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.ui.theme.errorColor
 import com.etag.stsyn.util.datasource.DataSource
 import com.tzh.retrofit_module.domain.model.FilterItem
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
@@ -51,7 +55,6 @@ fun AcctCheckScanScreen(
     val TAG = "AccountCheckScanScreen"
 
     var filterCount by remember { mutableStateOf(0) }
-    var isScanned by remember { mutableStateOf(false) }
     var filters by remember { mutableStateOf<List<FilterItem>>(emptyList()) }
     var showFilterDialog by remember { mutableStateOf(false) }
     val rfidUiState by accountCheckViewModel.rfidUiState.collectAsState()
@@ -60,8 +63,9 @@ fun AcctCheckScanScreen(
     var total by remember { mutableStateOf(0) }
     var done by remember { mutableStateOf(0) }
     var outstanding by remember { mutableStateOf(0) }
+    var showUnknownEpcDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(scannedItemIdList,acctCheckUiState.allItems) {
+    LaunchedEffect(scannedItemIdList, acctCheckUiState.allItems) {
         withContext(Dispatchers.IO) {
             total = acctCheckUiState.allItems.size
             done = acctCheckUiState.allItems.filter { it.epc in scannedItemIdList }.size
@@ -69,9 +73,31 @@ fun AcctCheckScanScreen(
         }
     }
 
+    LaunchedEffect(acctCheckUiState.unknownEpc) {
+        showUnknownEpcDialog = acctCheckUiState.unknownEpc != null
+    }
+
+    WarningDialog(
+        icon = CustomIcon.Resource(R.drawable.warning_dialog),
+        color = errorColor,
+        message = "Alien/Unknown EPC alert. Scan '${acctCheckUiState.unknownEpc}' again?",
+        showDialog = showUnknownEpcDialog,
+        positiveButtonTitle = "Yes",
+        negativeButtonTitle = "No",
+        onPositiveButtonClick = {
+            showUnknownEpcDialog = false
+        },
+        onNegativeButtonClick = {
+            showUnknownEpcDialog = false
+        }
+    )
+
     LaunchedEffect(acctCheckUiState.filterOptions) {
         filters = acctCheckUiState.filterOptions
-        Log.d(TAG, "AcctCheckScanScreen: ${acctCheckUiState.filterOptions.map { it.selectedOption }}")
+        Log.d(
+            TAG,
+            "AcctCheckScanScreen: ${acctCheckUiState.filterOptions.map { it.selectedOption }}"
+        )
     }
 
     Column(
@@ -118,7 +144,7 @@ fun AcctCheckScanScreen(
 @Composable
 private fun AcctCheckContent(
     filterCount: Int,
-    total : Int,
+    total: Int,
     done: Int,
     boxItem: BoxItem,
     outstanding: Int,
