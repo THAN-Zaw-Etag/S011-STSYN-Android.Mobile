@@ -39,6 +39,8 @@ import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.datasource.DataSource
 import com.tzh.retrofit_module.domain.model.FilterItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun AcctCheckScanScreen(
@@ -53,6 +55,18 @@ fun AcctCheckScanScreen(
     var showFilterDialog by remember { mutableStateOf(false) }
     val rfidUiState by accountCheckViewModel.rfidUiState.collectAsState()
     val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsState()
+    val scannedItemIdList by accountCheckViewModel.scannedItemIdList.collectAsState()
+    var total by remember { mutableStateOf(0) }
+    var done by remember { mutableStateOf(0) }
+    var outstanding by remember { mutableStateOf(0) }
+
+    LaunchedEffect(scannedItemIdList,acctCheckUiState.allItems) {
+        withContext(Dispatchers.IO) {
+            total = acctCheckUiState.allItems.size
+            done = acctCheckUiState.allItems.filter { it.epc in scannedItemIdList }.size
+            outstanding = acctCheckUiState.allItems.filter { it.epc !in scannedItemIdList }.size
+        }
+    }
 
     LaunchedEffect(acctCheckUiState.filterOptions) {
         filters = acctCheckUiState.filterOptions
@@ -73,22 +87,25 @@ fun AcctCheckScanScreen(
                 show = showFilterDialog,
                 filters = filters,
                 onDismiss = { showFilterDialog = false },
-                onClear = {accountCheckViewModel.clearFilters()},
-                onDone = {
-                    accountCheckViewModel.updateFilterOptions(it)
-                    filterCount = it.filter { it.selectedOption != "-" }.size
+                onClear = accountCheckViewModel::clearFilters,
+                onDone = { filterItems ->
+                    accountCheckViewModel.updateFilterOptions(filterItems)
+                    filterCount = filterItems.filter { it.selectedOption != "-" }.size
                 }
             )
             AcctCheckContent(
                 onFilterButtonClick = { showFilterDialog = true },
                 selectedFilters = acctCheckUiState.filterOptions,
+                total = total,
+                done = done,
+                outstanding = outstanding,
                 filterCount = filterCount,
                 isScanned = isScanned
             )
         }
         ScanIconButton(
             isScanning = rfidUiState.isScanning,
-            onScan = { accountCheckViewModel.toggle() },
+            onScan = accountCheckViewModel::toggle,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(16.dp)
@@ -99,6 +116,9 @@ fun AcctCheckScanScreen(
 @Composable
 private fun AcctCheckContent(
     filterCount: Int,
+    total : Int,
+    done: Int,
+    outstanding: Int,
     onFilterButtonClick: () -> Unit,
     selectedFilters: List<FilterItem>,
     isScanned: Boolean
@@ -113,12 +133,12 @@ private fun AcctCheckContent(
     }
     ScanBoxSection("", "")
     Row(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.weight(0.8f)) {
-            DetailItem(title = "Total", value = "0")
-            DetailItem(title = "Done", value = "0")
-            DetailItem(title = "Outstanding", value = "0")
+        Column(modifier = Modifier.weight(1f)) {
+            DetailItem(title = "Total", value = total.toString())
+            DetailItem(title = "Done", value = done.toString())
+            DetailItem(title = "Outstanding", value = outstanding.toString())
         }
-        TextButton(onClick = { }, modifier = Modifier.weight(0.2f)) {
+        TextButton(onClick = { }, modifier = Modifier) {
             Text(
                 text = "Reset",
                 color = if (isScanned) Purple80 else Color.Gray,
@@ -163,8 +183,8 @@ private fun DetailItem(
     modifier: Modifier = Modifier.padding(vertical = 4.dp)
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(text = title, modifier = Modifier.weight(0.3f))
-        Text(text = if (value.isEmpty()) "-" else value, modifier = Modifier.weight(0.7f))
+        Text(text = title, modifier = Modifier.weight(0.4f))
+        Text(text = if (value.isEmpty()) "-" else value, modifier = Modifier.weight(0.6f))
     }
 }
 
