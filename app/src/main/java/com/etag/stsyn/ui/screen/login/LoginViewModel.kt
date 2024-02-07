@@ -111,6 +111,8 @@ class LoginViewModel @Inject constructor(
                 val  baseUrl = appConfigModel.apiUrl
                 if (baseUrl.isEmpty()){
                     _shouldShowEmptyBaseUrlDialog.postValue(true)
+                }else{
+                    _shouldShowEmptyBaseUrlDialog.postValue(false)
                 }
             }
         }

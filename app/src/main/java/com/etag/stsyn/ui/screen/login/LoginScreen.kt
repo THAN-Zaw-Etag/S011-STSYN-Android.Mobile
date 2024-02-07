@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,7 +54,6 @@ import com.etag.stsyn.util.AppUtil.getDeviceSize
 import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.util.ApiResponse
 
-
 @Composable
 fun LoginScreen(
     navigateToLoginContentScreen: () -> Unit,
@@ -80,8 +80,8 @@ fun LoginScreen(
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val appConfiguration by loginViewModel.appConfig.collectAsState(initial = AppConfigModel())
-
-    if (appConfiguration.apiUrl.isEmpty()) {
+    val emptyBaseUrlStatus = loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
+    if (emptyBaseUrlStatus.value) {
         ShowBaseUrlAlertDialog(
             onConfirm = {
                 loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = "https://18.139.63.32/SMS-STSYN-Dev/api/"))   //TODO change this when app release

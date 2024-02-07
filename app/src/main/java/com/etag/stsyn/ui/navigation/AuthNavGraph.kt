@@ -76,11 +76,18 @@ fun NavGraphBuilder.authNavGraph(
             LoginContentScreen(
                 goToHome = {
                     // if sod initiate is true, go to sod initiate screen else home screen
-                    navController.navigate(if (true) Routes.SODInitiateScreen.name else Graph.HOME) {
+//                    navController.navigate(if (false) Routes.SODInitiateScreen.name else Graph.HOME) {
+//                        popUpTo(0) {
+//                            inclusive = true
+//                        }
+//                    }
+                    //TODO to check from kzl
+                    navController.navigate(if (true) Routes.SODInitiateScreen.name else "${Graph.HOME}/${loginUiState.isSodInitiate}") {
                         popUpTo(0) {
                             inclusive = true
                         }
                     }
+
                     loginViewModel.resetLoginResponseState()
                 },
                 loginAttemptCount = logInState.value.attemptCount,
