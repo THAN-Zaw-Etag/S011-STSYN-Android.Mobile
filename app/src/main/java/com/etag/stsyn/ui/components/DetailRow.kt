@@ -19,9 +19,3 @@ fun DetailRow(
         Text(itemDetail.value)
     }
 }
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun DetailRowPreview() {
-    DetailRow(itemDetail = ItemDetail("Serial No.", "SN001001"))
-}

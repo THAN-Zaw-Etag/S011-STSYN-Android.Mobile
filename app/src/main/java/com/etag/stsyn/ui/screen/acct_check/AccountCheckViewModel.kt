@@ -45,6 +45,9 @@ class AccountCheckViewModel @Inject constructor(
 
     private val saveAcctCheckResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
 
+    private val _scannedItemIdList = MutableStateFlow<List<String>>(emptyList())
+    val scannedItemIdList: StateFlow<List<String>> = _scannedItemIdList.asStateFlow()
+
     private val checkUserIdFlow = localDataStore.checkStatusId
     private val userFlow = localDataStore.getUser
     private val settingFlow = appConfiguration.appConfig

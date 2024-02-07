@@ -69,7 +69,7 @@ abstract class BaseViewModel(
     protected suspend fun <T> handleDialogStatesByResponse(response: ApiResponse<T>) {
         when (response) {
             is ApiResponse.Loading -> {
-                delay(300)
+                delay(400)
                 toggleLoadingVisibility(true)
                 disableScan()
             }
