@@ -57,7 +57,6 @@ fun HomeNavigationGraph(
             val popResultFlow by it.savedStateHandle.getStateFlow("isSodInitiate",true).collectAsState()
 
             LaunchedEffect(popResultFlow) {
-                Log.d("TAG", "HomeNavigationGraph: $popResultFlow")
                 if (!popResultFlow) isInitiate = false
             }
 
