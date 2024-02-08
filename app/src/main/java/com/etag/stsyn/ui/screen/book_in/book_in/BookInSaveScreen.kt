@@ -42,7 +42,7 @@ fun BookInSaveScreen(
         is ApiResponse.Success -> {
             showSuccessDialog = true
             viewModel.updateIsSavedStatus(true)
-            viewModel.updateSuccessDialogVisibility(true)
+            //viewModel.updateSuccessDialogVisibility(true)
         }
 
         is ApiResponse.ApiError -> showErrorDialog = true

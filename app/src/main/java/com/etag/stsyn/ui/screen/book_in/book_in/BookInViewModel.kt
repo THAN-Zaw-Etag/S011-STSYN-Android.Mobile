@@ -145,6 +145,11 @@ class BookInViewModel @Inject constructor(
                     printJob = printJob, itemMovementLogs = itemMovementLogs
                 )
             )
+
+            when (savedBookInResponse.value){
+                is ApiResponse.Success -> updateSuccessDialogVisibility(true)
+                else -> {}
+            }
         }
     }
 

@@ -71,7 +71,6 @@ fun HomeScreen(
     isSodInitiate: Boolean,
     onChangePassword: KFunction2<CharArray, CharArray, Unit>,
     onLogOutClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {

@@ -60,7 +60,7 @@ fun DetailScreen(
     shiftType: Shift,
     modifier: Modifier = Modifier,
     logOut: () -> Unit,
-    navigateToMainMenu:() -> Unit,
+    navigateToMainMenu: () -> Unit,
     navigateToHomeScreen: () -> Unit,
 ) {
     val TAG = "DetailScreen"
@@ -105,18 +105,18 @@ fun DetailScreen(
     }
 
     LaunchedEffect(clickEventFlow) {
-        when(clickEventFlow) {
-            is ClickEvent.ClickAfterSave ->{
+        when (clickEventFlow) {
+            is ClickEvent.ClickAfterSave -> {
                 scope.launch { pagerState.animateScrollToPage(0) }
             }
+
             is ClickEvent.ClickToNavigateHome -> navigateToMainMenu()
             else -> {}
         }
     }
 
     // show loading while data is fetching
-    if (detailUiState.showLoadingDialog) LoadingDialog(
-        title = "Loading...",
+    if (detailUiState.showLoadingDialog) LoadingDialog(title = "Loading...",
         showDialog = detailUiState.showLoadingDialog,
         onDismiss = { })
 
@@ -127,7 +127,7 @@ fun DetailScreen(
         positiveButtonTitle = "Try again",
         negativeButtonTitle = "Cancel",
         onNegativeButtonClick = {
-                                showErrorDialog = false
+            showErrorDialog = false
         },
         onDismiss = {
             showErrorDialog = false

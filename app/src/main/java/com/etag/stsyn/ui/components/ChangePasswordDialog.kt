@@ -91,7 +91,7 @@ fun ChangePasswordDialog(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         UserNameShortcutIcon(name = userName, modifier = Modifier.padding(0.dp))
-                        Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(22.dp))
                         Text(text = userName)
                     }
 

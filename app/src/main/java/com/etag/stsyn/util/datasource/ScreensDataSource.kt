@@ -134,7 +134,7 @@ object ScreensDataSource {
     fun bookInScreens(viewModel: BookInViewModel) = listOf(
         TabScreen(
             title = "Book in",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_in_tab_icon),
             screen = { BookInScanScreen(viewModel) }),
         TabScreen(
             title = "Count",

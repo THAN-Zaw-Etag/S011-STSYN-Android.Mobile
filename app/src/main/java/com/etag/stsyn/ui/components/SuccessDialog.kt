@@ -49,7 +49,7 @@ fun SuccessDialog(
     if (openDialog) {
         Dialog(onDismissRequest = { openDialog = false }) {
             Surface(
-                modifier = modifier.fillMaxWidth(0.9f),
+                modifier = modifier.fillMaxWidth(1f),
                 color = Color.Transparent
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
