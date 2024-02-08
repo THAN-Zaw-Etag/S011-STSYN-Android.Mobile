@@ -69,7 +69,7 @@ class BookInViewModel @Inject constructor(
 
     private fun handleUiEvent() {
         viewModelScope.launch {
-            eventFlow.collect {
+            clickEventFlow.collect {
                 when (it) {
                     is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
                     else -> {}

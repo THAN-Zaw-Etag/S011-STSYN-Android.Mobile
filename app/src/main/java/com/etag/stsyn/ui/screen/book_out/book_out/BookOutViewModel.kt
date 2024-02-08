@@ -65,7 +65,7 @@ class BookOutViewModel @Inject constructor(
 
     private fun handleClickEvent() {
         viewModelScope.launch {
-            eventFlow.collect {
+            clickEventFlow.collect {
                 when (it) {
                     is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
                     is ClickEvent.RetryClick -> getAllBookOutItems()

@@ -22,6 +22,7 @@ import androidx.work.WorkManager
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
 import com.etag.stsyn.core.receiver.BluetoothState
+import com.etag.stsyn.data.worker.TokenRefreshWorker
 import com.etag.stsyn.data.worker.TokenRefresher
 import com.etag.stsyn.ui.navigation.RootNavigationGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
@@ -33,6 +34,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    companion object {
+        const val TAG = "MainActivity"
+    }
+
     private lateinit var workManager: WorkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +46,8 @@ class MainActivity : ComponentActivity() {
         // lock screen rotation
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         workManager = WorkManager.getInstance(this)
+
+        TokenRefreshWorker.refresh()
 
         setContent {
             val navController = rememberNavController()
@@ -55,16 +62,16 @@ class MainActivity : ComponentActivity() {
                 loginViewModel.loading.value
             }
 
-            workManager.getWorkInfosByTagLiveData("refreshWorkName")
+           /* workManager.getWorkInfosByTagLiveData("refreshWorkName")
                 .observe(LocalLifecycleOwner.current) {
                     val workInfo = it.firstOrNull { it.state.isFinished }
                     if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
                         val outputData = workInfo.outputData
                         val outputValue = outputData.getString("api_token")
                         loginViewModel.saveToken(outputValue!!)
-                        Log.d("TAG", "doWork: savedToken: $outputValue")
+                        Log.d(TAG, "doWork: savedToken: $outputValue")
                     }
-                }
+                }*/
 
             PermissionUtil.checkBluetoothPermission(context)
 

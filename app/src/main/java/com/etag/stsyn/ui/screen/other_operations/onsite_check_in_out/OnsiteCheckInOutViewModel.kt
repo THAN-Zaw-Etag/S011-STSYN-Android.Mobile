@@ -62,7 +62,7 @@ class OnsiteCheckInOutViewModel @Inject constructor(
 
     private fun handleUiEvent() {
         viewModelScope.launch {
-            eventFlow.collect {event ->
+            clickEventFlow.collect { event ->
                 when (event) {
                     is ClickEvent.ClickAfterSave -> doTasksAfterSaved()
                     else -> {}

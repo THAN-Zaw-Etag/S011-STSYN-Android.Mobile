@@ -14,17 +14,15 @@ object TokenRefresher {
 
         val workName = "refreshWorkName"
 
-        workManager.cancelUniqueWork(workName)
-
-        val periodicRefreshRequest =
-            PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 16, TimeUnit.MINUTES)
+        val periodicRefreshRequest: PeriodicWorkRequest =
+            PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 15, TimeUnit.MINUTES)
                 .setInitialDelay(5, TimeUnit.SECONDS)
                 .setConstraints(constraints)
                 .build()
 
         workManager.enqueueUniquePeriodicWork(
             workName,
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.UPDATE,
             periodicRefreshRequest
         )
     }

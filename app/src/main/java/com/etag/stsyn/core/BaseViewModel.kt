@@ -32,8 +32,8 @@ abstract class BaseViewModel(
     private val _showAuthorizationFailedDialog = MutableStateFlow(false)
     val showAuthorizationFailedDialog: StateFlow<Boolean> = _showAuthorizationFailedDialog.asStateFlow()
 
-    private val _eventFlow = MutableSharedFlow<ClickEvent>()
-    val eventFlow: SharedFlow<ClickEvent> = _eventFlow.asSharedFlow()
+    private val _clickEventFlow = MutableSharedFlow<ClickEvent>()
+    val clickEventFlow: SharedFlow<ClickEvent> = _clickEventFlow.asSharedFlow()
 
     private var reconnectingJob: Job? = null
 
@@ -232,7 +232,7 @@ abstract class BaseViewModel(
      * */
     fun updateClickEvent(event: ClickEvent) {
         viewModelScope.launch {
-            _eventFlow.emit(event)
+            _clickEventFlow.emit(event)
         }
     }
 

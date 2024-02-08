@@ -22,6 +22,7 @@ class UserRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val localDataStore: LocalDataStore
 ) : UserRepository {
+    private val userFlow = localDataStore.getUser
 
     override suspend fun login(loginRequest: LoginRequest): ApiResponse<LoginResponse> {
         return ApiResponseHandler.processResponse {
@@ -30,10 +31,17 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun refreshToken(): ApiResponse<RefreshTokenResponse> {
-        val user = localDataStore.getUser.first()
-        return ApiResponseHandler.processResponse {
+        val user = userFlow.first()
+        val response = ApiResponseHandler.processResponse {
             apiService.refreshToken( RefreshTokenRequest(user.token))
         }
+        when (response) {
+            is ApiResponse.Success -> {
+                localDataStore.saveToken(response.data!!.token)
+            }
+            else -> {}
+        }
+        return response
     }
 
     override suspend fun updatePassword(
@@ -45,7 +53,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getUserMenuAccessRightsById(): ApiResponse<UserMenuAccessRightsByIdResponse> {
-        val user = localDataStore.getUser.last()
+        val user = userFlow.first()
         return ApiResponseHandler.processResponse {
             apiService.getUserAccessRightsByRoleId( id = user.roleId)
         }
@@ -64,7 +72,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getIssuerByEPC(
         epc: String
     ): ApiResponse<GetIssuerUserResponse> {
-        val user = localDataStore.getUser.first()
+        val user = userFlow.first()
         return ApiResponseHandler.processResponse {
             apiService.getIssuerByEPC(epc, user.userId)
         }
