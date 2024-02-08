@@ -43,6 +43,7 @@ import com.etag.stsyn.ui.theme.errorColor
 import com.kevinnzou.compose.swipebox.SwipeBox
 import com.kevinnzou.compose.swipebox.SwipeDirection
 import com.kevinnzou.compose.swipebox.widget.SwipeIcon
+import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import kotlinx.coroutines.launch
 
 @Composable

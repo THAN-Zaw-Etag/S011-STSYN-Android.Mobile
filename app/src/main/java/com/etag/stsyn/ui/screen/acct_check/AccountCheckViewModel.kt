@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.acct_check
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.ClickEvent
@@ -14,7 +13,6 @@ import com.tzh.retrofit_module.data.model.account_check.AccountCheckOutstandingI
 import com.tzh.retrofit_module.data.model.account_check.SaveAccountabilityCheckRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.FilterItem
-import com.tzh.retrofit_module.domain.model.accountabilityCheck.DropdownSet
 import com.tzh.retrofit_module.domain.model.accountabilityCheck.GetAllAccountabilityCheckItemsResponse
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -26,7 +24,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -79,7 +76,7 @@ class AccountCheckViewModel @Inject constructor(
 
     private fun handleUiEvent() {
         viewModelScope.launch {
-            eventFlow.collect {
+            clickEventFlow.collect {
                 when (it) {
                     is ClickEvent.RetryClick -> getAllAccountabilityCheckItems()
                     is ClickEvent.ClickAfterSave -> doTasksAfterSaving()
@@ -158,7 +155,7 @@ class AccountCheckViewModel @Inject constructor(
             val userId = userFlow.map { it.userId }.first()
             val readerId = settingFlow.map { it.handheldReaderId }.first()
             val shift = acctCheckUiState.value.shiftType.toString()
-            val checkStatusId = checkUserIdFlow.first()
+            val checkStatusId = checkUserIdFlow.first() ?: 0
 
             _saveAcctCheckResponse.value = ApiResponse.Loading
             delay(500)

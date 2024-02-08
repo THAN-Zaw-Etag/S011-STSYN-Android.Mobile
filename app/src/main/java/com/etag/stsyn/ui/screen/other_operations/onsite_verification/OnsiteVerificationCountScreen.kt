@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
-import com.etag.stsyn.ui.screen.BottomSheetContent
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
+import com.etag.stsyn.ui.screen.bottomsheet.BoxDetailScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.launch
@@ -42,6 +42,7 @@ fun OnsiteVerificationCountScreen(
     val itemsResponse by onsiteVerificationViewModel.getOnSiteVerifyItems.collectAsState()
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
     var items by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
+    var selectedItem by remember { mutableStateOf(BoxItem()) }
 
     val onsiteVerificationUiState by onsiteVerificationViewModel.onsiteVerificationUiState.collectAsState()
 
@@ -49,9 +50,10 @@ fun OnsiteVerificationCountScreen(
         bottomSheetState = SheetState(skipPartiallyExpanded = true, skipHiddenState = false)
     )
     val coroutineScope = rememberCoroutineScope()
+
     DetailBottomSheetScaffold(
         state = scaffoldState,
-        sheetContent = { BottomSheetContent(itemList = listOf()) }) {
+        sheetContent = { BoxDetailScreen(boxItem = selectedItem) }) {
         BaseCountScreen(
             itemCount = items.size,
             onTabSelected = {controlType->
@@ -80,7 +82,8 @@ fun OnsiteVerificationCountScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(items) {
-                    ScannedItem(id = it.epc, name = it.description, onItemClick = {
+                    ScannedItem(id = it.epc, name = it.description, showTrailingIcon = true, onItemClick = {
+                        selectedItem = it
                         if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
                         else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
                     })

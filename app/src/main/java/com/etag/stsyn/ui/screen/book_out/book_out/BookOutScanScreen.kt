@@ -49,7 +49,7 @@ fun BookOutScanScreen(
             itemsIndexed(bookOutUiState.scannedItems) {index,item ->
                 key(item.epc) {
                     ScannedItem(
-                        id = item.epc, name = item.description,
+                        id = "${item.serialNo} - ${item.itemLocation}", name = item.description,
                         isSwipeable = true,
                         showError = bookOutViewModel.isUnderCalibrationAlert(item.calDate),
                         onSwipeToDismiss = {

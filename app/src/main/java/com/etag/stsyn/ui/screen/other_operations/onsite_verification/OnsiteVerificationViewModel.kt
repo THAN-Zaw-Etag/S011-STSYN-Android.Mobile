@@ -3,6 +3,7 @@ package com.etag.stsyn.ui.screen.other_operations.onsite_verification
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
+import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.onsiteverification.SaveOnSiteVerificationRq
@@ -48,7 +49,6 @@ class OnsiteVerificationViewModel @Inject constructor(
     private val _onsiteVerificationUiState = MutableStateFlow(OnsiteVerificationUiState())
     val onsiteVerificationUiState: StateFlow<OnsiteVerificationUiState> =
         _onsiteVerificationUiState.asStateFlow()
-
 
     private val _totalScannedItems = MutableStateFlow<List<BoxItem?>>(emptyList())
     val totalScannedItems: StateFlow<List<BoxItem?>> = _totalScannedItems.asStateFlow()
@@ -107,7 +107,6 @@ class OnsiteVerificationViewModel @Inject constructor(
 
             val allExistingItems = _onsiteVerificationUiState.value.allItemsFromApi
             val currentItems = allExistingItems.toMutableList()
-
 
             val foundIndex = currentItems.indexOfFirst { it.epc == epc }
 
@@ -308,6 +307,24 @@ class OnsiteVerificationViewModel @Inject constructor(
     init {
         getOnSiteVerifyItems()
         addOutstandingItem()
+        handleClickEvent()
+    }
+
+    private fun handleClickEvent() {
+        viewModelScope.launch {
+            clickEventFlow.collect {
+                when (it) {
+                    is ClickEvent.ClickAfterSave -> doTasksAfterSave()
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun doTasksAfterSave() {
+        _onsiteVerificationUiState.update { it.copy(allItemsFromApi = emptyList()) }
+        getOnSiteVerifyItems()
     }
 
 }

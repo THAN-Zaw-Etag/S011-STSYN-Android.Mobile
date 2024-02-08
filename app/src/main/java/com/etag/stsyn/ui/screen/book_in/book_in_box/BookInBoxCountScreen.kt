@@ -72,7 +72,8 @@ fun BookInBoxCountScreen(
                             boxItem = item
                             if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
                             else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                        })
+                        }
+                    )
                 }
             }
         }

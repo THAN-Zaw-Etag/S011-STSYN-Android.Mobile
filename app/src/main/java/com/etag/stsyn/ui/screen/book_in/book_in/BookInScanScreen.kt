@@ -68,8 +68,8 @@ fun BookInScanScreen(
             items(bookInState.allBookInItems.filter { it.epc in scannedItemIdList }) {
                 key(it.epc) {
                     ScannedItem(
-                        id = it.epc ?: "",
-                        name = it.description ?: "",
+                        id = "${it.serialNo} - ${it.itemLocation}",
+                        name = it.description,
                         isSwipeable = true,
                         onSwipeToDismiss = { bookInViewModel.removeScannedBookInItem(it.epc) }
                     )

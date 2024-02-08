@@ -87,7 +87,6 @@ fun OnsiteVerifyScreen(
 
     val scannedItemIndex by onsiteVerificationViewModel.scannedItemIndex.collectAsState()
 
-
     var boxItemsFromApi by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
     val coroutineScope = rememberCoroutineScope()
     val rfidUiState by onsiteVerificationViewModel.rfidUiState.collectAsState()
@@ -163,7 +162,6 @@ fun OnsiteVerifyScreen(
         state = scaffoldState,
         sheetContent = {
             BoxDetailScreen(boxItem = currentBoxItem)
-
         }) {
         Column(
             modifier = Modifier
@@ -246,8 +244,6 @@ private fun ScannedContent(
 ) {
     var showResetDialog by remember { mutableStateOf(false) }
 
-
-
     LaunchedEffect(scannedItems) {
         if (scannedItems.size > 1) listState.animateScrollToItem(scannedItems.size - 1)
     }
@@ -287,7 +283,7 @@ private fun ScannedContent(
                 itemsIndexed(items = boxItem) { index, item ->
                     ScannedItem(
                         isScanned = item.isScanned,
-                        id = item.epc,
+                        id = "${item.serialNo} - ${item.itemLocation}",
                         isSwipeable = true,
                         name = item.description,
                         showTrailingIcon = true,
@@ -299,7 +295,10 @@ private fun ScannedContent(
                         }
                     )
                 }
-            } else {
+            }
+
+            //TODO Don't know why it has to be used [KZL]
+            /*else {
                 items(scannedItems) {
                     ScannedItem(
                         id = it,
@@ -310,7 +309,7 @@ private fun ScannedContent(
                         }
                     )
                 }
-            }
+            }*/
 
 
         }

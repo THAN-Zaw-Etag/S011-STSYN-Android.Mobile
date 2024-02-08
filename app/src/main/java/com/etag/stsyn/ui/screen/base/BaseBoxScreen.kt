@@ -151,7 +151,7 @@ fun BaseBoxScreen(
             itemsIndexed(bookItems) { index, item ->
                 key(item.epc) {
                     ScannedItem(
-                        id = "${item.serialNo} - ${item.partNo}",
+                        id = "${item.serialNo} - ${item.itemLocation}",
                         name = item.description,
                         isScanned = item.epc in scannedItemList,
                     )

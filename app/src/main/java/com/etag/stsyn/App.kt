@@ -3,6 +3,7 @@ package com.etag.stsyn
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.etag.stsyn.data.worker.TokenRefreshWorker
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -16,6 +17,11 @@ class App : Application(), Configuration.Provider {
             .setMinimumLoggingLevel(android.util.Log.INFO)
             .setWorkerFactory(workerFactory)
             .build()
+    override fun onCreate() {
+        super.onCreate()
+        //TokenRefreshWorker.refresh()
+    }
+
 
     /*override fun getWorkManagerConfiguration(): Configuration {
         return Configuration.Builder()

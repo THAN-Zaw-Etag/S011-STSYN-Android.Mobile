@@ -1,6 +1,7 @@
 package com.tzh.retrofit_module.data.local_storage
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -15,6 +16,7 @@ import javax.inject.Inject
 
 class LocalDataStore @Inject constructor(private val context: Context) {
     companion object {
+        const val TAG = "LocalDataStore"
         const val NAME = "user_prefs"
         val Context.dataStore: DataStore<Preferences> by preferencesDataStore(NAME)
         val USER_ID = stringPreferencesKey("user_id")
@@ -65,6 +67,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
     }
 
     suspend fun saveToken(token: String) {
+        Log.d(TAG, "saveToken: $token")
         context.dataStore.edit {
             it[TOKEN] = token
         }

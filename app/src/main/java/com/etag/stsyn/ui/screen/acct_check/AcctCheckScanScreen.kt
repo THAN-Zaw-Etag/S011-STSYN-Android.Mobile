@@ -98,6 +98,7 @@ fun AcctCheckScanScreen(
 
     LaunchedEffect(acctCheckUiState.filterOptions) {
         filters = acctCheckUiState.filterOptions
+        filterCount = acctCheckUiState.filterOptions.filter { it.selectedOption.isNotEmpty() }.size
     }
 
     Column(
@@ -117,7 +118,6 @@ fun AcctCheckScanScreen(
                 onClear = accountCheckViewModel::clearFilters,
                 onDone = { filterItems ->
                     accountCheckViewModel.updateFilterOptions(filterItems)
-                    filterCount = filterItems.filter { it.selectedOption.isNotEmpty() }.size
                 }
             )
             AcctCheckContent(

@@ -121,7 +121,7 @@ fun CheckInOutScreen(
             ) {
                 items(onsiteCheckInOutUiState.allItemsForOnsite.filter { it.epc in scannedItemList }) {
                     key(it.epc) {
-                        ScannedItem(id = "${it.id} - ${it.partNo}",
+                        ScannedItem(id = "${it.serialNo} - ${it.itemLocation}",
                             isSwipeable = true,
                             name = it.description,
                             onSwipeToDismiss = { onsiteCheckInOutViewModel.removeScannedItem(it.epc) })

@@ -9,9 +9,9 @@ import javax.inject.Inject
 
 class BaseUrlProvider @Inject constructor(
     private val appConfig: AppConfiguration
-){
+) {
 
-    private var baseUrl:String = "https://example.com"
+    private var baseUrl: String = "https://example.com"
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -22,7 +22,7 @@ class BaseUrlProvider @Inject constructor(
         }
     }
 
-        fun getBaseUrl(): String {
+    fun getBaseUrl(): String {
         if (baseUrl.isEmpty()) {
             throw IllegalStateException("Base URL is not set.")
         }
@@ -35,14 +35,11 @@ class BaseUrlProvider @Inject constructor(
 //    fun getBaseUrlWithTrailingSlash(): String {
 //        return getBaseUrl().trimEnd('/') + "/"}
 
-
     fun updateBaseUrl(newBaseUrl: String) {
-         Log.d("BaseUrlProvider", "From Class newBaseUrl: $newBaseUrl")
+        Log.d("BaseUrlProvider", "From Class newBaseUrl: $newBaseUrl")
         if (!newBaseUrl.startsWith("http://") && !newBaseUrl.startsWith("https://")) {
             throw IllegalArgumentException("Base URL must start with in update 'http://' or 'https://'. Provided URL: $newBaseUrl")
         }
         baseUrl = newBaseUrl
     }
-
-
 }

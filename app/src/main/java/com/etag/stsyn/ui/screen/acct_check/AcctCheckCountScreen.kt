@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,10 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
-import com.etag.stsyn.ui.screen.BottomSheetContent
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.etag.stsyn.ui.screen.bottomsheet.BoxDetailScreen
-import com.etag.stsyn.util.datasource.DataSource
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -73,7 +70,7 @@ fun AcctCheckCountScreen(
             ) {
                 items(items) {
                     ScannedItem(
-                        id = "${it.serialNo}-${it.partNo}",
+                        id = "${it.serialNo}-${it.itemLocation}",
                         name = it.description,
                         showTrailingIcon = true,
                         onItemClick = {
