@@ -46,7 +46,7 @@ fun AcctCheckSaveScreen(
     )
 
     BaseSaveScreen(
-        isError = scannedItemIdList.isEmpty(),
+        isError = false, //scannedItemIdList.isEmpty(),
         errorMessage = if (scannedItemIdList.isEmpty()) "Please read an item first" else "",
         onSave = accountCheckViewModel::saveAccountabilityCheck,
         modifier = modifier

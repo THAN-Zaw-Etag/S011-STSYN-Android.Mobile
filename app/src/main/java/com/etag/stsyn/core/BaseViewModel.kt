@@ -70,11 +70,13 @@ abstract class BaseViewModel(
         when (response) {
             is ApiResponse.Loading -> {
                 delay(400)
+                updateErrorMessage("")
                 toggleLoadingVisibility(true)
                 disableScan()
             }
             is ApiResponse.Success -> {
                 toggleLoadingVisibility(false)
+                updateErrorMessage("")
                 updateSuccessDialogVisibility(shouldShowSuccessDialog)
                 enableScan()
             }
@@ -84,6 +86,7 @@ abstract class BaseViewModel(
             }
             is ApiResponse.AuthorizationError -> {
                 toggleLoadingVisibility(false)
+                updateErrorMessage("")
                 shouldShowAuthorizationFailedDialog(true)
             }
             else -> {}
@@ -269,7 +272,8 @@ abstract class BaseViewModel(
 
 }
 sealed class ClickEvent {
-    object ClickAfterSave : ClickEvent()
-    object RetryClick: ClickEvent()
-    object Default: ClickEvent()
+    data object ClickAfterSave : ClickEvent()
+    data object ClickToNavigateHome : ClickEvent()
+    data object RetryClick: ClickEvent()
+    data object Default: ClickEvent()
 }

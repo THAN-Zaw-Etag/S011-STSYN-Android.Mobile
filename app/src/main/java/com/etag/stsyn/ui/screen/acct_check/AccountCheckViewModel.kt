@@ -79,7 +79,7 @@ class AccountCheckViewModel @Inject constructor(
             clickEventFlow.collect {
                 when (it) {
                     is ClickEvent.RetryClick -> getAllAccountabilityCheckItems()
-                    is ClickEvent.ClickAfterSave -> doTasksAfterSaving()
+                    is ClickEvent.ClickAfterSave -> updateClickEvent(ClickEvent.ClickToNavigateHome)
                     else -> {}
                 }
             }
@@ -159,7 +159,8 @@ class AccountCheckViewModel @Inject constructor(
 
             _saveAcctCheckResponse.value = ApiResponse.Loading
             delay(500)
-            _saveAcctCheckResponse.value = accountCheckRepository.saveAccountabilityCheck(
+            _saveAcctCheckResponse.value = ApiResponse.Success(NormalResponse(null,true))
+            /*_saveAcctCheckResponse.value = accountCheckRepository.saveAccountabilityCheck(
                 SaveAccountabilityCheckRequest(
                     acctCheckUiState.value.allItems
                         .filter { it.epc in scannedItemIdList.value }
@@ -171,7 +172,7 @@ class AccountCheckViewModel @Inject constructor(
                         checkStatusId = checkStatusId.toString()
                     ) }
                 )
-            )
+            )*/
         }
     }
 

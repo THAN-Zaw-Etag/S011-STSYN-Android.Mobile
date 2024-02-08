@@ -60,6 +60,7 @@ fun DetailScreen(
     shiftType: Shift,
     modifier: Modifier = Modifier,
     logOut: () -> Unit,
+    navigateToMainMenu:() -> Unit,
     navigateToHomeScreen: () -> Unit,
 ) {
     val TAG = "DetailScreen"
@@ -88,6 +89,7 @@ fun DetailScreen(
     val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsState()
     var showErrorDialog by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
+    val clickEventFlow by viewModel.clickEventFlow.collectAsState(initial = ClickEvent.Default)
 
     ReaderLifeCycle(viewModel = viewModel)
 
@@ -102,6 +104,16 @@ fun DetailScreen(
         showSuccessDialog = detailUiState.showSuccessDialog
     }
 
+    LaunchedEffect(clickEventFlow) {
+        when(clickEventFlow) {
+            is ClickEvent.ClickAfterSave ->{
+                scope.launch { pagerState.animateScrollToPage(0) }
+            }
+            is ClickEvent.ClickToNavigateHome -> navigateToMainMenu()
+            else -> {}
+        }
+    }
+
     // show loading while data is fetching
     if (detailUiState.showLoadingDialog) LoadingDialog(
         title = "Loading...",
@@ -112,7 +124,11 @@ fun DetailScreen(
     WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
         message = detailUiState.message,
         showDialog = showErrorDialog,
-        positiveButtonTitle = "Ok",
+        positiveButtonTitle = "Try again",
+        negativeButtonTitle = "Cancel",
+        onNegativeButtonClick = {
+                                showErrorDialog = false
+        },
         onDismiss = {
             showErrorDialog = false
             viewModel.updateClickEvent(ClickEvent.RetryClick)
@@ -120,7 +136,6 @@ fun DetailScreen(
 
     // show success dialog when saving items is done
     SuccessDialog(showDialog = showSuccessDialog, title = "SUCCESS!", onDoneClick = {
-        scope.launch { pagerState.animateScrollToPage(0) }
         viewModel.updateClickEvent(ClickEvent.ClickAfterSave)
     })
 

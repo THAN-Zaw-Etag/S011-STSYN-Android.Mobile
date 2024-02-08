@@ -1,12 +1,17 @@
 package com.etag.stsyn.ui.navigation
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
@@ -47,6 +52,14 @@ fun HomeNavigationGraph(
     ) {
 
         composable(route = Routes.HomeScreen.name) {
+            var isInitiate by remember { mutableStateOf(isSodInitiate) }
+
+            val popResultFlow by it.savedStateHandle.getStateFlow("isSodInitiate",true).collectAsState()
+
+            LaunchedEffect(popResultFlow) {
+                Log.d("TAG", "HomeNavigationGraph: $popResultFlow")
+                if (!popResultFlow) isInitiate = false
+            }
 
             BackHandler(enabled = true) {
                 ExitApp(context)
@@ -64,7 +77,7 @@ fun HomeNavigationGraph(
                 isReaderConnected = rfidUiState.isConnected,
                 batteryPercentage = rfidUiState.batteryLevel,
                 shiftType = loginUiState.shift,
-                isSodInitiate = isSodInitiate,
+                isSodInitiate = isInitiate,
                 onCategoryItemClick = {
                     // save current selected bottom navigation route
                     navController.navigate(it)
@@ -180,6 +193,13 @@ fun NavGraphBuilder.detailsNavGraph(
                 },
                 navigateToHomeScreen = {
                     navController.navigate(Routes.HomeScreen.name)
+                },
+                navigateToMainMenu = {
+                    // after saving
+                    try {
+                        navController.navigateUp()
+                        navController.currentBackStackEntry?.savedStateHandle?.set("isSodInitiate",false)
+                    }catch (e: Exception) {e.printStackTrace()}
                 }
             )
         }
