@@ -242,6 +242,7 @@ class LoginViewModel @Inject constructor(
             userMenuAccessRightsByIdResponse.value = userRepository.getUserMenuAccessRightsById()
 
             // when data is fetched, update user menu access rights
+            shouldShowAuthorizationFailedDialog(userMenuAccessRightsByIdResponse.value is ApiResponse.AuthorizationError)
             when (userMenuAccessRightsByIdResponse.value) {
                 is ApiResponse.Success -> {
                     _userMenuAccessRights.value =

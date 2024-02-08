@@ -48,6 +48,7 @@ import androidx.navigation.compose.rememberNavController
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.AppBar
+import com.etag.stsyn.ui.components.AuthorizationTokenExpiredDialog
 import com.etag.stsyn.ui.components.BottomNavigationBar
 import com.etag.stsyn.ui.components.ChangePasswordDialog
 import com.etag.stsyn.ui.components.ConfirmationDialog
@@ -62,6 +63,7 @@ import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
+import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.launch
 import kotlin.reflect.KFunction2
@@ -75,7 +77,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val savedUserState by loginViewModel.savedUser.collectAsState(initial = LocalUser())
-
+    val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
@@ -88,6 +90,9 @@ fun HomeScreen(
 
     ReaderLifeCycle(viewModel = loginViewModel)
 
+    if (showAuthorizationFailedDialog) AuthorizationTokenExpiredDialog(
+        message = AUTHORIZATION_FAILED_MESSAGE, onLogOut = onLogOutClick
+    )
 
     ChangePasswordDialog(
         userName = savedUserState.name,
