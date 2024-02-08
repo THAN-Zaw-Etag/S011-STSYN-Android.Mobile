@@ -84,6 +84,7 @@ fun STSYNTExtField(
             innerTextField = {},
             enabled = enabled,
             singleLine = singleLine,
+            placeholder = placeholder,
             label = {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxHeight()) {
                     AnimatedVisibility(

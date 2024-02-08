@@ -85,8 +85,21 @@ fun HomeScreen(
     var showErrorDialog by remember { mutableStateOf(false) }
     val updatePasswordResponse by loginViewModel.updatePasswordResponse.collectAsState()
     val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
 
     ReaderLifeCycle(viewModel = loginViewModel)
+
+
+    ChangePasswordDialog(
+        userName = savedUserState.name,
+        onChangePassword = { old, new ->
+            onChangePassword(old.toCharArray(), new.toCharArray())
+        },
+        showDialog = showDialog,
+        onDismiss = {
+            showDialog = false
+        }
+    )
 
     when (updatePasswordResponse) {
         is ApiResponse.Loading -> LoadingDialog(
@@ -124,9 +137,9 @@ fun HomeScreen(
             ModalDrawerSheet {
                 DrawerContent(
                     user = savedUserState,
-                    onChangePassword = { old, new ->
+                    onChangePasswordClick = {
                         coroutineScope.launch { drawerState.close() }
-                        onChangePassword(old.toCharArray(), new.toCharArray())
+                        showDialog = true
                     },
                     onSettingsClick = {
                         coroutineScope.launch { drawerState.close() }
@@ -178,22 +191,13 @@ fun HomeScreen(
 @Composable
 private fun DrawerContent(
     user: LocalUser,
-    onChangePassword: (String, String) -> Unit,
+    onChangePasswordClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onLogOutClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var showDialog by remember { mutableStateOf(false) }
     var showLogOutDialog by remember { mutableStateOf(false) }
 
-    if (showDialog) ChangePasswordDialog(
-        userName = user.name,
-        onChangePassword = onChangePassword,
-        showDialog = showDialog,
-        onDismiss = {
-            showDialog = false
-        }
-    )
 
     ConfirmationDialog(
         showDialog = showLogOutDialog,
@@ -255,9 +259,7 @@ private fun DrawerContent(
         Spacer(modifier = Modifier.height(16.dp))
         ProfileTextButton(
             text = "Change Password",
-            onOptionClick = {
-                showDialog = true
-            },
+            onOptionClick = onChangePasswordClick,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .fillMaxWidth()
