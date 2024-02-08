@@ -54,10 +54,10 @@ fun CheckInOutScreen(
         }
     }
 
-    when (getItemsForOnsiteResponse) {
+    /*when (getItemsForOnsiteResponse) {
         is ApiResponse.Loading -> LoadingDialog(title = "Loading...",
             showDialog = true,
-            onDismiss = { /*TODO*/ })
+            onDismiss = { *//*TODO*//* })
 
         is ApiResponse.Success -> {
             showErrorDialog = false
@@ -88,7 +88,7 @@ fun CheckInOutScreen(
                 attemptCount = 0
                 // handle something
             } else onsiteCheckInOutViewModel.getAllItemsForOnsite()
-        })
+        })*/
 
     // show this dialog when reader error occurs
     WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),

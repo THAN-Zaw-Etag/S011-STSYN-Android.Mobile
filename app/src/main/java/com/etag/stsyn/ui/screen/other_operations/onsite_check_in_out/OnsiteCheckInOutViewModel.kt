@@ -21,6 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -58,6 +59,7 @@ class OnsiteCheckInOutViewModel @Inject constructor(
     init {
         getAllItemsForOnsite()
         handleUiEvent()
+        observeCheckInOutItemsResponse()
     }
 
     private fun handleUiEvent() {
@@ -67,6 +69,14 @@ class OnsiteCheckInOutViewModel @Inject constructor(
                     is ClickEvent.ClickAfterSave -> doTasksAfterSaved()
                     else -> {}
                 }
+            }
+        }
+    }
+
+    private fun observeCheckInOutItemsResponse() {
+        viewModelScope.launch {
+            getAllItemsForOnsiteResponse.collect {
+                handleDialogStatesByResponse(it)
             }
         }
     }

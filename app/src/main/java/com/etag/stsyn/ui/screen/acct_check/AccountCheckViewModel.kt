@@ -44,11 +44,15 @@ class AccountCheckViewModel @Inject constructor(
     private val _acctCheckUiState = MutableStateFlow(AcctCheckUiState())
     val acctCheckUiState: StateFlow<AcctCheckUiState> = _acctCheckUiState.asStateFlow()
 
-    private val _accountabilityCheckItemsResponse = MutableStateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>>(ApiResponse.Default)
-    val accountabilityCheckItemsResponse: StateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>> = _accountabilityCheckItemsResponse.asStateFlow()
+    private val _accountabilityCheckItemsResponse =
+        MutableStateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>>(ApiResponse.Default)
+    val accountabilityCheckItemsResponse: StateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>> =
+        _accountabilityCheckItemsResponse.asStateFlow()
 
-    private val _saveAcctCheckResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
-    val saveAcctCheckResponse : StateFlow<ApiResponse<NormalResponse>> = _saveAcctCheckResponse.asStateFlow()
+    private val _saveAcctCheckResponse =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveAcctCheckResponse: StateFlow<ApiResponse<NormalResponse>> =
+        _saveAcctCheckResponse.asStateFlow()
 
     private val _scannedItemIdList = MutableStateFlow<List<String>>(emptyList())
     val scannedItemIdList: StateFlow<List<String>> = _scannedItemIdList.asStateFlow()
@@ -69,7 +73,7 @@ class AccountCheckViewModel @Inject constructor(
     private fun observeAccountabilityCheckSaveResponse() {
         viewModelScope.launch {
             saveAcctCheckResponse.collect {
-                handleDialogStatesByResponse(it,true)
+                handleDialogStatesByResponse(it, true)
             }
         }
     }
@@ -86,15 +90,20 @@ class AccountCheckViewModel @Inject constructor(
         }
     }
 
-    fun clearFilters(){
-        _acctCheckUiState.update {uiState ->
+    fun clearFilters() {
+        _acctCheckUiState.update { uiState ->
             val updatedList = uiState.filterOptions.map { it.copy(selectedOption = "") }
             uiState.copy(filterOptions = updatedList)
         }
     }
 
     fun updateFilterOptions(filterOptions: List<FilterItem>) {
-        _acctCheckUiState.update { it.copy(filterOptions = filterOptions, acctCheckRequest = filterOptions.toAccountabilityCheckRequest()) }
+        _acctCheckUiState.update {
+            it.copy(
+                filterOptions = filterOptions,
+                acctCheckRequest = filterOptions.toAccountabilityCheckRequest()
+            )
+        }
         getAllAccountabilityCheckItems()
     }
 
@@ -102,11 +111,9 @@ class AccountCheckViewModel @Inject constructor(
         getAllAccountabilityCheckItems()
         _scannedItemIdList.update { emptyList() }
         _acctCheckUiState.update { uiState ->
-            uiState.copy(
-                scannedItem = BoxItem(),
+            uiState.copy(scannedItem = BoxItem(),
                 allItems = emptyList(),
-                filterOptions = uiState.filterOptions.map { it.copy(selectedOption = "") }
-            )
+                filterOptions = uiState.filterOptions.map { it.copy(selectedOption = "") })
         }
     }
 
@@ -123,9 +130,13 @@ class AccountCheckViewModel @Inject constructor(
             when (val response = accountCheckRepository.getAllFilterOptions()) {
                 is ApiResponse.Success -> {
                     _acctCheckUiState.update {
-                        it.copy(filterOptions = response.data?.dropdownSet?.toFilterList() ?: emptyList())
+                        it.copy(
+                            filterOptions = response.data?.dropdownSet?.toFilterList()
+                                ?: emptyList()
+                        )
                     }
                 }
+
                 else -> {}
             }
         }
@@ -136,7 +147,10 @@ class AccountCheckViewModel @Inject constructor(
             _accountabilityCheckItemsResponse.value = ApiResponse.Loading
             delay(500)
             val accountCheckOutstandingItemsRequest = acctCheckUiState.value.acctCheckRequest
-            _accountabilityCheckItemsResponse.value = accountCheckRepository.getAllAccountabilityCheckItems(accountCheckOutstandingItemsRequest)
+            _accountabilityCheckItemsResponse.value =
+                accountCheckRepository.getAllAccountabilityCheckItems(
+                    accountCheckOutstandingItemsRequest
+                )
 
             when (accountabilityCheckItemsResponse.value) {
                 is ApiResponse.Success -> {
@@ -144,6 +158,7 @@ class AccountCheckViewModel @Inject constructor(
                         it.copy(allItems = (accountabilityCheckItemsResponse.value as ApiResponse.Success<GetAllAccountabilityCheckItemsResponse>).data!!.items)
                     }
                 }
+
                 else -> {}
             }
         }
@@ -159,20 +174,18 @@ class AccountCheckViewModel @Inject constructor(
 
             _saveAcctCheckResponse.value = ApiResponse.Loading
             delay(500)
-            _saveAcctCheckResponse.value = ApiResponse.Success(NormalResponse(null,true))
-            /*_saveAcctCheckResponse.value = accountCheckRepository.saveAccountabilityCheck(
-                SaveAccountabilityCheckRequest(
-                    acctCheckUiState.value.allItems
-                        .filter { it.epc in scannedItemIdList.value }
-                        .map { it.toStockTake(
+            _saveAcctCheckResponse.value = ApiResponse.Success(NormalResponse(null, true))
+            //_saveAcctCheckResponse.value = accountCheckRepository.saveAccountabilityCheck(
+            SaveAccountabilityCheckRequest(acctCheckUiState.value.allItems.filter { it.epc in scannedItemIdList.value }
+                .map {
+                    it.toStockTake(
                         readerId = readerId,
                         userId = userId,
                         date = currentDate,
                         shift = shift,
                         checkStatusId = checkStatusId.toString()
-                    ) }
-                )
-            )*/
+                    )
+                })
         }
     }
 
@@ -183,8 +196,7 @@ class AccountCheckViewModel @Inject constructor(
             if (scannedItem != null && !hasExisted) {
                 _acctCheckUiState.update { it.copy(scannedItem = scannedItem, unknownEpc = null) }
                 addScannedItemId(id)
-            }
-            else _acctCheckUiState.update { it.copy(unknownEpc = id) }
+            } else _acctCheckUiState.update { it.copy(unknownEpc = id) }
         }
     }
 

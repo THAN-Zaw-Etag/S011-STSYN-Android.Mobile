@@ -27,28 +27,6 @@ fun BookInScanScreen(
     val listState = rememberLazyListState()
     val bookInState by bookInViewModel.bookInState.collectAsState()
     val scannedItemIdList by bookInViewModel.scannedItemIdList.collectAsState()
-
-    /*when (bookInItemsResponse) {
-        is ApiResponse.Loading -> {
-            bookInViewModel.toggleLoadingVisibility(true)
-        }
-
-        is ApiResponse.Success -> {
-            bookInViewModel.toggleLoadingVisibility(false)
-        }
-
-        is ApiResponse.ApiError -> {
-            bookInViewModel.toggleLoadingVisibility(false)
-        }
-
-        else -> {
-            bookInViewModel.toggleLoadingVisibility(false)
-        }
-    }*/
-
-    /*LaunchedEffect(rfidUiState.scannedItems) {
-        if (rfidUiState.scannedItems.size > 1) listState.animateScrollToItem(rfidUiState.scannedItems.size - 1)
-    }*/
     
     LaunchedEffect(scannedItemIdList) {
         Log.d(TAG, "BookInScanScreen: $scannedItemIdList")

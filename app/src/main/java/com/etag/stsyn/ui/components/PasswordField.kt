@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.theme.errorColor
@@ -61,10 +62,9 @@ fun PasswordField(
 
     STSYNTExtField(
         value = text,
-        label = { Text(text = hint) },
+        label = { Text(text = hint, textAlign = TextAlign.Center) },
         modifier = modifier
-            .fillMaxWidth()
-            .defaultMinSize(40.dp),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(cornerRadius),
         maxLines = 1,
         colors = TextFieldDefaults.outlinedTextFieldColors(

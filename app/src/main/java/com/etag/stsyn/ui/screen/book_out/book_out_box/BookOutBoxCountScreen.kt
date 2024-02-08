@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,16 +67,18 @@ fun BookOutBoxCountScreen(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 itemsIndexed(boxes) { index, item ->
-                    ScannedItem(
-                        id = "${item.serialNo} - ${item.itemLocation}",
-                        name = "Box 01 item ${if (index < 10) "0$index" else index}",
-                        showTrailingIcon = true,
-                        onItemClick = {
-                            boxItem = item
-                            if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                            else coroutineScope.launch { scaffoldState.bottomSheetState.show() }
-                        }
-                    )
+                    key (item.epc){
+                        ScannedItem(
+                            id = "${item.serialNo} - ${item.itemLocation}",
+                            name = "Box 01 item ${if (index < 10) "0$index" else index}",
+                            showTrailingIcon = true,
+                            onItemClick = {
+                                boxItem = item
+                                if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
+                                else coroutineScope.launch { scaffoldState.bottomSheetState.show() }
+                            }
+                        )
+                    }
                 }
             }
         }

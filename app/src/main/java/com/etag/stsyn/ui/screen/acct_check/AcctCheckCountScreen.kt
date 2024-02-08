@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -69,16 +70,18 @@ fun AcctCheckCountScreen(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 items(items) {
-                    ScannedItem(
-                        id = "${it.serialNo}-${it.itemLocation}",
-                        name = it.description,
-                        showTrailingIcon = true,
-                        onItemClick = {
-                            selectedItem = it
-                            if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                            else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                        }
-                    )
+                    key (it.epc) {
+                        ScannedItem(
+                            id = "${it.serialNo}-${it.itemLocation}",
+                            name = it.description,
+                            showTrailingIcon = true,
+                            onItemClick = {
+                                selectedItem = it
+                                if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
+                                else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                            }
+                        )
+                    }
                 }
             }
         }
