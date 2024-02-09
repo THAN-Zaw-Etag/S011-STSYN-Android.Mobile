@@ -1,0 +1,18 @@
+object Versions {
+    const val hilt = "2.46"
+    const val hiltCompiler = "1.0.0"
+    const val runtimeCompose = "2.7.0"
+    const val work = "2.9.0"
+    const val accompanist = "0.33.2-alpha"
+    const val navCompose = "2.5.3"
+    const val swipeBox = "1.2.0"
+    const val extendedMaterialIcons = "1.5.4"
+    const val cryptoSecurity = "1.1.0-alpha06"
+    const val composeConstraintLayout = "1.0.1"
+    const val composeSplashScreen = "1.0.1"
+    const val kotlinSerialization = "1.3.2"
+    const val androidFoundation = "1.6.1"
+    const val dataStore = "1.0.0"
+    const val httpLoggingInterceptor = "4.11.0"
+    const val retrofit = "2.9.0"
+}
