@@ -14,6 +14,7 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.DateUtil
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.util.concurrent.TimeUnit
@@ -44,7 +45,7 @@ class TokenRefreshWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result  {
-        Log.d("TAG", "doWork: working...")
+        Log.d("TAG", "doWork: working...${DateUtil.currentTime()}")
 
         return try {
             when (val response = userRepository.refreshToken()) {
