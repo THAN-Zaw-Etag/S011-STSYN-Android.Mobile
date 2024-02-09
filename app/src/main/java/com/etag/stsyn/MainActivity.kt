@@ -70,14 +70,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-//                    NavigationGraph(
-//                        navController = navController,
-//                        loginViewModel = loginViewModel,
-//                    )
-
-                    Log.d("@inMain", "MainActivity: savedUser: ${savedUser.isLoggedIn}")
                     val isLoggedIn = savedUser.isLoggedIn
-
                     RootNavigationGraph(
                         isLoggedIn = isLoggedIn,
                         navController = navController,

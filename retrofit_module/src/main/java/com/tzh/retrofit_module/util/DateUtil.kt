@@ -2,13 +2,13 @@ package com.tzh.retrofit_module.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import com.tzh.retrofit_module.util.DateUtil.getCurrentDateTimeFormattedWithZone
-import com.tzh.retrofit_module.util.DateUtil.isUnderCalibrationAlert
+import com.tzh.retrofit_module.util.DateUtil.currentTime
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Date
 import java.util.Locale
 
 val FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
@@ -52,6 +52,13 @@ object DateUtil {
         return currentDateTime.format(formatter)
     }
 
+    fun currentTime(): String {
+        val currentTimerMillis = System.currentTimeMillis()
+        val dateFormat =
+            java.text.SimpleDateFormat("hh:mm:ss a", Locale.getDefault())
+        return dateFormat.format(Date(currentTimerMillis))
+    }
+
 }
 
 fun String.isBefore(date: String): Boolean {
@@ -60,6 +67,6 @@ fun String.isBefore(date: String): Boolean {
 }
 
 fun main() {
-    println(isUnderCalibrationAlert("2025-11-05T00:00:00"))
+    //println(isUnderCalibrationAlert("2025-11-05T00:00:00"))
 }
 
