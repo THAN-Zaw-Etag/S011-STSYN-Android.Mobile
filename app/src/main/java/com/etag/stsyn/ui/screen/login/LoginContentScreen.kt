@@ -43,6 +43,7 @@ import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.PasswordField
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.components.WarningDialog
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 import com.etag.stsyn.util.PasswordValidator
@@ -63,7 +64,6 @@ fun LoginContentScreen(
     onFailed: () -> Unit,
 ) {
     var error by remember { mutableStateOf("") }
-    var showWarningDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var showLoadingDialog by remember {
         mutableStateOf(false)
@@ -71,9 +71,10 @@ fun LoginContentScreen(
     var showLoginSuccessToast by remember {
         mutableStateOf(false)
     }
+    val dialogState = rememberMutableDialogState(data = "")
 
     LaunchedEffect(loginAttemptCount) {
-        showWarningDialog = loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS
+        if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) dialogState.showDialog("You've tried to log in 10 times.")
     }
 
     LoadingDialog(title = "Signing In...",
@@ -119,9 +120,9 @@ fun LoginContentScreen(
         }
     }
 
-    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Warning),
-        message = "You've tried to log in 10 times.",
-        showDialog = showWarningDialog,
+    WarningDialog(
+        icon = CustomIcon.Vector(Icons.Default.Warning),
+        dialogState = dialogState,
         positiveButtonTitle = "exit",
         onPositiveButtonClick = { ExitApp(context) })
 

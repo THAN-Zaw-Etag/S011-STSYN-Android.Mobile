@@ -60,6 +60,7 @@ import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.navigation.HomeNavigationGraph
 import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.screen.login.LoginViewModel
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
@@ -83,7 +84,7 @@ fun HomeScreen(
     val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
     val navController = rememberNavController()
     val sharedUiState by sharedUiViewModel.uiState.collectAsState()
-    var showErrorDialog by remember { mutableStateOf(false) }
+    val dialogState = rememberMutableDialogState(data = "")
     val updatePasswordResponse by loginViewModel.updatePasswordResponse.collectAsState()
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
@@ -117,7 +118,7 @@ fun HomeScreen(
         }
 
         is ApiResponse.ApiError -> {
-            showErrorDialog = true
+            dialogState.showDialog((updatePasswordResponse as ApiResponse.ApiError).message)
         }
 
         else -> {}
@@ -125,12 +126,8 @@ fun HomeScreen(
 
     WarningDialog(
         icon = CustomIcon.Vector(Icons.Default.Error),
-        message = if (showErrorDialog) (updatePasswordResponse as ApiResponse.ApiError).message else "",
-        showDialog = showErrorDialog,
+        dialogState = dialogState,
         positiveButtonTitle = "try again",
-        onPositiveButtonClick = {
-            showErrorDialog = false
-        }
     )
 
     ModalNavigationDrawer(

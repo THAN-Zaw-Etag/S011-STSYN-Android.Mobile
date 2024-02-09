@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.ErrorText
@@ -28,6 +29,7 @@ import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.errorColor
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -37,15 +39,16 @@ fun CheckInOutScreen(
 ) {
     val TAG = "CheckInOutScreen" //TODO might delete later
 
-    val rfidUiState by onsiteCheckInOutViewModel.rfidUiState.collectAsState()
-    val getItemsForOnsiteResponse by onsiteCheckInOutViewModel.getAllItemsForOnsiteResponse.collectAsState()
-    val onsiteCheckInOutUiState by onsiteCheckInOutViewModel.onSiteCheckInOutUiState.collectAsState()
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var attemptCount by remember { mutableStateOf(0) }
-    var errorMessage by remember { mutableStateOf("") }
-    val scannedItemList by onsiteCheckInOutViewModel.scannedItemList.collectAsState()
+    val rfidUiState by onsiteCheckInOutViewModel.rfidUiState.collectAsStateWithLifecycle()
+    val onsiteCheckInOutUiState by onsiteCheckInOutViewModel.onSiteCheckInOutUiState.collectAsStateWithLifecycle()
+    val scannedItemList by onsiteCheckInOutViewModel.scannedItemList.collectAsStateWithLifecycle()
 
     val listState = rememberLazyListState()
+    val dialogState = rememberMutableDialogState(data = "")
+
+    LaunchedEffect (onsiteCheckInOutUiState.shouldShowWarningDialog) {
+        if (onsiteCheckInOutUiState.shouldShowWarningDialog) dialogState.showDialog("All items must be from same user")
+    }
 
     LaunchedEffect(Unit) {
         onsiteCheckInOutViewModel.apply{
@@ -91,10 +94,10 @@ fun CheckInOutScreen(
         })*/
 
     // show this dialog when reader error occurs
-    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
-        message = "All items must be from same user",
+    WarningDialog(
+        icon = CustomIcon.Vector(Icons.Default.Error),
+        dialogState = dialogState,
         color = errorColor,
-        showDialog = onsiteCheckInOutUiState.shouldShowWarningDialog,
         positiveButtonTitle = "Ok",
         onPositiveButtonClick = { onsiteCheckInOutViewModel.updateWarningDialogVisibility(false) })
 

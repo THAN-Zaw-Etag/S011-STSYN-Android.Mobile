@@ -28,9 +28,9 @@ import com.etag.stsyn.ui.components.DropDown
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.STSYNTExtField
 import com.etag.stsyn.ui.components.SaveItemLayout
-import com.etag.stsyn.ui.components.SuccessDialog
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
@@ -45,12 +45,8 @@ fun BookOutBoxSaveScreen(
     val scannedItemList by bookOutBoxViewModel.scannedItemList.collectAsState()
     val needLocation by bookOutBoxViewModel.needLocation.collectAsState()
     val saveBookOutBoxesResponse by bookOutBoxViewModel.saveBookOutBoxResponse.collectAsState()
-    var showError by remember { mutableStateOf(false) }
     var location by remember { mutableStateOf("") }
-
-    LaunchedEffect(bookOutBoxUiState.errorMessage) {
-        showError = bookOutBoxUiState.errorMessage == null
-    }
+    val dialogState = rememberMutableDialogState(data = "")
 
     LaunchedEffect(boxUiState.scannedBox, scannedItemList, Unit) {
         if (boxUiState.scannedBox.epc.isEmpty()) bookOutBoxViewModel.updateBookOutBoxErrorMessage("Please scan a box tag first!")
@@ -60,7 +56,6 @@ fun BookOutBoxSaveScreen(
 
     when (saveBookOutBoxesResponse) {
         is ApiResponse.Loading -> {
-            showError = false
             LoadingDialog(
                 title = "Please wait while SMS is processing your request...",
                 showDialog = true,
@@ -69,27 +64,24 @@ fun BookOutBoxSaveScreen(
         }
 
         is ApiResponse.Success -> {
-            showError = false
             bookOutBoxViewModel.updateIsSavedStatus(true)
             bookOutBoxViewModel.updateSuccessDialogVisibility(true)
         }
 
-        is ApiResponse.ApiError -> showError = true
+        is ApiResponse.ApiError -> dialogState.showDialog((saveBookOutBoxesResponse as ApiResponse.ApiError).message)
         is ApiResponse.AuthorizationError -> bookOutBoxViewModel.shouldShowAuthorizationFailedDialog(
             true
         )
 
-        else -> showError = false
+        else -> {}
     }
 
 
-    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
-        message = bookOutBoxUiState.errorMessage ?: "",
-        showDialog = showError,
+    WarningDialog(
+        icon = CustomIcon.Vector(Icons.Default.Error),
+        dialogState = dialogState,
         positiveButtonTitle = "try again",
-        onPositiveButtonClick = {
-            showError = false
-        })
+        onPositiveButtonClick = bookOutBoxViewModel::saveBookOutBoxItems)
 
     BaseSaveScreen(
         isError = bookOutBoxUiState.errorMessage != null,

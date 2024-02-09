@@ -64,7 +64,7 @@ class BookInBoxViewModel @Inject constructor(
 
     init {
         updateScanType(ScanType.Single)
-        handleUiEvent()
+        handleClickEvent()
         getAllBoxesForBookInItem()
         observeBookInItemsResponse()
     }
@@ -90,11 +90,12 @@ class BookInBoxViewModel @Inject constructor(
         }
     }
 
-    private fun handleUiEvent() {
+    private fun handleClickEvent() {
         viewModelScope.launch {
             clickEventFlow.collect {
                 when(it) {
                     is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
+                    is ClickEvent.RetryClick -> getAllBoxesForBookInItem()
                     else -> {}
                 }
             }

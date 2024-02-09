@@ -31,23 +31,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.etag.stsyn.ui.states.MutableDialogState
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.SuccessColor
 
 @Composable
 fun SuccessDialog(
-    showDialog: Boolean,
-    title: String,
+    state: MutableDialogState<String>,
     onDoneClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var openDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(showDialog) {
-        openDialog = showDialog
-    }
-
-    if (openDialog) {
-        Dialog(onDismissRequest = { openDialog = false }) {
+    if (state.isVisible.value) {
+        Dialog(onDismissRequest = state::hideDialog) {
             Surface(
                 modifier = modifier.fillMaxWidth(1f),
                 color = Color.Transparent
@@ -62,14 +58,14 @@ fun SuccessDialog(
                     ) {
                         Spacer(modifier = Modifier.height(32.dp))
                         Text(
-                            text = title,
+                            text = state.data.value,
                             style = MaterialTheme.typography.titleLarge,
                             color = SuccessColor
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         FilledTonalButton(
                             onClick = {
-                                openDialog = false
+                                state.hideDialog()
                                 onDoneClick()
                             },
                             colors = ButtonDefaults.filledTonalButtonColors(
@@ -102,10 +98,4 @@ fun SuccessDialog(
             }
         }
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun SuccessDialogPreview() {
-    SuccessDialog(showDialog = true, title = "Success", onDoneClick = { /*TODO*/ })
 }

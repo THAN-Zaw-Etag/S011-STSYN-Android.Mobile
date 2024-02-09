@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.etag.stsyn.ui.screen.other_operations.det_p_loan_box
 
@@ -47,9 +49,7 @@ fun OtherDetPLoanOutBoxScanScreen(
                 modifier = Modifier
                     .height(400.dp)
                     .background(Color.White)
-            ) {
-
-            }
+            ) {}
         }) {
         DetPLoanOutContent(
             items = rfidUiState.scannedItems,

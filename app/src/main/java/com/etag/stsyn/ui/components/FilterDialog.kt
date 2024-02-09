@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.etag.stsyn.R
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.tzh.retrofit_module.domain.model.FilterItem
 
 @Composable
@@ -54,8 +55,7 @@ fun FilterDialog(
     val TAG = "FilterDialog"
     var showFilterDialog by remember { mutableStateOf(false) }
     var filterItems by remember { mutableStateOf<MutableList<FilterItem>>(mutableListOf()) }
-    var showDialog by remember { mutableStateOf(false) }
-    var dialogMessage by remember { mutableStateOf("") }
+    val dialogState = rememberMutableDialogState(data = "")
 
     LaunchedEffect(show) {
         showFilterDialog = show
@@ -63,11 +63,9 @@ fun FilterDialog(
 
     WarningDialog(
         icon = CustomIcon.Resource(R.drawable.warning_dialog),
-        message = dialogMessage,
-        showDialog = showDialog,
+        dialogState = dialogState,
         positiveButtonTitle = "Ok",
         onPositiveButtonClick = {
-            showDialog = false
             onDone(filterItems)
 
             showFilterDialog = false
@@ -90,8 +88,9 @@ fun FilterDialog(
                 filters = filters,
                 onClear = onClear,
                 onDone = { items ->
-                    dialogMessage = if (items.filter { it.selectedOption.isEmpty() || it.selectedOption == "All" }.size != items.size) "You're not able to scan unknown EPC" else "You're able to scan unknown EPC"
-                    showDialog = true
+                    dialogState.showDialog(
+                        data = if (items.filter { it.selectedOption.isEmpty() || it.selectedOption == "All" }.size != items.size) "You're not able to scan unknown EPC" else "You're able to scan unknown EPC"
+                    )
 
                     filterItems.clear()
                     filterItems.addAll(items)

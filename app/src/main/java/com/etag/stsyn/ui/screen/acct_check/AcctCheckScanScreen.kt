@@ -34,11 +34,13 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.FilterDialog
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.components.WarningDialog
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.ui.theme.errorColor
 import com.etag.stsyn.util.datasource.DataSource
@@ -57,13 +59,13 @@ fun AcctCheckScanScreen(
     var filterCount by remember { mutableStateOf(0) }
     var filters by remember { mutableStateOf<List<FilterItem>>(emptyList()) }
     var showFilterDialog by remember { mutableStateOf(false) }
-    val rfidUiState by accountCheckViewModel.rfidUiState.collectAsState()
-    val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsState()
-    val scannedItemIdList by accountCheckViewModel.scannedItemIdList.collectAsState()
+    val rfidUiState by accountCheckViewModel.rfidUiState.collectAsStateWithLifecycle()
+    val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsStateWithLifecycle()
+    val scannedItemIdList by accountCheckViewModel.scannedItemIdList.collectAsStateWithLifecycle()
     var total by remember { mutableStateOf(0) }
     var done by remember { mutableStateOf(0) }
     var outstanding by remember { mutableStateOf(0) }
-    var showUnknownEpcDialog by remember { mutableStateOf(false) }
+    val dialogState = rememberMutableDialogState(data = "")
 
     LaunchedEffect(Unit) {
         accountCheckViewModel.hideUnknownEpcDialog()
@@ -78,21 +80,21 @@ fun AcctCheckScanScreen(
     }
 
     LaunchedEffect(acctCheckUiState.unknownEpc) {
-        showUnknownEpcDialog = acctCheckUiState.unknownEpc != null
+        if (acctCheckUiState.unknownEpc != null) dialogState.showDialog("Alien/Unknown EPC alert. Scan '${acctCheckUiState.unknownEpc}' again?")
+        else dialogState.hideDialog()
     }
 
     WarningDialog(
         icon = CustomIcon.Resource(R.drawable.warning_dialog),
         color = errorColor,
-        message = "Alien/Unknown EPC alert. Scan '${acctCheckUiState.unknownEpc}' again?",
-        showDialog = showUnknownEpcDialog,
+        dialogState = dialogState,
         positiveButtonTitle = "Yes",
         negativeButtonTitle = "No",
         onPositiveButtonClick = {
-            showUnknownEpcDialog = false
+            //TODO do something here
         },
         onNegativeButtonClick = {
-            showUnknownEpcDialog = false
+            //TODO do something here
         }
     )
 

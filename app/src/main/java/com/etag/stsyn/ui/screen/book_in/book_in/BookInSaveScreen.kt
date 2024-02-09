@@ -16,6 +16,7 @@ import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.API_MULTI_ATTEMPT_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
@@ -32,7 +33,7 @@ fun BookInSaveScreen(
     val saveBookInResponse by viewModel.savedBookInResponse.collectAsState()
     val scannedItemIdList by viewModel.scannedItemIdList.collectAsState()
     var attemptCount by remember { mutableStateOf(0) }
-    var showErrorDialog by remember { mutableStateOf(false) }
+    val dialogState = rememberMutableDialogState(data = "")
 
     when (saveBookInResponse) {
         is ApiResponse.Loading -> LoadingDialog(title = SAVING_MESSAGE,
@@ -40,27 +41,16 @@ fun BookInSaveScreen(
             onDismiss = { }
         )
 
-        is ApiResponse.ApiError -> showErrorDialog = true
+        is ApiResponse.ApiError -> dialogState.showDialog((saveBookInResponse as? ApiResponse.ApiError)?.message ?: "")
 
         else -> {}
     }
 
     // show error dialog when error occurs in saving book in items
-    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
-        message = if (attemptCount >= 3) API_MULTI_ATTEMPT_FAILED_MESSAGE else (saveBookInResponse as? ApiResponse.ApiError)?.message ?: "",
-        showDialog = showErrorDialog,
-        positiveButtonTitle = "exit",
-        onDismiss = {},
-        onPositiveButtonClick = {
-            attemptCount++
-
-            if (attemptCount < 3) {
-                viewModel.saveBookIn()
-            } else {
-                showErrorDialog = false
-                attemptCount = 0
-            }
-        })
+    WarningDialog(
+        icon = CustomIcon.Vector(Icons.Default.Error),
+        dialogState = dialogState,
+        positiveButtonTitle = "exit",)
 
     BaseSaveScreen(
         isError = scannedItemIdList.isEmpty(),

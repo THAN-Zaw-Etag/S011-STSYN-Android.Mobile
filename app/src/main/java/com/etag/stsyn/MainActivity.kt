@@ -38,9 +38,6 @@ class MainActivity : ComponentActivity() {
         const val TAG = "MainActivity"
     }
 
-    /*@Inject
-    private lateinit var workManager: WorkManager*/
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -57,19 +54,17 @@ class MainActivity : ComponentActivity() {
             val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle(LocalUser())
             val context = LocalContext.current
 
+            PermissionUtil.checkBluetoothPermission(context)
+            handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)
+
             installSplashScreen().setKeepOnScreenCondition {
                 loginViewModel.loading.value
             }
-
 
             // connect reader only when the app starts
             LaunchedEffect(Unit) {
                 loginViewModel.connectReader()
             }
-
-            PermissionUtil.checkBluetoothPermission(context)
-
-            handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)
 
             STSYNTheme {
                 Surface(
@@ -111,10 +106,5 @@ class MainActivity : ComponentActivity() {
 
             else -> {}
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        //workManager.cancelAllWork() // cancel all token refresher when the app is destroyed
     }
 }

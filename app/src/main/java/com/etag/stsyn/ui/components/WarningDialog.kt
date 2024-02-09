@@ -31,13 +31,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.etag.stsyn.ui.states.MutableDialogState
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 
 @Composable
 fun WarningDialog(
     icon: CustomIcon,
-    message: String,
+    dialogState: MutableDialogState<String>,
     color: Color = MaterialTheme.colorScheme.primary,
-    showDialog: Boolean,
     positiveButtonTitle: String,
     onDismiss: () -> Unit = {},
     negativeButtonTitle: String = "",
@@ -45,16 +46,12 @@ fun WarningDialog(
     onPositiveButtonClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var show by remember { mutableStateOf(false) }
-    LaunchedEffect(showDialog) {
-        show = showDialog
-    }
 
-    if (show) {
+    if (dialogState.isVisible.value) {
         Dialog(properties = DialogProperties(
             dismissOnBackPress = false, dismissOnClickOutside = false
         ), onDismissRequest = {
-            show = false
+            dialogState.hideDialog()
             onDismiss()
         }) {
             Surface(
@@ -83,13 +80,13 @@ fun WarningDialog(
                                 )
                             }
                             Spacer(modifier = Modifier.width(16.dp))
-                            Text(text = message, color = color)
+                            Text(text = dialogState.data.value, color = color)
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Row(modifier = Modifier.align(Alignment.End)) {
                             TextButton(
                                 onClick = {
-                                show = false
+                                dialogState.hideDialog()
                                 onPositiveButtonClick()
                                 onDismiss()
                             }) {
@@ -98,7 +95,7 @@ fun WarningDialog(
 
                             if (negativeButtonTitle.isNotEmpty()) {
                                 TextButton(onClick = {
-                                    show = false
+                                    dialogState.hideDialog()
                                     onNegativeButtonClick()
                                     onDismiss()
                                 }) {
@@ -187,24 +184,4 @@ fun WarningDialog(
             }
         }
     }
-
-
-}
-
-
-
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun WarningDialogPreview() {
-    WarningDialog(
-        positiveButtonTitle = "Yes",
-        negativeButtonTitle = "No",
-        icon = CustomIcon.Vector(Icons.Default.Warning),
-        message = "You're able to scan unknown EPC",
-        color = MaterialTheme.colorScheme.error,
-        showDialog = true
-    )
 }

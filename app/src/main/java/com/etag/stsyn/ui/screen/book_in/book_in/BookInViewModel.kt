@@ -57,7 +57,7 @@ class BookInViewModel @Inject constructor(
     init {
         getBookInItems()
         observeBookInItemsResponse()
-        handleUiEvent()
+        handleClickEvent()
     }
 
     private fun observeBookInItemsResponse() {
@@ -67,11 +67,12 @@ class BookInViewModel @Inject constructor(
         }
     }
 
-    private fun handleUiEvent() {
+    private fun handleClickEvent() {
         viewModelScope.launch {
             clickEventFlow.collect {
                 when (it) {
                     is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
+                    is ClickEvent.RetryClick -> getBookInItems()
                     else -> {}
                 }
             }

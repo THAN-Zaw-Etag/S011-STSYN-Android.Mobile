@@ -4,6 +4,7 @@
     ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class
 )
 
@@ -45,6 +46,7 @@ import com.etag.stsyn.ui.components.TabBarLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.acct_check.AccountCheckViewModel
 import com.etag.stsyn.ui.screen.login.Shift
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.util.TabUtil
 import com.etag.stsyn.util.TransitionUtil
 import com.etag.stsyn.util.datasource.getScreensByOptionType
@@ -87,9 +89,10 @@ fun DetailScreen(
     val detailUiState by viewModel.detailUiState.collectAsState()
 
     val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsState()
-    var showErrorDialog by remember { mutableStateOf(false) }
-    var showSuccessDialog by remember { mutableStateOf(false) }
     val clickEventFlow by viewModel.clickEventFlow.collectAsState(initial = ClickEvent.Default)
+
+    val errorDialogState = rememberMutableDialogState(data = "")
+    val successDialogState = rememberMutableDialogState(data = "")
 
     ReaderLifeCycle(viewModel = viewModel)
     DisableBackPress()
@@ -100,8 +103,9 @@ fun DetailScreen(
 
     LaunchedEffect(detailUiState) {
         isSaved = detailUiState.isSaved
-        showErrorDialog = detailUiState.message.isNotEmpty()
-        showSuccessDialog = detailUiState.showSuccessDialog
+        if (detailUiState.showSuccessDialog) successDialogState.showDialog("SUCCESS!")
+        Log.d(TAG, "DetailScreen: ${detailUiState.message}")
+        errorDialogState.showDialog(detailUiState.message)
     }
 
     LaunchedEffect(clickEventFlow) {
@@ -116,29 +120,27 @@ fun DetailScreen(
     }
 
     // show loading while data is fetching
-    if (detailUiState.showLoadingDialog) LoadingDialog(title = "Loading...",
+    LoadingDialog(
+        title = "Loading...",
         showDialog = detailUiState.showLoadingDialog,
         onDismiss = { })
 
     // show error when error message is not empty
     WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
-        message = detailUiState.message,
-        showDialog = showErrorDialog,
+        dialogState = errorDialogState,
         positiveButtonTitle = "Try again",
         negativeButtonTitle = "Cancel",
-        onNegativeButtonClick = {
-            showErrorDialog = false
-        },
-        onDismiss = {
-            showErrorDialog = false
+        onPositiveButtonClick = {
             viewModel.updateClickEvent(ClickEvent.RetryClick)
-        }
-    )
+        })
 
     // show success dialog when saving items is done
-    SuccessDialog(showDialog = showSuccessDialog, title = "SUCCESS!", onDoneClick = {
-        viewModel.updateClickEvent(ClickEvent.ClickAfterSave)
-    })
+    SuccessDialog(
+        state = successDialogState,
+        onDoneClick = {
+            viewModel.updateClickEvent(ClickEvent.ClickAfterSave)
+        }
+    )
 
     LaunchedEffect(pagerState.currentPage) {
         val option = options.get(pagerState.currentPage)
