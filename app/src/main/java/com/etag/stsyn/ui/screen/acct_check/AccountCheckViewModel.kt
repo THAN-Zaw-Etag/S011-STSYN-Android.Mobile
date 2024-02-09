@@ -67,7 +67,7 @@ class AccountCheckViewModel @Inject constructor(
         getAllFilterOptions()
         observeAccountabilityCheckResponse()
         observeAccountabilityCheckSaveResponse()
-        handleUiEvent()
+        handleClickEvent()
     }
 
     private fun observeAccountabilityCheckSaveResponse() {
@@ -78,7 +78,7 @@ class AccountCheckViewModel @Inject constructor(
         }
     }
 
-    private fun handleUiEvent() {
+    private fun handleClickEvent() {
         viewModelScope.launch {
             clickEventFlow.collect {
                 when (it) {

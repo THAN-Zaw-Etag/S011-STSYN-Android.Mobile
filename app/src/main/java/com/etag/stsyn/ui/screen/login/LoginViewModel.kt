@@ -75,6 +75,7 @@ class LoginViewModel @Inject constructor(
 
     private val _loading = MutableStateFlow(true)
     val loading = _loading.asStateFlow()
+
     init {
         updateScanType(ScanType.Single)
         // if user is already logged in, fetch menu access rights from api
