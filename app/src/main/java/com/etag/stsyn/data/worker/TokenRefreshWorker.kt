@@ -26,7 +26,7 @@ class TokenRefreshWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, params) {
 
     companion object {
-        fun refresh() {
+        fun refresh(context: Context) {
             val workConstraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
@@ -35,7 +35,7 @@ class TokenRefreshWorker @AssistedInject constructor(
                 .setConstraints(workConstraints)
                 .build()
 
-            WorkManager.getInstance().enqueueUniquePeriodicWork(
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 "api_token_refresh_worker",
                 ExistingPeriodicWorkPolicy.REPLACE,
                 periodicWork

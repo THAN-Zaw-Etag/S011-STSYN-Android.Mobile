@@ -92,13 +92,13 @@ fun DetailScreen(
     val clickEventFlow by viewModel.clickEventFlow.collectAsState(initial = ClickEvent.Default)
 
     ReaderLifeCycle(viewModel = viewModel)
+    DisableBackPress()
 
     if (showAuthorizationFailedDialog) AuthorizationTokenExpiredDialog(
         message = AUTHORIZATION_FAILED_MESSAGE, onLogOut = logOut
     )
 
     LaunchedEffect(detailUiState) {
-        Log.d(TAG, "DetailScreen: $detailUiState")
         isSaved = detailUiState.isSaved
         showErrorDialog = detailUiState.message.isNotEmpty()
         showSuccessDialog = detailUiState.showSuccessDialog
@@ -132,7 +132,8 @@ fun DetailScreen(
         onDismiss = {
             showErrorDialog = false
             viewModel.updateClickEvent(ClickEvent.RetryClick)
-        })
+        }
+    )
 
     // show success dialog when saving items is done
     SuccessDialog(showDialog = showSuccessDialog, title = "SUCCESS!", onDoneClick = {
@@ -150,7 +151,6 @@ fun DetailScreen(
         showTabBar = true
     }
 
-    DisableBackPress()
 
     Column(
         modifier = modifier.fillMaxSize(),

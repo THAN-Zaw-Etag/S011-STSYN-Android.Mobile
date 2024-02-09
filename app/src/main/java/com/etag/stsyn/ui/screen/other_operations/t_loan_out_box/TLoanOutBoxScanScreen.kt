@@ -57,7 +57,7 @@ fun OtherTLoanOutBoxScanScreen(
                 items(rfidUiState.scannedItems) {
                     key(it) {
                         DetPLoanSwipeableItem(
-                            isSwipeable = true,
+                            swipeable = true,
                             item = DetPLoanItem(
                                 it,
                                 "data link jumper cable",

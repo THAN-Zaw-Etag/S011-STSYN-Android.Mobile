@@ -13,11 +13,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
@@ -30,6 +29,7 @@ import com.etag.stsyn.ui.theme.STSYNTheme
 import com.etag.stsyn.util.PermissionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -38,52 +38,36 @@ class MainActivity : ComponentActivity() {
         const val TAG = "MainActivity"
     }
 
-    private lateinit var workManager: WorkManager
+    /*@Inject
+    private lateinit var workManager: WorkManager*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // lock screen rotation
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        workManager = WorkManager.getInstance(this)
 
-        TokenRefreshWorker.refresh()
+        TokenRefreshWorker.refresh(this)
 
         setContent {
             val navController = rememberNavController()
             val loginViewModel: LoginViewModel = hiltViewModel()
-            val loginUiState by loginViewModel.loginUiState.collectAsState()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
-            val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsState()
-            val savedUser by loginViewModel.savedUser.collectAsState(LocalUser())
+            val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsStateWithLifecycle()
+            val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle(LocalUser())
             val context = LocalContext.current
 
             installSplashScreen().setKeepOnScreenCondition {
                 loginViewModel.loading.value
             }
 
-           /* workManager.getWorkInfosByTagLiveData("refreshWorkName")
-                .observe(LocalLifecycleOwner.current) {
-                    val workInfo = it.firstOrNull { it.state.isFinished }
-                    if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
-                        val outputData = workInfo.outputData
-                        val outputValue = outputData.getString("api_token")
-                        loginViewModel.saveToken(outputValue!!)
-                        Log.d(TAG, "doWork: savedToken: $outputValue")
-                    }
-                }*/
-
-            PermissionUtil.checkBluetoothPermission(context)
 
             // connect reader only when the app starts
             LaunchedEffect(Unit) {
                 loginViewModel.connectReader()
-
-                // refresh token every 45 minutes if only login is successful
-                if (loginUiState.isLoginSuccessful) {
-                    TokenRefresher.refresh(workManager)
-                }
             }
+
+            PermissionUtil.checkBluetoothPermission(context)
 
             handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)
 
@@ -131,6 +115,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        workManager.cancelAllWork() // cancel all token refresher when the app is destroyed
+        //workManager.cancelAllWork() // cancel all token refresher when the app is destroyed
     }
 }

@@ -23,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
@@ -38,14 +39,14 @@ fun AcctCheckCountScreen(
     accountCheckViewModel: AccountCheckViewModel,
     modifier: Modifier = Modifier
 ) {
-    val accountCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsState()
+    val accountCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsStateWithLifecycle()
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = SheetState(skipPartiallyExpanded = true, skipHiddenState = false)
     )
     var selectedItem by remember { mutableStateOf(BoxItem()) }
     var controlType by remember { mutableStateOf(ControlType.All) }
     var items by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
-    val scannedItemIdList by accountCheckViewModel.scannedItemIdList.collectAsState()
+    val scannedItemIdList by accountCheckViewModel.scannedItemIdList.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(controlType) {

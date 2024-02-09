@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.foundation:foundation-android:1.6.1")
     val hilt_version = "2.46"
     implementation("androidx.hilt:hilt-work:1.0.0")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
@@ -58,6 +59,7 @@ dependencies {
     //kapt ("com.google.dagger:hilt-android-compiler:$hilt_version")
     kapt("androidx.hilt:hilt-compiler:1.0.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
@@ -69,16 +71,15 @@ dependencies {
     val nav_version = "2.5.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
-    // splash screen api
-    implementation ("androidx.core:core-splashscreen:1.0.0")
-
-
     // swipeable item
     implementation("io.github.kevinnzou:compose-swipebox:1.2.0")
 
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
     implementation(files("libs/API3_LIB_release_2.0.1.44.aar"))
+
+    // for password encryption
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     // constraintLayout
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
