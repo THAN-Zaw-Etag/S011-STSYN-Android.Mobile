@@ -37,13 +37,8 @@ fun BookInSaveScreen(
     when (saveBookInResponse) {
         is ApiResponse.Loading -> LoadingDialog(title = SAVING_MESSAGE,
             showDialog = true,
-            onDismiss = { })
-
-        is ApiResponse.Success -> {
-            showSuccessDialog = true
-            viewModel.updateIsSavedStatus(true)
-            //viewModel.updateSuccessDialogVisibility(true)
-        }
+            onDismiss = { }
+        )
 
         is ApiResponse.ApiError -> showErrorDialog = true
 

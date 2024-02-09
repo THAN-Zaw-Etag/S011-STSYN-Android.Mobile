@@ -17,10 +17,6 @@ class App : Application(), Configuration.Provider {
             .setMinimumLoggingLevel(android.util.Log.INFO)
             .setWorkerFactory(workerFactory)
             .build()
-    override fun onCreate() {
-        super.onCreate()
-        //TokenRefreshWorker.refresh()
-    }
 
 
     /*override fun getWorkManagerConfiguration(): Configuration {

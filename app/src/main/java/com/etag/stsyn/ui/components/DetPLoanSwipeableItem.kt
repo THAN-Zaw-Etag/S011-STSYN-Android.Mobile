@@ -31,7 +31,7 @@ import com.etag.stsyn.domain.model.DetPLoanItem
 
 @Composable
 fun DetPLoanSwipeableItem(
-    isSwipeable: Boolean,
+    swipeable: Boolean,
     item: DetPLoanItem,
     onItemClick: () -> Unit,
     onSwipeToDismiss: (DetPLoanItem) -> Unit
@@ -39,8 +39,8 @@ fun DetPLoanSwipeableItem(
 
     var swipeable by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isSwipeable) {
-        swipeable = isSwipeable
+    LaunchedEffect(swipeable) {
+        swipeable = swipeable
     }
 
     val state = rememberDismissState(initialValue = DismissValue.Default, confirmValueChange = {

@@ -87,7 +87,7 @@ fun DetPLoanOutContent(
             itemsIndexed(items) { index, item ->
                 key(item) {
                     DetPLoanSwipeableItem(
-                        isSwipeable = true,
+                        swipeable = true,
                         item = DetPLoanItem("", item, "", ""),
                         onItemClick = onItemClick,
                         onSwipeToDismiss = { onSwipeToDismiss(item) }

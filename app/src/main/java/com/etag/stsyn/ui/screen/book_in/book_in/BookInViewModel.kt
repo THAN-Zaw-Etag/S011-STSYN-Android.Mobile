@@ -116,6 +116,8 @@ class BookInViewModel @Inject constructor(
 
     fun saveBookIn() {
         viewModelScope.launch {
+            updateIsSavedStatus(false)
+
             val currentDate = DateUtil.getCurrentDate()
             val setting = appConfigFlow.first()
             val userId = userFlow.map { it.userId }.first()
@@ -147,7 +149,10 @@ class BookInViewModel @Inject constructor(
             )
 
             when (savedBookInResponse.value){
-                is ApiResponse.Success -> updateSuccessDialogVisibility(true)
+                is ApiResponse.Success -> {
+                    updateSuccessDialogVisibility(true)
+                    updateIsSavedStatus(true)
+                }
                 else -> {}
             }
         }
