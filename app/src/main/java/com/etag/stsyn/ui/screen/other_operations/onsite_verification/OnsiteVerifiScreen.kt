@@ -80,7 +80,7 @@ fun OnsiteVerifyScreen(
     val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
 
-    val getItemFromApi by onsiteVerificationViewModel.getOnSiteVerifyItems.collectAsState()
+    val onSiteVerifyItemState by onsiteVerificationViewModel.getOnSiteVerifyItems.collectAsState()
     val onsiteVerificationUiState by onsiteVerificationViewModel.onsiteVerificationUiState.collectAsState()
 
     val currentScanItem by onsiteVerificationViewModel.currentScannedItem.collectAsState()
@@ -91,10 +91,6 @@ fun OnsiteVerifyScreen(
     val coroutineScope = rememberCoroutineScope()
     val rfidUiState by onsiteVerificationViewModel.rfidUiState.collectAsState()
     val itemResultMessage by onsiteVerificationViewModel.filterStatusMessage.collectAsState()
-    var showIsEmptyItem by remember {
-        mutableStateOf(false)
-    }
-
     var currentBoxItem by remember {
         mutableStateOf(BoxItem())
     }
@@ -109,7 +105,7 @@ fun OnsiteVerifyScreen(
     }
 
 
-    when (getItemFromApi) {
+    when (onSiteVerifyItemState) {
         is ApiResponse.Loading -> {
             Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Loading...")
             isApiError = false
@@ -121,19 +117,16 @@ fun OnsiteVerifyScreen(
 
         is ApiResponse.Success -> {
             hasScanned = true
-
             Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Success...")
             isApiError = false
-            //onsiteVerificationViewModel.updateUiState(items)
             boxItemsFromApi = onsiteVerificationUiState.allItemsFromApi
         }
 
         is ApiResponse.ApiError -> {
             Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: ApiError...")
             isApiError = true
-            val errorMessage = (getItemFromApi as ApiResponse.ApiError).message
+            val errorMessage = (onSiteVerifyItemState as ApiResponse.ApiError).message
             apiErrorMessage = errorMessage
-            //  onsiteVerificationViewModel.updateUiState(emptyList())
         }
 
         else -> {
@@ -147,13 +140,6 @@ fun OnsiteVerifyScreen(
             Toast.makeText(context, "$itemResultMessage", Toast.LENGTH_SHORT).show()
         }
     }
-
-    LaunchedEffect(key1 = showIsEmptyItem ){
-        if(showIsEmptyItem){
-            Toast.makeText(context, "No items found in inventory", Toast.LENGTH_SHORT).show()
-        }
-    }
-
 
     if (isApiError) {
         WarningDialog(
@@ -184,8 +170,6 @@ fun OnsiteVerifyScreen(
             if (hasScanned) {
                 ScannedContent(
                     onSwipeToDelete = {
-                        // It is not good for UX, Because it can just delete for Item from API
-                        //   onsiteVerificationViewModel.removeScannedBookInItem(it)
                         onsiteVerificationViewModel.removeScannedBookInItemByIndex(it)
                     },
                     listState = listState,
@@ -195,7 +179,7 @@ fun OnsiteVerifyScreen(
                     },
                     scannedItems = rfidUiState.scannedItems,
                     modifier = Modifier.weight(1f),
-                    onItemClick = { epc, isScanned, boxItem ->
+                    onItemClick = { _, _, boxItem ->
                         currentBoxItem = boxItem
                         if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
                         else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
@@ -224,7 +208,7 @@ fun OnsiteVerifyScreen(
                                 )
                             }
                         }else{
-                            showIsEmptyItem = true
+                            Toast.makeText(context, "No items found in inventory", Toast.LENGTH_SHORT).show()
                         }
                     })
                 Text(
