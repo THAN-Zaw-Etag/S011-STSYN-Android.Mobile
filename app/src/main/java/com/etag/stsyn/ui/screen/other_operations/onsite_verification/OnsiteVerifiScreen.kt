@@ -68,6 +68,7 @@ fun OnsiteVerifyScreen(
     val context = LocalContext.current
 
     var hasScanned by remember { mutableStateOf(true) }
+
     val scaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = SheetState(
             skipPartiallyExpanded = false,
@@ -79,7 +80,7 @@ fun OnsiteVerifyScreen(
     val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
 
-    val getItemWhereNotInResponseStat by onsiteVerificationViewModel.getOnSiteVerifyItems.collectAsState()
+    val getItemFromApi by onsiteVerificationViewModel.getOnSiteVerifyItems.collectAsState()
     val onsiteVerificationUiState by onsiteVerificationViewModel.onsiteVerificationUiState.collectAsState()
 
     val currentScanItem by onsiteVerificationViewModel.currentScannedItem.collectAsState()
@@ -90,7 +91,9 @@ fun OnsiteVerifyScreen(
     val coroutineScope = rememberCoroutineScope()
     val rfidUiState by onsiteVerificationViewModel.rfidUiState.collectAsState()
     val itemResultMessage by onsiteVerificationViewModel.filterStatusMessage.collectAsState()
-
+    var showIsEmptyItem by remember {
+        mutableStateOf(false)
+    }
 
     var currentBoxItem by remember {
         mutableStateOf(BoxItem())
@@ -106,7 +109,7 @@ fun OnsiteVerifyScreen(
     }
 
 
-    when (getItemWhereNotInResponseStat) {
+    when (getItemFromApi) {
         is ApiResponse.Loading -> {
             Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Loading...")
             isApiError = false
@@ -128,7 +131,7 @@ fun OnsiteVerifyScreen(
         is ApiResponse.ApiError -> {
             Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: ApiError...")
             isApiError = true
-            val errorMessage = (getItemWhereNotInResponseStat as ApiResponse.ApiError).message
+            val errorMessage = (getItemFromApi as ApiResponse.ApiError).message
             apiErrorMessage = errorMessage
             //  onsiteVerificationViewModel.updateUiState(emptyList())
         }
@@ -144,6 +147,13 @@ fun OnsiteVerifyScreen(
             Toast.makeText(context, "$itemResultMessage", Toast.LENGTH_SHORT).show()
         }
     }
+
+    LaunchedEffect(key1 = showIsEmptyItem ){
+        if(showIsEmptyItem){
+            Toast.makeText(context, "No items found in inventory", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     if (isApiError) {
         WarningDialog(
@@ -206,19 +216,16 @@ fun OnsiteVerifyScreen(
                     onScan = {
                         //  onsiteVerificationViewModel.toggle()
                         Log.d("@click", "OnsiteVerifyScreen: Clicked ${boxItemsFromApi.size}")
-
-                        //TODO setup empty message dialog
-
                         if (boxItemsFromApi.isNotEmpty()) {
-
-                           // onsiteVerificationViewModel.onReceivedTagIdTest()
+                            // onsiteVerificationViewModel.onReceivedTagIdTest()
                             onsiteVerificationViewModel.toggle()
-
                             coroutineScope.launch {
                                 if (scannedItemIndex != -1) listState.animateScrollToItem(
                                     scannedItemIndex
                                 )
                             }
+                        }else{
+                            showIsEmptyItem = true
                         }
                     })
                 Text(
@@ -295,22 +302,6 @@ private fun ScannedContent(
                     )
                 }
             }
-
-            //TODO Don't know why it has to be used [KZL]
-            /*else {
-                items(scannedItems) {
-                    ScannedItem(
-                        id = it,
-                        name = "data link jumper cable",
-                        showTrailingIcon = true,
-                        onItemClick = {
-                            onItemClick(it, false, BoxItem())
-                        }
-                    )
-                }
-            }*/
-
-
         }
     }
 }
