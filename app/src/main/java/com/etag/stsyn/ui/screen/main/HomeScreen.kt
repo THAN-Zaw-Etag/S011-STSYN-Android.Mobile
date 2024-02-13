@@ -29,7 +29,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
@@ -77,15 +77,15 @@ fun HomeScreen(
     loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {
-    val savedUserState by loginViewModel.savedUser.collectAsState(initial = LocalUser())
-    val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsState()
+    val savedUserState by loginViewModel.savedUser.collectAsStateWithLifecycle(LocalUser())
+    val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsStateWithLifecycle()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
     val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
     val navController = rememberNavController()
-    val sharedUiState by sharedUiViewModel.uiState.collectAsState()
+    val sharedUiState by sharedUiViewModel.uiState.collectAsStateWithLifecycle()
     val dialogState = rememberMutableDialogState(data = "")
-    val updatePasswordResponse by loginViewModel.updatePasswordResponse.collectAsState()
+    val updatePasswordResponse by loginViewModel.updatePasswordResponse.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
 

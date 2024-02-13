@@ -78,6 +78,7 @@ class LoginViewModel @Inject constructor(
 
     init {
         updateScanType(ScanType.Single)
+
         // if user is already logged in, fetch menu access rights from api
         viewModelScope.launch {
             launch {
@@ -194,8 +195,8 @@ class LoginViewModel @Inject constructor(
 
                     val checkStatus = (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.checkStatus!!
                     val isSodInitiate = (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
-                    if (checkStatus.isStart) updateShiftType(Shift.START)
-                    if (checkStatus.isAdhoc) updateShiftType(Shift.ADHOC)
+
+                    updateShiftType(if (checkStatus.isStart) Shift.START else Shift.ADHOC)
                     localDataStore.saveCheckStatusId(checkStatus.id.toString())
                     updateSODInitiateStatus(isSodInitiate)
                 }

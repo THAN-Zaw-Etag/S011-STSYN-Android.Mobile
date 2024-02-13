@@ -1,11 +1,10 @@
 package com.etag.stsyn.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -13,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.HomeScreen
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -22,7 +22,7 @@ fun RootNavigationGraph(
     loginViewModel: LoginViewModel,
 ) {
     val context = LocalContext.current
-    val loginUiState by loginViewModel.loginUiState.collectAsState()
+    val loginUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
     NavHost(
         navController = navController,
         route = Graph.ROOT,
@@ -31,9 +31,7 @@ fun RootNavigationGraph(
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            context,
-
-            )
+            context,)
         composable(route = "${Graph.HOME}/{isSodInitiate}") {
             // disable scan
             loginViewModel.disableScan()
@@ -57,7 +55,9 @@ fun RootNavigationGraph(
     }
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            navController.navigateToSingleTop(if (loginUiState.isSodInitiate) Routes.SODInitiateScreen.name else "${Graph.HOME}/${false}")
+            val route = if (!loginUiState.isSodInitiate) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
+            delay(300)
+            navController.navigateToSingleTop(route)
         }
     }
 }

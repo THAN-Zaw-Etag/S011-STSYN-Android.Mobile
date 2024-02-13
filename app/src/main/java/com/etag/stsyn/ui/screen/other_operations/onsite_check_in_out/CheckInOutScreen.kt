@@ -13,25 +13,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.ErrorText
-import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.errorColor
-import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun CheckInOutScreen(

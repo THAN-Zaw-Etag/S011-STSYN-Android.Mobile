@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
 import com.etag.stsyn.enums.DeviceSize
@@ -60,7 +60,7 @@ fun LoginScreen(
     loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val rfidUiState by loginViewModel.rfidUiState.collectAsState()
+    val rfidUiState by loginViewModel.rfidUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     ReaderLifeCycle(viewModel = loginViewModel)
@@ -79,7 +79,7 @@ fun LoginScreen(
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    val appConfiguration by loginViewModel.appConfig.collectAsState(initial = AppConfigModel())
+    val appConfiguration by loginViewModel.appConfig.collectAsStateWithLifecycle(initialValue = AppConfigModel())
     val emptyBaseUrlStatus = loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
     if (emptyBaseUrlStatus.value) {
         ShowBaseUrlAlertDialog(

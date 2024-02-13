@@ -1,7 +1,6 @@
 package com.etag.stsyn.ui.navigation
 
 import android.content.Context
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,7 +21,6 @@ fun NavGraphBuilder.authNavGraph(
     loginViewModel: LoginViewModel,
     context: Context
 ) {
-
     navigation(
         route = Graph.AUTHENTICATION,
         startDestination = Routes.LoginScreen.name

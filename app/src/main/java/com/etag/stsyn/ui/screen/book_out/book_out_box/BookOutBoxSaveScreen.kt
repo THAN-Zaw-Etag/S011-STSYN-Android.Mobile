@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.DropDown
@@ -39,12 +39,12 @@ import com.tzh.retrofit_module.util.ApiResponse
 fun BookOutBoxSaveScreen(
     bookOutBoxViewModel: BookOutBoxViewModel, modifier: Modifier = Modifier
 ) {
-    val user by bookOutBoxViewModel.user.collectAsState(initial = LocalUser())
-    val boxUiState by bookOutBoxViewModel.boxUiState.collectAsState()
-    val bookOutBoxUiState by bookOutBoxViewModel.bookOutBoxUiState.collectAsState()
-    val scannedItemList by bookOutBoxViewModel.scannedItemList.collectAsState()
-    val needLocation by bookOutBoxViewModel.needLocation.collectAsState()
-    val saveBookOutBoxesResponse by bookOutBoxViewModel.saveBookOutBoxResponse.collectAsState()
+    val user by bookOutBoxViewModel.user.collectAsStateWithLifecycle(LocalUser())
+    val boxUiState by bookOutBoxViewModel.boxUiState.collectAsStateWithLifecycle()
+    val bookOutBoxUiState by bookOutBoxViewModel.bookOutBoxUiState.collectAsStateWithLifecycle()
+    val scannedItemList by bookOutBoxViewModel.scannedItemList.collectAsStateWithLifecycle()
+    val needLocation by bookOutBoxViewModel.needLocation.collectAsStateWithLifecycle()
+    val saveBookOutBoxesResponse by bookOutBoxViewModel.saveBookOutBoxResponse.collectAsStateWithLifecycle()
     var location by remember { mutableStateOf("") }
     val dialogState = rememberMutableDialogState(data = "")
 

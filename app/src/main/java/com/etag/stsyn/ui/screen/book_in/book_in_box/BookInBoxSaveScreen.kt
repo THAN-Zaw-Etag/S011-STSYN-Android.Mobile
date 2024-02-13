@@ -6,12 +6,12 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SaveItemLayout
@@ -24,10 +24,10 @@ import com.tzh.retrofit_module.util.ApiResponse
 fun BookInBoxSaveScreen(
     bookInBoxViewModel: BookInBoxViewModel, modifier: Modifier = Modifier
 ) {
-    val bookInBoxUiState by bookInBoxViewModel.boxUiState.collectAsState()
-    val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsState()
-    val user by bookInBoxViewModel.user.collectAsState(initial = LocalUser())
-    val saveBookInBoxResponse by bookInBoxViewModel.saveBookInBoxResponse.collectAsState()
+    val bookInBoxUiState by bookInBoxViewModel.boxUiState.collectAsStateWithLifecycle()
+    val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsStateWithLifecycle()
+    val user by bookInBoxViewModel.user.collectAsStateWithLifecycle(LocalUser())
+    val saveBookInBoxResponse by bookInBoxViewModel.saveBookInBoxResponse.collectAsStateWithLifecycle()
     var shouldShowRefreshIcon by remember { mutableStateOf(false) }
 
     var shouldShowWarningDialog by remember {
