@@ -9,7 +9,7 @@ import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.GetAllItemsOfBoxResponse
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
-import com.tzh.retrofit_module.domain.model.bookOut.ItemWhereNotInResponse
+import com.tzh.retrofit_module.domain.model.bookOut.OnSiteVerificationResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
@@ -46,7 +46,7 @@ class BookOutRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getOnSiteVerifyItem(): ApiResponse<ItemWhereNotInResponse> {
+    override suspend fun getOnSiteVerifyItem(): ApiResponse<OnSiteVerificationResponse> {
         val loginUserId = localDataStore.getUser.first().userId
 
         val settings = appConfiguration.appConfig.first()

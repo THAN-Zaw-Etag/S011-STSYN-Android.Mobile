@@ -11,7 +11,7 @@ import com.tzh.retrofit_module.data.model.onsiteverification.StockTake
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.bookIn.safeCopy
-import com.tzh.retrofit_module.domain.model.bookOut.ItemWhereNotInResponse
+import com.tzh.retrofit_module.domain.model.bookOut.OnSiteVerificationResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
@@ -37,8 +37,8 @@ class OnsiteVerificationViewModel @Inject constructor(
 
     //TODO if all other testing are passed, implement override function of OnReceivedTagId of BaseViewModel
     private val _getOnSiteVerifyItems =
-        MutableStateFlow<ApiResponse<ItemWhereNotInResponse>>(ApiResponse.Default)
-    val getOnSiteVerifyItems: StateFlow<ApiResponse<ItemWhereNotInResponse>> =
+        MutableStateFlow<ApiResponse<OnSiteVerificationResponse>>(ApiResponse.Default)
+    val getOnSiteVerifyItems: StateFlow<ApiResponse<OnSiteVerificationResponse>> =
         _getOnSiteVerifyItems.asStateFlow()
 
     private val _saveOnSiteVerification =

@@ -17,7 +17,7 @@ import com.tzh.retrofit_module.domain.model.bookIn.RefreshTokenResponse
 import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
-import com.tzh.retrofit_module.domain.model.bookOut.ItemWhereNotInResponse
+import com.tzh.retrofit_module.domain.model.bookOut.OnSiteVerificationResponse
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.onsiteCheckInOut.GetItemsForOnsiteResponse
@@ -142,7 +142,7 @@ interface ApiService {
         @Query("Store") store: String,
         @Query("CsNo") csNo: String,
         @Query("LoginUserId") loginUserId: String,
-    ): Response<ItemWhereNotInResponse>
+    ): Response<OnSiteVerificationResponse>
 
 
     @POST(SAVE_ONSITE_VERIFICATION)
