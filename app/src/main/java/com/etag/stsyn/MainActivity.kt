@@ -2,14 +2,12 @@ package com.etag.stsyn
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -17,19 +15,17 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
-import androidx.work.WorkManager
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
 import com.etag.stsyn.core.receiver.BluetoothState
 import com.etag.stsyn.data.worker.TokenRefreshWorker
-import com.etag.stsyn.data.worker.TokenRefresher
 import com.etag.stsyn.ui.navigation.RootNavigationGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.theme.STSYNTheme
+import com.etag.stsyn.ui.viewmodel.HomeViewModel
 import com.etag.stsyn.util.PermissionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -54,6 +50,8 @@ class MainActivity : ComponentActivity() {
             val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle(LocalUser())
             val context = LocalContext.current
 
+            val homeViewModel: HomeViewModel = hiltViewModel()
+
             PermissionUtil.checkBluetoothPermission(context)
             handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)
 
@@ -75,7 +73,6 @@ class MainActivity : ComponentActivity() {
                         isLoggedIn = isLoggedIn,
                         navController = navController,
                         loginViewModel = loginViewModel
-
                     )
                 }
             }

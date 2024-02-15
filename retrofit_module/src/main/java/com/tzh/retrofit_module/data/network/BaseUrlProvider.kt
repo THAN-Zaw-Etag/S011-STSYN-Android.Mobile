@@ -2,6 +2,7 @@ package com.tzh.retrofit_module.data.network
 
 import android.util.Log
 import com.tzh.retrofit_module.data.settings.AppConfiguration
+import com.tzh.retrofit_module.util.BASE_URL
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +25,8 @@ class BaseUrlProvider @Inject constructor(
 
     fun getBaseUrl(): String {
         if (baseUrl.isEmpty()) {
-            throw IllegalStateException("Base URL is not set.")
+            updateBaseUrl(BASE_URL)
+            // TODO remove throw IllegalStateException("Base URL is not set.")
         }
         if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
             throw IllegalStateException("Base URL must start with in get 'http://' or 'https://'. Current base URL: $baseUrl")

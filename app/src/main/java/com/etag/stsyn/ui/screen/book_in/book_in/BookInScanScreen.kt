@@ -8,14 +8,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
-import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun BookInScanScreen(
@@ -23,10 +22,10 @@ fun BookInScanScreen(
     modifier: Modifier = Modifier
 ) {
     val TAG = "BookInScanScreen"
-    val rfidUiState by bookInViewModel.rfidUiState.collectAsState()
+    val rfidUiState by bookInViewModel.rfidUiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    val bookInState by bookInViewModel.bookInState.collectAsState()
-    val scannedItemIdList by bookInViewModel.scannedItemIdList.collectAsState()
+    val bookInState by bookInViewModel.bookInState.collectAsStateWithLifecycle()
+    val scannedItemIdList by bookInViewModel.scannedItemIdList.collectAsStateWithLifecycle()
     
     LaunchedEffect(scannedItemIdList) {
         Log.d(TAG, "BookInScanScreen: $scannedItemIdList")

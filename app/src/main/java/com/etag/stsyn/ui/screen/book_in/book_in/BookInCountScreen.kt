@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -14,16 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.ExpandedScannedItem
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.tzh.retrofit_module.data.mapper.toExpandedScannedItems
-import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
-import com.tzh.retrofit_module.domain.model.bookIn.BookInResponse
-import com.tzh.retrofit_module.util.ApiResponse
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
@@ -32,8 +27,8 @@ fun BookInCountScreen(
     viewModel: BookInViewModel,
     modifier: Modifier = Modifier
 ) {
-    val scannedItemIdList by viewModel.scannedItemIdList.collectAsState()
-    val bookInState by viewModel.bookInState.collectAsState()
+    val scannedItemIdList by viewModel.scannedItemIdList.collectAsStateWithLifecycle()
+    val bookInState by viewModel.bookInState.collectAsStateWithLifecycle()
     var bookInAllItems by remember { mutableStateOf(bookInState.allBookInItems) }
     var controlType by remember { mutableStateOf(ControlType.All) }
 

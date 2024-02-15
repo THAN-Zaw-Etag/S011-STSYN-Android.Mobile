@@ -93,6 +93,9 @@ class BookOutViewModel @Inject constructor(
 
     private fun getAllBookOutItems() {
         viewModelScope.launch {
+            user.collect {
+                Log.d(TAG, "getAllBookOutItems: ${it.token}")
+            }
             _getAllBookOutItemResponse.value = ApiResponse.Loading
             _getAllBookOutItemResponse.value = bookOutRepository.getAllBookOutItems()
             when (_getAllBookOutItemResponse.value) {

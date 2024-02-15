@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.acct_check
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,9 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,7 +40,6 @@ import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.ui.theme.errorColor
-import com.etag.stsyn.util.datasource.DataSource
 import com.tzh.retrofit_module.domain.model.FilterItem
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import kotlinx.coroutines.Dispatchers
