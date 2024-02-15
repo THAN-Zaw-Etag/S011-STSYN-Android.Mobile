@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.ExpandedScannedItem
+import com.etag.stsyn.ui.components.listItems
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.tzh.retrofit_module.data.mapper.toExpandedScannedItems
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +51,7 @@ fun BookInCountScreen(
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(bookInAllItems) {
+            listItems(bookInAllItems) {
                 key(it.epc) {
                     ExpandedScannedItem(
                         bookInItem = it.toExpandedScannedItems()

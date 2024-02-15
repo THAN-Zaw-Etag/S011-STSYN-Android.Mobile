@@ -16,4 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "STSYN"
 include(":app")
-include(":retrofit_module")
+include(":retrofit-module")

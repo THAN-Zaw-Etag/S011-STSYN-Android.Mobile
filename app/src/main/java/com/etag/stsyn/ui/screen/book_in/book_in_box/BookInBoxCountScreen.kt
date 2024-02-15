@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
+import com.etag.stsyn.ui.components.listItemsIndexed
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.etag.stsyn.ui.screen.bottomsheet.BoxDetailScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
@@ -64,7 +65,7 @@ fun BookInBoxCountScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                itemsIndexed(boxes) { index, item ->
+                listItemsIndexed(boxes) { index, item ->
                     key(item.epc) {
                         ScannedItem(
                             id = "${item.serialNo} - ${item.itemLocation}",

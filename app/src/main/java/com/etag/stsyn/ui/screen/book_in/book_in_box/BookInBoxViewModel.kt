@@ -297,6 +297,7 @@ class BookInBoxViewModel @Inject constructor(
                         val boxes =
                             (_boxItemsForBookInResponse.value as ApiResponse.Success<SelectBoxForBookInResponse>).data?.items
                                 ?: emptyList()
+                        Log.d(TAG, "getAllBoxesForBookInItem: ${boxes.size}")
                         _boxUiState.update { it.copy(allBoxes = boxes) }
                     }
 

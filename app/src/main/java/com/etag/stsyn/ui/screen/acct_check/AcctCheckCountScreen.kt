@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
+import com.etag.stsyn.ui.components.listItems
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.etag.stsyn.ui.screen.bottomsheet.BoxDetailScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
@@ -70,7 +71,7 @@ fun AcctCheckCountScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                items(items) {
+                listItems(items) {
                     key (it.epc) {
                         ScannedItem(
                             id = "${it.serialNo}-${it.itemLocation}",

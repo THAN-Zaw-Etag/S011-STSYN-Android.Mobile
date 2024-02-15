@@ -50,10 +50,11 @@ fun FilterDialog(
     show: Boolean,
     onClear: () -> Unit,
     onDismiss: () -> Unit,
-    onDone: (List<FilterItem>) -> Unit
+    onDone: (List<FilterItem>, Boolean) -> Unit
 ) {
     val TAG = "FilterDialog"
     var showFilterDialog by remember { mutableStateOf(false) }
+    var isUpdateAll by remember { mutableStateOf(false) }
     var filterItems by remember { mutableStateOf<MutableList<FilterItem>>(mutableListOf()) }
     val dialogState = rememberMutableDialogState(data = "")
 
@@ -66,8 +67,7 @@ fun FilterDialog(
         dialogState = dialogState,
         positiveButtonTitle = "Ok",
         onPositiveButtonClick = {
-            onDone(filterItems)
-
+            onDone(filterItems,isUpdateAll)
             showFilterDialog = false
             onDismiss()
         }
@@ -88,8 +88,12 @@ fun FilterDialog(
                 filters = filters,
                 onClear = onClear,
                 onDone = { items ->
+                    Log.d(TAG, "FilterDialog: ${items.map { it.selectedOption }}")
+                    val showWarningDialog = items.filter { it.selectedOption.trim().isEmpty() || it.selectedOption == "All" }.size != items.size
+                    isUpdateAll = showWarningDialog
+
                     dialogState.showDialog(
-                        data = if (items.filter { it.selectedOption.isEmpty() || it.selectedOption == "All" }.size != items.size) "You're not able to scan unknown EPC" else "You're able to scan unknown EPC"
+                        data = if (showWarningDialog) "You're not able to scan unknown EPC" else "You're able to scan unknown EPC"
                     )
 
                     filterItems.clear()
@@ -138,8 +142,9 @@ private fun FilterDialogContent(
 
         LazyColumn(modifier = Modifier.weight(1f)) {
             itemsIndexed(filters) { index, item ->
-                defaultValue = if (item.selectedOption.trim().isEmpty()) "All" else item.selectedOption
-                key (item.selectedOption) {
+                defaultValue =
+                    if (item.selectedOption.trim().isEmpty()) "All" else item.selectedOption
+                key(item.selectedOption) {
                     FilterItemLayout(
                         title = item.title,
                         isClear = isClear,
@@ -147,7 +152,8 @@ private fun FilterDialogContent(
                         options = filters[index].options,
                         onCleared = { isClear = false },
                         onSelected = { option ->
-                            val updatedItem = item.copy(selectedOption = if (option == "All") "" else option)
+                            val updatedItem =
+                                item.copy(selectedOption = if (option == "All") "" else option)
                             selectedItems[index] = updatedItem
                         }
                     )

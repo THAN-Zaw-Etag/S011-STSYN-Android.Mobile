@@ -75,8 +75,8 @@ fun AcctCheckScanScreen(
         }
     }
 
-    LaunchedEffect(acctCheckUiState.unknownEpc) {
-        if (acctCheckUiState.unknownEpc != null) dialogState.showDialog("Alien/Unknown EPC alert. Scan '${acctCheckUiState.unknownEpc}' again?")
+    LaunchedEffect(acctCheckUiState.showUnknownEpcDialog) {
+        if (acctCheckUiState.showUnknownEpcDialog) dialogState.showDialog("Alien/Unknown EPC alert. Scan '${acctCheckUiState.unknownEpc}' again?")
         else dialogState.hideDialog()
     }
 
@@ -96,7 +96,7 @@ fun AcctCheckScanScreen(
 
     LaunchedEffect(acctCheckUiState.filterOptions) {
         filters = acctCheckUiState.filterOptions
-        filterCount = acctCheckUiState.filterOptions.filter { it.selectedOption.isNotEmpty() }.size
+        filterCount = acctCheckUiState.filterOptions.filter { it.selectedOption.trim().isNotEmpty() }.size
     }
 
     Column(
@@ -114,9 +114,7 @@ fun AcctCheckScanScreen(
                 filters = filters,
                 onDismiss = { showFilterDialog = false },
                 onClear = accountCheckViewModel::clearFilters,
-                onDone = { filterItems ->
-                    accountCheckViewModel.updateFilterOptions(filterItems)
-                }
+                onDone = accountCheckViewModel::updateFilterOptions
             )
             AcctCheckContent(
                 onFilterButtonClick = { showFilterDialog = true },

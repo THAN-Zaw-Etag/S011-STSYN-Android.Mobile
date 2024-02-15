@@ -20,9 +20,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ControlType
 import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
+import com.etag.stsyn.ui.components.listItemsIndexed
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.etag.stsyn.ui.screen.bottomsheet.BoxDetailScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
@@ -33,7 +35,7 @@ fun BookOutBoxCountScreen(
     bookOutBoxViewModel: BookOutBoxViewModel,
     modifier: Modifier = Modifier
 ) {
-    val boxUiState by bookOutBoxViewModel.boxUiState.collectAsState()
+    val boxUiState by bookOutBoxViewModel.boxUiState.collectAsStateWithLifecycle()
     var controlType by remember { mutableStateOf(ControlType.All) }
     var boxes by remember { mutableStateOf(boxUiState.allItemsOfBox) }
     var boxItem by remember { mutableStateOf(BoxItem()) }
@@ -43,9 +45,9 @@ fun BookOutBoxCountScreen(
 
     LaunchedEffect(controlType) {
         boxes = when (controlType) {
-            ControlType.All -> boxUiState.allItemsOfBox
-            ControlType.Done -> boxUiState.allItemsOfBox.filter { it.epc in scannedItemList }.toMutableList()
-            ControlType.Outstanding -> boxUiState.allItemsOfBox.filter { it.epc !in scannedItemList }.toMutableList()
+            ControlType.All -> boxUiState.allBoxes
+            ControlType.Done -> boxUiState.allBoxes.filter { it.epc in scannedItemList }.toMutableList()
+            ControlType.Outstanding -> boxUiState.allBoxes.filter { it.epc !in scannedItemList }.toMutableList()
         }
     }
 
@@ -66,7 +68,7 @@ fun BookOutBoxCountScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                itemsIndexed(boxes) { index, item ->
+                listItemsIndexed(boxes) { index, item ->
                     key (item.epc){
                         ScannedItem(
                             id = "${item.serialNo} - ${item.itemLocation}",

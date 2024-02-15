@@ -97,10 +97,11 @@ class AccountCheckViewModel @Inject constructor(
         }
     }
 
-    fun updateFilterOptions(filterOptions: List<FilterItem>) {
+    fun updateFilterOptions(filterOptions: List<FilterItem>,isUpdateAll: Boolean) {
         _acctCheckUiState.update {
             it.copy(
                 filterOptions = filterOptions,
+                isUpdateAll = isUpdateAll,
                 acctCheckRequest = filterOptions.toAccountabilityCheckRequest()
             )
         }
@@ -175,7 +176,6 @@ class AccountCheckViewModel @Inject constructor(
             _saveAcctCheckResponse.value = ApiResponse.Loading
             delay(500)
             _saveAcctCheckResponse.value = ApiResponse.Success(NormalResponse(null, true))
-            //_saveAcctCheckResponse.value = accountCheckRepository.saveAccountabilityCheck(
             SaveAccountabilityCheckRequest(acctCheckUiState.value.allItems.filter { it.epc in scannedItemIdList.value }
                 .map {
                     it.toStockTake(
@@ -196,7 +196,9 @@ class AccountCheckViewModel @Inject constructor(
             if (scannedItem != null && !hasExisted) {
                 _acctCheckUiState.update { it.copy(scannedItem = scannedItem, unknownEpc = null) }
                 addScannedItemId(id)
-            } else _acctCheckUiState.update { it.copy(unknownEpc = id) }
+            } else {
+                _acctCheckUiState.update { it.copy(unknownEpc = id, showUnknownEpcDialog = acctCheckUiState.value.isUpdateAll) }
+            }
         }
     }
 
@@ -221,6 +223,8 @@ class AccountCheckViewModel @Inject constructor(
         val shiftType: Shift = Shift.START,
         val allItems: List<BoxItem> = emptyList(),
         val unknownEpc: String? = null,
+        val showUnknownEpcDialog: Boolean = false,
+        val isUpdateAll: Boolean = false,
         val scannedItem: BoxItem = BoxItem(),
         val filterOptions: List<FilterItem> = emptyList(),
         val acctCheckRequest: AccountCheckOutstandingItemsRequest = AccountCheckOutstandingItemsRequest()

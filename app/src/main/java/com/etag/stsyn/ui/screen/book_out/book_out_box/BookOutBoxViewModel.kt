@@ -107,7 +107,9 @@ class BookOutBoxViewModel @Inject constructor(
             delay(1000)
             when (getAllBookOutBoxesResponse.value) {
                 is ApiResponse.Success -> {
-                    _boxUiState.update { it.copy(allBoxes = (getAllBookOutBoxesResponse.value as ApiResponse.Success<GetAllBookOutBoxesResponse>).data?.items ?: emptyList()) }
+                    val boxes = (getAllBookOutBoxesResponse.value as ApiResponse.Success<GetAllBookOutBoxesResponse>).data?.items ?: emptyList()
+                    Log.d(TAG, "getAllBookOutBoxes: ${boxes.size}")
+                    _boxUiState.update { it.copy(allBoxes = boxes) }
                 }
                 else -> {}
             }

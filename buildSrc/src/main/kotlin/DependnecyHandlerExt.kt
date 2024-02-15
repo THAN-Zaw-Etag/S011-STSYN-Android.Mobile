@@ -18,7 +18,7 @@ fun DependencyHandler.composeFoundationAndroid() {
 }
 
 fun DependencyHandler.retrofitModule() {
-    moduleImplementation(":retrofit_module")
+    moduleImplementation(":retrofit-module")
 }
 
 fun DependencyHandler.hilt() {
