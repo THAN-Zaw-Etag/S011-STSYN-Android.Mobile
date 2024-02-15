@@ -38,7 +38,7 @@ private class MutableDialogStateImpl<T>(data: T): MutableDialogState<T> {
 
     override fun showDialog(data: T) {
         _dialogData.value = data
-        _isVisible.value = (data as String).isNotEmpty()
+        _isVisible.value = (data as String).trim().isNotEmpty()
     }
 
 }

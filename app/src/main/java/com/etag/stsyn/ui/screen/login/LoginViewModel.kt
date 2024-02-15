@@ -218,7 +218,7 @@ class LoginViewModel @Inject constructor(
         val oldPassword = String(oldPasswordCharArr)
         val newPassword = String(newPasswordChar)
         //TODO remove unused lines of code and encrypt password if required
-        shouldShowAuthorizationFailedDialog(false)
+        //shouldShowAuthorizationFailedDialog(false)
         viewModelScope.launch {
             _updatePasswordResponse.value = ApiResponse.Loading
             delay(1000)
@@ -232,7 +232,7 @@ class LoginViewModel @Inject constructor(
                 )
 
                 // show authorization error dialog if error is authorization failed error
-                shouldShowAuthorizationFailedDialog(_updatePasswordResponse.value is ApiResponse.AuthorizationError)
+                //shouldShowAuthorizationFailedDialog(_updatePasswordResponse.value is ApiResponse.AuthorizationError)
             }
         }
         oldPasswordCharArr.fill('0')

@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +61,7 @@ import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.navigation.HomeNavigationGraph
 import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.screen.login.LoginViewModel
+import com.etag.stsyn.ui.states.mutableDialogStateOf
 import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
@@ -84,54 +86,58 @@ fun HomeScreen(
     val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
     val navController = rememberNavController()
     val sharedUiState by sharedUiViewModel.uiState.collectAsStateWithLifecycle()
-    val dialogState = rememberMutableDialogState(data = "")
+    val dialogState = remember { mutableDialogStateOf("") }
     val updatePasswordResponse by loginViewModel.updatePasswordResponse.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var showLoadingDialog by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
 
     ReaderLifeCycle(viewModel = loginViewModel)
+
+    LaunchedEffect (updatePasswordResponse){
+        when (updatePasswordResponse) {
+            is ApiResponse.Loading -> showLoadingDialog = true
+
+            is ApiResponse.Success -> {
+                showLoadingDialog = false
+                Toast.makeText(context, "Password updated successfully!", Toast.LENGTH_SHORT).show()
+            }
+
+            is ApiResponse.ApiError -> {
+                showLoadingDialog = false
+                dialogState.showDialog((updatePasswordResponse as ApiResponse.ApiError).message)
+            }
+
+            else -> {
+                showLoadingDialog = false
+                dialogState.hideDialog()
+            }
+        }
+    }
+
+    LoadingDialog(
+        title = "Updating password...",
+        showDialog = showLoadingDialog,
+        onDismiss = { /*TODO*/ })
 
     if (showAuthorizationFailedDialog) AuthorizationTokenExpiredDialog(
         message = AUTHORIZATION_FAILED_MESSAGE, onLogOut = onLogOutClick
     )
 
-    ChangePasswordDialog(
-        userName = savedUserState.name,
-        onChangePassword = { old, new ->
-            onChangePassword(old.toCharArray(), new.toCharArray())
-        },
-        showDialog = showDialog,
-        onDismiss = {
-            showDialog = false
-        }
-    )
-
-    when (updatePasswordResponse) {
-        is ApiResponse.Loading -> LoadingDialog(
-            title = "Updating password...",
-            showDialog = true,
-            onDismiss = { /*TODO*/ }
-        )
-
-        is ApiResponse.Success -> {
-            Toast.makeText(context, "Password updated successfully!", Toast.LENGTH_SHORT).show()
-        }
-
-        is ApiResponse.ApiError -> {
-            dialogState.showDialog((updatePasswordResponse as ApiResponse.ApiError).message)
-        }
-
-        else -> {}
-    }
+    ChangePasswordDialog(userName = savedUserState.name, onChangePassword = { old, new ->
+        onChangePassword(old.toCharArray(), new.toCharArray())
+    }, showDialog = showDialog, onDismiss = {
+        showDialog = false
+    })
 
     WarningDialog(
         icon = CustomIcon.Vector(Icons.Default.Error),
         dialogState = dialogState,
-        positiveButtonTitle = "try again",
+        positiveButtonTitle = "ok",
+        onPositiveButtonClick = dialogState::hideDialog
     )
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
+    ModalNavigationDrawer(drawerState = drawerState,
         modifier = modifier,
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
@@ -149,12 +155,10 @@ fun HomeScreen(
                     onLogOutClick = onLogOutClick,
                 )
             }
-        }
-    ) {
+        }) {
         Scaffold(
             bottomBar = {
-                BottomNavigationBar(
-                    selectedItem = sharedUiState.selectedBottomNavigationItem,
+                BottomNavigationBar(selectedItem = sharedUiState.selectedBottomNavigationItem,
                     showBottomBar = sharedUiState.showBottomNavigationBar,
                     onBottomNavigationItemSelected = { navController.navigate(it) })
             },
@@ -164,16 +168,16 @@ fun HomeScreen(
                     enter = TransitionUtil.slideInVerticallyFromTop,
                     exit = TransitionUtil.slideOutVerticallyToTop
                 ) {
-                    AppBar(
-                        userName = savedUserState.name,
+                    AppBar(userName = savedUserState.name,
                         title = sharedUiState.title,
                         icon = sharedUiState.icon,
                         onIconClick = {
-                            if (sharedUiState.icon == Icons.Default.ArrowBack) {
+                            if (sharedUiState.icon == Icons.AutoMirrored.Filled.ArrowBack) {
                                 navController.navigateUp()
-                            } else coroutineScope.launch { drawerState.open() }
-                        }
-                    )
+                            } else coroutineScope.launch {
+                                drawerState.open()
+                            }
+                        })
                 }
             },
         ) {
@@ -199,9 +203,7 @@ private fun DrawerContent(
 ) {
     var showLogOutDialog by remember { mutableStateOf(false) }
 
-
-    ConfirmationDialog(
-        showDialog = showLogOutDialog,
+    ConfirmationDialog(showDialog = showLogOutDialog,
         title = "Log Out?",
         cancelTitle = "Cancel",
         confirmTitle = "Ok",
@@ -223,8 +225,7 @@ private fun DrawerContent(
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center)
             ) {
                 Icon(
                     imageVector = Icons.Filled.AccountCircle,
@@ -250,8 +251,7 @@ private fun DrawerContent(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = user.nric,
-                            color = Color.White
+                            text = user.nric, color = Color.White
                         )
                     }
                 }
