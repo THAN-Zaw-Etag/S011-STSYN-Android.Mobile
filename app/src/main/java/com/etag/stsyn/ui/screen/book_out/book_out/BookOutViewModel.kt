@@ -170,14 +170,6 @@ class BookOutViewModel @Inject constructor(
                 userId = user.userId.toInt()
             )
 
-            /*val  = bookOutUiState.value.scannedItems.toItemMovementLogs(
-                handleHeldId = appConfig.handheldReaderId.toInt(),
-                currentDate = currentDate,
-                userId = user.userId,
-                workLocation = bookOutUiState.value.location,
-                itemStatus = bookOutUiState.value.purpose
-            )*/
-
             val itemMovementLogs = bookOutUiState.value.scannedItems.map { it.toItemMovementLog(
                 readerId = appConfig.handheldReaderId,
                 date = currentDate,
