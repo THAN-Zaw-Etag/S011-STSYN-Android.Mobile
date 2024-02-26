@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-fun String.doesNotEquals(string: String): Boolean {
+fun String.doesNotEquals(string: String?): Boolean {
     return !this.equals(string)
 }
 

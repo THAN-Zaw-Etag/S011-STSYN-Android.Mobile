@@ -39,7 +39,7 @@ fun BookOutBoxCountScreen(
     var controlType by remember { mutableStateOf(ControlType.All) }
     var boxes by remember { mutableStateOf(boxUiState.allBoxes) }
     var boxItem by remember { mutableStateOf(BoxItem()) }
-    val scannedItemList by bookOutBoxViewModel.scannedItemList.collectAsState()
+    val scannedItemList by bookOutBoxViewModel.scannedItemList.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = SheetState(skipPartiallyExpanded = true, skipHiddenState = false))
 
