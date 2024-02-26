@@ -69,7 +69,7 @@ class BookOutBoxViewModel @Inject constructor(
 
         // Testing
         viewModelScope.launch {
-            boxUiState.collect {boxState ->
+            boxUiState.collect { boxState ->
                 if (boxState.allBoxes.isNotEmpty()) _boxUiState.update { it.copy(scannedBox = boxState.allBoxes.get(3)) }
                 if (boxState.allItemsOfBox.isNotEmpty()) scannedItemList.update { boxState.allItemsOfBox.map { it.epc }.subList(0,2) }
             }

@@ -53,7 +53,7 @@ fun BookInBoxScanScreen(
                 toggle()
             }
         },
-        onRefresh = { bookInBoxViewModel.refreshScannedBox() },
+        onRefresh = bookInBoxViewModel::refreshScannedBox,
         isScanning = rfidUiState.isScanning,
         scannedBox = scannedBox,
         modifier = modifier,

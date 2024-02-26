@@ -65,6 +65,14 @@ class BookInBoxViewModel @Inject constructor(
         handleClickEvent()
         getAllBoxesForBookInItem()
         observeBookInItemsResponse()
+
+        viewModelScope.launch {
+            boxUiState.collect {boxState ->
+                Log.d(TAG, "scannedBox: ${boxState.scannedBox}")
+                if (boxState.allBoxes.isNotEmpty()) _boxUiState.update { it.copy(scannedBox = boxState.allBoxes.get(0)) }
+                if (boxState.allItemsOfBox.isNotEmpty()) scannedItemsList.update { boxState.allItemsOfBox.map { it.epc } }
+            }
+        }
     }
 
     private fun getItemsCountNotInBox(box: String) {
@@ -260,6 +268,7 @@ class BookInBoxViewModel @Inject constructor(
 
     fun refreshScannedBox() {
         viewModelScope.launch {
+            Log.d(TAG, "refreshScannedBox: refresh")
             boxItems.update { emptyList() }
             scannedItemsList.update { emptyList() }
             _boxUiState.update {
