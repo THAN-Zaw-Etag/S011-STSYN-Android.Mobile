@@ -66,6 +66,14 @@ class BookOutBoxViewModel @Inject constructor(
         observeLocation()
         observeApiResponse()
         handleClickEvent()
+
+        // Testing
+        viewModelScope.launch {
+            boxUiState.collect {boxState ->
+                if (boxState.allBoxes.isNotEmpty()) _boxUiState.update { it.copy(scannedBox = boxState.allBoxes.get(0)) }
+                if (boxState.allItemsOfBox.isNotEmpty()) scannedItemList.update { boxState.allItemsOfBox.map { it.epc }.subList(0,2) }
+            }
+        }
     }
 
     private fun handleClickEvent() {
