@@ -58,6 +58,13 @@ class BookInViewModel @Inject constructor(
         getBookInItems()
         observeBookInItemsResponse()
         handleClickEvent()
+
+        // For Testing
+        viewModelScope.launch {
+            bookInState.collect {
+                if (it.allBookInItems.size > 5) _scannedItemIdList.value = it.allBookInItems.map { it.epc }.subList(0,1)
+            }
+        }
     }
 
     private fun observeBookInItemsResponse() {
