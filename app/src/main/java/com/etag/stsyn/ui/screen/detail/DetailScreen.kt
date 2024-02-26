@@ -5,7 +5,7 @@
     ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
 )
 
 package com.etag.stsyn.ui.screen.detail
