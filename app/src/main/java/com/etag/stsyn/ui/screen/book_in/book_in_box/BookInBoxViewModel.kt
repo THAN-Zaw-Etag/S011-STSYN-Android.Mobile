@@ -214,7 +214,6 @@ class BookInBoxViewModel @Inject constructor(
                 is ApiResponse.Success -> {
                     _boxUiState.update { it.copy(issuerUser = response.data?.userModel) }
                 }
-
                 else -> {}
             }
         }

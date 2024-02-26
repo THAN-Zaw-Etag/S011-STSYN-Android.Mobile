@@ -144,11 +144,14 @@ class BookOutViewModel @Inject constructor(
             val user = user.first()
             val currentDate = DateUtil.getCurrentDate()
             bookOutUiState.value.scannedItems.forEach {
-                if (it.calDate != null && it.calDate.isNotEmpty() && it.calDate != Instant.MIN.toString()) {
-                    if (it.calDate!! < currentDate && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
+                if (it.calDate.isNotEmpty() && it.calDate != Instant.MIN.toString()) {
+                    if (it.calDate < currentDate && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
                         setBookOutErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
                         return@launch
                     }
+                } else if (it.calDate.isEmpty()) {
+                    setBookOutErrorMessage("Include invalid calibration date!")
+                    return@launch
                 }
             }
 
