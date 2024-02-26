@@ -69,10 +69,11 @@ fun BookOutBoxCountScreen(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 listItemsIndexed(boxes) { index, item ->
+                    val currentIndex = index + 1
                     key (item.epc){
                         ScannedItem(
                             id = "${item.serialNo} - ${item.itemLocation}",
-                            name = "Box 01 item ${if (index < 10) "0$index" else index}",
+                            name = "Box 01 item ${if (currentIndex < 10) "0${currentIndex}" else currentIndex}",
                             showTrailingIcon = true,
                             onItemClick = {
                                 boxItem = item
