@@ -30,20 +30,21 @@ object DateUtil {
     fun getCurrentDate(): String {
         val currentDateTime = LocalDateTime.now()
 
-        val formattedDateTime = currentDateTime.format(FORMATTER)
-
-        return formattedDateTime
+        return currentDateTime.format(FORMATTER)
     }
 
     fun isUnderCalibrationAlert(calDate: String): Boolean {
-        val currentDate = getCurrentDate()
-        val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        val date1 = LocalDate.parse(calDate, formatter)
-        val date2 = LocalDate.parse(currentDate, formatter)
+        return try {
+            val currentDate = getCurrentDate()
+            val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+            val date1 = LocalDate.parse(calDate, formatter)
+            val date2 = LocalDate.parse(currentDate, formatter)
 
-        val differences = ChronoUnit.DAYS.between(date1,date2)
-        println(differences)
-        return differences <= CALIBRATION_ALERT_DAYS
+            val differences = ChronoUnit.DAYS.between(date1,date2)
+            differences <= CALIBRATION_ALERT_DAYS
+        } catch (e: Exception) {
+            false
+        }
     }
 
     fun getCurrentDateTimeFormattedWithZone(): String {

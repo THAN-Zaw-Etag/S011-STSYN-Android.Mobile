@@ -13,6 +13,7 @@ import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
+import com.tzh.retrofit_module.domain.model.bookIn.safeCopy
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -63,6 +64,15 @@ class BookOutViewModel @Inject constructor(
         getAllBookOutItems()
         handleClickEvent()
         observeBookOutItemsResponse()
+
+        // Testing
+        viewModelScope.launch {
+            bookOutUiState.collect {
+                if (it.allBookOutItems.size > 1) _bookOutUiState.update { uiState ->
+                    uiState.copy(scannedItems = it.allBookOutItems.subList(0,1))
+                }
+            }
+        }
     }
 
     private fun handleClickEvent() {
@@ -101,7 +111,7 @@ class BookOutViewModel @Inject constructor(
             when (_getAllBookOutItemResponse.value) {
                 is ApiResponse.Success -> {
                     val allItems = (_getAllBookOutItemResponse.value as ApiResponse.Success<BookOutResponse>).data?.items ?: emptyList()
-                    _bookOutUiState.update { it.copy( allBookOutItems = allItems ) }
+                    _bookOutUiState.update { it.copy( allBookOutItems = allItems.map { it.safeCopy() } ) }
                 }
 
                 else -> {}
@@ -130,7 +140,7 @@ class BookOutViewModel @Inject constructor(
         _bookOutUiState.update { it.copy(scannedItems = emptyList()) }
     }
 
-    fun isUnderCalibrationAlert(calDate: String) = DateUtil.isUnderCalibrationAlert(calDate)
+    fun isUnderCalibrationAlert(calDate: String?) = if (calDate != null) DateUtil.isUnderCalibrationAlert(calDate) else false
 
     fun removeScannedItem(item: BoxItem){
         val currentList = bookOutUiState.value.scannedItems.toMutableList()
@@ -142,13 +152,17 @@ class BookOutViewModel @Inject constructor(
         viewModelScope.launch {
             val appConfig = settings.first()
             val user = user.first()
+
             val currentDate = DateUtil.getCurrentDate()
             bookOutUiState.value.scannedItems.forEach {
-                if (it.calDate != null && it.calDate.isNotEmpty() && it.calDate != Instant.MIN.toString()) {
-                    if (it.calDate!! < currentDate && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
+                if (it.calDate.isNotEmpty() && it.calDate != Instant.MIN.toString()) {
+                    if (it.calDate < currentDate && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
                         setBookOutErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
                         return@launch
                     }
+                } else if (it.calDate.isEmpty()) {
+                    setBookOutErrorMessage("Include invalid calibration date!")
+                    return@launch
                 }
             }
 
@@ -166,14 +180,6 @@ class BookOutViewModel @Inject constructor(
                 reportType = bookOutUiState.value.purpose,
                 userId = user.userId.toInt()
             )
-
-            /*val  = bookOutUiState.value.scannedItems.toItemMovementLogs(
-                handleHeldId = appConfig.handheldReaderId.toInt(),
-                currentDate = currentDate,
-                userId = user.userId,
-                workLocation = bookOutUiState.value.location,
-                itemStatus = bookOutUiState.value.purpose
-            )*/
 
             val itemMovementLogs = bookOutUiState.value.scannedItems.map { it.toItemMovementLog(
                 readerId = appConfig.handheldReaderId,
