@@ -26,7 +26,7 @@ fun BookInBoxSaveScreen(
 ) {
     val bookInBoxUiState by bookInBoxViewModel.boxUiState.collectAsStateWithLifecycle()
     val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsStateWithLifecycle()
-    val user by bookInBoxViewModel.user.collectAsStateWithLifecycle(LocalUser())
+    val user by bookInBoxViewModel.userFlow.collectAsStateWithLifecycle(LocalUser())
     val saveBookInBoxResponse by bookInBoxViewModel.saveBookInBoxResponse.collectAsStateWithLifecycle()
     var shouldShowRefreshIcon by remember { mutableStateOf(false) }
 

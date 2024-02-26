@@ -125,7 +125,6 @@ object DataSource {
         )
     )
 
-
     val otherTLoanOptions = listOf(
         OptionButtonModel(
             title = OptionType.OtherTLoan.title,

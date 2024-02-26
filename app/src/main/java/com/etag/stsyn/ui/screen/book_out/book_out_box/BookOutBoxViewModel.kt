@@ -8,7 +8,7 @@ import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.screen.book_in.book_in_box.BoxUiState
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
-import com.tzh.retrofit_module.data.mapper.toBookOutBoxItemMovementLog
+import com.tzh.retrofit_module.data.mapper.toItemMovementLog
 import com.tzh.retrofit_module.data.model.book_in.ItemMovementLog
 import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
@@ -177,7 +177,7 @@ class BookOutBoxViewModel @Inject constructor(
             // add scanned items
             itemMovementLogs.addAll(boxUiState.value.allItemsOfBox.filter { it.epc in scannedItemList.value }
                 .map {
-                    it.toBookOutBoxItemMovementLog(
+                    it.toItemMovementLog(
                         readerId = settings.first().handheldReaderId,
                         date = currentDate,
                         issuerId = user.first().userId,
@@ -190,7 +190,7 @@ class BookOutBoxViewModel @Inject constructor(
             // add outstanding items
             itemMovementLogs.addAll(boxUiState.value.allItemsOfBox.filter { it.epc !in scannedItemList.value }
                 .map {
-                    it.toBookOutBoxItemMovementLog(
+                    it.toItemMovementLog(
                         readerId = settings.first().handheldReaderId,
                         date = currentDate,
                         issuerId = user.first().userId,
@@ -202,7 +202,7 @@ class BookOutBoxViewModel @Inject constructor(
 
             if (boxUiState.value.allItemsOfBox.find { it.epc == scannedBox.epc } == null) {
                 itemMovementLogs.add(
-                    scannedBox.toBookOutBoxItemMovementLog(
+                    scannedBox.toItemMovementLog(
                         readerId = settings.first().handheldReaderId,
                         date = currentDate,
                         issuerId = user.first().userId,

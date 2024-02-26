@@ -57,9 +57,7 @@ class BookInBoxViewModel @Inject constructor(
     private var boxItems = MutableStateFlow<List<BoxItem>>(emptyList())  // items from api
     val scannedItemsList = MutableStateFlow<List<String>>(emptyList()) // scanned tag list
 
-    private val getItemsCountNotInBoxResponse = MutableStateFlow<ApiResponse<GetItemsCountNotInBox>>(ApiResponse.Default)
-
-    val user = localDataStore.getUser
+    val userFlow = localDataStore.getUser
     private val appConfig = appConfiguration.appConfig
 
     init {
@@ -185,7 +183,7 @@ class BookInBoxViewModel @Inject constructor(
                     date = currentDate,
                     handheldId = readerId.toInt(),
                     reportType = ItemStatus.BookIn.title,
-                    userId = user.first().userId.toInt()
+                    userId = userFlow.first().userId.toInt()
                 )
             )
 
@@ -289,7 +287,7 @@ class BookInBoxViewModel @Inject constructor(
         viewModelScope.launch {
             _boxItemsForBookInResponse.value = ApiResponse.Loading
             delay(1000)
-            user.collect {
+            userFlow.collect {
                 _boxItemsForBookInResponse.value = bookInRepository.getBoxItemsForBookIn(it.userId)
 
                 when (_boxItemsForBookInResponse.value) {
@@ -316,7 +314,7 @@ class BookInBoxViewModel @Inject constructor(
         status: String,
     ) {
         viewModelScope.launch {
-            user.collect {
+            userFlow.collect {
                 _getAllItemsOfBox.value = ApiResponse.Loading
                 _getAllItemsOfBox.value = bookInRepository.getAllBookItemsOfBox(box = box, status = status)
 

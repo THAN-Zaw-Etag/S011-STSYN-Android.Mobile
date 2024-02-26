@@ -106,7 +106,7 @@ object ScreensDataSource {
     fun bookOutScreens(viewModel: BookOutViewModel) = listOf(
         TabScreen(
             title = "Book out",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_out_tab_icon),
             screen = { BookOutScanScreen(viewModel) }),
         TabScreen(
             title = "Save",
@@ -118,7 +118,7 @@ object ScreensDataSource {
     fun bookOutBoxScreens(viewModel: BookOutBoxViewModel) = listOf(
         TabScreen(
             title = "Book out box",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_out_tab_icon),
             screen = { BookOutBoxScanScreen(viewModel) }),
         TabScreen(
             title = "Count",
@@ -150,7 +150,7 @@ object ScreensDataSource {
     fun bookInBoxScreens(viewModel: BookInBoxViewModel) = listOf(
         TabScreen(
             title = "Book in box",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_in_tab_icon),
             screen = { BookInBoxScanScreen(viewModel) }),
         TabScreen(
             title = "Count",
@@ -166,7 +166,7 @@ object ScreensDataSource {
     fun bookInCalScreens(viewModel: BookInCalViewModel) = listOf(
         TabScreen(
             title = "Book in (cal)",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_in_tab_icon),
             screen = { BookInCalScanScreen(viewModel) }),
         TabScreen(
             title = "Count",
@@ -182,7 +182,7 @@ object ScreensDataSource {
     fun bookInTLoanScreens(viewModel: TLoanViewModel) = listOf(
         TabScreen(
             title = "Book in (T-loan)",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_in_tab_icon),
             screen = { TLoanScanScreen(viewModel) }),
         TabScreen(
             title = "Count",
@@ -198,7 +198,7 @@ object ScreensDataSource {
     fun bookInTLoanBoxScreens(viewModel: TLoanBoxViewModel) = listOf(
         TabScreen(
             title = "in (T-loan box)",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_in_tab_icon),
             screen = { TLoanBoxScanScreen(viewModel) }),
         TabScreen(
             title = "Count",
@@ -214,7 +214,7 @@ object ScreensDataSource {
     fun bookInDetPLoanScreens(viewModel: DetPLoanViewModel) = listOf(
         TabScreen(
             title = "in (det/p-loan)",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_in_tab_icon),
             screen = { DetPLoanScanScreen(viewModel) }),
         TabScreen(
             title = "Count",
@@ -230,7 +230,7 @@ object ScreensDataSource {
     fun bookInDetPLoanBoxScreens(viewModel: DetPLoanBoxViewModel) = listOf(
         TabScreen(
             title = "det/p-loan box",
-            icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
+            icon = CustomIcon.Resource(R.drawable.book_in_tab_icon),
             screen = { DetPLoanBoxScanScreen(viewModel) }),
         TabScreen(
             title = "Count",
@@ -243,7 +243,7 @@ object ScreensDataSource {
         TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
     )
 
-    fun AccountCheckScreens(viewModel: AccountCheckViewModel) = listOf(
+    fun accountCheckScreens(viewModel: AccountCheckViewModel) = listOf(
         TabScreen(
             title = "acct check",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
@@ -259,7 +259,7 @@ object ScreensDataSource {
         TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
     )
 
-    fun OnsiteCheckInOutScreens(viewModel: OnsiteCheckInOutViewModel) = listOf(
+    fun onsiteCheckInOutScreens(viewModel: OnsiteCheckInOutViewModel) = listOf(
         TabScreen(
             title = "check in/out",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
@@ -271,7 +271,7 @@ object ScreensDataSource {
         TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
     )
 
-    fun OnsiteVerificationScreens(viewModel: OnsiteVerificationViewModel) = listOf(
+    fun onsiteVerificationScreens(viewModel: OnsiteVerificationViewModel) = listOf(
         TabScreen(
             title = "onsite verify",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
@@ -287,7 +287,7 @@ object ScreensDataSource {
         TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
     )
 
-    fun OnsiteTLoanScreens(viewModel: OtherTLoanOutViewModel) = listOf(
+    fun onsiteTLoanScreens(viewModel: OtherTLoanOutViewModel) = listOf(
         TabScreen(
             title = "t-loan out",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
@@ -299,7 +299,7 @@ object ScreensDataSource {
         TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
     )
 
-    fun OnsiteTLoanBoxScreens(viewModel: OtherTLoanOutBoxViewModel) = listOf(
+    fun onsiteTLoanBoxScreens(viewModel: OtherTLoanOutBoxViewModel) = listOf(
         TabScreen(
             title = "t-loan box",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
@@ -315,7 +315,7 @@ object ScreensDataSource {
         TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
     )
 
-    fun OnsiteDetPScreens(viewModel: OtherDetPLoanViewModel) = listOf(
+    fun onsiteDetPScreens(viewModel: OtherDetPLoanViewModel) = listOf(
         TabScreen(
             title = "det/p-loan",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
@@ -327,7 +327,7 @@ object ScreensDataSource {
         TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
     )
 
-    fun OnsiteDetPLoanBoxScreens(viewModel: OtherDetPLoanBoxViewModel) = listOf(
+    fun onsiteDetPLoanBoxScreens(viewModel: OtherDetPLoanBoxViewModel) = listOf(
         TabScreen(
             title = "det/p-loan box",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
@@ -358,13 +358,13 @@ fun getScreensByOptionType(optionType: OptionType, viewModel: BaseViewModel): Li
         OptionType.BookOut -> ScreensDataSource.bookOutScreens(viewModel as BookOutViewModel)
         OptionType.BookOutBox -> ScreensDataSource.bookOutBoxScreens(viewModel as BookOutBoxViewModel)
 
-        OptionType.AccountCheck -> ScreensDataSource.AccountCheckScreens(viewModel as AccountCheckViewModel)
+        OptionType.AccountCheck -> ScreensDataSource.accountCheckScreens(viewModel as AccountCheckViewModel)
 
-        OptionType.OnsiteCheckInOut -> ScreensDataSource.OnsiteCheckInOutScreens(viewModel as OnsiteCheckInOutViewModel)
-        OptionType.OnsiteVerification -> ScreensDataSource.OnsiteVerificationScreens(viewModel as OnsiteVerificationViewModel)
-        OptionType.OtherTLoan -> ScreensDataSource.OnsiteTLoanScreens(viewModel as OtherTLoanOutViewModel)
-        OptionType.OtherTLoanBox -> ScreensDataSource.OnsiteTLoanBoxScreens(viewModel as OtherTLoanOutBoxViewModel)
-        OptionType.OtherDetPLoan -> ScreensDataSource.OnsiteDetPScreens(viewModel as OtherDetPLoanViewModel)
-        OptionType.OtherDetPLoanBox -> ScreensDataSource.OnsiteDetPLoanBoxScreens(viewModel as OtherDetPLoanBoxViewModel)
+        OptionType.OnsiteCheckInOut -> ScreensDataSource.onsiteCheckInOutScreens(viewModel as OnsiteCheckInOutViewModel)
+        OptionType.OnsiteVerification -> ScreensDataSource.onsiteVerificationScreens(viewModel as OnsiteVerificationViewModel)
+        OptionType.OtherTLoan -> ScreensDataSource.onsiteTLoanScreens(viewModel as OtherTLoanOutViewModel)
+        OptionType.OtherTLoanBox -> ScreensDataSource.onsiteTLoanBoxScreens(viewModel as OtherTLoanOutBoxViewModel)
+        OptionType.OtherDetPLoan -> ScreensDataSource.onsiteDetPScreens(viewModel as OtherDetPLoanViewModel)
+        OptionType.OtherDetPLoanBox -> ScreensDataSource.onsiteDetPLoanBoxScreens(viewModel as OtherDetPLoanBoxViewModel)
     }
 }

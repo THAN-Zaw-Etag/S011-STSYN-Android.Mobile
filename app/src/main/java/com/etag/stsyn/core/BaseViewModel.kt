@@ -19,8 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(
-    private val rfidHandler: ZebraRfidHandler,
-    private val TAG: String = "Base Viewmodel"
+    private val rfidHandler: ZebraRfidHandler, private val TAG: String = "Base Viewmodel"
 ) : ViewModel(), RfidResponseHandlerInterface {
 
     private val _rfidUiState = MutableStateFlow(RfidUiState())
@@ -30,7 +29,8 @@ abstract class BaseViewModel(
     val detailUiState: StateFlow<DetailUiState> = _detailUiState.asStateFlow()
 
     private val _showAuthorizationFailedDialog = MutableStateFlow(false)
-    val showAuthorizationFailedDialog: StateFlow<Boolean> = _showAuthorizationFailedDialog.asStateFlow()
+    val showAuthorizationFailedDialog: StateFlow<Boolean> =
+        _showAuthorizationFailedDialog.asStateFlow()
 
     private val _clickEventFlow = MutableSharedFlow<ClickEvent>()
     val clickEventFlow: SharedFlow<ClickEvent> = _clickEventFlow.asSharedFlow()
@@ -52,7 +52,7 @@ abstract class BaseViewModel(
         }
     }
 
-    fun updateSuccessDialogVisibility(visible: Boolean){
+    fun updateSuccessDialogVisibility(visible: Boolean) {
         _detailUiState.update { it.copy(showSuccessDialog = visible) }
     }
 
@@ -66,7 +66,9 @@ abstract class BaseViewModel(
      * Handle api response state and update loading , error dialogs states.
      * @see delay not to show loading dialog immediately
      * @see disableScan disable scan while loading*/
-    protected suspend fun <T> handleDialogStatesByResponse(response: ApiResponse<T>, shouldShowSuccessDialog: Boolean = false) {
+    protected suspend fun <T> handleDialogStatesByResponse(
+        response: ApiResponse<T>, shouldShowSuccessDialog: Boolean = false
+    ) {
         when (response) {
             is ApiResponse.Loading -> {
                 delay(400)
@@ -74,29 +76,35 @@ abstract class BaseViewModel(
                 toggleLoadingVisibility(true)
                 disableScan()
             }
+
             is ApiResponse.Success -> {
                 toggleLoadingVisibility(false)
                 updateErrorMessage("")
                 updateSuccessDialogVisibility(shouldShowSuccessDialog)
                 enableScan()
             }
+
             is ApiResponse.ApiError -> {
                 toggleLoadingVisibility(false)
                 updateErrorMessage(response.message)
             }
+
             is ApiResponse.AuthorizationError -> {
                 toggleLoadingVisibility(false)
                 updateErrorMessage("")
                 shouldShowAuthorizationFailedDialog(true)
             }
+
             else -> {}
         }
     }
 
-    fun updateErrorMessage(message: String) {
+    private fun updateErrorMessage(message: String) {
         _detailUiState.update { it.copy(message = message) }
     }
 
+    /** Update reader scan type [ScanType.Multi] or [ScanType.Single]
+     * */
     fun updateScanType(scanType: ScanType) {
         _rfidUiState.update {
             it.copy(scanType = scanType)
@@ -113,11 +121,6 @@ abstract class BaseViewModel(
         _rfidUiState.update {
             it.copy(scannedItems = mutableListOf())
         }
-    }
-
-    // to initialize reader when needed
-    fun onCreate() {
-        viewModelScope.launch { rfidHandler.onCreate() }
     }
 
     fun connectReader() {
@@ -214,8 +217,7 @@ abstract class BaseViewModel(
                     it.copy(batteryLevel = batteryLevel, isConnected = true)
                 }
             }
-        }
-        )
+        })
     }
 
     abstract fun onReceivedTagId(id: String)
@@ -271,9 +273,10 @@ abstract class BaseViewModel(
     }
 
 }
+
 sealed class ClickEvent {
     data object ClickAfterSave : ClickEvent()
     data object ClickToNavigateHome : ClickEvent()
-    data object RetryClick: ClickEvent()
-    data object Default: ClickEvent()
+    data object RetryClick : ClickEvent()
+    data object Default : ClickEvent()
 }

@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -70,14 +71,16 @@ fun DropDown(
                 onDismissRequest = { expanded = false }
             ) {
                 items.forEach { item ->
-                    DropdownMenuItem(
-                        text = { Text(text = item,  maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                        onClick = {
-                            onSelected(item)
-                            selectedText = item
-                            expanded = false
-                        }
-                    )
+                    key (item) {
+                        DropdownMenuItem(
+                            text = { Text(text = item,  maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            onClick = {
+                                onSelected(item)
+                                selectedText = item
+                                expanded = false
+                            }
+                        )
+                    }
                 }
             }
         }

@@ -6,7 +6,7 @@ import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
-import com.tzh.retrofit_module.data.mapper.toBookOutBoxItemMovementLog
+import com.tzh.retrofit_module.data.mapper.toItemMovementLog
 import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
@@ -131,7 +131,7 @@ class BookInViewModel @Inject constructor(
             )
 
             val itemMovementLogs = bookInState.value.allBookInItems.map { item ->
-                item.toBookOutBoxItemMovementLog(
+                item.toItemMovementLog(
                     itemStatus = ItemStatus.BookIn.name,
                     workLocation = "",
                     issuerId = item.issuerId,

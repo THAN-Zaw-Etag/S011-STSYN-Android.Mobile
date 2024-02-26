@@ -7,6 +7,7 @@ import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.enums.Purpose
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
+import com.tzh.retrofit_module.data.mapper.toItemMovementLog
 import com.tzh.retrofit_module.data.mapper.toItemMovementLogs
 import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
@@ -19,6 +20,7 @@ import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -93,17 +95,13 @@ class BookOutViewModel @Inject constructor(
 
     private fun getAllBookOutItems() {
         viewModelScope.launch {
-            user.collect {
-                Log.d(TAG, "getAllBookOutItems: ${it.token}")
-            }
             _getAllBookOutItemResponse.value = ApiResponse.Loading
+            delay(500)
             _getAllBookOutItemResponse.value = bookOutRepository.getAllBookOutItems()
             when (_getAllBookOutItemResponse.value) {
                 is ApiResponse.Success -> {
-                    val allItems =
-                        (_getAllBookOutItemResponse.value as ApiResponse.Success<BookOutResponse>).data?.items
-                            ?: emptyList()
-                    _bookOutUiState.update { it.copy(allBookOutItems = allItems) }
+                    val allItems = (_getAllBookOutItemResponse.value as ApiResponse.Success<BookOutResponse>).data?.items ?: emptyList()
+                    _bookOutUiState.update { it.copy( allBookOutItems = allItems ) }
                 }
 
                 else -> {}
@@ -169,13 +167,21 @@ class BookOutViewModel @Inject constructor(
                 userId = user.userId.toInt()
             )
 
-            val itemMovementLogs = bookOutUiState.value.scannedItems.toItemMovementLogs(
+            /*val  = bookOutUiState.value.scannedItems.toItemMovementLogs(
                 handleHeldId = appConfig.handheldReaderId.toInt(),
                 currentDate = currentDate,
                 userId = user.userId,
                 workLocation = bookOutUiState.value.location,
                 itemStatus = bookOutUiState.value.purpose
-            )
+            )*/
+
+            val itemMovementLogs = bookOutUiState.value.scannedItems.map { it.toItemMovementLog(
+                readerId = appConfig.handheldReaderId,
+                date = currentDate,
+                issuerId = user.userId,
+                workLocation = bookOutUiState.value.location,
+                itemStatus = bookOutUiState.value.purpose
+            ) }
 
             _saveBookOutBoxesResponse.value = bookOutRepository.saveBookOutItems(
                 SaveBookInRequest(

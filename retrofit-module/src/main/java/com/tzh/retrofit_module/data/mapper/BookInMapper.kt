@@ -2,38 +2,8 @@ package com.tzh.retrofit_module.data.mapper
 
 import com.tzh.retrofit_module.data.model.book_in.ItemMovementLog
 import com.tzh.retrofit_module.domain.model.ExpandedScannedItemModel
-import com.tzh.retrofit_module.domain.model.bookIn.BookInItem
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.enum.ItemStatus
-import com.tzh.retrofit_module.util.DateUtil
-
-/**
- * For Book In
- * */
-fun List<BookInItem>.toItemMovementLog(
-    handleHeldId: Int
-): List<ItemMovementLog> {
-    val currentDate = DateUtil.getCurrentDate()
-    return map {
-        ItemMovementLog(
-            itemId = it.id,
-            description = it.description,
-            itemStatus = ItemStatus.BookIn.title,
-            workLoc = it.workLocation,
-            issuerId = 0,
-            receiverId = it.receiverId,
-            approverId = 0,
-            date = currentDate,
-            handheldReaderId = handleHeldId,
-            calDate = it.calDate, //TODO it.calDate
-            iS_ONSITE_TRANSFER = "0",
-            remarks = it.remarks,
-            receiverName = "",
-            buddyId = "0",
-            itemType = it.itemType
-        )
-    }
-}
 
 fun List<BoxItem>.toItemMovementLogs(
     handleHeldId: Int,
@@ -63,14 +33,14 @@ fun List<BoxItem>.toItemMovementLogs(
     }
 }
 
-fun BoxItem.toBookOutBoxItemMovementLog(
+fun BoxItem.toItemMovementLog(
     itemStatus: String,
     workLocation: String,
     issuerId: String,
     date: String,
     readerId: String,
-    visualChecked: Boolean,
-
+    buddyId: String = "0",
+    visualChecked: Boolean = false,
 ): ItemMovementLog {
     return ItemMovementLog(
             itemId = this.id.toInt(),
@@ -86,7 +56,7 @@ fun BoxItem.toBookOutBoxItemMovementLog(
             iS_ONSITE_TRANSFER = "0",
             remarks = if (visualChecked) "Visual Check" else "",
             receiverName = "",
-            buddyId = "0",
+            buddyId = buddyId,
             itemType = this.itemType
         )
 }
@@ -107,7 +77,7 @@ fun List<BoxItem>.toItemMovementLogs(
             itemId = it.id.toInt(),
             description = it.description,
             itemStatus = itemStatus.title,
-            workLoc = "",
+            workLoc = it.workLocation,
             issuerId = it.issuerId.toInt(),
             receiverId = it.receiverId.toInt(),
             approverId = 0,
@@ -121,17 +91,6 @@ fun List<BoxItem>.toItemMovementLogs(
             itemType = it.itemType
         )
     }
-}
-
-fun BookInItem.toExpandedScannedItems(): ExpandedScannedItemModel {
-    return ExpandedScannedItemModel(
-        serialNo = "${this.id} - ${this.partNo}",
-        description = this.description,
-        code = this.unit,
-        location = this.itemLocation,
-        storeLocation = this.storeLocation,
-        status = ItemStatus.BookIn.title
-    )
 }
 
 fun BoxItem.toExpandedScannedItems(): ExpandedScannedItemModel {

@@ -51,9 +51,9 @@ private fun BookOutBoxItem(
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .background(color = Purple80.copy(0.1f), shape = RoundedCornerShape(8.dp))
             .padding(16.dp)
-            .clickable { },
     ) {
         Row(
             modifier = modifier.fillMaxWidth(),
