@@ -64,7 +64,6 @@ fun BookOutSaveScreen(
 
         is ApiResponse.Success -> {
             shouldShowWarningDialog = false
-            bookOutViewModel.updateSuccessDialogVisibility(true)
         }
 
         is ApiResponse.ApiError -> {

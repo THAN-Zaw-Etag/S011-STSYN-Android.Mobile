@@ -69,7 +69,7 @@ class BookOutViewModel @Inject constructor(
         viewModelScope.launch {
             bookOutUiState.collect {
                 if (it.allBookOutItems.size > 1) _bookOutUiState.update { uiState ->
-                    uiState.copy(scannedItems = it.allBookOutItems.subList(0,1))
+                    uiState.copy(scannedItems = listOf(it.allBookOutItems[0].copy(calDate = "2024-02-05T16:10:38.21")))
                 }
             }
         }
@@ -197,7 +197,9 @@ class BookOutViewModel @Inject constructor(
             )
 
             when (_saveBookOutBoxesResponse.value) {
-                is ApiResponse.Success -> updateSuccessDialogVisibility(true)
+                is ApiResponse.Success -> {
+                    updateSuccessDialogVisibility(true)
+                }
                 else -> {}
             }
         }

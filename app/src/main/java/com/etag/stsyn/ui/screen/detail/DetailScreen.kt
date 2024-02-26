@@ -69,7 +69,6 @@ fun DetailScreen(
 
     var showTabBar by remember { mutableStateOf(false) }
     var options = TabUtil.getTabDetails(optionType)
-    var exitTitle = options.get(options.size - 1).title
     var tabTitle by remember { mutableStateOf(options.get(0).title) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var oldSelectedIndex by remember { mutableStateOf(0) }
