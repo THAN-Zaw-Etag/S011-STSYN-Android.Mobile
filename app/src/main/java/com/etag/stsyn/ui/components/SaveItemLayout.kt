@@ -24,11 +24,11 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun SaveItemLayout(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     itemTitle: String,
     showRefreshIcon: Boolean = false,
     onRefresh: () -> Unit = {},
-    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Column(modifier = modifier) {

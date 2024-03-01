@@ -58,9 +58,8 @@ data class BoxItem(
     val vendor: String = "",
     val workLocation: String = "",
     var isScanned:Boolean = false
-){
+)
 
-}
 fun BoxItem.safeCopy(
     actualCalDate: String? = this.actualCalDate,
     airbase: String? = this.airbase,

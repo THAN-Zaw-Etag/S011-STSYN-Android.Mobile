@@ -20,11 +20,9 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun ProfileTextButton(
+    modifier: Modifier = Modifier,
     text: String,
     onOptionClick: () -> Unit,
-    modifier: Modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp)
 ) {
     Card(
         onClick = onOptionClick,
@@ -38,7 +36,9 @@ fun ProfileTextButton(
             color = Purple80,
             textAlign = TextAlign.Start,
             style = MaterialTheme.typography.titleLarge,
-            modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp, horizontal = 16.dp)
         )
     }
 }

@@ -37,6 +37,7 @@ import com.etag.stsyn.util.TransitionUtil
 
 @Composable
 fun STSYNTExtField(
+    modifier: Modifier = Modifier,
     value: String,
     label: @Composable () -> Unit,
     trailingIcon: @Composable (() -> Unit)? = null,
@@ -54,7 +55,6 @@ fun STSYNTExtField(
     shape: Shape = OutlinedTextFieldDefaults.shape,
     colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
     enabled: Boolean = true,
-    modifier: Modifier = Modifier
 ) {
     var text by remember { mutableStateOf(value) }
     var isFocused by remember { mutableStateOf(true) }
@@ -79,12 +79,13 @@ fun STSYNTExtField(
         keyboardOptions = keyboardOptions,
         interactionSource = interactionSource,
     ) { innerTextField ->
-        TextFieldDefaults.OutlinedTextFieldDecorationBox(
+        OutlinedTextFieldDefaults.DecorationBox(
             value = text,
             innerTextField = {},
             enabled = enabled,
             singleLine = singleLine,
-            placeholder = placeholder,
+            visualTransformation = visualTransformation,
+            interactionSource = interactionSource,
             label = {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxHeight()) {
                     AnimatedVisibility(
@@ -96,10 +97,14 @@ fun STSYNTExtField(
                     }
                 }
             },
-            visualTransformation = visualTransformation,
-            interactionSource = interactionSource,
+            placeholder = placeholder,
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
+            colors = OutlinedTextFieldDefaults.colors(),
+            contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(
+                top = 0.dp,
+                bottom = 0.dp,
+            ),
             container = {
                 OutlinedTextFieldDefaults.ContainerBox(
                     enabled,
@@ -109,10 +114,6 @@ fun STSYNTExtField(
                     shape
                 )
             },
-            contentPadding = TextFieldDefaults.textFieldWithoutLabelPadding(
-                top = 0.dp,
-                bottom = 0.dp
-            )
         )
         Box (modifier = Modifier
             .fillMaxHeight()

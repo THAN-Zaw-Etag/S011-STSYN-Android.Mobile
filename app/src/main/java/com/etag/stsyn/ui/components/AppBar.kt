@@ -56,10 +56,10 @@ fun AppBar(
 @Composable
 fun UserNameShortcutIcon(
     name: String,
-    modifier: Modifier = Modifier.padding(16.dp)
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.padding(16.dp),
         colors = CardDefaults.cardColors(containerColor = Purple80)
     ) {
         Text(

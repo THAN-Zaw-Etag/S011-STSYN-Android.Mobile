@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 
-class DWInterface() {
+class DWInterface {
     companion object {
 
         const val DATAWEDGE_SEND_ACTION = "com.symbol.datawedge.api.ACTION"

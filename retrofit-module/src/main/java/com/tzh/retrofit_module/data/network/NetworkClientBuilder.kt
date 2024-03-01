@@ -1,5 +1,6 @@
 package com.tzh.retrofit_module.data.network
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.repository.TokenRepository
@@ -19,7 +20,9 @@ class NetworkClientBuilder(
     private val baseUrlProvider: BaseUrlProvider
 ) {
     fun build(): OkHttpClient {
-        val trustManager = object : X509TrustManager {
+        val trustManager = @SuppressLint("CustomX509TrustManager")
+        object : X509TrustManager {
+            @SuppressLint("TrustAllX509TrustManager")
             override fun checkClientTrusted(
                 chain: Array<out java.security.cert.X509Certificate>?,
                 authType: String?

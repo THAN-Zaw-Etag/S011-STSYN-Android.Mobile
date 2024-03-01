@@ -191,7 +191,7 @@ fun DetailScreen(
 
                         if (canBeSelected) oldSelectedIndex = index
                         // check whether current tab item is exit tab
-                        if (title.equals(options.get(options.size - 1).title)) {
+                        if (title == options.get(options.size - 1).title) {
                             showConfirmationDialog = true
                         }
                     })

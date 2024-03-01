@@ -38,6 +38,7 @@ import com.etag.stsyn.ui.theme.Purple80
  * */
 @Composable
 fun ConfirmationDialog(
+    modifier: Modifier = Modifier,
     showDialog: Boolean,
     title: String,
     cancelTitle: String,
@@ -45,7 +46,6 @@ fun ConfirmationDialog(
     onDismiss: () -> Unit = {},
     onCancelClick: () -> Unit,
     onConfirmClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     var openDialog by remember { mutableStateOf(showDialog) }
 

@@ -36,6 +36,7 @@ import com.etag.stsyn.ui.states.rememberMutableDialogState
 
 @Composable
 fun WarningDialog(
+    modifier: Modifier = Modifier,
     icon: CustomIcon,
     dialogState: MutableDialogState<String>,
     color: Color = MaterialTheme.colorScheme.primary,
@@ -44,7 +45,6 @@ fun WarningDialog(
     negativeButtonTitle: String = "",
     onNegativeButtonClick: () -> Unit = {},
     onPositiveButtonClick: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
 
     if (dialogState.isVisible.value) {

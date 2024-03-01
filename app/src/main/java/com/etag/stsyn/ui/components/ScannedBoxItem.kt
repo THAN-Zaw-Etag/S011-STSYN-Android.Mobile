@@ -26,11 +26,11 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun ScannedBoxItem(
+    modifier: Modifier = Modifier,
     boxTitle: String,
     boxDescription: String,
     showRefreshIcon: Boolean = false,
     onRefresh: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier

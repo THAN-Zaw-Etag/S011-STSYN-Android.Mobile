@@ -27,9 +27,9 @@ import com.etag.stsyn.util.customShadow
 
 @Composable
 fun ScanIconButton(
+    modifier: Modifier = Modifier,
     isScanning: Boolean = false,
     onScan: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val animatedColor by animateColorAsState(
         targetValue = if (isScanning) SuccessColor else Color.Transparent, animationSpec = spring(

@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleDown
 import androidx.compose.material.icons.filled.ArrowCircleUp
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Save
@@ -150,7 +149,7 @@ object DataSource {
     val tabOptions = listOf(
         TabOption(title = "COUNT", icon = CustomIcon.Resource(R.drawable.tally)),
         TabOption(title = "SAVE", icon = CustomIcon.Vector(Icons.Default.Save)),
-        TabOption(title = "EXIT", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabOption(title = "EXIT", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     val filters = listOf(

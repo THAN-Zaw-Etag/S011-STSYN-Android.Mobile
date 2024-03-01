@@ -22,10 +22,10 @@ import com.etag.stsyn.ui.components.ScanIconButton
 
 @Composable
 fun BaseSaveScreen(
+    modifier: Modifier = Modifier,
     isError: Boolean,
     isUsCase: Boolean = false,
     errorMessage: String = "",
-    modifier: Modifier = Modifier,
     onSave: () -> Unit,
     onScan: () -> Unit = {},
     content: @Composable () -> Unit

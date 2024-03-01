@@ -17,6 +17,7 @@ object ApiResponseHandler {
         return try {
             val response = makeApiCall()
             delay(1000)
+
             if (response.isSuccessful) {
                 val normalResponse = getNormalResponseFromApiResponse(response.body().toString())
                 val normalResponseError = normalResponse.error ?: "Unknown error"

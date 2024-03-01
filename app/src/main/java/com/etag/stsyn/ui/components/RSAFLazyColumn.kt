@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -46,6 +47,7 @@ fun <T> LazyListScope.listItemsIndexed(
     }
 }
 
+@SuppressLint("ComposableNaming")
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun test() {

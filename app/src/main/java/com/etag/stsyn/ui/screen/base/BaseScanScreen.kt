@@ -29,11 +29,11 @@ const val TAG = "BaseScanScreen"
 
 @Composable
 fun BaseScanScreen(
+    modifier: Modifier = Modifier,
     scannedItemCount: Int,
     isScanning: Boolean = false,
     onScan: () -> Unit,
     onClear: () -> Unit,
-    modifier: Modifier = Modifier,
     scanContent: @Composable () -> Unit
 ) {
 

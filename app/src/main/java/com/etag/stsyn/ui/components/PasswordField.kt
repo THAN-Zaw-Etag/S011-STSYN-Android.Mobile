@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -41,6 +42,7 @@ import com.etag.stsyn.ui.theme.errorColor
 
 @Composable
 fun PasswordField(
+    modifier: Modifier = Modifier,
     isError: Boolean,
     onValueChange: (String) -> Unit,
     hint: String,
@@ -48,7 +50,6 @@ fun PasswordField(
     borderColor: Color = MaterialTheme.colorScheme.primary,
     showVisibilityIcon: Boolean = true,
     onSubmit: (String) -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
 
     var showError by remember { mutableStateOf(false) }
@@ -67,7 +68,7 @@ fun PasswordField(
             .fillMaxWidth(),
         shape = RoundedCornerShape(cornerRadius),
         maxLines = 1,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = if (showError) errorColor else borderColor,
             unfocusedBorderColor = if (showError) errorColor else borderColor,
         ),

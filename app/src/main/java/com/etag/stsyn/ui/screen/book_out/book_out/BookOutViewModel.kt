@@ -201,7 +201,7 @@ class BookOutViewModel @Inject constructor(
                 if (scannedItem != null) {
                     _bookOutUiState.update {
                         val updatedItems = it.scannedItems.toMutableList()
-                        updatedItems.add(scannedItem!!)
+                        updatedItems.add(scannedItem)
                         it.copy(scannedItems = updatedItems)
                     }
                 }

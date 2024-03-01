@@ -38,7 +38,7 @@ class TokenRefreshWorker @AssistedInject constructor(
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 "api_token_refresh_worker",
-                ExistingPeriodicWorkPolicy.REPLACE,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 periodicWork
             )
         }

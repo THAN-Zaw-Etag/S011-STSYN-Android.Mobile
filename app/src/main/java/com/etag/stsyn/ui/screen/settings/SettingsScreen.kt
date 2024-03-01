@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AdfScanner
 import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.NotListedLocation
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Store
@@ -151,7 +150,7 @@ fun SettingsScreen(
         )
 
         SettingItem(
-            icon = Icons.Default.NotListedLocation,
+            icon = Icons.AutoMirrored.Filled.NotListedLocation,
             title = "Need Location",
             description = "Enable location if required",
             clickable = false,
@@ -195,10 +194,13 @@ private fun UpdateSettingItemDialog(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(24.dp))
+                    val containerColor = MaterialTheme.colorScheme.primary.copy(0.1f)
                     TextField(
                         value = inputValue,
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = MaterialTheme.colorScheme.primary.copy(0.1f)
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = containerColor,
+                            unfocusedContainerColor = containerColor,
+                            disabledContainerColor = containerColor,
                         ),
                         onValueChange = { inputValue = it },
                         modifier = Modifier.fillMaxWidth()
@@ -224,11 +226,11 @@ private fun UpdateSettingItemDialog(
 
 @Composable
 private fun SettingItem(
+    modifier: Modifier = Modifier,
     icon: ImageVector,
     title: String,
     value: String = "",
     description: String,
-    modifier: Modifier = Modifier,
     clickable: Boolean = true,
     onUpdateClick: (String) -> Unit = {},
     trailingIcon: @Composable () -> Unit = {}

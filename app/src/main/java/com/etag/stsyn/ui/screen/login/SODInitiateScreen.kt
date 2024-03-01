@@ -74,5 +74,5 @@ fun SODInitiateScreen(
 @Composable
 @Preview(showBackground = true)
 fun SODInitiateScreenPreview(modifier: Modifier = Modifier) {
-    SODInitiateScreen() {}
+    SODInitiateScreen {}
 }

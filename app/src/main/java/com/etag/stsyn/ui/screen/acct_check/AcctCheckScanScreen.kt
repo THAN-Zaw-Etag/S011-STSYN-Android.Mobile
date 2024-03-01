@@ -156,7 +156,7 @@ private fun AcctCheckContent(
             value = it.selectedOption
         )
     }
-    ScanBoxSection(boxItem.id ?: "", boxItem.description ?: "")
+    ScanBoxSection(boxItem.id, boxItem.description)
     Row(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.weight(1f)) {
             DetailItem(title = "Total", value = total.toString())
@@ -205,7 +205,7 @@ private fun ScanBoxSection(
 private fun DetailItem(
     title: String,
     value: String,
-    modifier: Modifier = Modifier.padding(vertical = 4.dp)
+    modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         Text(text = title, modifier = Modifier.weight(0.4f))

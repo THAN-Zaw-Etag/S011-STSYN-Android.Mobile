@@ -15,11 +15,11 @@ import com.etag.stsyn.util.datasource.OptionButtonModel
 
 @Composable
 fun OptionsButtonRow(
+    modifier: Modifier = Modifier,
     text: String,
     optionPairs: HashMap<String, Boolean> = hashMapOf(),
     optionButtonModels: List<OptionButtonModel>,
     onOptionItemClick: (String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
 
     Column(modifier = modifier) {

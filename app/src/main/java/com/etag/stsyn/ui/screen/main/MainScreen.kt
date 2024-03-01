@@ -96,10 +96,10 @@ fun MainScreen(
 
 @Composable
 private fun CategoryItem(
+    modifier: Modifier = Modifier,
     category: OptionButtonModel,
     enabled: Boolean = true,
     onCategoryItemClick: (String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Card(
         onClick = { onCategoryItemClick(category.route) },

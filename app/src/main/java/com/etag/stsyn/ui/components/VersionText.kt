@@ -12,8 +12,8 @@ import com.etag.stsyn.util.AppUtil
 
 @Composable
 fun VersionText(
+    modifier: Modifier = Modifier,
     color: Color = Color.Gray,
-    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     Text(

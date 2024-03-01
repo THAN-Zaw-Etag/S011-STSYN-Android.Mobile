@@ -66,6 +66,7 @@ import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 
 @Composable
 fun BaseBoxScreen(
+    modifier: Modifier = Modifier,
     bookItems: List<BoxItem>,
     boxes: List<BoxItem> = emptyList(), //TODO Need to remove empty list later
     scannedItemList: List<String> = emptyList(),
@@ -78,7 +79,6 @@ fun BaseBoxScreen(
     onRefresh: () -> Unit = {},
     onCheckChange: (Boolean) -> Unit = {},
     showBoxBookOutButton: Boolean = false,
-    modifier: Modifier = Modifier
 ) {
     var items by remember { mutableStateOf(listOf<BoxItem>()) }
     var show by remember { mutableStateOf(false) }
@@ -235,9 +235,9 @@ fun BottomScannedButtonLayout(
 
 @Composable
 private fun ScannedItemsOptionLayout(
+    modifier: Modifier = Modifier,
     itemCount: Int,
     isScanned: Boolean = false,
-    modifier: Modifier = Modifier,
     checked: Boolean,
     onCheckChange: (Boolean) -> Unit,
     onReset: () -> Unit,

@@ -40,7 +40,6 @@ fun DetPLoanSwipeableItem(
     var swipeable by remember { mutableStateOf(false) }
 
     LaunchedEffect(swipeable) {
-        swipeable = swipeable
     }
 
     val state = rememberDismissState(initialValue = DismissValue.Default, confirmValueChange = {

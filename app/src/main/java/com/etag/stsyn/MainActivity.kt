@@ -1,5 +1,6 @@
 package com.etag.stsyn
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
         const val TAG = "MainActivity"
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

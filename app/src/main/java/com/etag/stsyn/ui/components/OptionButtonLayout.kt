@@ -19,10 +19,10 @@ import com.etag.stsyn.util.datasource.OptionButtonModel
 
 @Composable
 fun OptionButtonLayout(
+    modifier: Modifier = Modifier,
     showButton: Boolean = true,
     optionButtonModel: OptionButtonModel,
     onOptionButtonClick: (String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Card(
         enabled = showButton,

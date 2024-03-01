@@ -2,7 +2,6 @@ package com.etag.stsyn.util.datasource
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -112,7 +111,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { BookOutSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun bookOutBoxScreens(viewModel: BookOutBoxViewModel) = listOf(
@@ -128,7 +127,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { BookOutBoxSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun bookInScreens(viewModel: BookInViewModel) = listOf(
@@ -144,7 +143,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { BookInSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun bookInBoxScreens(viewModel: BookInBoxViewModel) = listOf(
@@ -160,7 +159,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { BookInBoxSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun bookInCalScreens(viewModel: BookInCalViewModel) = listOf(
@@ -176,7 +175,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { BookInCalSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun bookInTLoanScreens(viewModel: TLoanViewModel) = listOf(
@@ -192,7 +191,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { TLoanSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun bookInTLoanBoxScreens(viewModel: TLoanBoxViewModel) = listOf(
@@ -208,7 +207,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { TLoanBoxSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun bookInDetPLoanScreens(viewModel: DetPLoanViewModel) = listOf(
@@ -224,7 +223,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { DetPLoanSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun bookInDetPLoanBoxScreens(viewModel: DetPLoanBoxViewModel) = listOf(
@@ -240,7 +239,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { DetPLoanBoxSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun accountCheckScreens(viewModel: AccountCheckViewModel) = listOf(
@@ -256,7 +255,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { AcctCheckSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun onsiteCheckInOutScreens(viewModel: OnsiteCheckInOutViewModel) = listOf(
@@ -268,7 +267,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { CheckInOutSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun onsiteVerificationScreens(viewModel: OnsiteVerificationViewModel) = listOf(
@@ -284,7 +283,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { OnsiteVerificationSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun onsiteTLoanScreens(viewModel: OtherTLoanOutViewModel) = listOf(
@@ -296,7 +295,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { OtherTLoanOutSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun onsiteTLoanBoxScreens(viewModel: OtherTLoanOutBoxViewModel) = listOf(
@@ -312,7 +311,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { OtherTLoanOutBoxSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun onsiteDetPScreens(viewModel: OtherDetPLoanViewModel) = listOf(
@@ -324,7 +323,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { OtherDetPLoanOutSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
     fun onsiteDetPLoanBoxScreens(viewModel: OtherDetPLoanBoxViewModel) = listOf(
@@ -340,7 +339,7 @@ object ScreensDataSource {
             title = "Save",
             icon = CustomIcon.Vector(Icons.Default.Save),
             screen = { OtherDetPLoanOutBoxSaveScreen(viewModel) }),
-        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.Default.ExitToApp)),
+        TabScreen(title = "Exit", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
 }
