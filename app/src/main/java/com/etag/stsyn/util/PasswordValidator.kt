@@ -12,7 +12,8 @@ object PasswordValidator {
      * @return Any three of true conditions*/
     fun validatePassword(password: String): List<String> {
 
-        if (password.length < 12) return listOf("Password must contain at least 12 characters.")  // error message list size = 0 means valid password
+        //TODO confirm this password length in future
+       // if (password.length < 12) return listOf("Password must contain at least 12 characters.")  // error message list size = 0 means valid password
 
         var upperCaseCondition =
             PasswordCondition(false, "Password must contain at least one uppercase letter.")
