@@ -1,6 +1,7 @@
 package com.etag.stsyn.util.datasource
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.runtime.Composable

@@ -1,18 +1,21 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
-
 package com.etag.stsyn.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.DismissDirection
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.DismissState
+
 import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SwipeToDismiss
+
+
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +31,7 @@ import com.kevinnzou.compose.swipebox.SwipeDirection
 import com.kevinnzou.compose.swipebox.widget.SwipeIcon
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwipeableItem(
     state: DismissState,
@@ -56,7 +60,8 @@ fun SwipeBoxAtEnd() {
         modifier = Modifier.fillMaxWidth(),
         swipeDirection = SwipeDirection.EndToStart,
         endContentWidth = 60.dp,
-        endContent = { swipeableState, endSwipeProgress ->
+        endContent = { swappableState, _ ->
+            //endSwipeProgress->
             SwipeIcon(
                 imageVector = Icons.Outlined.Delete,
                 contentDescription = "Delete",
@@ -67,7 +72,7 @@ fun SwipeBoxAtEnd() {
             ) {
                 println("clicked")
                 coroutineScope.launch {
-                    swipeableState.animateTo(0)
+                    swappableState.animateTo(0)
                 }
             }
         }

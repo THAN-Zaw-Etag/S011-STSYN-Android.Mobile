@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+
 
 package com.etag.stsyn.ui.components
 
@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
-import androidx.compose.material3.ExperimentalMaterial3Api
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.DismissDirection
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.DismissValue
+import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDismissState
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.etag.stsyn.domain.model.DetPLoanItem
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DetPLoanSwipeableItem(
     swipeable: Boolean,
@@ -42,7 +47,7 @@ fun DetPLoanSwipeableItem(
     LaunchedEffect(swipeable) {
     }
 
-    val state = rememberDismissState(initialValue = DismissValue.Default, confirmValueChange = {
+    val state = rememberDismissState(initialValue = DismissValue.Default, confirmStateChange = {
         if (it == DismissValue.DismissedToStart) {
             onSwipeToDismiss(item)
         }
