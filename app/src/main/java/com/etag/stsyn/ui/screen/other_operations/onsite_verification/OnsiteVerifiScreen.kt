@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -64,7 +66,9 @@ fun OnsiteVerifyScreen(
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
-    var hasScanned by remember { mutableStateOf(true) }
+    //var hasScanned by remember { mutableStateOf(true) }
+    val hasScanned by onsiteVerificationViewModel.hasScanned.collectAsState()
+    Log.d("onScanStatus", "Scan.$hasScanned")
 
     val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
@@ -88,7 +92,7 @@ fun OnsiteVerifyScreen(
         mutableStateOf(false)
     }
     var retryCount by remember {
-        mutableStateOf(0)
+        mutableIntStateOf(0)
     }
     var apiErrorMessage by remember {
         mutableStateOf("")
@@ -106,7 +110,7 @@ fun OnsiteVerifyScreen(
         }
 
         is ApiResponse.Success -> {
-            hasScanned = true
+          // hasScanned = true
             Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Success...")
             isApiError = false
             boxItemsFromApi = onsiteVerificationUiState.allItemsFromApi
@@ -130,6 +134,7 @@ fun OnsiteVerifyScreen(
             Toast.makeText(context, "$itemResultMessage", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     if (isApiError) {
         WarningDialog(
@@ -158,7 +163,7 @@ fun OnsiteVerifyScreen(
                 id = currentScanItem?.epc ?: "",
                 description = currentScanItem?.description ?: ""
             )
-            if (hasScanned) {
+            if(hasScanned){
                 ScannedContent(
                     onSwipeToDelete = {
                         onsiteVerificationViewModel.removeScannedBookInItemByIndex(it)
@@ -174,37 +179,78 @@ fun OnsiteVerifyScreen(
                         currentBoxItem = boxItem
                         showBottomSheet = true
                     })
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "Os: ${outstandingItems.size}",
-                    color = if (hasScanned) Color.Black else Color.Transparent
-                )
-                ScanIconButton(
-                    isScanning = rfidUiState.isScanning,
-                    onScan = {
-                        Log.d("TAG", "OnsiteVerifyScreen: Clicked ${boxItemsFromApi.size}")
-                        if (boxItemsFromApi.isNotEmpty()) {
-                            onsiteVerificationViewModel.toggle()
-                            coroutineScope.launch {
-                                if (scannedItemIndex != -1) listState.animateScrollToItem(
-                                    scannedItemIndex
-                                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Os: ${outstandingItems.size}",
+                        color = Color.Black
+                    )
+                    ScanIconButton(
+                        isScanning = rfidUiState.isScanning,
+                        onScan = {
+                            Log.d("TAG", "OnsiteVerifyScreen: Clicked ${boxItemsFromApi.size}")
+                            if (boxItemsFromApi.isNotEmpty()) {
+                                //onsiteVerificationViewModel.toggle()
+                                onsiteVerificationViewModel.onReceivedTagIdTest()
+                                coroutineScope.launch {
+                                    if (scannedItemIndex != -1) listState.animateScrollToItem(
+                                        scannedItemIndex
+                                    )
+                                }
+                            }else{
+                                Toast.makeText(context, "No items found in inventory", Toast.LENGTH_SHORT).show()
                             }
-                        }else{
-                            Toast.makeText(context, "No items found in inventory", Toast.LENGTH_SHORT).show()
-                        }
-                    })
-                Text(
-                    text = "Done: ${scannedItems.size}",
-                    color = if (hasScanned) Color.Black else Color.Transparent
-                )
+                        })
+                    Text(
+                        text = "Done: ${scannedItems.size}",
+                        color = Color.Black
+                    )
+                }
+            }else{
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.BottomCenter
+                ){
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Os: ${outstandingItems.size}",
+                            color =  Color.Transparent
+                        )
+                        ScanIconButton(
+                            isScanning = rfidUiState.isScanning,
+                            onScan = {
+                                Log.d("TAG", "OnsiteVerifyScreen: Clicked ${boxItemsFromApi.size}")
+                                if (boxItemsFromApi.isNotEmpty()) {
+                                    //onsiteVerificationViewModel.toggle()
+                                    onsiteVerificationViewModel.onReceivedTagIdTest()
+                                    coroutineScope.launch {
+                                        if (scannedItemIndex != -1) listState.animateScrollToItem(
+                                            scannedItemIndex
+                                        )
+                                    }
+                                }else{
+                                    Toast.makeText(context, "No items found in inventory", Toast.LENGTH_SHORT).show()
+                                }
+                            })
+                        Text(
+                            text = "Done: ${scannedItems.size}",
+                            color =  Color.Transparent
+                        )
+                    }
+                }
             }
+
+
         }
     }
 }
@@ -242,7 +288,8 @@ private fun ScannedContent(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 text = "Item booked out ${boxItem?.size}",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+
             )
 
             Text(
@@ -250,7 +297,9 @@ private fun ScannedContent(
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier.clickable {
                     showResetDialog = true
-                })
+                },
+                color = if(!boxItem.isNullOrEmpty())  Color.Black else Color.Transparent
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn(

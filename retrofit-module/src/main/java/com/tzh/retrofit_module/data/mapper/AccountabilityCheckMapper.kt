@@ -22,7 +22,7 @@ fun DropdownSet.toFilterList(): List<FilterItem> {
 fun List<FilterItem>.toAccountabilityCheckRequest(): AccountCheckOutstandingItemsRequest {
     return AccountCheckOutstandingItemsRequest(
         storeType = this[0].selectedOption,
-        csNo = if (this[1].selectedOption.isEmpty()) "0" else this[1].selectedOption,
+        csNo = this[1].selectedOption.ifEmpty { "0" },
         unitSqn = this[1].selectedOption,
         flight = this[1].selectedOption,
         itemType = this[1].selectedOption,

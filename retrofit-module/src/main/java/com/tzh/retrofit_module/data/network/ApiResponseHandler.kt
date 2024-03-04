@@ -31,7 +31,7 @@ object ApiResponseHandler {
         } catch (e: Exception) {
             e.printStackTrace()
             ApiResponse.ApiError(e.localizedMessage ?: UNKNOWN_ERROR)
-            handleError<T>(e)
+            handleError(e)
         }
     }
 

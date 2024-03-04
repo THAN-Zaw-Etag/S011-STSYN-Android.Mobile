@@ -33,7 +33,6 @@ class OnsiteVerificationViewModel @Inject constructor(
     appConfiguration: AppConfiguration,
     private val localDataStore: LocalDataStore,
 ) : BaseViewModel(rfidHandler) {
-    val TAG = "OnsiteVerificationViewModel"
     private val _getOnSiteVerifyItems =
         MutableStateFlow<ApiResponse<OnSiteVerificationResponse>>(ApiResponse.Default)
     val getOnSiteVerifyItems: StateFlow<ApiResponse<OnSiteVerificationResponse>> =
@@ -65,8 +64,11 @@ class OnsiteVerificationViewModel @Inject constructor(
 
     private val settingsFlow = appConfiguration.appConfig
 
+    private val _hasScanned = MutableStateFlow(false)
+    val hasScanned: StateFlow<Boolean> = _hasScanned.asStateFlow()
     override fun onReceivedTagId(id: String) {
           addScannedItemAndMoveToTop(id)
+        _hasScanned.value = true
     }
 
     fun onReceivedTagIdTest() {
@@ -90,8 +92,9 @@ class OnsiteVerificationViewModel @Inject constructor(
             "020200004669",
             "76r5e45675645"
         )
-
+        _hasScanned.value = true
         addScannedItemAndMoveToTop(dummyEpc.random())
+
     }
 
     private fun addScannedItemAndMoveToTop(epc: String) {

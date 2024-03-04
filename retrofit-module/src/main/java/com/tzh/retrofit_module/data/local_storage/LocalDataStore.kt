@@ -17,7 +17,7 @@ import javax.inject.Inject
 class LocalDataStore @Inject constructor(private val context: Context) {
     companion object {
         const val TAG = "LocalDataStore"
-        const val NAME = "user_prefs"
+        private const val NAME = "user_prefs"
         val Context.dataStore: DataStore<Preferences> by preferencesDataStore(NAME)
         val USER_ID = stringPreferencesKey("user_id")
         val ROLE_ID = stringPreferencesKey("role_id")

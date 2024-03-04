@@ -14,7 +14,6 @@ class BaseUrlInterceptor @Inject constructor(private val baseUrlProvider: BaseUr
         val newBaseUrl = newBaseUrlString.toHttpUrlOrNull()
 
         return if (newBaseUrl != null) {
-            // Remove the trailing slash from the base URL's path if it exists
             val baseWithPath = if (newBaseUrl.encodedPath.endsWith("/")) {
                 newBaseUrl.encodedPath.removeSuffix("/")
             } else {

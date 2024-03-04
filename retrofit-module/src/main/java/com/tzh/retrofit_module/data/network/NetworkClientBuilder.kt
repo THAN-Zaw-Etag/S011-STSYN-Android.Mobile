@@ -26,6 +26,7 @@ class NetworkClientBuilder(
             ) {
             }
 
+            @SuppressLint("TrustAllX509TrustManager")
             override fun checkServerTrusted(
                 chain: Array<out java.security.cert.X509Certificate>?,
                 authType: String?
@@ -45,7 +46,7 @@ class NetworkClientBuilder(
             .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(BaseUrlInterceptor(baseUrlProvider))
             .sslSocketFactory(sslContext.socketFactory, trustManager)
-            .hostnameVerifier(HostnameVerifier { _, _ -> true }) // Bypass hostname verification
+            .hostnameVerifier { _, _ -> true } // Bypass hostname verification
             .addInterceptor(AuthInterceptor(tokenRepository))
             .addInterceptor(NoConnectionInterceptor(context))
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
