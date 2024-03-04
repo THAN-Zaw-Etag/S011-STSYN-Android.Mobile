@@ -30,25 +30,32 @@ fun OnsiteVerificationSaveScreen(
 
     var attemptCount by remember { mutableIntStateOf(0) }
 
-    when(saveOnSiteVerification){
+    when (saveOnSiteVerification) {
         is ApiResponse.Loading -> {
             shouldShowWarningDialog = false
             LoadingDialog(title = "Please wait while SMS is processing your request...",
                 showDialog = true,
                 onDismiss = { })
         }
+
         is ApiResponse.Success -> {
             shouldShowWarningDialog = false
             onsiteVerificationViewModel.resetAll()
             onsiteVerificationViewModel.updateSuccessDialogVisibility(true)
         }
+
         is ApiResponse.ApiError -> {
             shouldShowWarningDialog = true
             errorMessage = (saveOnSiteVerification as ApiResponse.ApiError).message
         }
 
-        is ApiResponse.AuthorizationError -> {  shouldShowWarningDialog = false}
-        ApiResponse.Default -> {  shouldShowWarningDialog = false}
+        is ApiResponse.AuthorizationError -> {
+            shouldShowWarningDialog = false
+        }
+
+        ApiResponse.Default -> {
+            shouldShowWarningDialog = false
+        }
     }
 
     if (shouldShowWarningDialog) {
@@ -58,10 +65,12 @@ fun OnsiteVerificationSaveScreen(
             onProcess = {
                 attemptCount++
                 onsiteVerificationViewModel.saveOnSiteVerification()
-            }, onDismiss = { attemptCount = 0})
+            }, onDismiss = { attemptCount = 0 })
     }
 
-    BaseSaveScreen(isError = scannedItems.isEmpty(),
+    BaseSaveScreen(
+        modifier = modifier,
+        isError = scannedItems.isEmpty(),
         errorMessage = if (scannedItems.isEmpty()) "Please read a box first" else "Please read an item first",
         onSave = {
             onsiteVerificationViewModel.saveOnSiteVerification()

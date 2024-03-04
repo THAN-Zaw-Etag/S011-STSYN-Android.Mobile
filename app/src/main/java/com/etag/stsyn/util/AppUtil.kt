@@ -40,7 +40,7 @@ object AppUtil {
         }
     }
 
-    fun baseUrlValidationStatus(newBaseUrl: String):Boolean {
+    fun baseUrlValidationStatus(newBaseUrl: String): Boolean {
         Log.d("BaseUrlProvider", "From Class newBaseUrl: $newBaseUrl")
         return !(!newBaseUrl.startsWith("http://") && !newBaseUrl.startsWith("https://"))
 

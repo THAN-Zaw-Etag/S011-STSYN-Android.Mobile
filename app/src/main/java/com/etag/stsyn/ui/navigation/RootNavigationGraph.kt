@@ -31,7 +31,8 @@ fun RootNavigationGraph(
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            context,)
+            context,
+        )
         composable(route = "${Graph.HOME}/{isSodInitiate}") {
             // disable scan
             loginViewModel.disableScan()
@@ -55,7 +56,8 @@ fun RootNavigationGraph(
     }
     LaunchedEffect(isLoggedIn) {
         if (isLoggedIn) {
-            val route = if (!loginUiState.isSodInitiate) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
+            val route =
+                if (!loginUiState.isSodInitiate) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
             delay(300)
             navController.navigateToSingleTop(route)
         }

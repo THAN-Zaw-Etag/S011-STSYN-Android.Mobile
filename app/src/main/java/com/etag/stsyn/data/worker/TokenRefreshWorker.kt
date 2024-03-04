@@ -8,7 +8,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
@@ -32,9 +31,10 @@ class TokenRefreshWorker @AssistedInject constructor(
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
 
-            val periodicWork = PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 15, TimeUnit.MINUTES)
-                .setConstraints(workConstraints)
-                .build()
+            val periodicWork =
+                PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 15, TimeUnit.MINUTES)
+                    .setConstraints(workConstraints)
+                    .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 "api_token_refresh_worker",
@@ -44,7 +44,7 @@ class TokenRefreshWorker @AssistedInject constructor(
         }
     }
 
-    override suspend fun doWork(): Result  {
+    override suspend fun doWork(): Result {
         Log.d("TAG", "doWork: working...${DateUtil.currentTime()}")
 
         return try {

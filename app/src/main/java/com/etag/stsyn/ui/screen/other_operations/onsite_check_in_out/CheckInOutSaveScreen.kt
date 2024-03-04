@@ -22,15 +22,14 @@ import com.tzh.retrofit_module.util.SAVING_MESSAGE
 fun CheckInOutSaveScreen(
     onsiteCheckInOutViewModel: OnsiteCheckInOutViewModel, modifier: Modifier = Modifier
 ) {
-    val TAG = "CheckInOutSaveScreen" //TODO might delete later
 
     val hasScannedItems by remember { mutableStateOf(false) }
     val scannedItemList by onsiteCheckInOutViewModel.scannedItemList.collectAsState()
     val onsiteCheckInOutUiState by onsiteCheckInOutViewModel.onSiteCheckInOutUiState.collectAsState()
     val saveOnsiteCheckInOutResponse by onsiteCheckInOutViewModel.saveOnSiteCheckInOutResponse.collectAsState()
     val user by onsiteCheckInOutViewModel.userFlow.collectAsState(initial = LocalUser())
-    
-    when(saveOnsiteCheckInOutResponse) {
+
+    when (saveOnsiteCheckInOutResponse) {
         is ApiResponse.Loading -> LoadingDialog(
             title = SAVING_MESSAGE,
             showDialog = true,
@@ -45,7 +44,9 @@ fun CheckInOutSaveScreen(
             onsiteCheckInOutViewModel.updateOnsiteCheckInOutErrorMessage((saveOnsiteCheckInOutResponse as ApiResponse.ApiError).message)
         }
 
-        is ApiResponse.AuthorizationError -> onsiteCheckInOutViewModel.shouldShowAuthorizationFailedDialog(true)
+        is ApiResponse.AuthorizationError -> onsiteCheckInOutViewModel.shouldShowAuthorizationFailedDialog(
+            true
+        )
 
         else -> {}
     }

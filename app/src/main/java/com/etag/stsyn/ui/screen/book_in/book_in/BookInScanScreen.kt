@@ -16,17 +16,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
 
+private const val TAG = "BookInScanScreen"
+
 @Composable
 fun BookInScanScreen(
     bookInViewModel: BookInViewModel,
     modifier: Modifier = Modifier
 ) {
-    val TAG = "BookInScanScreen"
+
     val rfidUiState by bookInViewModel.rfidUiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val bookInState by bookInViewModel.bookInState.collectAsStateWithLifecycle()
     val scannedItemIdList by bookInViewModel.scannedItemIdList.collectAsStateWithLifecycle()
-    
+
     LaunchedEffect(scannedItemIdList) {
         Log.d(TAG, "BookInScanScreen: $scannedItemIdList")
     }
@@ -36,7 +38,8 @@ fun BookInScanScreen(
         scannedItemCount = scannedItemIdList.size,
         isScanning = rfidUiState.isScanning,
         onScan = bookInViewModel::toggle,
-        onClear = bookInViewModel::removeAllScannedItems) {
+        onClear = bookInViewModel::removeAllScannedItems
+    ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             state = listState,

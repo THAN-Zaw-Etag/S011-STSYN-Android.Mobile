@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -54,7 +53,7 @@ fun ScannedBoxItem(
             IconButton(onClick = onRefresh) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
-                    tint = if(boxDescription.isNotEmpty() && showRefreshIcon) Color.Gray else Color.Transparent,
+                    tint = if (boxDescription.isNotEmpty() && showRefreshIcon) Color.Gray else Color.Transparent,
                     contentDescription = null
                 )
             }

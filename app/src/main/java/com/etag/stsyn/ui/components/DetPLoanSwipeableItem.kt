@@ -1,5 +1,3 @@
-
-
 package com.etag.stsyn.ui.components
 
 import androidx.compose.animation.AnimatedVisibility

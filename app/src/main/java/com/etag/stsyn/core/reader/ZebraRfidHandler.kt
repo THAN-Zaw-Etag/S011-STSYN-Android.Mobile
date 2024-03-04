@@ -235,7 +235,8 @@ class ZebraRfidHandler @Inject constructor(
         if (mConnectedReader.isConnected) {
             try {
                 val triggerInfo = TriggerInfo()
-                triggerInfo.StartTrigger.triggerType = START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE
+                triggerInfo.StartTrigger.triggerType =
+                    START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE
                 triggerInfo.StopTrigger.triggerType = STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_IMMEDIATE
                 mConnectedReader.apply {
                     // receive events from reader

@@ -56,9 +56,9 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun LoginScreen(
+    modifier: Modifier = Modifier,
     navigateToLoginContentScreen: () -> Unit,
     loginViewModel: LoginViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier,
 ) {
     val rfidUiState by loginViewModel.rfidUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -86,7 +86,7 @@ fun LoginScreen(
         ShowBaseUrlAlertDialog(
             onConfirm = {
                 loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = "https://18.139.63.32/SMS-STSYN-Dev/api/"))   //TODO change this when app release
-        }) {
+            }) {
 
         }
     }
@@ -99,7 +99,7 @@ fun LoginScreen(
                     showErrorDialog = false
                     Log.d("TAGUser", "LoginScreen: Loading")
                 }
-                                                                                                                    
+
                 is ApiResponse.Success -> {
                     Log.d("TAGUser", "LoginScreen: Success")
                     showLoadingDialog = false
@@ -118,14 +118,14 @@ fun LoginScreen(
 
                 is ApiResponse.ApiError -> {
                     val error = response.message
-                   showErrorDialog = true
+                    showErrorDialog = true
                     errorMessage = error
                     Log.d("TAGUser", "LoginScreen: ApiError")
                     showLoadingDialog = false
                 }
 
                 else -> {
-                    Log.d( "TAGUser", "LoginScreen: else"  )
+                    Log.d("TAGUser", "LoginScreen: else")
                     showLoadingDialog = false
                     showErrorDialog = false
                 }
@@ -137,7 +137,7 @@ fun LoginScreen(
             showDialog = showErrorDialog,
             errorTitle = "Error",
             errorMessage = errorMessage,
-            onDismiss = {showErrorDialog = false}
+            onDismiss = { showErrorDialog = false }
         )
     }
 
@@ -147,7 +147,8 @@ fun LoginScreen(
     )
 
     LaunchedEffect(rfidUiState.isConnected) {
-        if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT).show()
+        if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT)
+            .show()
     }
 
     Column(modifier = modifier) {
@@ -171,8 +172,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.weight(1f))
         MainLowerContent(onScan = {
             //TODO delete this loginViewModel.getUserByRfidId("455341303030303030303130") when app release
-           loginViewModel.getUserByRfidId("455341303030303030303130")
-      //     loginViewModel.toggle()
+            loginViewModel.getUserByRfidId("455341303030303030303130")
         })
     }
 }
@@ -182,8 +182,8 @@ private fun MainLowerContent(
     onScan: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var quickLoginTextFontSize =16.sp
-    when(getDeviceSize()){
+    var quickLoginTextFontSize = 16.sp
+    when (getDeviceSize()) {
         DeviceSize.SMALL -> quickLoginTextFontSize = MaterialTheme.typography.titleSmall.fontSize
         DeviceSize.MEDIUM -> Log.d("TAG", "LoginScreen: MEDIUM")
         DeviceSize.TABLET -> Log.d("TAG", "LoginScreen: TABLET")
@@ -232,10 +232,4 @@ private fun MainLowerContent(
                 .align(Alignment.BottomEnd)
         )
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun LoginScreenPreview(modifier: Modifier = Modifier) {
-    LoginScreen(navigateToLoginContentScreen = { /*TODO*/ }, loginViewModel = hiltViewModel())
 }

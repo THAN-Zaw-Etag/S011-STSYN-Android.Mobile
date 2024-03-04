@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.etag.stsyn.ui.states.mutableDialogStateOf
-import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
@@ -46,7 +44,8 @@ class LoginViewModel @Inject constructor(
     val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
 
     private val _getUserResponse = MutableSharedFlow<ApiResponse<GetUserByEPCResponse>>()
-    val getUserByEPCResponse: SharedFlow<ApiResponse<GetUserByEPCResponse>> = _getUserResponse.asSharedFlow()
+    val getUserByEPCResponse: SharedFlow<ApiResponse<GetUserByEPCResponse>> =
+        _getUserResponse.asSharedFlow()
 
     private val _loginResponse = MutableStateFlow<ApiResponse<LoginResponse>>(ApiResponse.Default)
     val loginResponse: StateFlow<ApiResponse<LoginResponse>> = _loginResponse.asStateFlow()
@@ -90,11 +89,11 @@ class LoginViewModel @Inject constructor(
 
             launch {
                 localDataStore.getEpcUser.collect {
-                    _epcModelUser.value =it
+                    _epcModelUser.value = it
                 }
             }
 
-            launch {  baseUrlStatus() }
+            launch { baseUrlStatus() }
             launch {
                 delay(1000)
                 _loading.value = false
@@ -109,13 +108,14 @@ class LoginViewModel @Inject constructor(
             baseUrlStatus()
         }
     }
+
     private fun baseUrlStatus() {
         viewModelScope.launch {
             appConfiguration.appConfig.collect { appConfigModel ->
-                val  baseUrl = appConfigModel.apiUrl
-                if (baseUrl.isEmpty()){
+                val baseUrl = appConfigModel.apiUrl
+                if (baseUrl.isEmpty()) {
                     _shouldShowEmptyBaseUrlDialog.postValue(true)
-                }else{
+                } else {
                     _shouldShowEmptyBaseUrlDialog.postValue(false)
                 }
             }
@@ -127,7 +127,7 @@ class LoginViewModel @Inject constructor(
     }
 
 
-       fun getUserByRfidId(rfidId: String) {
+    fun getUserByRfidId(rfidId: String) {
         viewModelScope.launch {
             _getUserResponse.emit(ApiResponse.Loading)
             val response = userRepository.getUserByEPC(rfidId)
@@ -161,7 +161,6 @@ class LoginViewModel @Inject constructor(
     }
 
     fun increaseLoginAttempt() {
-        //var currentCount = _loginUiState.value.attemptCount
         _loginUiState.update {
             it.copy(
                 attemptCount = it.attemptCount + 1
@@ -174,7 +173,6 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _loginResponse.value = ApiResponse.Loading
             delay(1000) // set delay for loading
-            //TODO remove unused lines of code and encrypt password if required
             val passwordString = String(passwordCharArray)
             _loginResponse.value = userRepository.login(
                 LoginRequest(
@@ -193,8 +191,10 @@ class LoginViewModel @Inject constructor(
                     _userMenuAccessRights.value =
                         (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.rolePermission!!.handheldMenuAccessRight
 
-                    val checkStatus = (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.checkStatus!!
-                    val isSodInitiate = (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
+                    val checkStatus =
+                        (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.checkStatus!!
+                    val isSodInitiate =
+                        (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
 
                     updateShiftType(if (checkStatus.isStart) Shift.START else Shift.ADHOC)
                     localDataStore.saveCheckStatusId(checkStatus.id.toString())
@@ -218,8 +218,6 @@ class LoginViewModel @Inject constructor(
     fun updatePassword(oldPasswordCharArr: CharArray, newPasswordChar: CharArray) {
         val oldPassword = String(oldPasswordCharArr)
         val newPassword = String(newPasswordChar)
-        //TODO remove unused lines of code and encrypt password if required
-        //shouldShowAuthorizationFailedDialog(false)
         viewModelScope.launch {
             _updatePasswordResponse.value = ApiResponse.Loading
             delay(1000)
@@ -287,4 +285,4 @@ class LoginViewModel @Inject constructor(
     )
 }
 
-enum class Shift {START,ADHOC}
+enum class Shift { START, ADHOC }

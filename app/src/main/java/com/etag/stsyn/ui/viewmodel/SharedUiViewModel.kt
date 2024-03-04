@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.viewmodel
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -17,11 +18,15 @@ import javax.inject.Inject
 class SharedUiViewModel @Inject constructor(
     val rfidHandler: ZebraRfidHandler
 ) : BaseViewModel(rfidHandler) {
+    companion object {
+        const val TAG = "SharedUiViewModel"
+    }
+
     private val _uiState = MutableStateFlow(SharedUiState())
     val uiState: StateFlow<SharedUiState> = _uiState.asStateFlow()
 
     override fun onReceivedTagId(id: String) {
-
+        Log.d(TAG, "onReceivedTagId: $id")
     }
 
     fun updateTopAppBarStatus(show: Boolean) {

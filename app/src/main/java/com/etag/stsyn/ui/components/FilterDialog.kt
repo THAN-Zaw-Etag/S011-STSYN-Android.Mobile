@@ -67,7 +67,7 @@ fun FilterDialog(
         dialogState = dialogState,
         positiveButtonTitle = "Ok",
         onPositiveButtonClick = {
-            onDone(filterItems,isUpdateAll)
+            onDone(filterItems, isUpdateAll)
             showFilterDialog = false
             onDismiss()
         }
@@ -89,7 +89,9 @@ fun FilterDialog(
                 onClear = onClear,
                 onDone = { items ->
                     Log.d(TAG, "FilterDialog: ${items.map { it.selectedOption }}")
-                    val showWarningDialog = items.filter { it.selectedOption.trim().isEmpty() || it.selectedOption == "All" }.size != items.size
+                    val showWarningDialog = items.filter {
+                        it.selectedOption.trim().isEmpty() || it.selectedOption == "All"
+                    }.size != items.size
                     isUpdateAll = showWarningDialog
 
                     dialogState.showDialog(
@@ -224,7 +226,12 @@ private fun FilterItemLayout(
         }
     }
 
-    Row(modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(text = "$title :", modifier = Modifier.weight(0.4f))
         Spacer(modifier = Modifier.width(8.dp))
         DropDown(

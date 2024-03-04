@@ -62,7 +62,12 @@ fun DropDown(
                     )
                     .padding(vertical = 8.dp, horizontal = 16.dp)
             ) {
-                Text(text = selectedText, maxLines = 1, modifier = Modifier.weight(1f), overflow = TextOverflow.Ellipsis)
+                Text(
+                    text = selectedText,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f),
+                    overflow = TextOverflow.Ellipsis
+                )
                 TrailingIcon(expanded = expanded)
             }
 
@@ -71,9 +76,15 @@ fun DropDown(
                 onDismissRequest = { expanded = false }
             ) {
                 items.forEach { item ->
-                    key (item) {
+                    key(item) {
                         DropdownMenuItem(
-                            text = { Text(text = item,  maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            text = {
+                                Text(
+                                    text = item,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
                             onClick = {
                                 onSelected(item)
                                 selectedText = item

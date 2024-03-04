@@ -14,7 +14,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,7 +41,6 @@ import com.etag.stsyn.ui.theme.errorColor
 import com.kevinnzou.compose.swipebox.SwipeBox
 import com.kevinnzou.compose.swipebox.SwipeDirection
 import com.kevinnzou.compose.swipebox.widget.SwipeIcon
-import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import kotlinx.coroutines.launch
 
 @Composable

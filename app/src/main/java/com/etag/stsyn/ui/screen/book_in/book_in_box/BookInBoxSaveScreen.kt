@@ -85,7 +85,7 @@ fun BookInBoxSaveScreen(
             onProcess = {
                 attemptCount++
                 bookInBoxViewModel.saveBookInBox()
-            }, onDismiss = { attemptCount = 0})
+            }, onDismiss = { attemptCount = 0 })
     }
     BaseSaveScreen(
         isError = scannedItemList.isEmpty(),

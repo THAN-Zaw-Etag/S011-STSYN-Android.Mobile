@@ -48,7 +48,7 @@ import com.etag.stsyn.util.datasource.OptionButtonModel
 @Composable
 fun MainScreen(
     isSodInitiate: Boolean,
-    shiftType: Shift,
+    //shiftType: Shift,
     isReaderConnected: Boolean,
     batteryPercentage: Int,
     onCategoryItemClick: (String) -> Unit,
@@ -85,8 +85,7 @@ fun MainScreen(
                     onCategoryItemClick = onCategoryItemClick
                 )
             }
-        }
-        else {
+        } else {
             items(DataSource.categories) {
                 CategoryItem(category = it, onCategoryItemClick = onCategoryItemClick)
             }

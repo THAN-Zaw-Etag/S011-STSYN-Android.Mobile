@@ -78,7 +78,7 @@ fun BookOutScreen(
                 modifier = Modifier.clickable {
                     showClearDialog = true
                 })
-            ScanIconButton(onScan = { /*TODO*/ })
+            ScanIconButton(onScan = {  })
             Text(text = "Total :${scannedItems.size}")
         }
     }

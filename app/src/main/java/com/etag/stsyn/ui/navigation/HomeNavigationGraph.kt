@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.navigation
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -54,7 +53,8 @@ fun HomeNavigationGraph(
         composable(route = Routes.HomeScreen.name) {
             var isInitiate by remember { mutableStateOf(isSodInitiate) }
 
-            val popResultFlow by it.savedStateHandle.getStateFlow("isSodInitiate",true).collectAsState()
+            val popResultFlow by it.savedStateHandle.getStateFlow("isSodInitiate", true)
+                .collectAsState()
 
             LaunchedEffect(popResultFlow) {
                 if (!popResultFlow) isInitiate = false
@@ -75,7 +75,7 @@ fun HomeNavigationGraph(
             MainScreen(
                 isReaderConnected = rfidUiState.isConnected,
                 batteryPercentage = rfidUiState.batteryLevel,
-                shiftType = loginUiState.shift,
+                //shiftType = loginUiState.shift,
                 isSodInitiate = isInitiate,
                 onCategoryItemClick = {
                     // save current selected bottom navigation route
@@ -147,19 +147,20 @@ fun HomeNavigationGraph(
 
             SettingsScreen()
         }
-        detailsNavGraph(navController,sharedUiViewModel,loginViewModel)
+        detailsNavGraph(navController, sharedUiViewModel, loginViewModel)
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            context)
+            context
+        )
     }
 }
 
 fun NavGraphBuilder.detailsNavGraph(
     navController: NavHostController,
-    sharedUiViewModel:SharedUiViewModel,
+    sharedUiViewModel: SharedUiViewModel,
     loginViewModel: LoginViewModel
-    ) {
+) {
     navigation(
         route = Graph.DETAILS,
         startDestination = Routes.DetailScreen.name
@@ -197,8 +198,13 @@ fun NavGraphBuilder.detailsNavGraph(
                     // after saving
                     try {
                         navController.navigateUp()
-                        navController.currentBackStackEntry?.savedStateHandle?.set("isSodInitiate",false)
-                    }catch (e: Exception) {e.printStackTrace()}
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "isSodInitiate",
+                            false
+                        )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             )
         }

@@ -91,7 +91,12 @@ class OnsiteCheckInOutViewModel @Inject constructor(
      * 3.delay 1 second to reload data again.*/
     private suspend fun doTasksAfterSaved() {
         _scannedItemList.value = emptyList()
-        _onSiteCheckInOutUiState.update { it.copy(allItemsForOnsite = emptyList(), receiver = null) }
+        _onSiteCheckInOutUiState.update {
+            it.copy(
+                allItemsForOnsite = emptyList(),
+                receiver = null
+            )
+        }
         delay(1000)
         getAllItemsForOnsite()
     }
@@ -123,10 +128,12 @@ class OnsiteCheckInOutViewModel @Inject constructor(
                 )
             }
 
-            _saveOnSiteCheckInOutResponse.value = repository.saveOnsiteCheckInOut(SaveBookInRequest(
-                printJob = printJob,
-                itemMovementLogs = itemMovementLogs
-            ))
+            _saveOnSiteCheckInOutResponse.value = repository.saveOnsiteCheckInOut(
+                SaveBookInRequest(
+                    printJob = printJob,
+                    itemMovementLogs = itemMovementLogs
+                )
+            )
         }
     }
 

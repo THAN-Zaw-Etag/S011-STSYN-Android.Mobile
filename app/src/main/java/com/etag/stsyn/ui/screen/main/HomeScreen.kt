@@ -62,7 +62,6 @@ import com.etag.stsyn.ui.navigation.HomeNavigationGraph
 import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.states.mutableDialogStateOf
-import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import com.etag.stsyn.util.TransitionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
@@ -94,7 +93,7 @@ fun HomeScreen(
 
     ReaderLifeCycle(viewModel = loginViewModel)
 
-    LaunchedEffect (updatePasswordResponse){
+    LaunchedEffect(updatePasswordResponse) {
         when (updatePasswordResponse) {
             is ApiResponse.Loading -> showLoadingDialog = true
 
@@ -118,7 +117,7 @@ fun HomeScreen(
     LoadingDialog(
         title = "Updating password...",
         showDialog = showLoadingDialog,
-        onDismiss = { /*TODO*/ })
+        onDismiss = {  })
 
     if (showAuthorizationFailedDialog) AuthorizationTokenExpiredDialog(
         message = AUTHORIZATION_FAILED_MESSAGE, onLogOut = onLogOutClick

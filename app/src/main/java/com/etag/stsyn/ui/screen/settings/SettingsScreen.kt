@@ -76,9 +76,11 @@ fun SettingsScreen(
             .show()
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         SettingItem(
             icon = Icons.Default.AdfScanner,
             title = "Reader Id",
@@ -104,7 +106,7 @@ fun SettingsScreen(
                     viewModel.updateAppConfig(appConfiguration.copy(apiUrl = it))
                     viewModel.updateBaseUrl(it)
                     false
-                }else{
+                } else {
                     true
                 }
 

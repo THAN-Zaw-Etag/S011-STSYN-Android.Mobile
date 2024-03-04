@@ -12,13 +12,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,12 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.etag.stsyn.ui.states.MutableDialogState
-import com.etag.stsyn.ui.states.rememberMutableDialogState
 
 @Composable
 fun WarningDialog(
@@ -86,10 +82,10 @@ fun WarningDialog(
                         Row(modifier = Modifier.align(Alignment.End)) {
                             TextButton(
                                 onClick = {
-                                dialogState.hideDialog()
-                                onPositiveButtonClick()
-                                onDismiss()
-                            }) {
+                                    dialogState.hideDialog()
+                                    onPositiveButtonClick()
+                                    onDismiss()
+                                }) {
                                 Text(text = positiveButtonTitle.uppercase())
                             }
 
@@ -123,7 +119,7 @@ fun WarningDialog(
 
     Log.d("WarningDialog", "attemptCount: $attemptAccount")
     var messageStatus = ""
-    messageStatus = if (attemptAccount > 3){
+    messageStatus = if (attemptAccount > 3) {
         "Too many attempts,please check your internet connection or try again later"
     } else {
         message
@@ -162,14 +158,14 @@ fun WarningDialog(
                         }
 
                         Row(modifier = Modifier.align(Alignment.End)) {
-                            if (attemptAccount <= 2){
+                            if (attemptAccount <= 2) {
                                 TextButton(onClick = {
                                     showDialog = false
                                     onProcess()
                                 }) {
                                     Text(text = "try again".uppercase())
                                 }
-                            }else{
+                            } else {
                                 TextButton(onClick = {
                                     showDialog = false
                                     onDismiss()

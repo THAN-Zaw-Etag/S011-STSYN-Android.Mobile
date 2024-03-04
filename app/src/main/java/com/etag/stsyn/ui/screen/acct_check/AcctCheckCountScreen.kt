@@ -9,29 +9,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ControlType
-import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.components.ScannedItem
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.components.listItems
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.etag.stsyn.ui.screen.bottomsheet.BoxDetailScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,9 +34,6 @@ fun AcctCheckCountScreen(
     modifier: Modifier = Modifier
 ) {
     val accountCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsStateWithLifecycle()
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = SheetState(skipPartiallyExpanded = true, skipHiddenState = false)
-    )
     var selectedItem by remember { mutableStateOf(BoxItem()) }
     var controlType by remember { mutableStateOf(ControlType.All) }
     var items by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
@@ -50,12 +41,10 @@ fun AcctCheckCountScreen(
     var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(controlType) {
-        withContext(Dispatchers.IO) {
-            items = when (controlType) {
-                ControlType.All -> accountCheckUiState.allItems
-                ControlType.Done -> accountCheckUiState.allItems.filter { it.epc in scannedItemIdList }
-                ControlType.Outstanding -> accountCheckUiState.allItems.filter { it.epc !in scannedItemIdList }
-            }
+        items = when (controlType) {
+            ControlType.All -> accountCheckUiState.allItems
+            ControlType.Done -> accountCheckUiState.allItems.filter { it.epc in scannedItemIdList }
+            ControlType.Outstanding -> accountCheckUiState.allItems.filter { it.epc !in scannedItemIdList }
         }
     }
 
@@ -72,7 +61,7 @@ fun AcctCheckCountScreen(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 listItems(items) {
-                    key (it.epc) {
+                    key(it.epc) {
                         ScannedItem(
                             id = "${it.serialNo}-${it.itemLocation}",
                             name = it.description,

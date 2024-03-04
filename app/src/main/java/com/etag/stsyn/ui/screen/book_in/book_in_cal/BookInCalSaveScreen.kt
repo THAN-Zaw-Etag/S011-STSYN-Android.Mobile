@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.tzh.retrofit_module.util.DateUtil
@@ -27,11 +28,12 @@ fun BookInCalSaveScreen(
     bookInCalViewModel: BookInCalViewModel,
     modifier: Modifier = Modifier
 ) {
+    val rfidUiState by bookInCalViewModel.rfidUiState.collectAsStateWithLifecycle()
     var selectedDate by remember { mutableStateOf(DateUtil.getCurrentFormattedDate()) }
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
-    BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {
+    BaseSaveScreen(isError = false, onSave = {  }) {
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User") {
             Text(text = "Admin-123S")
         }

@@ -42,15 +42,14 @@ import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.ui.theme.errorColor
 import com.tzh.retrofit_module.domain.model.FilterItem
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+
+private const val TAG = "AccountCheckScanScreen"
 
 @Composable
 fun AcctCheckScanScreen(
     accountCheckViewModel: AccountCheckViewModel,
     modifier: Modifier = Modifier
 ) {
-    val TAG = "AccountCheckScanScreen"
 
     var filterCount by remember { mutableStateOf(0) }
     var filters by remember { mutableStateOf<List<FilterItem>>(emptyList()) }
@@ -68,11 +67,9 @@ fun AcctCheckScanScreen(
     }
 
     LaunchedEffect(scannedItemIdList, acctCheckUiState.allItems) {
-        withContext(Dispatchers.IO) {
-            total = acctCheckUiState.allItems.size
-            done = acctCheckUiState.allItems.filter { it.epc in scannedItemIdList }.size
-            outstanding = total - done
-        }
+        total = acctCheckUiState.allItems.size
+        done = acctCheckUiState.allItems.filter { it.epc in scannedItemIdList }.size
+        outstanding = total - done
     }
 
     LaunchedEffect(acctCheckUiState.showUnknownEpcDialog) {
@@ -87,16 +84,17 @@ fun AcctCheckScanScreen(
         positiveButtonTitle = "Yes",
         negativeButtonTitle = "No",
         onPositiveButtonClick = {
-            //TODO do something here
+
         },
         onNegativeButtonClick = {
-            //TODO do something here
+
         }
     )
 
     LaunchedEffect(acctCheckUiState.filterOptions) {
         filters = acctCheckUiState.filterOptions
-        filterCount = acctCheckUiState.filterOptions.filter { it.selectedOption.trim().isNotEmpty() }.size
+        filterCount =
+            acctCheckUiState.filterOptions.filter { it.selectedOption.trim().isNotEmpty() }.size
     }
 
     Column(

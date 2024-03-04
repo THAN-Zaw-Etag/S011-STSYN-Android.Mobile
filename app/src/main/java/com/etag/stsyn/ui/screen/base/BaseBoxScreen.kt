@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -68,7 +67,7 @@ import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 fun BaseBoxScreen(
     modifier: Modifier = Modifier,
     bookItems: List<BoxItem>,
-    boxes: List<BoxItem> = emptyList(), //TODO Need to remove empty list later
+    boxes: List<BoxItem> = emptyList(),
     scannedItemList: List<String> = emptyList(),
     isScanning: Boolean = false,
     boxOutTitle: String = "",
@@ -141,13 +140,12 @@ fun BaseBoxScreen(
                         itemCount = items.size,
                         checked = checked,
                         onCheckChange = onCheckChange,
-                        isScanned = false,
                         onReset = onReset
                     )
                 }
             }
 
-            itemsIndexed(bookItems) { index, item ->
+            itemsIndexed(bookItems) { _, item ->
                 key(item.epc) {
                     ScannedItem(
                         id = "${item.serialNo} - ${item.itemLocation}",
@@ -236,7 +234,6 @@ fun BottomScannedButtonLayout(
 private fun ScannedItemsOptionLayout(
     modifier: Modifier = Modifier,
     itemCount: Int,
-    isScanned: Boolean = false,
     checked: Boolean,
     onCheckChange: (Boolean) -> Unit,
     onReset: () -> Unit,

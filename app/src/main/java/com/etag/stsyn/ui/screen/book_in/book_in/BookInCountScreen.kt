@@ -3,7 +3,6 @@ package com.etag.stsyn.ui.screen.book_in.book_in
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,8 +18,6 @@ import com.etag.stsyn.ui.components.ExpandedScannedItem
 import com.etag.stsyn.ui.components.listItems
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.tzh.retrofit_module.data.mapper.toExpandedScannedItems
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 
 @Composable
@@ -34,17 +31,18 @@ fun BookInCountScreen(
     var controlType by remember { mutableStateOf(ControlType.All) }
 
     LaunchedEffect(controlType) {
-        withContext(Dispatchers.IO) {
-            val items = bookInState.allBookInItems
-            bookInAllItems = when (controlType) {
-                ControlType.All -> items
-                ControlType.Done -> items.filter { it.epc in scannedItemIdList}
-                ControlType.Outstanding -> items.filter { it.epc !in scannedItemIdList }
-            }
+        val items = bookInState.allBookInItems
+        bookInAllItems = when (controlType) {
+            ControlType.All -> items
+            ControlType.Done -> items.filter { it.epc in scannedItemIdList }
+            ControlType.Outstanding -> items.filter { it.epc !in scannedItemIdList }
         }
     }
 
-    BaseCountScreen(modifier = modifier, itemCount = bookInAllItems.size, onTabSelected = { control -> controlType = control}
+    BaseCountScreen(
+        modifier = modifier,
+        itemCount = bookInAllItems.size,
+        onTabSelected = { control -> controlType = control }
     ) {
         LazyColumn(
             modifier = Modifier,

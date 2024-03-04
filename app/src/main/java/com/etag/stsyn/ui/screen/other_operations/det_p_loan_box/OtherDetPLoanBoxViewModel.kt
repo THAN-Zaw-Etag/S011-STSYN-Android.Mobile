@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.other_operations.det_p_loan_box
 
+import android.util.Log
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.zebra.rfid.api3.TagData
@@ -10,19 +11,22 @@ import javax.inject.Inject
 class OtherDetPLoanBoxViewModel @Inject constructor(
     rfidHandler: ZebraRfidHandler
 ) : BaseViewModel(rfidHandler) {
+    companion object {
+        const val TAG = "OtherDetPLoanBoxViewModel"
+    }
     override fun handleTagData(tagData: Array<TagData>) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "handleTagData")
     }
 
     override fun onReceivedTagId(id: String) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "onReceivedTagId")
     }
 
     override fun handleTriggerPress(pressed: Boolean) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "handleTriggerPress")
     }
 
     override fun handleReaderConnected(isConnected: Boolean) {
-        TODO("Not yet implemented")
+        Log.d(TAG, "handleReaderConnected")
     }
 }

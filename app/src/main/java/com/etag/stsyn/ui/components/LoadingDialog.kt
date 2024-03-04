@@ -77,14 +77,16 @@ fun LoadingDialog(
 fun LoginProgressDialog(showDialog: Boolean) {
     if (showDialog) {
         Dialog(onDismissRequest = {}) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0x66000000))) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x66000000))
+            ) {
                 Card(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(16.dp),
-                    elevation =CardDefaults.cardElevation(8.dp)
+                    elevation = CardDefaults.cardElevation(8.dp)
                 ) {
                     Column(
                         modifier = Modifier

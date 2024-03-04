@@ -23,7 +23,6 @@ import com.etag.stsyn.data.worker.TokenRefreshWorker
 import com.etag.stsyn.ui.navigation.RootNavigationGraph
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.theme.STSYNTheme
-import com.etag.stsyn.ui.viewmodel.HomeViewModel
 import com.etag.stsyn.util.PermissionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,8 +50,6 @@ class MainActivity : ComponentActivity() {
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsStateWithLifecycle()
             val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle(LocalUser())
             val context = LocalContext.current
-
-            val homeViewModel: HomeViewModel = hiltViewModel()
 
             PermissionUtil.checkBluetoothPermission(context)
             handleBluetoothState(bluetoothState = bluetoothState, loginViewModel = loginViewModel)

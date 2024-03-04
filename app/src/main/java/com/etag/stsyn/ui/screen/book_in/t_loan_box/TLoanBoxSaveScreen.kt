@@ -5,7 +5,9 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 
@@ -14,7 +16,9 @@ fun TLoanBoxSaveScreen(
     tLoanBoxViewModel: TLoanBoxViewModel,
     modifier: Modifier = Modifier
 ) {
-    BaseSaveScreen(isError = false, onSave = { /*TODO*/ }) {
+    val rfidUiState by tLoanBoxViewModel.rfidUiState.collectAsStateWithLifecycle()
+
+    BaseSaveScreen(modifier = modifier, isError = false, onSave = {  }) {
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User", showRefreshIcon = true) {
             Text(text = "Admin-123S")
         }

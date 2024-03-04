@@ -28,9 +28,10 @@ data class BottomNavigationItem(
 )
 
 object DataSource {
+    private val bookOutTitle = "Book Out"
     val categories = listOf(
         OptionButtonModel(
-            title = "Book Out",
+            title = bookOutTitle,
             icon = R.drawable.book_out_icon,
             route = Routes.BookOutScreen.name
         ),
@@ -76,7 +77,7 @@ object DataSource {
     )
 
     val bookOutOptions = listOf(
-        OptionButtonModel(title = "Book Out", route = OptionType.BookOut.toString()),
+        OptionButtonModel(title = bookOutTitle, route = OptionType.BookOut.toString()),
         OptionButtonModel(title = "Book Out (Box)", route = OptionType.BookOutBox.toString()),
     )
 

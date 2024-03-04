@@ -51,5 +51,10 @@ fun StsynIcon(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    Icon(painter = painterResource(id = icon), tint = color, contentDescription = null, modifier = modifier)
+    Icon(
+        painter = painterResource(id = icon),
+        tint = color,
+        contentDescription = null,
+        modifier = modifier
+    )
 }

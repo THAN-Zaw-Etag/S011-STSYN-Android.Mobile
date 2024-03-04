@@ -8,14 +8,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,14 +23,12 @@ import com.etag.stsyn.ui.components.InfoBottomSheetContent
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
-import kotlinx.coroutines.launch
 
 @Composable
 fun BookInCalScanScreen(
     bookInCalViewModel: BookInCalViewModel,
     modifier: Modifier = Modifier
 ) {
-    val scaffoldState = rememberBottomSheetScaffoldState()
     val rfidUiState by bookInCalViewModel.rfidUiState.collectAsState()
     var showBottomSheet by remember { mutableStateOf(false) }
 
@@ -43,7 +39,6 @@ fun BookInCalScanScreen(
     }
 
     ScreenWithBottomSheet(
-        state = scaffoldState,
         show = showBottomSheet,
         onDismiss = { showBottomSheet = false },
         modifier = modifier,
@@ -65,7 +60,7 @@ fun BookInCalScanScreen(
                         name = "john smith",
                         showTrailingIcon = true,
                         onItemClick = {
-                           showBottomSheet = true
+                            showBottomSheet = true
                         }
                     )
                 }
