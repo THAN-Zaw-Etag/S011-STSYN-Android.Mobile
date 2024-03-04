@@ -124,7 +124,6 @@ fun BaseBoxScreen(
             item {
                 if (show) {
                     BoxBookOutButton(boxOutTitle) {
-
                         showBottomSheet = !showBottomSheet
                     }
                     Spacer(modifier = Modifier.height(16.dp))

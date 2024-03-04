@@ -99,7 +99,6 @@ fun LoginContentScreen(
                 onSuccess(localUser)
                 showLoginSuccessToast = true
                 goToHome()
-
             }
 
             is ApiResponse.ApiError -> {
@@ -197,9 +196,7 @@ private fun LoginSection(
             errorMessages.clear()
         }, onSubmit = {
             errorMessages.clear() // clear old error messages
-            val messages = PasswordValidator.validatePassword(enteredPassword)
-            errorMessages.addAll(messages)
-            if (errorMessages.isEmpty()) onLogInClick(it) // if there is no error, allow to login
+            onLogInClick(it) // if there is no error, allow to login
         })
         Spacer(modifier = Modifier.height(8.dp))
         AnimatedVisibility(visible = showError) {
@@ -209,9 +206,8 @@ private fun LoginSection(
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
             Button(
                 onClick = {
-                    errorMessages.clear() // clear old error messages
-                    errorMessages.addAll(PasswordValidator.validatePassword(enteredPassword))
-                    if (errorMessages.isEmpty()) onLogInClick(enteredPassword)
+                    errorMessages.clear()
+                    onLogInClick(enteredPassword)
                 }, colors = ButtonDefaults.buttonColors(containerColor = Purple80)
             ) {
                 Text(text = "Log in", modifier = Modifier.padding(horizontal = 16.dp))

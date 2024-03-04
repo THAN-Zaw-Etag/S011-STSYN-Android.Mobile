@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.domain.model.DetPLoanItem
 import com.etag.stsyn.ui.components.DetPLoanSwipeableItem
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import kotlinx.coroutines.launch
 
@@ -36,13 +36,12 @@ fun OtherDetPLoanOutBoxScanScreen(
     modifier: Modifier = Modifier
 ) {
     var showDetailBottomSheet by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
 
     val rfidUiState by otherDetPLoanBoxViewModel.rfidUiState.collectAsState()
 
-    DetailBottomSheetScaffold(
-        state = scaffoldState,
+    ScreenWithBottomSheet(
+        show = showDetailBottomSheet,
+        onDismiss = {showDetailBottomSheet = false},
         modifier = modifier,
         sheetContent = {
             Column(
@@ -53,11 +52,7 @@ fun OtherDetPLoanOutBoxScanScreen(
         }) {
         DetPLoanOutContent(
             items = rfidUiState.scannedItems,
-            onItemClick = {
-                if (scaffoldState.bottomSheetState.isVisible) {
-                    coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                } else coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-            },
+            onItemClick = { showDetailBottomSheet = true },
             onSwipeToDismiss = { otherDetPLoanBoxViewModel.removeItem(it) },
             onScan = { otherDetPLoanBoxViewModel.toggle() },
             isScanning = rfidUiState.isScanning,
@@ -87,7 +82,7 @@ fun DetPLoanOutContent(
             itemsIndexed(items) { index, item ->
                 key(item) {
                     DetPLoanSwipeableItem(
-                        swipeable = true,
+                        isSwipeable = true,
                         item = DetPLoanItem("", item, "", ""),
                         onItemClick = onItemClick,
                         onSwipeToDismiss = { onSwipeToDismiss(item) }

@@ -5,13 +5,10 @@ package com.etag.stsyn.ui.screen.book_out.book_out_box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ControlType
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.components.listItemsIndexed
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
@@ -40,19 +37,24 @@ fun BookOutBoxCountScreen(
     var boxes by remember { mutableStateOf(boxUiState.allBoxes) }
     var boxItem by remember { mutableStateOf(BoxItem()) }
     val scannedItemList by bookOutBoxViewModel.scannedItemList.collectAsStateWithLifecycle()
-    val coroutineScope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = SheetState(skipPartiallyExpanded = true, skipHiddenState = false))
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(controlType) {
         boxes = when (controlType) {
             ControlType.All -> boxUiState.allBoxes
-            ControlType.Done -> boxUiState.allBoxes.filter { it.epc in scannedItemList }.toMutableList()
-            ControlType.Outstanding -> boxUiState.allBoxes.filter { it.epc !in scannedItemList }.toMutableList()
+            ControlType.Done -> boxUiState.allBoxes.filter { it.epc in scannedItemList }
+                .toMutableList()
+
+            ControlType.Outstanding -> boxUiState.allBoxes.filter { it.epc !in scannedItemList }
+                .toMutableList()
         }
     }
 
-    DetailBottomSheetScaffold(
-        state = scaffoldState,
+    ScreenWithBottomSheet(
+        show = showBottomSheet,
+        onDismiss = { showBottomSheet = false },
         sheetContent = {
             BoxDetailScreen(boxItem = boxItem)
         }
@@ -70,15 +72,15 @@ fun BookOutBoxCountScreen(
             ) {
                 listItemsIndexed(boxes) { index, item ->
                     val currentIndex = index + 1
-                    key (item.epc){
+                    key(item.epc) {
                         ScannedItem(
                             id = "${item.serialNo} - ${item.itemLocation}",
                             name = "Box 01 item ${if (currentIndex < 10) "0${currentIndex}" else currentIndex}",
                             showTrailingIcon = true,
                             onItemClick = {
+                                scope.launch { sheetState.expand() }
                                 boxItem = item
-                                if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                                else coroutineScope.launch { scaffoldState.bottomSheetState.show() }
+                                showBottomSheet = true
                             }
                         )
                     }

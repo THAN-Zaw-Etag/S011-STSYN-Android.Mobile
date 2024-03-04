@@ -57,7 +57,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 @Composable
 fun LoginScreen(
     navigateToLoginContentScreen: () -> Unit,
-    loginViewModel: LoginViewModel,
+    loginViewModel: LoginViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
     val rfidUiState by loginViewModel.rfidUiState.collectAsStateWithLifecycle()
@@ -74,6 +74,7 @@ fun LoginScreen(
     var errorMessage by remember {
         mutableStateOf("")
     }
+
     var showInvalidUserDialog by remember {
         mutableStateOf(false)
     }
