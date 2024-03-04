@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.components.WarningDialog
@@ -18,7 +19,9 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun OnsiteVerificationSaveScreen(
-    onsiteVerificationViewModel: OnsiteVerificationViewModel) {
+    onsiteVerificationViewModel: OnsiteVerificationViewModel,
+    modifier : Modifier = Modifier
+) {
     val saveOnSiteVerification by onsiteVerificationViewModel.saveOnSiteVerification.collectAsState()
     val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
     var shouldShowWarningDialog by remember {

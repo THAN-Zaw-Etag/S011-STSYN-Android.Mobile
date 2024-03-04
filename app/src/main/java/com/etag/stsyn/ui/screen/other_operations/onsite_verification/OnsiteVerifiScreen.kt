@@ -57,7 +57,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OnsiteVerifyScreen(
+fun OnsiteVerificationScreen(
     onsiteVerificationViewModel: OnsiteVerificationViewModel,
     modifier: Modifier = Modifier
 ) {

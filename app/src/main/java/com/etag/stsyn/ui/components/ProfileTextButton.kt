@@ -42,9 +42,3 @@ fun ProfileTextButton(
         )
     }
 }
-
-@Composable
-@Preview(showBackground = true)
-fun ProfileTextButtonPreview() {
-    ProfileTextButton(text = "Hello", onOptionClick = { /*TODO*/ })
-}

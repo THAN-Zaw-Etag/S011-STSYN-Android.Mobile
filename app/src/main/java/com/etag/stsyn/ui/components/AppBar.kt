@@ -63,7 +63,7 @@ fun UserNameShortcutIcon(
         colors = CardDefaults.cardColors(containerColor = Purple80)
     ) {
         Text(
-            text = if (name.length > 0) name[0].toString() else name,
+            text = if (name.isNotEmpty()) name[0].toString() else name,
             fontWeight = FontWeight.Bold,
             color = Color.White,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)

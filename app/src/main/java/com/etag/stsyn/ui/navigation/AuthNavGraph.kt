@@ -8,7 +8,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.etag.stsyn.ui.components.ExitApp
+import com.etag.stsyn.ui.components.exitApp
 import com.etag.stsyn.ui.screen.login.LoginContentScreen
 import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
@@ -55,7 +55,7 @@ fun NavGraphBuilder.authNavGraph(
                 loginViewModel = loginViewModel
             )
             BackHandler {
-                ExitApp(context)
+                exitApp(context)
             }
         }
         composable(route = Routes.LoginContentScreen.name) {

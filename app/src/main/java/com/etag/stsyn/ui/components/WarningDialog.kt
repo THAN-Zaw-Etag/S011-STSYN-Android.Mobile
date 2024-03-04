@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.components
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -117,9 +116,7 @@ fun WarningDialog(
         mutableStateOf(true)
     }
 
-    Log.d("WarningDialog", "attemptCount: $attemptAccount")
-    var messageStatus = ""
-    messageStatus = if (attemptAccount > 3) {
+    val messageStatus = if (attemptAccount > 3) {
         "Too many attempts,please check your internet connection or try again later"
     } else {
         message

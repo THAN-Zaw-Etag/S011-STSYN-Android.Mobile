@@ -21,8 +21,7 @@ import com.etag.stsyn.ui.theme.Purple80
 
 @Composable
 fun ShowBaseUrlAlertDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onConfirm: () -> Unit
 ) {
     var showAlertDialog by remember { mutableStateOf(true) }
 

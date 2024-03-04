@@ -61,7 +61,7 @@ fun ScannedItem(
         SwipeBox(modifier = Modifier.fillMaxWidth(),
             swipeDirection = SwipeDirection.EndToStart,
             endContentWidth = 60.dp,
-            endContent = { swipeableState, endSwipeProgress ->
+            endContent = { swipeableState, _ ->
                 SwipeIcon(
                     imageVector = Icons.Filled.Delete,
                     contentDescription = null,

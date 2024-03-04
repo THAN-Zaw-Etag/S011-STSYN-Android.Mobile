@@ -19,7 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.etag.stsyn.enums.OptionType
-import com.etag.stsyn.ui.components.ExitApp
+import com.etag.stsyn.ui.components.exitApp
 import com.etag.stsyn.ui.screen.detail.DetailScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.BookInScreen
@@ -61,7 +61,7 @@ fun HomeNavigationGraph(
             }
 
             BackHandler(enabled = true) {
-                ExitApp(context)
+                exitApp(context)
             }
 
             // update ui

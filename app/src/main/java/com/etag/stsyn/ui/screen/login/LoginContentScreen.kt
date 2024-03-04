@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.CustomIcon
-import com.etag.stsyn.ui.components.ExitApp
+import com.etag.stsyn.ui.components.exitApp
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.PasswordField
 import com.etag.stsyn.ui.components.VersionText
@@ -119,7 +119,7 @@ fun LoginContentScreen(
         icon = CustomIcon.Vector(Icons.Default.Warning),
         dialogState = dialogState,
         positiveButtonTitle = "exit",
-        onPositiveButtonClick = { ExitApp(context) })
+        onPositiveButtonClick = { exitApp(context) })
 
     if (showLoginSuccessToast) Toast.makeText(
         context, "Login successful!", Toast.LENGTH_SHORT

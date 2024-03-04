@@ -53,6 +53,7 @@ fun FilterDialog(
     onDone: (List<FilterItem>, Boolean) -> Unit
 ) {
     val TAG = "FilterDialog"
+
     var showFilterDialog by remember { mutableStateOf(false) }
     var isUpdateAll by remember { mutableStateOf(false) }
     var filterItems by remember { mutableStateOf<MutableList<FilterItem>>(mutableListOf()) }
@@ -154,9 +155,7 @@ private fun FilterDialogContent(
                         options = filters[index].options,
                         onCleared = { isClear = false },
                         onSelected = { option ->
-                            val updatedItem =
-                                item.copy(selectedOption = if (option == "All") "" else option)
-                            selectedItems[index] = updatedItem
+                            selectedItems[index] = item.copy(selectedOption = if (option == "All") "" else option)
                         }
                     )
                 }
@@ -221,7 +220,7 @@ private fun FilterItemLayout(
 
     LaunchedEffect(isClear) {
         if (isClear) {
-            defaultValue = options.get(0)
+            defaultValue = options[0]
             onCleared()
         }
     }

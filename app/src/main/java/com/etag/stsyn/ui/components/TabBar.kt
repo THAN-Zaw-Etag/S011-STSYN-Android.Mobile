@@ -53,21 +53,6 @@ fun TabBarLayout(
                 selectedContentColor = MaterialTheme.colorScheme.primary,
                 icon = {
                     TabItemIcon(icon = tabOption.icon, selected = pagerState.currentPage == index)
-                    /*when (tabOption.icon) {
-                        is CustomIcon.Vector -> {
-                            TabItemIcon(
-                                icon = tabOption.icon.iconVector,
-                                selected = pagerState.currentPage == index
-                            )
-                        }
-
-                        is CustomIcon.Resource -> {
-                            TabItemIcon(
-                                icon = tabOption.icon.iconRes,
-                                selected = pagerState.currentPage == index
-                            )
-                        }
-                    }*/
                 },
                 text = {
                     Text(
