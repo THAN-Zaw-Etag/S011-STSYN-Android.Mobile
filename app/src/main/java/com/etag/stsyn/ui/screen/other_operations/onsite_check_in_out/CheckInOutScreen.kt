@@ -6,8 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
@@ -31,7 +30,6 @@ import com.etag.stsyn.ui.theme.errorColor
 fun CheckInOutScreen(
     onsiteCheckInOutViewModel: OnsiteCheckInOutViewModel, modifier: Modifier = Modifier
 ) {
-    val TAG = "CheckInOutScreen" //TODO might delete later
 
     val rfidUiState by onsiteCheckInOutViewModel.rfidUiState.collectAsStateWithLifecycle()
     val onsiteCheckInOutUiState by onsiteCheckInOutViewModel.onSiteCheckInOutUiState.collectAsStateWithLifecycle()
@@ -40,52 +38,16 @@ fun CheckInOutScreen(
     val listState = rememberLazyListState()
     val dialogState = rememberMutableDialogState(data = "")
 
-    LaunchedEffect (onsiteCheckInOutUiState.shouldShowWarningDialog) {
+    LaunchedEffect(onsiteCheckInOutUiState.shouldShowWarningDialog) {
         if (onsiteCheckInOutUiState.shouldShowWarningDialog) dialogState.showDialog("All items must be from same user")
     }
 
     LaunchedEffect(Unit) {
-        onsiteCheckInOutViewModel.apply{
+        onsiteCheckInOutViewModel.apply {
             updateScanType(BaseViewModel.ScanType.Multi)
             updateOnsiteScanType(OnsiteCheckInOutViewModel.OnSiteScanType.ITEMS)
         }
     }
-
-    /*when (getItemsForOnsiteResponse) {
-        is ApiResponse.Loading -> LoadingDialog(title = "Loading...",
-            showDialog = true,
-            onDismiss = { *//*TODO*//* })
-
-        is ApiResponse.Success -> {
-            showErrorDialog = false
-        }
-
-        is ApiResponse.ApiError -> {
-            showErrorDialog = true
-            errorMessage = (getItemsForOnsiteResponse as ApiResponse.ApiError).message
-        }
-
-        is ApiResponse.AuthorizationError -> {
-            showErrorDialog = false
-            onsiteCheckInOutViewModel.shouldShowAuthorizationFailedDialog(true)
-        }
-
-        else -> showErrorDialog = false
-    }
-
-    // show this dialog when api error occurs
-    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
-        message = if (attemptCount >= 3) "You've tried many times. Check your connection and try again." else errorMessage,
-        showDialog = showErrorDialog,
-        positiveButtonTitle = "try again",
-        onPositiveButtonClick = {
-            attemptCount++
-
-            if (attemptCount >= 3) {
-                attemptCount = 0
-                // handle something
-            } else onsiteCheckInOutViewModel.getAllItemsForOnsite()
-        })*/
 
     // show this dialog when reader error occurs
     WarningDialog(

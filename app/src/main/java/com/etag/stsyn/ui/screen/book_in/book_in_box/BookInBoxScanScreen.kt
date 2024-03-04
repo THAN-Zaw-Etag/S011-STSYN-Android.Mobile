@@ -2,10 +2,8 @@
 
 package com.etag.stsyn.ui.screen.book_in.book_in_box
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,8 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.ui.screen.base.BaseBoxScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
-import com.tzh.retrofit_module.domain.model.bookIn.SelectBoxForBookInResponse
-import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun BookInBoxScanScreen(
@@ -38,7 +34,11 @@ fun BookInBoxScanScreen(
         boxes = bookInBoxUiState.allBoxes
 
         if (bookInBoxUiState.itemsCountNotInBox != 0)
-            Toast.makeText(context,"${bookInBoxUiState.itemsCountNotInBox} items in this box be booked out",Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                "${bookInBoxUiState.itemsCountNotInBox} items in this box be booked out",
+                Toast.LENGTH_SHORT
+            ).show()
     }
 
     BaseBoxScreen(

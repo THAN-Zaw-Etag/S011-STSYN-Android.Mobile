@@ -62,7 +62,7 @@ import com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out.OnsiteCheck
 import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationCountScreen
 import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationSaveScreen
 import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationViewModel
-import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerifyScreen
+import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutSaveScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutScanScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutViewModel
@@ -275,7 +275,7 @@ object ScreensDataSource {
         TabScreen(
             title = "onsite verify",
             icon = CustomIcon.Vector(Icons.Default.ArrowCircleUp),
-            screen = { OnsiteVerifyScreen(viewModel) }),
+            screen = { OnsiteVerificationScreen(viewModel) }),
         TabScreen(
             title = "Count",
             icon = CustomIcon.Resource(R.drawable.tally),

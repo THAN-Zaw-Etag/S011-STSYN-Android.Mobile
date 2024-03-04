@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.CustomIcon
-import com.etag.stsyn.ui.components.ExitApp
+import com.etag.stsyn.ui.components.exitApp
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.PasswordField
 import com.etag.stsyn.ui.components.VersionText
@@ -43,7 +43,6 @@ import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
-import com.etag.stsyn.util.PasswordValidator
 import com.etag.stsyn.util.toLines
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
@@ -51,7 +50,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun LoginContentScreen(
-    goToHome:() ->Unit,
+    goToHome: () -> Unit,
     loginAttemptCount: Int,
     userName: String,
     loginResponse: ApiResponse<LoginResponse>,
@@ -120,7 +119,7 @@ fun LoginContentScreen(
         icon = CustomIcon.Vector(Icons.Default.Warning),
         dialogState = dialogState,
         positiveButtonTitle = "exit",
-        onPositiveButtonClick = { ExitApp(context) })
+        onPositiveButtonClick = { exitApp(context) })
 
     if (showLoginSuccessToast) Toast.makeText(
         context, "Login successful!", Toast.LENGTH_SHORT

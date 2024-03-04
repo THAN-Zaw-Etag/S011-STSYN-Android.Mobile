@@ -21,6 +21,7 @@ class SettingsViewModel @Inject constructor(
             appConfiguration.updateAppConfig(appConfigModel)
         }
     }
+
     fun updateBaseUrl(newBaseUrl: String) {
         baseUrlProvider.updateBaseUrl(newBaseUrl)
     }

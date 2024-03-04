@@ -81,7 +81,8 @@ fun BookOutBoxSaveScreen(
         icon = CustomIcon.Vector(Icons.Default.Error),
         dialogState = dialogState,
         positiveButtonTitle = "try again",
-        onPositiveButtonClick = bookOutBoxViewModel::saveBookOutBoxItems)
+        onPositiveButtonClick = bookOutBoxViewModel::saveBookOutBoxItems
+    )
 
     BaseSaveScreen(
         isError = bookOutBoxUiState.errorMessage != null,

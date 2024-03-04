@@ -35,7 +35,9 @@ fun BookInSaveScreen(
             onDismiss = { }
         )
 
-        is ApiResponse.ApiError -> dialogState.showDialog((saveBookInResponse as? ApiResponse.ApiError)?.message ?: "")
+        is ApiResponse.ApiError -> dialogState.showDialog(
+            (saveBookInResponse as? ApiResponse.ApiError)?.message ?: ""
+        )
 
         else -> {}
     }
@@ -44,7 +46,8 @@ fun BookInSaveScreen(
     WarningDialog(
         icon = CustomIcon.Vector(Icons.Default.Error),
         dialogState = dialogState,
-        positiveButtonTitle = "exit",)
+        positiveButtonTitle = "exit",
+    )
 
     BaseSaveScreen(
         isError = scannedItemIdList.isEmpty(),

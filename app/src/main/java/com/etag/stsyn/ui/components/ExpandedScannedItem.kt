@@ -61,9 +61,3 @@ private fun DetailItem(
         Text(text = value.uppercase())
     }
 }
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun TLoanScannedItemPreview() {
-
-}

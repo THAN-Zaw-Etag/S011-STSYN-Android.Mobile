@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.theme.Purple80
 
@@ -28,6 +29,8 @@ fun OtherDetPLoanOutSaveScreen(
     modifier: Modifier = Modifier
 ) {
     var value by remember { mutableStateOf("") }
+    val rfidUiState by otherDetPLoanViewModel.rfidUiState.collectAsStateWithLifecycle()
+
     Column(
         modifier = modifier.fillMaxSize()
     ) {

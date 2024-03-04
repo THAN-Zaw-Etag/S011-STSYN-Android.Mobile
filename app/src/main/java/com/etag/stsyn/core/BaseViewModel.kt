@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel(
-    private val rfidHandler: ZebraRfidHandler, private val TAG: String = "Base Viewmodel"
+    private val rfidHandler: ZebraRfidHandler,
 ) : ViewModel(), RfidResponseHandlerInterface {
 
     private val _rfidUiState = MutableStateFlow(RfidUiState())
@@ -66,12 +66,12 @@ abstract class BaseViewModel(
      * Handle api response state and update loading , error dialogs states.
      * @see delay not to show loading dialog immediately
      * @see disableScan disable scan while loading*/
-    protected suspend fun <T> handleDialogStatesByResponse(
+    protected fun <T> handleDialogStatesByResponse(
         response: ApiResponse<T>, shouldShowSuccessDialog: Boolean = false
     ) {
         when (response) {
             is ApiResponse.Loading -> {
-                delay(400)
+                //delay(400)
                 updateErrorMessage("")
                 toggleLoadingVisibility(true)
                 disableScan()
@@ -222,10 +222,8 @@ abstract class BaseViewModel(
 
     abstract fun onReceivedTagId(id: String)
     override fun handleTagData(tagData: Array<TagData>) {
-        if (_rfidUiState.value.scanType == ScanType.Single) {
-            if (tagData.get(0).tagID.isNotEmpty()) stopScan()
-        }
-        onReceivedTagId(tagData.get(0).tagID)
+        if (_rfidUiState.value.scanType == ScanType.Single && tagData[0].tagID.isNotEmpty()) stopScan()
+        onReceivedTagId(tagData[0].tagID)
     }
 
     /**

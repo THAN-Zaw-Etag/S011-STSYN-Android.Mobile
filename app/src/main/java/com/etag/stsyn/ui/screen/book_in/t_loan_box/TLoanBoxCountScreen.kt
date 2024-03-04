@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.screen.BottomSheetContent
@@ -29,6 +30,7 @@ fun TLoanBoxCountScreen(
 ) {
     val items = remember { mutableStateListOf<String>() }
     var showBottomSheet by remember { mutableStateOf(false) }
+    val rfidUiState by tLoanBoxViewModel.rfidUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         DataSource.dummyDataList.forEach {

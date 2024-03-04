@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 fun String.doesNotEquals(string: String?): Boolean {
-    return !this.equals(string)
+    return this != string
 }
 
 fun List<String>.toLines(): String {

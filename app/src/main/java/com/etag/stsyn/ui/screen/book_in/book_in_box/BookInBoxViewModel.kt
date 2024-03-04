@@ -42,20 +42,27 @@ class BookInBoxViewModel @Inject constructor(
 ) : BaseViewModel(rfidHandler) {
     private val TAG = "BookInBoxViewModel"
 
-    private val _boxItemsForBookInResponse = MutableStateFlow<ApiResponse<SelectBoxForBookInResponse>>(ApiResponse.Default)
-    val boxItemsForBookInResponse: StateFlow<ApiResponse<SelectBoxForBookInResponse>> = _boxItemsForBookInResponse.asStateFlow()
+    private val _boxItemsForBookInResponse =
+        MutableStateFlow<ApiResponse<SelectBoxForBookInResponse>>(ApiResponse.Default)
+    val boxItemsForBookInResponse: StateFlow<ApiResponse<SelectBoxForBookInResponse>> =
+        _boxItemsForBookInResponse.asStateFlow()
 
-    private val _getAllItemsOfBox = MutableStateFlow<ApiResponse<GetAllItemsOfBoxResponse>>(ApiResponse.Default)
-    val getAllItemsOfBox: StateFlow<ApiResponse<GetAllItemsOfBoxResponse>> = _getAllItemsOfBox.asStateFlow()
+    private val _getAllItemsOfBox =
+        MutableStateFlow<ApiResponse<GetAllItemsOfBoxResponse>>(ApiResponse.Default)
+    val getAllItemsOfBox: StateFlow<ApiResponse<GetAllItemsOfBoxResponse>> =
+        _getAllItemsOfBox.asStateFlow()
 
-    private val _saveBookInBoxResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
-    val saveBookInBoxResponse: StateFlow<ApiResponse<NormalResponse>> = _saveBookInBoxResponse.asStateFlow()
+    private val _saveBookInBoxResponse =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveBookInBoxResponse: StateFlow<ApiResponse<NormalResponse>> =
+        _saveBookInBoxResponse.asStateFlow()
 
     private val _boxUiState = MutableStateFlow(BoxUiState())
     val boxUiState: StateFlow<BoxUiState> = _boxUiState.asStateFlow()
 
     private var boxItems = MutableStateFlow<List<BoxItem>>(emptyList())  // items from api
-    val scannedItemsList = MutableStateFlow<List<String>>(emptyList()) // scanned tag list
+    private val _scannedItemsList = MutableStateFlow<List<String>>(emptyList())
+    val scannedItemsList = _scannedItemsList.asStateFlow()
 
     val userFlow = localDataStore.getUser
     private val appConfig = appConfiguration.appConfig
@@ -72,10 +79,13 @@ class BookInBoxViewModel @Inject constructor(
 
             when (val response = bookInRepository.getItemsCountNotInBox(box)) {
                 is ApiResponse.Success -> {
-                    _boxUiState.update { it.copy(
-                        itemsCountNotInBox = (response as GetItemsCountNotInBox).itemCount
-                    ) }
+                    _boxUiState.update {
+                        it.copy(
+                            itemsCountNotInBox = (response as GetItemsCountNotInBox).itemCount
+                        )
+                    }
                 }
+
                 else -> {}
             }
         }
@@ -91,7 +101,7 @@ class BookInBoxViewModel @Inject constructor(
     private fun handleClickEvent() {
         viewModelScope.launch {
             clickEventFlow.collect {
-                when(it) {
+                when (it) {
                     is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
                     is ClickEvent.RetryClick -> getAllBoxesForBookInItem()
                     else -> {}
@@ -104,12 +114,12 @@ class BookInBoxViewModel @Inject constructor(
         viewModelScope.launch {
             updateSuccessDialogVisibility(false)
             getAllBoxesForBookInItem()
-            scannedItemsList.value = emptyList()
+            _scannedItemsList.value = emptyList()
         }
     }
 
     private fun addScannedItemToList(id: String) {
-        scannedItemsList.update { currentList ->
+        _scannedItemsList.update { currentList ->
             if (id in currentList) {
                 currentList
             } else {
@@ -129,12 +139,12 @@ class BookInBoxViewModel @Inject constructor(
             _saveBookInBoxResponse.value = ApiResponse.Loading
 
             val readerId = appConfig.first().handheldReaderId
-            val currentDate = DateUtil.getCurrentDate() //TODO replace with DateUtil.getCurrentDate()
+            val currentDate = DateUtil.getCurrentDate()
             val buddy = boxUiState.value.issuerUser
             val scannedItems =
-                _boxUiState.value.allItemsOfBox.filter { it.epc in scannedItemsList.value }
+                _boxUiState.value.allItemsOfBox.filter { it.epc in _scannedItemsList.value }
             val outStandingItems =
-                _boxUiState.value.allItemsOfBox.filter { it.epc !in scannedItemsList.value }
+                _boxUiState.value.allItemsOfBox.filter { it.epc !in _scannedItemsList.value }
 
             val itemMovementLogs = mutableListOf<ItemMovementLog>()
             val scannedBox = boxUiState.value.scannedBox
@@ -214,6 +224,7 @@ class BookInBoxViewModel @Inject constructor(
                 is ApiResponse.Success -> {
                     _boxUiState.update { it.copy(issuerUser = response.data?.userModel) }
                 }
+
                 else -> {}
             }
         }
@@ -260,7 +271,7 @@ class BookInBoxViewModel @Inject constructor(
     fun refreshScannedBox() {
         viewModelScope.launch {
             boxItems.update { emptyList() }
-            scannedItemsList.update { emptyList() }
+            _scannedItemsList.update { emptyList() }
             _boxUiState.update {
                 it.copy(scannedBox = BoxItem(), allItemsOfBox = mutableListOf())
             }
@@ -270,13 +281,13 @@ class BookInBoxViewModel @Inject constructor(
     fun toggleVisualCheck(enable: Boolean) {
         _boxUiState.update { it.copy(isChecked = enable) }
         if (enable) {
-            scannedItemsList.update { _boxUiState.value.allItemsOfBox.map { it.epc } }
+            _scannedItemsList.update { _boxUiState.value.allItemsOfBox.map { it.epc } }
             getItemsCountNotInBox(boxUiState.value.scannedBox.box)
-        } else scannedItemsList.update { emptyList() }
+        } else _scannedItemsList.update { emptyList() }
     }
 
     fun resetScannedItems() {
-        scannedItemsList.update { emptyList() }
+        _scannedItemsList.update { emptyList() }
 
         // when reset all scanned items, disable checked
         _boxUiState.update { it.copy(isChecked = false) }
@@ -315,13 +326,14 @@ class BookInBoxViewModel @Inject constructor(
         viewModelScope.launch {
             userFlow.collect {
                 _getAllItemsOfBox.value = ApiResponse.Loading
-                _getAllItemsOfBox.value = bookInRepository.getAllBookItemsOfBox(box = box, status = status)
+                _getAllItemsOfBox.value =
+                    bookInRepository.getAllBookItemsOfBox(box = box, status = status)
 
                 when (_getAllItemsOfBox.value) {
                     is ApiResponse.Success -> {
                         val allItems = (_getAllItemsOfBox.value as ApiResponse.Success).data!!.items
                         viewModelScope.launch {
-                            _getAllItemsOfBox.collect { response ->
+                            _getAllItemsOfBox.collect { _ ->
                                 _boxUiState.update { it.copy(allItemsOfBox = allItems.toMutableList()) }
                             }
                         }
@@ -335,6 +347,7 @@ class BookInBoxViewModel @Inject constructor(
 
 
 }
+
 enum class BoxScanType {
     BOX, ITEMS, BUDDY
 }
@@ -343,7 +356,7 @@ data class BoxUiState(
     val scannedBox: BoxItem = BoxItem(),
     val issuerUser: UserModel? = null,
     val isUsCase: Boolean = false,
-    val itemsCountNotInBox : Int = 0,
+    val itemsCountNotInBox: Int = 0,
     val isChecked: Boolean = false,
     val boxScanType: BoxScanType = BoxScanType.BOX,
     val allBoxes: List<BoxItem> = listOf(),

@@ -11,7 +11,7 @@ class LoginTest {
     /*@get:Rule(order = 1)
     var hiltTestRule = HiltAndroidRule(this)*/
 
-    @get:Rule (order = 1)
+    @get:Rule(order = 1)
     val rule = createComposeRule()
 
     /*@Before

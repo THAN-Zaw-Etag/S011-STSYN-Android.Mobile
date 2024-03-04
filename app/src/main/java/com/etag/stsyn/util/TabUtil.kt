@@ -10,6 +10,7 @@ data class TabOption(
     val title: String,
     val icon: CustomIcon,
 )
+
 object TabUtil {
 
     /**
@@ -23,33 +24,48 @@ object TabUtil {
         return when (optionType) {
             OptionType.OtherDetPLoan -> {
                 options.removeAt(0)
-                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(
+                    0,
+                    TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp))
+                )
 
                 options
             }
 
             OptionType.OtherTLoan -> {
                 options.removeAt(0)
-                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(
+                    0,
+                    TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp))
+                )
                 options
             }
 
             OptionType.OnsiteCheckInOut -> {
                 options.removeAt(0)
-                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(
+                    0,
+                    TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp))
+                )
 
                 options
             }
 
             OptionType.BookOut -> {
                 options.removeAt(0)
-                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(
+                    0,
+                    TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp))
+                )
 
                 options
             }
 
             else -> {
-                options.add(0, TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp)))
+                options.add(
+                    0,
+                    TabOption(optionType.title, CustomIcon.Vector(Icons.Filled.ArrowCircleUp))
+                )
                 options
             }
         }

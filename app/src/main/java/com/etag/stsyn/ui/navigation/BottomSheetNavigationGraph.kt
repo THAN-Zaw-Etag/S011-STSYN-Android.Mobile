@@ -28,7 +28,7 @@ fun BottomSheetNavigationGraph(
 
         composable(route = "${BottomSheetNavigation.BoxDetail.name}/{index}") {
             val index = it.arguments?.getString("index")?.toInt() ?: 0
-            val box = boxList.get(index)
+            val box = boxList[index]
 
             BoxDetailScreen(boxItem = box)
         }

@@ -53,6 +53,7 @@ fun FilterDialog(
     onDone: (List<FilterItem>, Boolean) -> Unit
 ) {
     val TAG = "FilterDialog"
+
     var showFilterDialog by remember { mutableStateOf(false) }
     var isUpdateAll by remember { mutableStateOf(false) }
     var filterItems by remember { mutableStateOf<MutableList<FilterItem>>(mutableListOf()) }
@@ -67,7 +68,7 @@ fun FilterDialog(
         dialogState = dialogState,
         positiveButtonTitle = "Ok",
         onPositiveButtonClick = {
-            onDone(filterItems,isUpdateAll)
+            onDone(filterItems, isUpdateAll)
             showFilterDialog = false
             onDismiss()
         }
@@ -89,7 +90,9 @@ fun FilterDialog(
                 onClear = onClear,
                 onDone = { items ->
                     Log.d(TAG, "FilterDialog: ${items.map { it.selectedOption }}")
-                    val showWarningDialog = items.filter { it.selectedOption.trim().isEmpty() || it.selectedOption == "All" }.size != items.size
+                    val showWarningDialog = items.filter {
+                        it.selectedOption.trim().isEmpty() || it.selectedOption == "All"
+                    }.size != items.size
                     isUpdateAll = showWarningDialog
 
                     dialogState.showDialog(
@@ -152,9 +155,7 @@ private fun FilterDialogContent(
                         options = filters[index].options,
                         onCleared = { isClear = false },
                         onSelected = { option ->
-                            val updatedItem =
-                                item.copy(selectedOption = if (option == "All") "" else option)
-                            selectedItems[index] = updatedItem
+                            selectedItems[index] = item.copy(selectedOption = if (option == "All") "" else option)
                         }
                     )
                 }
@@ -219,12 +220,17 @@ private fun FilterItemLayout(
 
     LaunchedEffect(isClear) {
         if (isClear) {
-            defaultValue = options.get(0)
+            defaultValue = options[0]
             onCleared()
         }
     }
 
-    Row(modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(text = "$title :", modifier = Modifier.weight(0.4f))
         Spacer(modifier = Modifier.width(8.dp))
         DropDown(

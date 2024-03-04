@@ -38,7 +38,6 @@ import com.tzh.retrofit_module.util.ApiResponse
 fun BookOutSaveScreen(
     bookOutViewModel: BookOutViewModel, modifier: Modifier = Modifier
 ) {
-    val TAG = "BookOutSaveScreen"
     var location by remember { mutableStateOf("") }
     val settings by bookOutViewModel.settings.collectAsState(initial = AppConfigModel())
     val bookOutUiState by bookOutViewModel.bookOutUiState.collectAsState()
@@ -90,7 +89,7 @@ fun BookOutSaveScreen(
             onProcess = {
                 attemptCount++
                 bookOutViewModel.saveBookOutItems()
-            }, onDismiss = { attemptCount = 0})
+            }, onDismiss = { attemptCount = 0 })
     }
 
     LaunchedEffect(bookOutUiState.scannedItems, bookOutUiState.location) {

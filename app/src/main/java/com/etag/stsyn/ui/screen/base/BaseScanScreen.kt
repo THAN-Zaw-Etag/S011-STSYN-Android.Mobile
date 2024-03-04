@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.ScanIconButton
@@ -91,13 +90,5 @@ private fun BottomScanButtonLayout(
             } else Modifier)
         ScanIconButton(onScan = onScan, isScanning = isScanning)
         Text(text = "Total $itemCount")
-    }
-}
-
-@Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun ParentScanScreenPreview() {
-    BaseScanScreen(scannedItemCount = 5, onScan = { /*TODO*/ }, onClear = { /*TODO*/ }) {
-        Text(text = "Hello")
     }
 }

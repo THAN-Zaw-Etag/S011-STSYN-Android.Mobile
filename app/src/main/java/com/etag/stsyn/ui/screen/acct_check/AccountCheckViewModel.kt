@@ -97,7 +97,7 @@ class AccountCheckViewModel @Inject constructor(
         }
     }
 
-    fun updateFilterOptions(filterOptions: List<FilterItem>,isUpdateAll: Boolean) {
+    fun updateFilterOptions(filterOptions: List<FilterItem>, isUpdateAll: Boolean) {
         _acctCheckUiState.update {
             it.copy(
                 filterOptions = filterOptions,
@@ -106,16 +106,6 @@ class AccountCheckViewModel @Inject constructor(
             )
         }
         getAllAccountabilityCheckItems()
-    }
-
-    private fun doTasksAfterSaving() {
-        getAllAccountabilityCheckItems()
-        _scannedItemIdList.update { emptyList() }
-        _acctCheckUiState.update { uiState ->
-            uiState.copy(scannedItem = BoxItem(),
-                allItems = emptyList(),
-                filterOptions = uiState.filterOptions.map { it.copy(selectedOption = "") })
-        }
     }
 
     private fun observeAccountabilityCheckResponse() {
@@ -197,7 +187,12 @@ class AccountCheckViewModel @Inject constructor(
                 _acctCheckUiState.update { it.copy(scannedItem = scannedItem, unknownEpc = null) }
                 addScannedItemId(id)
             } else {
-                _acctCheckUiState.update { it.copy(unknownEpc = id, showUnknownEpcDialog = acctCheckUiState.value.isUpdateAll) }
+                _acctCheckUiState.update {
+                    it.copy(
+                        unknownEpc = id,
+                        showUnknownEpcDialog = acctCheckUiState.value.isUpdateAll
+                    )
+                }
             }
         }
     }

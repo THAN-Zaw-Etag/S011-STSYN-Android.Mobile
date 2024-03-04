@@ -27,6 +27,7 @@ fun DetPLoanScanScreen(
         if (rfidUiState.scannedItems.size > 1) listState.animateScrollToItem(rfidUiState.scannedItems.size - 1)
     }
     BaseScanScreen(
+        modifier = modifier,
         scannedItemCount = rfidUiState.scannedItems.size,
         onScan = { detPLoanViewModel.toggle() },
         isScanning = rfidUiState.isScanning,

@@ -44,8 +44,10 @@ class BookOutBoxViewModel @Inject constructor(
     private val _boxUiState = MutableStateFlow(BoxUiState())
     val boxUiState: StateFlow<BoxUiState> = _boxUiState.asStateFlow()
 
-    private val _getAllBookOutBoxesResponse = MutableStateFlow<ApiResponse<GetAllBookOutBoxesResponse>>(ApiResponse.Default)
-    val getAllBookOutBoxesResponse: StateFlow<ApiResponse<GetAllBookOutBoxesResponse>> = _getAllBookOutBoxesResponse.asStateFlow()
+    private val _getAllBookOutBoxesResponse =
+        MutableStateFlow<ApiResponse<GetAllBookOutBoxesResponse>>(ApiResponse.Default)
+    val getAllBookOutBoxesResponse: StateFlow<ApiResponse<GetAllBookOutBoxesResponse>> =
+        _getAllBookOutBoxesResponse.asStateFlow()
 
     private val _bookOutBoxUiState = MutableStateFlow(BookOutBoxUiState())
     val bookOutBoxUiState: StateFlow<BookOutBoxUiState> = _bookOutBoxUiState.asStateFlow()
@@ -53,10 +55,13 @@ class BookOutBoxViewModel @Inject constructor(
     private val _needLocation = MutableStateFlow(false)
     val needLocation: StateFlow<Boolean> = _needLocation.asStateFlow()
 
-    private val _saveBookOutBoxResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
-    val saveBookOutBoxResponse: StateFlow<ApiResponse<NormalResponse>> = _saveBookOutBoxResponse.asStateFlow()
+    private val _saveBookOutBoxResponse =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveBookOutBoxResponse: StateFlow<ApiResponse<NormalResponse>> =
+        _saveBookOutBoxResponse.asStateFlow()
 
-    val scannedItemList = MutableStateFlow<List<String>>(emptyList())
+    private val _scannedItemList = MutableStateFlow<List<String>>(emptyList())
+    val scannedItemList = _scannedItemList.asStateFlow()
 
     val user = localDataStore.getUser
     private val settings = appConfiguration.appConfig
@@ -107,10 +112,13 @@ class BookOutBoxViewModel @Inject constructor(
             delay(1000)
             when (getAllBookOutBoxesResponse.value) {
                 is ApiResponse.Success -> {
-                    val boxes = (getAllBookOutBoxesResponse.value as ApiResponse.Success<GetAllBookOutBoxesResponse>).data?.items ?: emptyList()
+                    val boxes =
+                        (getAllBookOutBoxesResponse.value as ApiResponse.Success<GetAllBookOutBoxesResponse>).data?.items
+                            ?: emptyList()
                     Log.d(TAG, "getAllBookOutBoxes: ${boxes.size}")
                     _boxUiState.update { it.copy(allBoxes = boxes) }
                 }
+
                 else -> {}
             }
         }
@@ -126,7 +134,7 @@ class BookOutBoxViewModel @Inject constructor(
             getAllBookOutBoxes()
             _boxUiState.update { it.copy(scannedBox = BoxItem(), allItemsOfBox = emptyList()) }
             // clear all scanned items
-            scannedItemList.value = emptyList()
+            _scannedItemList.value = emptyList()
         }
     }
 
@@ -145,15 +153,10 @@ class BookOutBoxViewModel @Inject constructor(
                 } else updateBookOutBoxErrorMessage(null)
             }
 
-            if (needLocation) {
-                if (location.isEmpty() && purpose.isEmpty()) {
-                    updateBookOutBoxErrorMessage("Please Key In Location!")
-                    return@launch
-                } else updateBookOutBoxErrorMessage(null)
-            }
+            if (needLocation) validateLocationAndPurpose(location, purpose)
 
             boxUiState.value.allItemsOfBox.forEach { box ->
-                if (box.calDate != null && box.calDate.isNotEmpty() && box.calDate != Instant.MIN.toString()) {
+                if (box.calDate.isNotEmpty() && box.calDate != Instant.MIN.toString()) {
                     if (box.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
                         updateBookOutBoxErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
                         return@launch
@@ -225,9 +228,16 @@ class BookOutBoxViewModel @Inject constructor(
         }
     }
 
+    private fun validateLocationAndPurpose(location: String, purpose: String) {
+        if (location.isEmpty() && purpose.isEmpty()) {
+            updateBookOutBoxErrorMessage("Please Key In Location!")
+            return
+        } else updateBookOutBoxErrorMessage(null)
+    }
+
     fun refreshScannedBox() {
         viewModelScope.launch {
-            scannedItemList.update { emptyList() }
+            _scannedItemList.update { emptyList() }
             _boxUiState.update {
                 it.copy(
                     scannedBox = BoxItem(), allItemsOfBox = mutableListOf()
@@ -243,15 +253,15 @@ class BookOutBoxViewModel @Inject constructor(
     }
 
     fun resetAllItemsInBox() {
-        scannedItemList.update { emptyList() }
+        _scannedItemList.update { emptyList() }
         _boxUiState.update { it.copy(isChecked = false) }
     }
 
     fun toggleVisualCheck(enable: Boolean) {
         _boxUiState.update { it.copy(isChecked = enable) }
         if (enable) {
-            scannedItemList.update { _boxUiState.value.allItemsOfBox.map { it.epc } }
-        } else scannedItemList.update { emptyList() }
+            _scannedItemList.update { _boxUiState.value.allItemsOfBox.map { it.epc } }
+        } else _scannedItemList.update { emptyList() }
     }
 
     private fun getAllItemsInBox(box: String) {

@@ -1,5 +1,3 @@
-
-
 package com.etag.stsyn.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
@@ -45,6 +43,7 @@ fun DetPLoanSwipeableItem(
     var swipeable by remember { mutableStateOf(false) }
 
     LaunchedEffect(swipeable) {
+        swipeable = isSwipeable
     }
 
     val state = rememberDismissState(initialValue = DismissValue.Default, confirmStateChange = {

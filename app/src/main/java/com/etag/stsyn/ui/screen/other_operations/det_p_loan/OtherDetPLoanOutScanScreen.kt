@@ -89,7 +89,7 @@ fun DetPLoanOutContent(
             state = listState,
             verticalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(16.dp)
         ) {
-            itemsIndexed(items) { index, item ->
+            itemsIndexed(items) { _, item ->
                 key(item) {
                     DetPLoanSwipeableItem(
                         isSwipeable = true,

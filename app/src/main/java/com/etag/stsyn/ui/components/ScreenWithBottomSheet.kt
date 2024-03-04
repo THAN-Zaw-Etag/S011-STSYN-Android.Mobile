@@ -1,9 +1,8 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
 package com.etag.stsyn.ui.components
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -18,10 +17,9 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun ScreenWithBottomSheet(
+    modifier: Modifier = Modifier,
     show: Boolean = false,
     sheetState: SheetState = rememberModalBottomSheetState(),
-    state: BottomSheetScaffoldState? = null,
-    modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
     sheetContent: @Composable () -> Unit,
     content: @Composable () -> Unit

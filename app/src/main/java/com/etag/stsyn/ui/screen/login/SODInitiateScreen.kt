@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,7 +19,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.theme.Purple80
 
@@ -68,11 +66,4 @@ fun SODInitiateScreen(
             }
         }
     }
-}
-
-
-@Composable
-@Preview(showBackground = true)
-fun SODInitiateScreenPreview(modifier: Modifier = Modifier) {
-    SODInitiateScreen {}
 }

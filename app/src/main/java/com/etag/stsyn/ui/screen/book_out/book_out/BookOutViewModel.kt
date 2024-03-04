@@ -8,7 +8,6 @@ import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.enums.Purpose
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.mapper.toItemMovementLog
-import com.tzh.retrofit_module.data.mapper.toItemMovementLogs
 import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
@@ -50,11 +49,15 @@ class BookOutViewModel @Inject constructor(
     val getAllBookOutItemResponse: StateFlow<ApiResponse<BookOutResponse>> =
         _getAllBookOutItemResponse.asStateFlow()
 
-    private val _getAllBookOutBoxesResponse = MutableStateFlow<ApiResponse<GetAllBookOutBoxesResponse>> (ApiResponse.Default)
-    val getAllBookOutBoxesResponse: StateFlow<ApiResponse<GetAllBookOutBoxesResponse>> = _getAllBookOutBoxesResponse.asStateFlow()
+    private val _getAllBookOutBoxesResponse =
+        MutableStateFlow<ApiResponse<GetAllBookOutBoxesResponse>>(ApiResponse.Default)
+    val getAllBookOutBoxesResponse: StateFlow<ApiResponse<GetAllBookOutBoxesResponse>> =
+        _getAllBookOutBoxesResponse.asStateFlow()
 
-    private val _saveBookOutBoxesResponse = MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
-    val saveBookOutBoxesResponse: StateFlow<ApiResponse<NormalResponse>> = _saveBookOutBoxesResponse.asStateFlow()
+    private val _saveBookOutBoxesResponse =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val saveBookOutBoxesResponse: StateFlow<ApiResponse<NormalResponse>> =
+        _saveBookOutBoxesResponse.asStateFlow()
 
     val settings = appConfiguration.appConfig
     val user = localDataStore.getUser
@@ -81,7 +84,14 @@ class BookOutViewModel @Inject constructor(
         viewModelScope.launch {
             updateSuccessDialogVisibility(false)
             getAllBookOutItems()
-            _bookOutUiState.update { it.copy(allBookOutItems = emptyList(), scannedItems = emptyList(), purpose = "", location = "") }
+            _bookOutUiState.update {
+                it.copy(
+                    allBookOutItems = emptyList(),
+                    scannedItems = emptyList(),
+                    purpose = "",
+                    location = ""
+                )
+            }
         }
     }
 
@@ -100,8 +110,10 @@ class BookOutViewModel @Inject constructor(
             _getAllBookOutItemResponse.value = bookOutRepository.getAllBookOutItems()
             when (_getAllBookOutItemResponse.value) {
                 is ApiResponse.Success -> {
-                    val allItems = (_getAllBookOutItemResponse.value as ApiResponse.Success<BookOutResponse>).data?.items ?: emptyList()
-                    _bookOutUiState.update { it.copy( allBookOutItems = allItems ) }
+                    val allItems =
+                        (_getAllBookOutItemResponse.value as ApiResponse.Success<BookOutResponse>).data?.items
+                            ?: emptyList()
+                    _bookOutUiState.update { it.copy(allBookOutItems = allItems) }
                 }
 
                 else -> {}
@@ -114,7 +126,7 @@ class BookOutViewModel @Inject constructor(
         addScannedItem(id)
     }
 
-    fun setPurpose (purpose: String) {
+    fun setPurpose(purpose: String) {
         _bookOutUiState.update { it.copy(purpose = purpose) }
     }
 
@@ -132,7 +144,7 @@ class BookOutViewModel @Inject constructor(
 
     fun isUnderCalibrationAlert(calDate: String) = DateUtil.isUnderCalibrationAlert(calDate)
 
-    fun removeScannedItem(item: BoxItem){
+    fun removeScannedItem(item: BoxItem) {
         val currentList = bookOutUiState.value.scannedItems.toMutableList()
         currentList.remove(item)
         _bookOutUiState.update { it.copy(scannedItems = currentList) }
@@ -155,11 +167,9 @@ class BookOutViewModel @Inject constructor(
                 }
             }
 
-            if (settings.first().needLocation) {
-                if (bookOutUiState.value.location.isEmpty() && bookOutUiState.value.purpose.isEmpty()) {
-                    setBookOutErrorMessage("Please Key In Location")
-                    return@launch
-                }
+            if (settings.first().needLocation && bookOutUiState.value.location.isEmpty() && bookOutUiState.value.purpose.isEmpty()) {
+                setBookOutErrorMessage("Please Key In Location")
+                return@launch
             }
 
             _saveBookOutBoxesResponse.value = ApiResponse.Loading
@@ -170,13 +180,15 @@ class BookOutViewModel @Inject constructor(
                 userId = user.userId.toInt()
             )
 
-            val itemMovementLogs = bookOutUiState.value.scannedItems.map { it.toItemMovementLog(
-                readerId = appConfig.handheldReaderId,
-                date = currentDate,
-                issuerId = user.userId,
-                workLocation = bookOutUiState.value.location,
-                itemStatus = bookOutUiState.value.purpose
-            ) }
+            val itemMovementLogs = bookOutUiState.value.scannedItems.map {
+                it.toItemMovementLog(
+                    readerId = appConfig.handheldReaderId,
+                    date = currentDate,
+                    issuerId = user.userId,
+                    workLocation = bookOutUiState.value.location,
+                    itemStatus = bookOutUiState.value.purpose
+                )
+            }
 
             _saveBookOutBoxesResponse.value = bookOutRepository.saveBookOutItems(
                 SaveBookInRequest(
@@ -197,13 +209,11 @@ class BookOutViewModel @Inject constructor(
 
         try {
             val scannedItem = bookOutUiState.value.allBookOutItems.find { it.epc == id }
-            if (!hasExisted) {
-                if (scannedItem != null) {
-                    _bookOutUiState.update {
-                        val updatedItems = it.scannedItems.toMutableList()
-                        updatedItems.add(scannedItem)
-                        it.copy(scannedItems = updatedItems)
-                    }
+            if (!hasExisted && scannedItem != null) {
+                _bookOutUiState.update {
+                    val updatedItems = it.scannedItems.toMutableList()
+                    updatedItems.add(scannedItem)
+                    it.copy(scannedItems = updatedItems)
                 }
             }
         } catch (e: Exception) {

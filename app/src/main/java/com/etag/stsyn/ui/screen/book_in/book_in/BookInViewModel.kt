@@ -97,10 +97,8 @@ class BookInViewModel @Inject constructor(
         viewModelScope.launch {
             val hasExisted = id in scannedItemIdList.value
             val scannedItem = bookInState.value.allBookInItems.find { it.epc == id }
-            if (!hasExisted) {
-                if (scannedItem != null) {
-                    _scannedItemIdList.update { it + id }
-                }
+            if (!hasExisted && scannedItem != null) {
+                _scannedItemIdList.update { it + id }
             }
         }
     }
@@ -149,11 +147,12 @@ class BookInViewModel @Inject constructor(
                 )
             )
 
-            when (savedBookInResponse.value){
+            when (savedBookInResponse.value) {
                 is ApiResponse.Success -> {
                     updateSuccessDialogVisibility(true)
                     updateIsSavedStatus(true)
                 }
+
                 else -> {}
             }
         }

@@ -18,9 +18,9 @@ fun AuthorizationTokenExpiredDialog(
     var show by remember { mutableStateOf(true) }
     val state = rememberMutableDialogState(data = "")
 
-     LaunchedEffect (message) {
-         state.showDialog(message)
-     }
+    LaunchedEffect(message) {
+        state.showDialog(message)
+    }
 
     WarningDialog(
         icon = CustomIcon.Vector(Icons.Default.Error),

@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 
@@ -18,13 +19,14 @@ fun BookInCalCountScreen(
     bookInCalViewModel: BookInCalViewModel,
     modifier: Modifier = Modifier
 ) {
+    val rfidUiState by bookInCalViewModel.rfidUiState.collectAsStateWithLifecycle()
     val items by remember {
         mutableStateOf(listOf<String>())
     }
     BaseCountScreen(
         itemCount = items.size,
         modifier = modifier,
-        onTabSelected = { controlType ->
+        onTabSelected = { _ ->
             // filter items here
         }
     ) {
