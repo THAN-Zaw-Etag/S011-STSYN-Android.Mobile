@@ -6,17 +6,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class TokenRepository @Inject constructor( private val localDataStore: LocalDataStore) {
+class TokenRepository @Inject constructor(private val localDataStore: LocalDataStore) {
 
-    private var token: String? = null
+    private var _token: String? = null
+    val token: String?
+        get() = _token
+
     init {
         // Initialize a coroutine to listen to DataStore changes
         CoroutineScope(Dispatchers.IO).launch {
             localDataStore.getUser.collect { user ->
-                token = user.token
+                _token = user.token
             }
         }
     }
-
-    fun getToken(): String? = token
 }

@@ -12,7 +12,7 @@ import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.repository.AccountCheckRepository
 import com.tzh.retrofit_module.domain.repository.BookInRepository
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
-import com.tzh.retrofit_module.domain.repository.CheckIn.CheckInOutRepository
+import com.tzh.retrofit_module.domain.repository.checkIn.CheckInOutRepository
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -56,10 +56,9 @@ object RepositoryModule {
     @Singleton
     fun providesCheckInOutRepository(
         apiService: ApiService,
-        localDataStore: LocalDataStore,
         appConfiguration: AppConfiguration
     ): CheckInOutRepository {
-        return CheckInOutRepositoryImpl(apiService,localDataStore,appConfiguration)
+        return CheckInOutRepositoryImpl(apiService,appConfiguration)
     }
 
     @Provides
@@ -70,7 +69,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun providesAccountabilityCheckRepository(apiService: ApiService, localDataStore: LocalDataStore, appConfiguration: AppConfiguration): AccountCheckRepository{
-        return AccountCheckRepositoryImpl(apiService,localDataStore, appConfiguration)
+    fun providesAccountabilityCheckRepository(apiService: ApiService, localDataStore: LocalDataStore): AccountCheckRepository{
+        return AccountCheckRepositoryImpl(apiService,localDataStore)
     }
 }

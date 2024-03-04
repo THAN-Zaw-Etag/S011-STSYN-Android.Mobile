@@ -1,6 +1,6 @@
 package com.etag.stsyn.ui.screen.other_operations.onsite_verification
 
-import android.util.Log
+
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.ClickEvent
@@ -34,8 +34,6 @@ class OnsiteVerificationViewModel @Inject constructor(
     private val localDataStore: LocalDataStore,
 ) : BaseViewModel(rfidHandler) {
     val TAG = "OnsiteVerificationViewModel"
-
-    //TODO if all other testing are passed, implement override function of OnReceivedTagId of BaseViewModel
     private val _getOnSiteVerifyItems =
         MutableStateFlow<ApiResponse<OnSiteVerificationResponse>>(ApiResponse.Default)
     val getOnSiteVerifyItems: StateFlow<ApiResponse<OnSiteVerificationResponse>> =
@@ -93,13 +91,7 @@ class OnsiteVerificationViewModel @Inject constructor(
             "76r5e45675645"
         )
 
-        val dummyListTwo = listOf<String>(
-            "020200000112",
-            "020200000112"
-        )
         addScannedItemAndMoveToTop(dummyEpc.random())
-
-
     }
 
     private fun addScannedItemAndMoveToTop(epc: String) {
@@ -215,7 +207,6 @@ class OnsiteVerificationViewModel @Inject constructor(
                     stokeList.add(stockTake)
                 }
             }
-            Log.d("@LsTest", "saveOnSiteVerification: $stokeList")
             val saveOnSiteVerificationRq = SaveOnSiteVerificationRq(
                 stockTakes = stokeList
             )

@@ -2,7 +2,6 @@ package com.tzh.retrofit_module.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import com.tzh.retrofit_module.util.DateUtil.currentTime
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -29,10 +28,7 @@ object DateUtil {
 
     fun getCurrentDate(): String {
         val currentDateTime = LocalDateTime.now()
-
-        val formattedDateTime = currentDateTime.format(FORMATTER)
-
-        return formattedDateTime
+        return currentDateTime.format(FORMATTER)
     }
 
     fun isUnderCalibrationAlert(calDate: String): Boolean {
@@ -68,9 +64,5 @@ object DateUtil {
 fun String.isBefore(date: String): Boolean {
     val comparison = this.compareTo(date)
     return comparison < 0
-}
-
-fun main() {
-    //println(isUnderCalibrationAlert("2025-11-05T00:00:00"))
 }
 

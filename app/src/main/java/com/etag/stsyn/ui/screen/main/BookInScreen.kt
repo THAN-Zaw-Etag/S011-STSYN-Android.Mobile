@@ -25,10 +25,10 @@ fun BookInScreen(
         OptionType.BookIn.title to menuAccessRight.allowBookIn,
         OptionType.BookInBox.title to menuAccessRight.allowBookInBox,
         OptionType.BookInCalibration.title to menuAccessRight.allowBookInCal,
-        OptionType.BookInTLoan.title to menuAccessRight.allowBookInT_Loan,
-        OptionType.BookInTLoanBox.title to menuAccessRight.allowBookInT_LoanBox,
-        OptionType.BookInDetPLoan.title to menuAccessRight.allowBookInP_Loan,
-        OptionType.BookInDetPLoanBox.title to menuAccessRight.allowBookInP_LoanBox
+        OptionType.BookInTLoan.title to menuAccessRight.allowBookInTLoan,
+        OptionType.BookInTLoanBox.title to menuAccessRight.allowBookInTLoanBox,
+        OptionType.BookInDetPLoan.title to menuAccessRight.allowBookInPLoan,
+        OptionType.BookInDetPLoanBox.title to menuAccessRight.allowBookInPLoanBox
     )
 
     LazyColumn(

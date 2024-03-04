@@ -2,13 +2,10 @@ package com.tzh.retrofit_module.data.network
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.repository.TokenRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager

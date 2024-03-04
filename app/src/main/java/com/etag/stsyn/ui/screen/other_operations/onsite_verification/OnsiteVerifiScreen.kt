@@ -23,10 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,10 +44,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ConfirmationDialog
-import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.components.ScannedItem
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.bottomsheet.BoxDetailScreen
 import com.etag.stsyn.ui.theme.Purple80
@@ -68,14 +65,6 @@ fun OnsiteVerifyScreen(
     val context = LocalContext.current
 
     var hasScanned by remember { mutableStateOf(true) }
-
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = SheetState(
-            skipPartiallyExpanded = false,
-            initialValue = SheetValue.Hidden,
-            skipHiddenState = false
-        )
-    )
 
     val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
@@ -113,7 +102,7 @@ fun OnsiteVerifyScreen(
             LoadingDialog(
                 title = "Loading ... items...",
                 showDialog = true,
-                onDismiss = { /*TODO*/ })
+                onDismiss = {  })
         }
 
         is ApiResponse.Success -> {
@@ -201,7 +190,6 @@ fun OnsiteVerifyScreen(
                     onScan = {
                         Log.d("TAG", "OnsiteVerifyScreen: Clicked ${boxItemsFromApi.size}")
                         if (boxItemsFromApi.isNotEmpty()) {
-                            // onsiteVerificationViewModel.onReceivedTagIdTest()
                             onsiteVerificationViewModel.toggle()
                             coroutineScope.launch {
                                 if (scannedItemIndex != -1) listState.animateScrollToItem(

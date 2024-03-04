@@ -15,7 +15,6 @@ import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdRespons
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(

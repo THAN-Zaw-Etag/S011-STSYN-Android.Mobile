@@ -26,16 +26,12 @@ class BaseUrlProvider @Inject constructor(
     fun getBaseUrl(): String {
         if (baseUrl.isEmpty()) {
             updateBaseUrl(BASE_URL)
-            // TODO remove throw IllegalStateException("Base URL is not set.")
         }
         if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
             throw IllegalStateException("Base URL must start with in get 'http://' or 'https://'. Current base URL: $baseUrl")
         }
         return baseUrl
     }
-    // todo delete it if not needed
-//    fun getBaseUrlWithTrailingSlash(): String {
-//        return getBaseUrl().trimEnd('/') + "/"}
 
     fun updateBaseUrl(newBaseUrl: String) {
         Log.d("BaseUrlProvider", "From Class newBaseUrl: $newBaseUrl")

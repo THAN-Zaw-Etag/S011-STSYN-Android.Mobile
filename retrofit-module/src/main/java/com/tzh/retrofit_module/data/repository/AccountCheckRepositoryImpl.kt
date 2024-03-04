@@ -5,7 +5,6 @@ import com.tzh.retrofit_module.data.model.account_check.AccountCheckOutstandingI
 import com.tzh.retrofit_module.data.model.account_check.SaveAccountabilityCheckRequest
 import com.tzh.retrofit_module.data.network.ApiResponseHandler
 import com.tzh.retrofit_module.data.network.ApiService
-import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.accountabilityCheck.GetAllAccountabilityCheckItemsResponse
 import com.tzh.retrofit_module.domain.model.accountabilityCheck.GetAllFilterOptionsResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -15,11 +14,10 @@ import javax.inject.Inject
 
 class AccountCheckRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
-    private val localDataStore: LocalDataStore,
-    private val appConfiguration: AppConfiguration
-): AccountCheckRepository {
+    localDataStore: LocalDataStore,
+    ): AccountCheckRepository {
     val userFlow = localDataStore.getUser
-    val settingFlow = appConfiguration.appConfig
+
 
     override suspend fun getAllFilterOptions(): ApiResponse<GetAllFilterOptionsResponse> {
         return ApiResponseHandler.processResponse {

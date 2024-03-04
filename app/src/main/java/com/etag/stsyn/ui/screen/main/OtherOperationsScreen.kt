@@ -22,8 +22,8 @@ fun OtherOperationsScreen(
     val optionPairs = hashMapOf(
         OptionType.OnsiteVerification.title to menuAccessRight.allowOnSiteVerification,
         OptionType.OnsiteCheckInOut.title to menuAccessRight.allowOnSiteTransfer,
-        OptionType.OtherTLoan.title to menuAccessRight.allowT_Loan,
-        OptionType.OtherTLoanBox.title to menuAccessRight.allowT_LoanBox,
+        OptionType.OtherTLoan.title to menuAccessRight.allowTLoan,
+        OptionType.OtherTLoanBox.title to menuAccessRight.allowTLoanBox,
         OptionType.OtherDetPLoan.title to menuAccessRight.allowPermanentLoan,
         OptionType.OtherDetPLoanBox.title to menuAccessRight.allowPermanentLoanBox
     )

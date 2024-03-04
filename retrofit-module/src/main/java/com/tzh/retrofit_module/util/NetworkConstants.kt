@@ -27,6 +27,8 @@ const val GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH = "User/GetUserAccessRightByRol
 const val AUTHORIZATION_FAILED_MESSAGE =
     "Your authorization token has been expired. Try login again!"
 
+const val UNKNOWN_ERROR = "Unknown Error"
+
 const val GET_USER_BY_EPC_ROUTE = "User/GetUserByEPC"
 const val GET_ISSUER_BY_EPC = "User/GetUserNotIssuerByEPC"
 const val SELECT_ONSITE_VERIFY_ITEMS = "BookInOut/SelectItemWhereAllNotIn"

@@ -1,5 +1,8 @@
 package com.tzh.retrofit_module.data.model.book_in
 
+import com.google.gson.annotations.SerializedName
+
+
 data class ItemMovementLog(
     val approverId: Int,
     val buddyId: String,
@@ -7,7 +10,8 @@ data class ItemMovementLog(
     val date: String,
     val description: String,
     val handheldReaderId: Int,
-    val iS_ONSITE_TRANSFER: String,
+    @SerializedName("iS_ONSITE_TRANSFER")
+    val isOnSiteTransfer: String,
     val issuerId: Int,
     val itemId: Int,
     val itemStatus: String,

@@ -1,12 +1,11 @@
 package com.tzh.retrofit_module.data.network
 
-import android.util.Log
 import com.tzh.retrofit_module.data.exception.NetworkException
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.UNKNOWN_ERROR
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.json.JSONException
 import retrofit2.HttpException
 import retrofit2.Response
@@ -20,15 +19,18 @@ object ApiResponseHandler {
 
             if (response.isSuccessful) {
                 val normalResponse = getNormalResponseFromApiResponse(response.body().toString())
-                val normalResponseError = normalResponse.error ?: "Unknown error"
-                if (normalResponse.isSuccess && normalResponseError.contains("null")) return ApiResponse.Success(response.body())
-                else return ApiResponse.ApiError(normalResponse.error ?: "Unknown error")
+                val normalResponseError = normalResponse.error ?: UNKNOWN_ERROR
+                return if (normalResponse.isSuccess && normalResponseError.contains("null")){
+                    ApiResponse.Success(response.body())
+                }else{
+                    ApiResponse.ApiError(normalResponse.error ?: UNKNOWN_ERROR)
+                }
             } else {
-                handleResponseCode<T>(response.code())
+                handleResponseCode(response.code())
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            ApiResponse.ApiError(e.localizedMessage ?: "Unknown error")
+            ApiResponse.ApiError(e.localizedMessage ?: UNKNOWN_ERROR)
             handleError<T>(e)
         }
     }

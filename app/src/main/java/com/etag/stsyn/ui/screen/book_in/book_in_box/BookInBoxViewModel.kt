@@ -154,7 +154,7 @@ class BookInBoxViewModel @Inject constructor(
                         calDate = scannedBox.calDate,
                         description = "",
                         buddyId = buddy?.userId ?: "0",
-                        iS_ONSITE_TRANSFER = "0",
+                        isOnSiteTransfer = "0",
                         itemType = ""
                     )
                 )

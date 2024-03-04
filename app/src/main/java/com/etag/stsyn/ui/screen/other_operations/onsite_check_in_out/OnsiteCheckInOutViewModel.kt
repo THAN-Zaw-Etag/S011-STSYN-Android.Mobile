@@ -13,7 +13,7 @@ import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.model.onsiteCheckInOut.GetItemsForOnsiteResponse
 import com.tzh.retrofit_module.domain.model.user.UserModel
-import com.tzh.retrofit_module.domain.repository.CheckIn.CheckInOutRepository
+import com.tzh.retrofit_module.domain.repository.checkIn.CheckInOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.DateUtil
 import dagger.hilt.android.lifecycle.HiltViewModel

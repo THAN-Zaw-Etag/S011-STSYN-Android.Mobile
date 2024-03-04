@@ -1,6 +1,5 @@
 package com.tzh.retrofit_module.domain.model.bookIn
 
-import com.tzh.retrofit_module.util.isBefore
 import com.tzh.retrofit_module.util.safeCall
 
 data class BoxItem(
