@@ -214,6 +214,7 @@ class LoginViewModel @Inject constructor(
     fun resetLoginResponseState() {
         _loginResponse.value = ApiResponse.Default
     }
+
     fun updatePassword(oldPasswordCharArr: CharArray, newPasswordChar: CharArray) {
         val oldPassword = String(oldPasswordCharArr)
         val newPassword = String(newPasswordChar)

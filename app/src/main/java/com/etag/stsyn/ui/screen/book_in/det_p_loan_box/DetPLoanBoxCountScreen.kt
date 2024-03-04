@@ -11,28 +11,27 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.screen.BottomSheetContent
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.etag.stsyn.util.datasource.DataSource
-import kotlinx.coroutines.launch
 
 @Composable
 fun DetPLoanBoxCountScreen(
     detPLoanBoxViewModel: DetPLoanBoxViewModel,
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = SheetState(skipHiddenState = false, skipPartiallyExpanded = true)
-    )
     val items = remember { mutableStateListOf(String()) }
+    var showBottomSheet by remember { mutableStateOf(   false) }
 
     LaunchedEffect(Unit) {
         DataSource.dummyDataList.forEach {
@@ -40,8 +39,9 @@ fun DetPLoanBoxCountScreen(
         }
     }
 
-    DetailBottomSheetScaffold(
-        state = scaffoldState,
+    ScreenWithBottomSheet(
+        show = showBottomSheet,
+        onDismiss = { showBottomSheet = false },
         sheetContent = { BottomSheetContent(itemList = listOf()) }) {
         BaseCountScreen(itemCount = items.size, onTabSelected = {}) {
             LazyColumn(
@@ -54,8 +54,7 @@ fun DetPLoanBoxCountScreen(
                         name = "World",
                         showTrailingIcon = true,
                         onItemClick = {
-                            if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                            else coroutineScope.launch { scaffoldState.bottomSheetState.show() }
+                            showBottomSheet = true
                         })
                 }
             }

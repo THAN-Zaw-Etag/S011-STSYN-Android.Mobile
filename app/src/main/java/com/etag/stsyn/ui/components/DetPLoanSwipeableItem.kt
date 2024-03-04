@@ -36,7 +36,7 @@ import com.etag.stsyn.domain.model.DetPLoanItem
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DetPLoanSwipeableItem(
-    swipeable: Boolean,
+    isSwipeable: Boolean,
     item: DetPLoanItem,
     onItemClick: () -> Unit,
     onSwipeToDismiss: (DetPLoanItem) -> Unit

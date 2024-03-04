@@ -1,6 +1,6 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class
 )
 
 package com.etag.stsyn.ui.screen.acct_check
@@ -8,13 +8,11 @@ package com.etag.stsyn.ui.screen.acct_check
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.ControlType
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.components.listItems
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
@@ -35,6 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AcctCheckCountScreen(
     accountCheckViewModel: AccountCheckViewModel,
@@ -48,7 +47,7 @@ fun AcctCheckCountScreen(
     var controlType by remember { mutableStateOf(ControlType.All) }
     var items by remember { mutableStateOf<List<BoxItem>>(emptyList()) }
     val scannedItemIdList by accountCheckViewModel.scannedItemIdList.collectAsStateWithLifecycle()
-    val coroutineScope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(controlType) {
         withContext(Dispatchers.IO) {
@@ -60,9 +59,10 @@ fun AcctCheckCountScreen(
         }
     }
 
-    DetailBottomSheetScaffold(
-        state = scaffoldState,
+    ScreenWithBottomSheet(
+        show = showBottomSheet,
         modifier = modifier,
+        onDismiss = { showBottomSheet = false },
         sheetContent = { BoxDetailScreen(boxItem = selectedItem) }) {
         BaseCountScreen(itemCount = items.size, onTabSelected = {
             controlType = it
@@ -79,8 +79,7 @@ fun AcctCheckCountScreen(
                             showTrailingIcon = true,
                             onItemClick = {
                                 selectedItem = it
-                                if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                                else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                                showBottomSheet = true
                             }
                         )
                     }

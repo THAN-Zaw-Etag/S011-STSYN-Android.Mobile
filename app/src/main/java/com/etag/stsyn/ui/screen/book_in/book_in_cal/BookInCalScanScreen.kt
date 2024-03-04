@@ -13,14 +13,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.domain.model.ItemDetail
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.DetailRow
 import com.etag.stsyn.ui.components.InfoBottomSheetContent
 import com.etag.stsyn.ui.components.ScannedItem
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import kotlinx.coroutines.launch
 
@@ -29,9 +32,9 @@ fun BookInCalScanScreen(
     bookInCalViewModel: BookInCalViewModel,
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     val rfidUiState by bookInCalViewModel.rfidUiState.collectAsState()
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState()
 
@@ -39,8 +42,10 @@ fun BookInCalScanScreen(
         if (rfidUiState.scannedItems.size > 1) listState.animateScrollToItem(rfidUiState.scannedItems.size - 1)
     }
 
-    DetailBottomSheetScaffold(
+    ScreenWithBottomSheet(
         state = scaffoldState,
+        show = showBottomSheet,
+        onDismiss = { showBottomSheet = false },
         modifier = modifier,
         sheetContent = { BookInCalScanBottomSheetContent("Title") }) {
         BaseScanScreen(
@@ -60,8 +65,7 @@ fun BookInCalScanScreen(
                         name = "john smith",
                         showTrailingIcon = true,
                         onItemClick = {
-                            if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                            else coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
+                           showBottomSheet = true
                         }
                     )
                 }

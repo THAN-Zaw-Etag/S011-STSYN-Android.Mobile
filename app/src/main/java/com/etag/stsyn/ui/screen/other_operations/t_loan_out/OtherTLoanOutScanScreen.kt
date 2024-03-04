@@ -13,12 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.domain.model.DetPLoanItem
 import com.etag.stsyn.ui.components.DetPLoanSwipeableItem
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.screen.BottomSheetContent
 import com.etag.stsyn.ui.screen.base.BaseScanScreen
 import kotlinx.coroutines.launch
@@ -28,14 +31,12 @@ fun OtherTLoanOutScanScreen(
     otherTLoanOutViewModel: OtherTLoanOutViewModel,
     modifier: Modifier = Modifier
 ) {
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = SheetState(skipPartiallyExpanded = false, skipHiddenState = false)
-    )
-    val coroutineScope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
     val rfidUiState by otherTLoanOutViewModel.rfidUiState.collectAsState()
 
-    DetailBottomSheetScaffold(
-        state = scaffoldState,
+    ScreenWithBottomSheet(
+        show = showBottomSheet,
+        onDismiss = {showBottomSheet = false},
         sheetContent = { BottomSheetContent(itemList = listOf()) }) {
         BaseScanScreen(
             scannedItemCount = rfidUiState.scannedItems.size,
@@ -49,17 +50,14 @@ fun OtherTLoanOutScanScreen(
                 items(rfidUiState.scannedItems) {
                     key(it) {
                         DetPLoanSwipeableItem(
-                            swipeable = true,
+                            isSwipeable = true,
                             item = DetPLoanItem(
                                 "$it",
                                 "data link jumper cable",
                                 "tool",
                                 "01010010"
                             ),
-                            onItemClick = {
-                                if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                                else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                            },
+                            onItemClick = { showBottomSheet = true },
                             onSwipeToDismiss = {}
                         )
                     }

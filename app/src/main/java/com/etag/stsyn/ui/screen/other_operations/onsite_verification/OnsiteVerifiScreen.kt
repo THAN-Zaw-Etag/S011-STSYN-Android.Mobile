@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ConfirmationDialog
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
+import com.etag.stsyn.ui.components.ScreenWithBottomSheet
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.ScanIconButton
 import com.etag.stsyn.ui.components.ScannedItem
@@ -91,6 +91,7 @@ fun OnsiteVerifyScreen(
     val coroutineScope = rememberCoroutineScope()
     val rfidUiState by onsiteVerificationViewModel.rfidUiState.collectAsState()
     val itemResultMessage by onsiteVerificationViewModel.filterStatusMessage.collectAsState()
+    var showBottomSheet by remember { mutableStateOf(false) }
     var currentBoxItem by remember {
         mutableStateOf(BoxItem())
     }
@@ -152,9 +153,10 @@ fun OnsiteVerifyScreen(
     }
 
 
-    DetailBottomSheetScaffold(
+    ScreenWithBottomSheet(
         modifier = modifier,
-        state = scaffoldState,
+        show = showBottomSheet,
+        onDismiss = {showBottomSheet = false},
         sheetContent = {
             BoxDetailScreen(boxItem = currentBoxItem)
         }) {
@@ -181,8 +183,7 @@ fun OnsiteVerifyScreen(
                     modifier = Modifier.weight(1f),
                     onItemClick = { _, _, boxItem ->
                         currentBoxItem = boxItem
-                        if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                        else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                        showBottomSheet = true
                     })
             }
             Spacer(modifier = Modifier.height(16.dp))
