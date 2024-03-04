@@ -1,18 +1,23 @@
-@file:OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3Api::class
-)
 
 package com.etag.stsyn.ui.screen.other_operations.onsite_verification
 
-import android.util.Log
+
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.rememberBottomSheetScaffoldState
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.BottomSheetScaffold
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.BottomSheetScaffoldState
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.BottomSheetState
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,9 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.components.ControlType
-import com.etag.stsyn.ui.components.DetailBottomSheetScaffold
 import com.etag.stsyn.ui.components.ScannedItem
 import com.etag.stsyn.ui.components.listItems
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
@@ -32,12 +37,11 @@ import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
 import com.tzh.retrofit_module.util.ApiResponse
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OnsiteVerificationCountScreen(
     onsiteVerificationViewModel: OnsiteVerificationViewModel,
-    modifier: Modifier = Modifier
-) {
+    ) {
 
     val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
     val itemsResponse by onsiteVerificationViewModel.getOnSiteVerifyItems.collectAsState()
@@ -47,17 +51,32 @@ fun OnsiteVerificationCountScreen(
 
     val onsiteVerificationUiState by onsiteVerificationViewModel.onsiteVerificationUiState.collectAsState()
 
-    val scaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = SheetState(skipPartiallyExpanded = true, skipHiddenState = false)
+//    val scaffoldState = rememberBottomSheetScaffoldState(
+//        bottomSheetState = SheetState(
+//            skipPartiallyExpanded = true,
+//            density = LocalDensity.current,
+//            skipHiddenState = false
+//        )
+//    )
+
+    val muScaffoldState = rememberBottomSheetScaffoldState(
+        BottomSheetState(initialValue = BottomSheetValue.Collapsed,
+            density = LocalDensity.current,
+            )
     )
+
     val coroutineScope = rememberCoroutineScope()
 
-    DetailBottomSheetScaffold(
-        state = scaffoldState,
-        sheetContent = { BoxDetailScreen(boxItem = selectedItem) }) {
+
+
+    TestDetailBottomSheetScaffold(
+        state = muScaffoldState,
+        sheetContent = {
+            BoxDetailScreen(boxItem = selectedItem)
+        }) {
         BaseCountScreen(
             itemCount = items.size,
-            onTabSelected = {controlType->
+            onTabSelected = { controlType ->
                 when (controlType) {
                     ControlType.All -> {
                         if (itemsResponse is ApiResponse.Success) {
@@ -83,13 +102,53 @@ fun OnsiteVerificationCountScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 listItems(items) {
-                    ScannedItem(id = it.epc, name = it.description, showTrailingIcon = true, onItemClick = {
-                        selectedItem = it
-                        if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch { scaffoldState.bottomSheetState.hide() }
-                        else coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
-                    })
+                    ScannedItem(
+                        id = it.epc,
+                        name = it.description,
+                        showTrailingIcon = true,
+                        onItemClick = {
+                            selectedItem = it
+//                            if (scaffoldState.bottomSheetState.isVisible) coroutineScope.launch {
+//                                scaffoldState.bottomSheetState.hide()
+//                            }
+//                            else coroutineScope.launch {
+//                                scaffoldState.bottomSheetState.expand()
+//                            }
+                            coroutineScope.launch {
+                                if (muScaffoldState.bottomSheetState.isCollapsed) {
+                                    muScaffoldState.bottomSheetState.expand()
+                                } else {
+                                    muScaffoldState.bottomSheetState.collapse()
+                                }
+                            }
+                        })
                 }
             }
+        }
+    }
+}
+
+
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun TestDetailBottomSheetScaffold(
+    state: BottomSheetScaffoldState,
+    modifier: Modifier = Modifier,
+    sheetContent: @Composable () -> Unit,
+    content: @Composable () -> Unit
+) {
+
+    BottomSheetScaffold(
+        scaffoldState = state,
+        sheetPeekHeight = 0.dp,
+        sheetContent = {
+            sheetContent()
+        },
+    ) {
+        Column(modifier = modifier.padding(it)) {
+            content()
         }
     }
 }
