@@ -66,10 +66,7 @@ fun OnsiteVerificationScreen(
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
-    //var hasScanned by remember { mutableStateOf(true) }
     val hasScanned by onsiteVerificationViewModel.hasScanned.collectAsState()
-    Log.d("onScanStatus", "Scan.$hasScanned")
-
     val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
     val outstandingItems by onsiteVerificationViewModel.outstandingItems.collectAsState()
 
@@ -101,7 +98,6 @@ fun OnsiteVerificationScreen(
 
     when (onSiteVerifyItemState) {
         is ApiResponse.Loading -> {
-            Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Loading...")
             isApiError = false
             LoadingDialog(
                 title = "Loading ... items...",
@@ -110,21 +106,17 @@ fun OnsiteVerificationScreen(
         }
 
         is ApiResponse.Success -> {
-          // hasScanned = true
-            Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Success...")
             isApiError = false
             boxItemsFromApi = onsiteVerificationUiState.allItemsFromApi
         }
 
         is ApiResponse.ApiError -> {
-            Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: ApiError...")
             isApiError = true
             val errorMessage = (onSiteVerifyItemState as ApiResponse.ApiError).message
             apiErrorMessage = errorMessage
         }
 
         else -> {
-            Log.d("OnsiteVerifyScreen", "OnsiteVerifyScreen: Else...")
             isApiError = false
         }
     }
@@ -171,7 +163,7 @@ fun OnsiteVerificationScreen(
                     listState = listState,
                     boxItem = boxItemsFromApi,
                     onReset = {
-                        onsiteVerificationViewModel.resetAll()
+                        onsiteVerificationViewModel.resetAll(isShowToast = true)
                     },
                     scannedItems = rfidUiState.scannedItems,
                     modifier = Modifier.weight(1f),
@@ -229,7 +221,6 @@ fun OnsiteVerificationScreen(
                         ScanIconButton(
                             isScanning = rfidUiState.isScanning,
                             onScan = {
-                                Log.d("TAG", "OnsiteVerifyScreen: Clicked ${boxItemsFromApi.size}")
                                 if (boxItemsFromApi.isNotEmpty()) {
                                     //onsiteVerificationViewModel.toggle()
                                     onsiteVerificationViewModel.onReceivedTagIdTest()
@@ -257,7 +248,6 @@ fun OnsiteVerificationScreen(
 
 @Composable
 private fun ScannedContent(
-    // pass item list here
     onSwipeToDelete: (Int) -> Unit,
     listState: LazyListState,
     boxItem: List<BoxItem>?,

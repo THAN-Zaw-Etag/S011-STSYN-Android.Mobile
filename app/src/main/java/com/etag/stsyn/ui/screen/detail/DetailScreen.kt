@@ -145,7 +145,7 @@ fun DetailScreen(
     )
 
     LaunchedEffect(pagerState.currentPage) {
-        val option = options.get(pagerState.currentPage)
+        val option = options[pagerState.currentPage]
         tabTitle = option.title
         if (pagerState.currentPage == options.size - 1) showConfirmationDialog = true
     }
