@@ -5,6 +5,7 @@
 
 package com.etag.stsyn.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,9 +26,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.TransitionUtil
 
 @Composable
-fun AppBar(
+fun AnimatedAppBar(
+    visible: Boolean,
     userName: String,
     title: String,
     icon: ImageVector,
@@ -40,17 +43,23 @@ fun AppBar(
         startChar = if (userName.isNotEmpty()) userName[0].toString() else ""
     }
 
-    TopAppBar(
-        title = { Text(text = title, modifier = Modifier.padding(horizontal = 8.dp)) },
-        navigationIcon = {
-            IconButton(onClick = onIconClick) {
-                Icon(imageVector = icon, contentDescription = null)
+    AnimatedVisibility(
+        visible = visible,
+        enter = TransitionUtil.slideInVerticallyFromTop,
+        exit = TransitionUtil.slideOutVerticallyToTop
+    ) {
+        TopAppBar(
+            title = { Text(text = title, modifier = Modifier.padding(horizontal = 8.dp)) },
+            navigationIcon = {
+                IconButton(onClick = onIconClick) {
+                    Icon(imageVector = icon, contentDescription = null)
+                }
+            },
+            actions = {
+                UserNameShortcutIcon(name = startChar)
             }
-        },
-        actions = {
-            UserNameShortcutIcon(name = startChar)
-        }
-    )
+        )
+    }
 }
 
 @Composable

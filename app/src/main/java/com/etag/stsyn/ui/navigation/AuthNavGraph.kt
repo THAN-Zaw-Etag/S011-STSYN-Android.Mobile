@@ -2,6 +2,7 @@ package com.etag.stsyn.ui.navigation
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
@@ -20,16 +21,15 @@ import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavHostController,
-    sharedUiViewModel: SharedUiViewModel,
     loginViewModel: LoginViewModel,
     context: Context
 ) {
+
     navigation(
         route = Graph.AUTHENTICATION,
         startDestination = Routes.LoginScreen.name
     ) {
         composable(route = Routes.SplashScreen.name) {
-            sharedUiViewModel.updateStatusBarColor(Purple80)
             SplashScreen(
                 onTimeOut = {
                     navController.navigate(

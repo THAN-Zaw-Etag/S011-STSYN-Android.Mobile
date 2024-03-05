@@ -34,7 +34,6 @@ fun RootNavigationGraph(
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            sharedUiViewModel = sharedUiViewModel,
             context = context
         )
         composable(route = "${Graph.HOME}/{isSodInitiate}") {

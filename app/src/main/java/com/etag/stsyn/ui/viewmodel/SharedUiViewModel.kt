@@ -54,10 +54,6 @@ class SharedUiViewModel @Inject constructor(
         }
     }
 
-    fun updateStatusBarColor(color: Color) {
-        _uiState.update { it.copy(statusBarColor = color) }
-    }
-
     fun updateBottomNavigationBarStatus(showBottomNavigationBar: Boolean) {
         _uiState.update {
             it.copy(
@@ -70,7 +66,6 @@ class SharedUiViewModel @Inject constructor(
 data class SharedUiState(
     val title: String = Routes.HomeScreen.title,
     val showTopAppBar: Boolean = true,
-    val statusBarColor: Color = Purple80,
     val icon: ImageVector = Icons.Default.Menu,
     val selectedBottomNavigationItem: String = Routes.HomeScreen.title,
     val showBottomNavigationBar: Boolean = false

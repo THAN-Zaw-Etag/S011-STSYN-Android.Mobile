@@ -54,7 +54,6 @@ class MainActivity : ComponentActivity() {
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsStateWithLifecycle()
             val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle(LocalUser())
-            val sharedUiState by sharedUiViewModel.uiState.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
             PermissionUtil.checkBluetoothPermission(context)
@@ -69,7 +68,7 @@ class MainActivity : ComponentActivity() {
                 loginViewModel.connectReader()
             }
 
-            STSYNTheme (statusBarColor = sharedUiState.statusBarColor.toArgb()) {
+            STSYNTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {

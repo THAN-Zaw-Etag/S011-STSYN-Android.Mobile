@@ -3,7 +3,6 @@
 package com.etag.stsyn.ui.screen.main
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -43,12 +42,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
-import com.etag.stsyn.ui.components.AppBar
+import com.etag.stsyn.ui.components.AnimatedAppBar
 import com.etag.stsyn.ui.components.AuthorizationTokenExpiredDialog
 import com.etag.stsyn.ui.components.BottomNavigationBar
 import com.etag.stsyn.ui.components.ChangePasswordDialog
@@ -63,7 +61,6 @@ import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.states.mutableDialogStateOf
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
-import com.etag.stsyn.util.TransitionUtil
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
@@ -89,7 +86,7 @@ fun HomeScreen(
     val updatePasswordResponse by loginViewModel.updatePasswordResponse.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var showLoadingDialog by remember { mutableStateOf(false) }
-    var showDialog by remember { mutableStateOf(false) }
+    var showUpdatePasswordDialog by remember { mutableStateOf(false) }
 
     ReaderLifeCycle(viewModel = loginViewModel)
 
@@ -117,17 +114,22 @@ fun HomeScreen(
     LoadingDialog(
         title = "Updating password...",
         showDialog = showLoadingDialog,
-        onDismiss = {  })
+        onDismiss = { })
 
     if (showAuthorizationFailedDialog) AuthorizationTokenExpiredDialog(
         message = AUTHORIZATION_FAILED_MESSAGE, onLogOut = onLogOutClick
     )
 
-    ChangePasswordDialog(userName = savedUserState.name, onChangePassword = { old, new ->
-        onChangePassword(old.toCharArray(), new.toCharArray())
-    }, showDialog = showDialog, onDismiss = {
-        showDialog = false
-    })
+    ChangePasswordDialog(
+        userName = savedUserState.name,
+        onChangePassword = { old, new ->
+            onChangePassword(old.toCharArray(), new.toCharArray())
+        },
+        showDialog = showUpdatePasswordDialog,
+        onDismiss = {
+            showUpdatePasswordDialog = false
+        }
+    )
 
     WarningDialog(
         icon = CustomIcon.Vector(Icons.Default.Error),
@@ -144,8 +146,10 @@ fun HomeScreen(
                 DrawerContent(
                     user = savedUserState,
                     onChangePasswordClick = {
-                        coroutineScope.launch { drawerState.close() }
-                        showDialog = true
+                        coroutineScope.launch {
+                            drawerState.close()
+                            showUpdatePasswordDialog = true
+                        }
                     },
                     onSettingsClick = {
                         coroutineScope.launch { drawerState.close() }
@@ -157,27 +161,26 @@ fun HomeScreen(
         }) {
         Scaffold(
             bottomBar = {
-                BottomNavigationBar(selectedItem = sharedUiState.selectedBottomNavigationItem,
+                BottomNavigationBar(
+                    selectedItem = sharedUiState.selectedBottomNavigationItem,
                     showBottomBar = sharedUiState.showBottomNavigationBar,
-                    onBottomNavigationItemSelected = { navController.navigate(it) })
+                    onBottomNavigationItemSelected = { navController.navigate(it) }
+                )
             },
             topBar = {
-                AnimatedVisibility(
+                AnimatedAppBar(
                     visible = sharedUiState.showTopAppBar,
-                    enter = TransitionUtil.slideInVerticallyFromTop,
-                    exit = TransitionUtil.slideOutVerticallyToTop
-                ) {
-                    AppBar(userName = savedUserState.name,
-                        title = sharedUiState.title,
-                        icon = sharedUiState.icon,
-                        onIconClick = {
-                            if (sharedUiState.icon == Icons.AutoMirrored.Filled.ArrowBack) {
-                                navController.navigateUp()
-                            } else coroutineScope.launch {
-                                drawerState.open()
-                            }
-                        })
-                }
+                    userName = savedUserState.name,
+                    title = sharedUiState.title,
+                    icon = sharedUiState.icon,
+                    onIconClick = {
+                        if (sharedUiState.icon == Icons.AutoMirrored.Filled.ArrowBack) {
+                            navController.navigateUp()
+                        } else coroutineScope.launch {
+                            drawerState.open()
+                        }
+                    }
+                )
             },
         ) {
             HomeNavigationGraph(

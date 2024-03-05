@@ -99,7 +99,7 @@ fun ChangePasswordDialog(
 
                     ChangePasswordField(
                         hint = "Old Password",
-                        isError = false,
+                        isError = oldPassword.isEmpty(),
                         onValueChange = { oldPassword = it }
                     )
                     ChangePasswordField(
@@ -124,7 +124,12 @@ fun ChangePasswordDialog(
                             containerColor = MaterialTheme.colorScheme.primary
                         ),
                         onClick = {
-                            onChangePassword(oldPassword, newPassword)
+                            when {
+                                oldPassword.isEmpty() -> oldPassword = ""
+                                newPassword.isEmpty() -> newPassword = ""
+                                confirmPassword.isEmpty() -> confirmPassword = ""
+                                else -> onChangePassword(oldPassword,newPassword)
+                            }
                             onDismiss()
                         }
                     ) {
