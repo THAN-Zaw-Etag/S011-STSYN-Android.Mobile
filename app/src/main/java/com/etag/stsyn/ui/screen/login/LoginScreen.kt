@@ -37,7 +37,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,10 +59,10 @@ fun LoginScreen(
     navigateToLoginContentScreen: () -> Unit,
     loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
+    ReaderLifeCycle(viewModel = loginViewModel)
+
     val rfidUiState by loginViewModel.rfidUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-
-    ReaderLifeCycle(viewModel = loginViewModel)
 
     var showLoadingDialog by remember {
         mutableStateOf(false)
@@ -86,7 +85,8 @@ fun LoginScreen(
         ShowBaseUrlAlertDialog(
             onConfirm = {
                 loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = "https://18.139.63.32/SMS-STSYN-Dev/api/"))   //TODO change this when app release
-            })
+            }
+        )
     }
 
     LaunchedEffect(lifecycleOwner) {
@@ -169,7 +169,6 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.weight(1f))
         MainLowerContent(onScan = {
-            //TODO delete this loginViewModel.getUserByRfidId("455341303030303030303130") when app release
             loginViewModel.getUserByRfidId("455341303030303030303130")
         })
     }

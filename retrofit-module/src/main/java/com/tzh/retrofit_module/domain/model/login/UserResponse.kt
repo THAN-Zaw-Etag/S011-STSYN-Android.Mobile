@@ -1,5 +1,7 @@
 package com.tzh.retrofit_module.domain.model.login
 
+import com.tzh.retrofit_module.data.model.LocalUser
+
 data class UserResponse(
     val airbase: Any,
     val airbaseId: Any,
@@ -19,3 +21,13 @@ data class UserResponse(
     val userName: String,
     val userRole: Any
 )
+
+fun UserResponse?.toLocalUser(token: String?): LocalUser {
+    return LocalUser(
+        name = this?.userName ?: "",
+        userId = this?.userId ?: "",
+        roleId = this?.roleId ?: "",
+        nric = this?.nric ?: "",
+        token = token ?: ""
+    )
+}

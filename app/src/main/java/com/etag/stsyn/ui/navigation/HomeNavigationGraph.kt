@@ -40,7 +40,7 @@ fun HomeNavigationGraph(
 ) {
     val rfidUiState by loginViewModel.rfidUiState.collectAsState()
     val menuAccessRights by loginViewModel.userMenuAccessRight.collectAsState()
-    val loginUiState by loginViewModel.loginUiState.collectAsState()
+    val loginUiState by loginViewModel.loginState.collectAsState()
     val context = LocalContext.current
 
     NavHost(
@@ -170,7 +170,7 @@ fun NavGraphBuilder.detailsNavGraph(
                 it.arguments?.getString("type") ?: OptionType.BookOut.toString()
             )
             val rfidUiState by loginViewModel.rfidUiState.collectAsState()
-            val loginUiState by loginViewModel.loginUiState.collectAsState()
+            val loginUiState by loginViewModel.loginState.collectAsState()
 
             sharedUiViewModel.apply {
                 updateTopBarTitle(Routes.OtherOperationsScreen.title)

@@ -15,6 +15,7 @@ import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.MenuAccessRight
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
+import com.tzh.retrofit_module.domain.model.login.toLocalUser
 import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.domain.model.user.UserModel
@@ -40,8 +41,8 @@ class LoginViewModel @Inject constructor(
     private val appConfiguration: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
 
-    private val _loginUiState = MutableStateFlow(LoginUiState())
-    val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
+    private val _loginState = MutableStateFlow(LoginState())
+    val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
     private val _getUserResponse = MutableSharedFlow<ApiResponse<GetUserByEPCResponse>>()
     val getUserByEPCResponse: SharedFlow<ApiResponse<GetUserByEPCResponse>> =
@@ -123,12 +124,16 @@ class LoginViewModel @Inject constructor(
     }
 
     fun updateLoginStatus(isSuccessful: Boolean) {
-        _loginUiState.update { it.copy(isLoginSuccessful = isSuccessful) }
+        _loginState.update { it.copy(isLoginSuccessful = isSuccessful) }
     }
 
 
     fun getUserByRfidId(rfidId: String) {
         viewModelScope.launch {
+
+            // reset attempt count when user change
+            _loginState.update { it.copy(attemptCount = 0) }
+
             _getUserResponse.emit(ApiResponse.Loading)
             val response = userRepository.getUserByEPC(rfidId)
             _getUserResponse.emit(response)
@@ -141,7 +146,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun saveUserToLocalStorage(localUser: LocalUser) {
+    private fun saveUserToLocalStorage(localUser: LocalUser) {
         viewModelScope.launch {
             localDataStore.saveUser(localUser)
             updateLoginStatus(true)
@@ -149,19 +154,19 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun updateSODInitiateStatus(isSodInitiate: Boolean) {
-        _loginUiState.update { it.copy(isSodInitiate = isSodInitiate) }
+        _loginState.update { it.copy(isSodInitiate = isSodInitiate) }
     }
 
     private fun updateShiftType(shift: Shift) {
-        _loginUiState.update { it.copy(shift = shift) }
+        _loginState.update { it.copy(shift = shift) }
     }
 
     fun saveToken(token: String) {
         viewModelScope.launch { localDataStore.saveToken(token) }
     }
 
-    fun increaseLoginAttempt() {
-        _loginUiState.update {
+    private fun increaseLoginAttempt() {
+        _loginState.update {
             it.copy(
                 attemptCount = it.attemptCount + 1
             )
@@ -174,6 +179,7 @@ class LoginViewModel @Inject constructor(
             _loginResponse.value = ApiResponse.Loading
             delay(1000) // set delay for loading
             val passwordString = String(passwordCharArray)
+
             _loginResponse.value = userRepository.login(
                 LoginRequest(
                     id = "",
@@ -184,30 +190,40 @@ class LoginViewModel @Inject constructor(
                 )
             )
 
-            // when login is successful, update user menu access rights
-            when (_loginResponse.value) {
-                is ApiResponse.Success -> {
-                    updateLoginStatus(true)
-                    _userMenuAccessRights.value =
-                        (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.rolePermission!!.handheldMenuAccessRight
+            handleLoginResponse()
 
-                    val checkStatus =
-                        (_loginResponse.value as ApiResponse.Success<LoginResponse>).data?.checkStatus!!
-                    val isSodInitiate =
-                        (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
-
-                    updateShiftType(if (checkStatus.isStart) Shift.START else Shift.ADHOC)
-                    localDataStore.saveCheckStatusId(checkStatus.id.toString())
-                    updateSODInitiateStatus(isSodInitiate)
-                }
-
-                is ApiResponse.AuthorizationError -> {
-                    shouldShowAuthorizationFailedDialog(true)
-                }
-
-                else -> {}
-            }
             passwordCharArray.fill('0')
+        }
+    }
+
+    private suspend fun handleLoginResponse(){
+        when (loginResponse.value) {
+            is ApiResponse.Success -> {
+                updateLoginStatus(true)
+
+                val data = (loginResponse.value as ApiResponse.Success<LoginResponse>).data
+                saveUserToLocalStorage(data?.user.toLocalUser(data?.token))
+
+                // update menu access rights
+                _userMenuAccessRights.value = data?.rolePermission!!.handheldMenuAccessRight
+
+                val checkStatus = data.checkStatus!!
+                val isSodInitiate = (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
+                updateShiftType(if (checkStatus.isStart) Shift.START else Shift.ADHOC)
+                localDataStore.saveCheckStatusId(checkStatus.id.toString())
+                updateSODInitiateStatus(isSodInitiate)
+            }
+
+            is ApiResponse.ApiError -> {
+                increaseLoginAttempt()
+                updateLoginStatus(false)
+            }
+
+            is ApiResponse.AuthorizationError -> {
+                shouldShowAuthorizationFailedDialog(true)
+            }
+
+            else -> {}
         }
     }
 
@@ -265,16 +281,16 @@ class LoginViewModel @Inject constructor(
     }
 
     fun navigateToScanScreen() {
-        _loginUiState.update { it.copy(rfidId = "") }
+        _loginState.update { it.copy(rfidId = "") }
     }
 
     override fun onReceivedTagId(id: String) {
         Log.d("TAG", "onReceivedTagId: $id")
-        _loginUiState.update { it.copy(rfidId = id) }
+        _loginState.update { it.copy(rfidId = id) }
         getUserByRfidId(id)
     }
 
-    data class LoginUiState(
+    data class LoginState(
         val isLoginSuccessful: Boolean = false,
         var attemptCount: Int = 0,
         val rfidId: String = "",

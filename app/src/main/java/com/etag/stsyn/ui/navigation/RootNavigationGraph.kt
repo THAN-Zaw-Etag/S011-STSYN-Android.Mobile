@@ -22,7 +22,7 @@ fun RootNavigationGraph(
     loginViewModel: LoginViewModel,
 ) {
     val context = LocalContext.current
-    val loginUiState by loginViewModel.loginUiState.collectAsStateWithLifecycle()
+    val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
     NavHost(
         navController = navController,
         route = Graph.ROOT,
