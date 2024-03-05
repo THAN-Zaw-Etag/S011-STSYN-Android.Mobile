@@ -2,8 +2,8 @@ package com.etag.stsyn.ui.navigation
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -66,10 +66,10 @@ fun NavGraphBuilder.authNavGraph(
                 navController.navigateUp()
             }
 
-            val logInState = loginViewModel.loginUiState.collectAsState()
-            val loginResponse by loginViewModel.loginResponse.collectAsState()
-            val loginUiState by loginViewModel.loginUiState.collectAsState()
-            val epcModelUserName = loginViewModel.epcModelUser.collectAsState()
+            val logInState = loginViewModel.loginState.collectAsStateWithLifecycle()
+            val loginResponse by loginViewModel.loginResponse.collectAsStateWithLifecycle()
+            val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
+            val epcModelUserName = loginViewModel.epcModelUser.collectAsStateWithLifecycle()
 
             LoginContentScreen(
                 goToHome = {

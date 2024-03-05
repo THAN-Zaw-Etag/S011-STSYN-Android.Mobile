@@ -35,11 +35,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.CustomIcon
-import com.etag.stsyn.ui.components.exitApp
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.PasswordField
 import com.etag.stsyn.ui.components.VersionText
 import com.etag.stsyn.ui.components.WarningDialog
+import com.etag.stsyn.ui.components.exitApp
 import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
@@ -128,7 +128,11 @@ fun LoginContentScreen(
     Column(modifier = modifier.fillMaxSize()) {
         LoginUpperSection()
         Spacer(modifier = Modifier.height(16.dp))
-        LoginSection(onLogInClick = onLogInClick, errorMessage = error, userName = userName)
+        LoginSection(
+            onLogInClick = onLogInClick,
+            errorMessage = error,
+            userName = userName
+        )
         Spacer(modifier = Modifier.weight(1f))
         LoginLowerSection()
     }
@@ -190,13 +194,17 @@ private fun LoginSection(
             text = "Please enter your password", fontWeight = FontWeight.Bold, color = Purple80
         )
         Spacer(modifier = Modifier.height(24.dp))
-        PasswordField(hint = "Password", isError = showError, onValueChange = {
-            enteredPassword = it
-            errorMessages.clear()
-        }, onSubmit = {
-            errorMessages.clear() // clear old error messages
-            onLogInClick(it) // if there is no error, allow to login
-        })
+        PasswordField(
+            hint = "Password",
+            isError = showError,
+            onValueChange = {
+                enteredPassword = it
+                errorMessages.clear()
+            }, onSubmit = {
+                errorMessages.clear() // clear old error messages
+                if (it.trim().isNotEmpty()) onLogInClick(it) else errorMessages.add("Password must not empty!") // if there is no error, allow to login
+            }
+        )
         Spacer(modifier = Modifier.height(8.dp))
         AnimatedVisibility(visible = showError) {
             Text(text = error, color = Color.Red)
@@ -206,7 +214,7 @@ private fun LoginSection(
             Button(
                 onClick = {
                     errorMessages.clear()
-                    onLogInClick(enteredPassword)
+                    if (enteredPassword.trim().isNotEmpty()) onLogInClick(enteredPassword) else errorMessages.add("Password must not empty!")
                 }, colors = ButtonDefaults.buttonColors(containerColor = Purple80)
             ) {
                 Text(text = "Log in", modifier = Modifier.padding(horizontal = 16.dp))

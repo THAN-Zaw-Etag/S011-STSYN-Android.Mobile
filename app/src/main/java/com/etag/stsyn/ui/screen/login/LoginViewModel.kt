@@ -40,8 +40,8 @@ class LoginViewModel @Inject constructor(
     private val appConfiguration: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
 
-    private val _loginUiState = MutableStateFlow(LoginUiState())
-    val loginUiState: StateFlow<LoginUiState> = _loginUiState.asStateFlow()
+    private val _loginState = MutableStateFlow(LoginState())
+    val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
     private val _getUserResponse = MutableSharedFlow<ApiResponse<GetUserByEPCResponse>>()
     val getUserByEPCResponse: SharedFlow<ApiResponse<GetUserByEPCResponse>> =
@@ -123,7 +123,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun updateLoginStatus(isSuccessful: Boolean) {
-        _loginUiState.update { it.copy(isLoginSuccessful = isSuccessful) }
+        _loginState.update { it.copy(isLoginSuccessful = isSuccessful) }
     }
 
 
@@ -149,11 +149,11 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun updateSODInitiateStatus(isSodInitiate: Boolean) {
-        _loginUiState.update { it.copy(isSodInitiate = isSodInitiate) }
+        _loginState.update { it.copy(isSodInitiate = isSodInitiate) }
     }
 
     private fun updateShiftType(shift: Shift) {
-        _loginUiState.update { it.copy(shift = shift) }
+        _loginState.update { it.copy(shift = shift) }
     }
 
     fun saveToken(token: String) {
@@ -161,7 +161,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun increaseLoginAttempt() {
-        _loginUiState.update {
+        _loginState.update {
             it.copy(
                 attemptCount = it.attemptCount + 1
             )
@@ -265,16 +265,16 @@ class LoginViewModel @Inject constructor(
     }
 
     fun navigateToScanScreen() {
-        _loginUiState.update { it.copy(rfidId = "") }
+        _loginState.update { it.copy(rfidId = "") }
     }
 
     override fun onReceivedTagId(id: String) {
         Log.d("TAG", "onReceivedTagId: $id")
-        _loginUiState.update { it.copy(rfidId = id) }
+        _loginState.update { it.copy(rfidId = id) }
         getUserByRfidId(id)
     }
 
-    data class LoginUiState(
+    data class LoginState(
         val isLoginSuccessful: Boolean = false,
         var attemptCount: Int = 0,
         val rfidId: String = "",
