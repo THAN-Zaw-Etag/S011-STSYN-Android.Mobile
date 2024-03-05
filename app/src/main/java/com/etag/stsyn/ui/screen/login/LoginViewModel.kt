@@ -123,7 +123,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun updateLoginStatus(isSuccessful: Boolean) {
+    private fun updateLoginStatus(isSuccessful: Boolean) {
         _loginState.update { it.copy(isLoginSuccessful = isSuccessful) }
     }
 
@@ -131,8 +131,9 @@ class LoginViewModel @Inject constructor(
     fun getUserByRfidId(rfidId: String) {
         viewModelScope.launch {
 
-            // reset attempt count when user change
+            // reset attempt count and errorMessage when user changes
             _loginState.update { it.copy(attemptCount = 0) }
+            _loginResponse.value = ApiResponse.Default
 
             _getUserResponse.emit(ApiResponse.Loading)
             val response = userRepository.getUserByEPC(rfidId)
@@ -149,7 +150,6 @@ class LoginViewModel @Inject constructor(
     private fun saveUserToLocalStorage(localUser: LocalUser) {
         viewModelScope.launch {
             localDataStore.saveUser(localUser)
-            updateLoginStatus(true)
         }
     }
 

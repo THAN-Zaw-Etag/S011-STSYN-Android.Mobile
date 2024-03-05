@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.HomeScreen
+import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import kotlinx.coroutines.delay
 
 
@@ -19,10 +20,12 @@ import kotlinx.coroutines.delay
 fun RootNavigationGraph(
     isLoggedIn: Boolean,
     navController: NavHostController,
+    sharedUiViewModel: SharedUiViewModel,
     loginViewModel: LoginViewModel,
 ) {
     val context = LocalContext.current
     val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
+
     NavHost(
         navController = navController,
         route = Graph.ROOT,
@@ -31,7 +34,8 @@ fun RootNavigationGraph(
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            context,
+            sharedUiViewModel = sharedUiViewModel,
+            context = context
         )
         composable(route = "${Graph.HOME}/{isSodInitiate}") {
             // disable scan
@@ -42,6 +46,7 @@ fun RootNavigationGraph(
             HomeScreen(
                 loginViewModel = loginViewModel,
                 onChangePassword = loginViewModel::updatePassword,
+                sharedUiViewModel = sharedUiViewModel,
                 isSodInitiate = isSodInitiate,
                 onLogOutClick = {
                     loginViewModel.logOut()

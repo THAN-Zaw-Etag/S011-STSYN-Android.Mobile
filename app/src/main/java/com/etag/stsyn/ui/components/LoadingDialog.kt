@@ -37,7 +37,7 @@ fun LoadingDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var openDialog by remember { mutableStateOf(true) }
+    var openDialog by remember { mutableStateOf(false) } // true
 
     LaunchedEffect(showDialog) {
         openDialog = showDialog
