@@ -14,10 +14,13 @@ import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.login.SODInitiateScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
+import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 
 
 fun NavGraphBuilder.authNavGraph(
     navController: NavHostController,
+    sharedUiViewModel: SharedUiViewModel,
     loginViewModel: LoginViewModel,
     context: Context
 ) {
@@ -26,6 +29,7 @@ fun NavGraphBuilder.authNavGraph(
         startDestination = Routes.LoginScreen.name
     ) {
         composable(route = Routes.SplashScreen.name) {
+            sharedUiViewModel.updateStatusBarColor(Purple80)
             SplashScreen(
                 onTimeOut = {
                     navController.navigate(

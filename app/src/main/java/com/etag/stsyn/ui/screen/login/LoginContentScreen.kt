@@ -64,7 +64,7 @@ fun LoginContentScreen(
     val dialogState = rememberMutableDialogState(data = "")
 
     LaunchedEffect(loginAttemptCount) {
-        if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) dialogState.showDialog("You've tried to log in 10 times.")
+        if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) dialogState.showDialog("You've tried multiple times with wrong password")
     }
 
     LoadingDialog(title = "Signing In...",

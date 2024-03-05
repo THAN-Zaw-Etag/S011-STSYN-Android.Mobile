@@ -75,6 +75,7 @@ fun HomeScreen(
     isSodInitiate: Boolean,
     onChangePassword: KFunction2<CharArray, CharArray, Unit>,
     onLogOutClick: () -> Unit,
+    sharedUiViewModel: SharedUiViewModel,
     loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -82,7 +83,6 @@ fun HomeScreen(
     val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsStateWithLifecycle()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
-    val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
     val navController = rememberNavController()
     val sharedUiState by sharedUiViewModel.uiState.collectAsStateWithLifecycle()
     val dialogState = remember { mutableDialogStateOf("") }

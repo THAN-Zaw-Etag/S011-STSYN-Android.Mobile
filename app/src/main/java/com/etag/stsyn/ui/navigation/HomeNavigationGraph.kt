@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.navigation
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -12,6 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -42,6 +45,11 @@ fun HomeNavigationGraph(
     val menuAccessRights by loginViewModel.userMenuAccessRight.collectAsState()
     val loginUiState by loginViewModel.loginState.collectAsState()
     val context = LocalContext.current
+
+    LaunchedEffect(true) {
+        Log.d("TAG", "HomeNavigationGraph: ")
+        sharedUiViewModel.updateStatusBarColor(Color.Transparent)
+    }
 
     NavHost(
         route = Graph.HOME,
@@ -151,7 +159,8 @@ fun HomeNavigationGraph(
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            context
+            context = context,
+            sharedUiViewModel = sharedUiViewModel
         )
     }
 }
