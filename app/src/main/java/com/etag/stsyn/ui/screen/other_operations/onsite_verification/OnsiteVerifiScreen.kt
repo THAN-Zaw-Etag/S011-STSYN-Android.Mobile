@@ -301,7 +301,7 @@ private fun ScannedContent(
                     ScannedItem(
                         isScanned = item.isScanned,
                         id = "${item.serialNo} - ${item.itemLocation}",
-                        isSwipeable = true,
+                        isSwipeable = false,
                         name = item.description,
                         showTrailingIcon = true,
                         onItemClick = {
