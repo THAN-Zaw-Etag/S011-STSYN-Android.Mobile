@@ -66,10 +66,10 @@ fun NavGraphBuilder.authNavGraph(
                 navController.navigateUp()
             }
 
-            val logInState = loginViewModel.loginState.collectAsStateWithLifecycle()
+            val logInState by loginViewModel.loginState.collectAsStateWithLifecycle()
             val loginResponse by loginViewModel.loginResponse.collectAsStateWithLifecycle()
             val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
-            val epcModelUserName = loginViewModel.epcModelUser.collectAsStateWithLifecycle()
+            val epcModelUserName by loginViewModel.epcModelUser.collectAsStateWithLifecycle()
 
             LoginContentScreen(
                 goToHome = {
@@ -88,17 +88,10 @@ fun NavGraphBuilder.authNavGraph(
 
                     loginViewModel.resetLoginResponseState()
                 },
-                loginAttemptCount = logInState.value.attemptCount,
-                userName = epcModelUserName.value.userName,
+                loginAttemptCount = logInState.attemptCount,
+                userName = epcModelUserName.userName,
                 loginResponse = loginResponse,
                 onLogInClick = { loginViewModel.login(it.toCharArray()) },
-                onSuccess = loginViewModel::saveUserToLocalStorage,
-                onFailed = {
-                    loginViewModel.apply {
-                        increaseLoginAttempt()
-                        updateLoginStatus(false)
-                    }
-                }
             )
             BackHandler {
                 navController.navigate(Routes.LoginScreen.name)

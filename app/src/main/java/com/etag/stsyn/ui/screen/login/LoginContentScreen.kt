@@ -56,17 +56,11 @@ fun LoginContentScreen(
     loginResponse: ApiResponse<LoginResponse>,
     modifier: Modifier = Modifier,
     onLogInClick: (String) -> Unit,
-    onSuccess: (LocalUser) -> Unit,
-    onFailed: () -> Unit,
 ) {
     var error by remember { mutableStateOf("") }
     val context = LocalContext.current
-    var showLoadingDialog by remember {
-        mutableStateOf(false)
-    }
-    var showLoginSuccessToast by remember {
-        mutableStateOf(false)
-    }
+    var showLoadingDialog by remember { mutableStateOf(false) }
+    var showLoginSuccessToast by remember { mutableStateOf(false) }
     val dialogState = rememberMutableDialogState(data = "")
 
     LaunchedEffect(loginAttemptCount) {
@@ -87,15 +81,6 @@ fun LoginContentScreen(
 
             is ApiResponse.Success -> {
                 showLoadingDialog = false
-                val user = loginResponse.data?.user
-                val localUser = LocalUser(
-                    name = user?.userName ?: "",
-                    userId = user?.userId ?: "",
-                    roleId = user?.roleId ?: "",
-                    nric = user?.nric ?: "",
-                    token = loginResponse.data?.token ?: ""
-                )
-                onSuccess(localUser)
                 showLoginSuccessToast = true
                 goToHome()
             }
@@ -103,8 +88,6 @@ fun LoginContentScreen(
             is ApiResponse.ApiError -> {
                 showLoadingDialog = false
                 showLoginSuccessToast = false
-                Log.d("TAG", "LoginContentScreen: ${loginResponse.message}")
-                onFailed()
                 error = loginResponse.message
             }
 
