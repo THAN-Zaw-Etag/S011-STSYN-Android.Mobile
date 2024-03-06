@@ -4,16 +4,13 @@ import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,8 +50,7 @@ class MainActivity : ComponentActivity() {
             val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
             val bluetoothReceiverViewModel: BluetoothReceiverViewModel = hiltViewModel()
             val bluetoothState by bluetoothReceiverViewModel.bluetoothState.collectAsStateWithLifecycle()
-            val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle(LocalUser())
-            val sharedUiState by sharedUiViewModel.uiState.collectAsStateWithLifecycle()
+            val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
             PermissionUtil.checkBluetoothPermission(context)
@@ -69,13 +65,12 @@ class MainActivity : ComponentActivity() {
                 loginViewModel.connectReader()
             }
 
-            STSYNTheme (statusBarColor = sharedUiState.statusBarColor.toArgb()) {
+            STSYNTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    val isLoggedIn = savedUser.isLoggedIn
                     RootNavigationGraph(
-                        isLoggedIn = isLoggedIn,
+                        isLoggedIn = savedUser.isLoggedIn,
                         navController = navController,
                         sharedUiViewModel = sharedUiViewModel,
                         loginViewModel = loginViewModel

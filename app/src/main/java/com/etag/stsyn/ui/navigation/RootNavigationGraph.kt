@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -14,6 +15,8 @@ import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.main.HomeScreen
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 import kotlinx.coroutines.delay
+
+private const val TAG = "RootNavigationGraph"
 
 
 @Composable
@@ -34,7 +37,6 @@ fun RootNavigationGraph(
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            sharedUiViewModel = sharedUiViewModel,
             context = context
         )
         composable(route = "${Graph.HOME}/{isSodInitiate}") {
@@ -60,9 +62,9 @@ fun RootNavigationGraph(
         }
     }
     LaunchedEffect(isLoggedIn) {
+        Log.d(TAG, "RootNavigationGraph: $isLoggedIn")
         if (isLoggedIn) {
-            val route =
-                if (!loginUiState.isSodInitiate) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
+            val route = if (!loginUiState.isSodInitiate) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
             delay(300)
             navController.navigateToSingleTop(route)
         }

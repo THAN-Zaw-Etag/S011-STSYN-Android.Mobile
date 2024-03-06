@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.navigation
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,9 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -43,13 +41,7 @@ fun HomeNavigationGraph(
 ) {
     val rfidUiState by loginViewModel.rfidUiState.collectAsState()
     val menuAccessRights by loginViewModel.userMenuAccessRight.collectAsState()
-    val loginUiState by loginViewModel.loginState.collectAsState()
     val context = LocalContext.current
-
-    LaunchedEffect(true) {
-        Log.d("TAG", "HomeNavigationGraph: ")
-        sharedUiViewModel.updateStatusBarColor(Color.Transparent)
-    }
 
     NavHost(
         route = Graph.HOME,
@@ -159,8 +151,7 @@ fun HomeNavigationGraph(
         authNavGraph(
             navController = navController,
             loginViewModel = loginViewModel,
-            context = context,
-            sharedUiViewModel = sharedUiViewModel
+            context = context
         )
     }
 }
@@ -178,16 +169,17 @@ fun NavGraphBuilder.detailsNavGraph(
             val optionType = OptionType.valueOf(
                 it.arguments?.getString("type") ?: OptionType.BookOut.toString()
             )
-            val rfidUiState by loginViewModel.rfidUiState.collectAsState()
-            val loginUiState by loginViewModel.loginState.collectAsState()
+            val rfidUiState by loginViewModel.rfidUiState.collectAsStateWithLifecycle()
+            val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
 
-            sharedUiViewModel.apply {
-                updateTopBarTitle(Routes.OtherOperationsScreen.title)
-                updateTopAppBarStatus(false)
-                updateAppBarNavigationIcon(Icons.Default.Menu)
-                updateBottomNavigationBarStatus(false)
+            LaunchedEffect(Unit) {
+                sharedUiViewModel.apply {
+                    updateTopBarTitle(Routes.OtherOperationsScreen.title)
+                    updateTopAppBarStatus(false)
+                    updateAppBarNavigationIcon(Icons.Default.Menu)
+                    updateBottomNavigationBarStatus(false)
+                }
             }
-
             DetailScreen(
                 isConnected = rfidUiState.isConnected,
                 optionType = optionType,

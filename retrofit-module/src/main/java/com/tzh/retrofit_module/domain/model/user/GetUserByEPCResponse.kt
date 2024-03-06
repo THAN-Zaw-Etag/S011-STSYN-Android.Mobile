@@ -21,6 +21,8 @@ data class UserModel(
     val unit: String = "",
     val unitId: String = "",
     val userId: String = "",
+    val isPasswordExpired: Boolean = false,
+    val isSysAdmin: Boolean = false,
     val userName: String = "",
     val userRole: String =""
 )

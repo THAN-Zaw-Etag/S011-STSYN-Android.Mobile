@@ -48,7 +48,7 @@ fun ChangePasswordDialog(
     onChangePassword: (String, String) -> Unit
 ) {
     var show by remember { mutableStateOf(false) }
-    var oldPassword by remember { mutableStateOf("") }
+    var oldPassword by remember { mutableStateOf(" ") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var isWrongPassword by remember { mutableStateOf(false) }
@@ -99,7 +99,7 @@ fun ChangePasswordDialog(
 
                     ChangePasswordField(
                         hint = "Old Password",
-                        isError = false,
+                        isError = oldPassword.isEmpty(),
                         onValueChange = { oldPassword = it }
                     )
                     ChangePasswordField(
@@ -124,8 +124,15 @@ fun ChangePasswordDialog(
                             containerColor = MaterialTheme.colorScheme.primary
                         ),
                         onClick = {
-                            onChangePassword(oldPassword, newPassword)
-                            onDismiss()
+                            when {
+                                oldPassword.isEmpty() -> oldPassword = ""
+                                newPassword.isEmpty() -> newPassword = ""
+                                confirmPassword.isEmpty() -> confirmPassword = ""
+                            }
+
+                            if(oldPassword.isNotEmpty() && newPassword.isNotEmpty() && confirmPassword.isNotEmpty()) onChangePassword(oldPassword,newPassword)
+
+
                         }
                     ) {
                         Text(text = "Save")

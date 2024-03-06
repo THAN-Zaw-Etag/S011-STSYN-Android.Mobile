@@ -61,8 +61,8 @@ import com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out.CheckInOutS
 import com.etag.stsyn.ui.screen.other_operations.onsite_check_in_out.OnsiteCheckInOutViewModel
 import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationCountScreen
 import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationSaveScreen
-import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationViewModel
 import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationScreen
+import com.etag.stsyn.ui.screen.other_operations.onsite_verification.OnsiteVerificationViewModel
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutSaveScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutScanScreen
 import com.etag.stsyn.ui.screen.other_operations.t_loan_out.OtherTLoanOutViewModel

@@ -36,6 +36,8 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val EPC_FLIGHT = stringPreferencesKey("epc_flight")
         val EPC_FLIGHT_ID = stringPreferencesKey("epc_flight_id")
         val EPC_IS_DELETED = booleanPreferencesKey("epc_is_deleted")
+        val IS_ADMIN = booleanPreferencesKey("is_admin")
+        val IS_PASSWORD_EXPIRED = booleanPreferencesKey("is_password_expired")
         val EPC_NRIC = stringPreferencesKey("epc_nric")
         val EPC_PASSWORD = stringPreferencesKey("epc_password")
         val EPC_REMARK = stringPreferencesKey("epc_remark")
@@ -83,6 +85,8 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             preferences[EPC_FLIGHT_ID] = userModel.flightId
             preferences[EPC_IS_DELETED] = userModel.isDeleted
             preferences[EPC_NRIC] = userModel.nric
+            preferences[IS_ADMIN] = userModel.isSysAdmin
+            preferences[IS_PASSWORD_EXPIRED] = userModel.isPasswordExpired
             preferences[EPC_PASSWORD] = userModel.password
             preferences[EPC_REMARK] = userModel.remark
             preferences[EPC_TAG_ID] = userModel.tagId
@@ -105,6 +109,8 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val flight = preferences[EPC_FLIGHT] ?: ""
         val flightId = preferences[EPC_FLIGHT_ID] ?: ""
         val isDeleted = preferences[EPC_IS_DELETED] ?: false
+        val isAdmin = preferences[IS_ADMIN] ?: false
+        val isPasswordExpired = preferences[IS_PASSWORD_EXPIRED] ?: false
         val nric = preferences[EPC_NRIC] ?: ""
         val password = preferences[EPC_PASSWORD] ?: ""
         val remark = preferences[EPC_REMARK] ?: ""
@@ -129,6 +135,8 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             remark = remark,
             tagId = tagId,
             unit = unit,
+            isSysAdmin = isAdmin,
+            isPasswordExpired = isPasswordExpired,
             unitId = unitId,
             userId = userId,
             roleId = roleId,

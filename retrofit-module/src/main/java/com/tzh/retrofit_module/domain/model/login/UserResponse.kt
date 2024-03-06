@@ -1,6 +1,7 @@
 package com.tzh.retrofit_module.domain.model.login
 
 import com.tzh.retrofit_module.data.model.LocalUser
+import com.tzh.retrofit_module.domain.model.user.UserModel
 
 data class UserResponse(
     val airbase: Any,
@@ -22,12 +23,13 @@ data class UserResponse(
     val userRole: Any
 )
 
-fun UserResponse?.toLocalUser(token: String?): LocalUser {
+fun UserModel?.toLocalUser(token: String?): LocalUser {
     return LocalUser(
         name = this?.userName ?: "",
         userId = this?.userId ?: "",
         roleId = this?.roleId ?: "",
         nric = this?.nric ?: "",
-        token = token ?: ""
+        token = token ?: "",
+        isPasswordExpired = true
     )
 }
