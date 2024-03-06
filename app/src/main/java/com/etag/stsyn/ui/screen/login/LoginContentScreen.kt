@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.login
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -20,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +43,6 @@ import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 import com.etag.stsyn.util.toLines
-import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.ApiResponse
@@ -223,12 +220,12 @@ private fun LoginSection(
         AnimatedVisibility(visible = showError) {
             Text(
                 text = if (error != "null") {
-                    if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS){
+                    if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) {
                         "You've tried multiple times with wrong password."
-                    }else{
+                    } else {
                         error
                     }
-                }  else {
+                } else {
                     "Something went wrong! Please try again."
                 },
                 color = if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) {
