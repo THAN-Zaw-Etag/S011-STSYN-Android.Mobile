@@ -80,7 +80,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun lockUser(nric: String): ApiResponse<NormalResponse> {
         return ApiResponseHandler.processResponse {
-            apiService.lockUSer("nric")
+            apiService.lockUSer(nric)
         }
     }
 }
