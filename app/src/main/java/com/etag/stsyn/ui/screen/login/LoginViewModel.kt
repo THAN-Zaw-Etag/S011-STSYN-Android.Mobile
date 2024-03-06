@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
+import com.etag.stsyn.util.log.Logger
+import com.etag.stsyn.util.log.printLog
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
@@ -40,6 +42,10 @@ class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val appConfiguration: AppConfiguration
 ) : BaseViewModel(rfidHandler) {
+
+    companion object {
+        const val TAG = "LoginViewModel"
+    }
 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
@@ -89,6 +95,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 localDataStore.getUser.collect {
+                    Logger.i("isLoggedIn: ${it.isLoggedIn}")
                     _savedUser.value = it
                     if (it.isLoggedIn) getUserMenuAccessRightsById()
                 }

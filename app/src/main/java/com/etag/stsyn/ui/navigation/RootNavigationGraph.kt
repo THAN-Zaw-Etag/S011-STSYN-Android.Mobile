@@ -27,7 +27,7 @@ fun RootNavigationGraph(
     loginViewModel: LoginViewModel,
 ) {
     val context = LocalContext.current
-    val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
+    val loginState by loginViewModel.loginState.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
@@ -64,7 +64,7 @@ fun RootNavigationGraph(
     LaunchedEffect(isLoggedIn) {
         Log.d(TAG, "RootNavigationGraph: $isLoggedIn")
         if (isLoggedIn) {
-            val route = if (!loginUiState.isSodInitiate) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
+            val route = if (!loginState.isSodInitiate) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
             delay(300)
             navController.navigateToSingleTop(route)
         }

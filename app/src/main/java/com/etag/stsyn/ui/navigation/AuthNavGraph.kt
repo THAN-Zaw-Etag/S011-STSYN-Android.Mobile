@@ -92,7 +92,7 @@ fun NavGraphBuilder.authNavGraph(
                     loginViewModel.resetLoginResponseState()
                 },
                 loginAttemptCount = logInState.attemptCount,
-                userName = epcModelUserName.userName,
+                name = epcModelUserName.userName,
                 loginResponse = loginResponse,
                 onLogInClick = {
                     if (loginUiState.attemptCount >= MAXIMUM_LOGIN_ATTEMPTS) {

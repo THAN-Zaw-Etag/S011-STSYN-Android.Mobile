@@ -52,7 +52,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 fun LoginContentScreen(
     goToHome: () -> Unit,
     loginAttemptCount: Int,
-    userName: String,
+    name: String,
     loginResponse: ApiResponse<LoginResponse>,
     modifier: Modifier = Modifier,
     onLogInClick: (String) -> Unit,
@@ -65,9 +65,10 @@ fun LoginContentScreen(
     var showLoginSuccessToast by remember { mutableStateOf(false) }
     val dialogState = rememberMutableDialogState(data = "")
     var showChangePasswordDialog by remember { mutableStateOf(false) }
-    var userName by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf(name) }
 
-    LoadingDialog(title = "Signing In...",
+    LoadingDialog(
+        title = "Signing In...",
         showDialog = showLoadingDialog,
         onDismiss = { }
     )
@@ -90,7 +91,7 @@ fun LoginContentScreen(
                 showLoadingDialog = false
                 showLoginSuccessToast = true
                 val user = loginResponse.data?.user
-                if (user?.isPasswordExpired == true) { //TODO Change false to true
+                if (user?.isPasswordExpired == true) {
                     userName = user.userName
                     showChangePasswordDialog = true
                 } else goToHome()
