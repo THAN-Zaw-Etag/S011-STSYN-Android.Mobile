@@ -67,6 +67,10 @@ fun LoginContentScreen(
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var userName by remember { mutableStateOf(name) }
 
+    LaunchedEffect(name) {
+        userName = name
+    }
+
     LoadingDialog(
         title = "Signing In...",
         showDialog = showLoadingDialog,

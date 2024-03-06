@@ -7,6 +7,5 @@ data class LocalUser(
     val nric: String = "",
     val token: String = "",
     val isAdmin: Boolean = false,
-    val isPasswordExpired: Boolean = false,
     val isLoggedIn: Boolean = false,
 )

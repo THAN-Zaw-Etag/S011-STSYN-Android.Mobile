@@ -2,6 +2,7 @@ package com.etag.stsyn.ui.navigation
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
@@ -15,6 +16,7 @@ import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.login.SODInitiateScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
+import com.tzh.retrofit_module.util.log.Logger
 
 
 fun NavGraphBuilder.authNavGraph(
@@ -73,7 +75,12 @@ fun NavGraphBuilder.authNavGraph(
             val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
             val lockUserState by loginViewModel.lockUserState.collectAsStateWithLifecycle()
             val epcModelUserName by loginViewModel.epcModelUser.collectAsStateWithLifecycle()
+            val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle()
 
+            LaunchedEffect(savedUser.isLoggedIn) {
+                Logger.d("authNavGraph: ${savedUser.isLoggedIn  }")
+            }
+            
             LoginContentScreen(
                 goToHome = {
                     // if sod initiate is true, go to sod initiate screen else home screen

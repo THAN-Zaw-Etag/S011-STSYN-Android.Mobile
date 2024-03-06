@@ -61,6 +61,7 @@ import com.etag.stsyn.ui.navigation.Routes
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.states.mutableDialogStateOf
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
+import com.tzh.retrofit_module.util.log.Logger
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.AUTHORIZATION_FAILED_MESSAGE
 import com.tzh.retrofit_module.util.ApiResponse
@@ -89,6 +90,10 @@ fun HomeScreen(
     var showUpdatePasswordDialog by remember { mutableStateOf(false) }
 
     ReaderLifeCycle(viewModel = loginViewModel)
+
+    LaunchedEffect(savedUserState) {
+        Logger.d("HomeScreen: $savedUserState")
+    }
 
     LaunchedEffect(updatePasswordResponse) {
         when (updatePasswordResponse) {

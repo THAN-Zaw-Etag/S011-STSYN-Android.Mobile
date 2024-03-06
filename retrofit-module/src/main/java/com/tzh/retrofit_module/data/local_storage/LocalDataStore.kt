@@ -10,6 +10,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.domain.model.user.UserModel
+import com.tzh.retrofit_module.util.log.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -37,7 +38,6 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val EPC_FLIGHT_ID = stringPreferencesKey("epc_flight_id")
         val EPC_IS_DELETED = booleanPreferencesKey("epc_is_deleted")
         val IS_ADMIN = booleanPreferencesKey("is_admin")
-        val IS_PASSWORD_EXPIRED = booleanPreferencesKey("is_password_expired")
         val EPC_NRIC = stringPreferencesKey("epc_nric")
         val EPC_PASSWORD = stringPreferencesKey("epc_password")
         val EPC_REMARK = stringPreferencesKey("epc_remark")
@@ -59,6 +59,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             preferences[USER_NRIC] = user.nric
             preferences[TOKEN] = user.token
             preferences[IS_LOGGED_IN] = true
+            preferences[IS_ADMIN] = user.isAdmin
         }
     }
 
@@ -69,7 +70,6 @@ class LocalDataStore @Inject constructor(private val context: Context) {
     }
 
     suspend fun saveToken(token: String) {
-        Log.d(TAG, "saveToken: $token")
         context.dataStore.edit {
             it[TOKEN] = token
         }
@@ -86,7 +86,6 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             preferences[EPC_IS_DELETED] = userModel.isDeleted
             preferences[EPC_NRIC] = userModel.nric
             preferences[IS_ADMIN] = userModel.isSysAdmin
-            preferences[IS_PASSWORD_EXPIRED] = userModel.isPasswordExpired
             preferences[EPC_PASSWORD] = userModel.password
             preferences[EPC_REMARK] = userModel.remark
             preferences[EPC_TAG_ID] = userModel.tagId
@@ -110,7 +109,6 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val flightId = preferences[EPC_FLIGHT_ID] ?: ""
         val isDeleted = preferences[EPC_IS_DELETED] ?: false
         val isAdmin = preferences[IS_ADMIN] ?: false
-        val isPasswordExpired = preferences[IS_PASSWORD_EXPIRED] ?: false
         val nric = preferences[EPC_NRIC] ?: ""
         val password = preferences[EPC_PASSWORD] ?: ""
         val remark = preferences[EPC_REMARK] ?: ""
@@ -136,7 +134,6 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             tagId = tagId,
             unit = unit,
             isSysAdmin = isAdmin,
-            isPasswordExpired = isPasswordExpired,
             unitId = unitId,
             userId = userId,
             roleId = roleId,
@@ -166,6 +163,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val userNric = preferences[USER_NRIC] ?: ""
         val token = preferences[TOKEN] ?: ""
         val isLoggedIn = preferences[IS_LOGGED_IN] ?: false
+        val isAdmin = preferences[IS_ADMIN] ?: false
 
         LocalUser(
             name = name,
@@ -173,7 +171,8 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             nric = userNric,
             roleId = roleId,
             token = token,
-            isLoggedIn = isLoggedIn
+            isLoggedIn = isLoggedIn,
+            isAdmin = isAdmin,
         )
     }
 

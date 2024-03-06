@@ -1,4 +1,4 @@
-package com.etag.stsyn.util.log
+package com.tzh.retrofit_module.util.log
 
 import android.util.Log
 
@@ -9,6 +9,7 @@ object Logger {
     private val tag = try {
         stackTrace[3].fileName.replace(".kt","")
     } catch (e: Exception) {
+        e.printStackTrace()
         "UnknownClass"
     }
     fun d(message: String) {
@@ -25,15 +26,5 @@ object Logger {
 
     fun e(message: String) {
         Log.e(tag,message)
-    }
-}
-
-fun printLog(message: String) {
-    val stackTrace = Thread.currentThread().stackTrace
-    val clazzName = stackTrace[3].fileName
-    try {
-        Log.d(clazzName, message)
-    }catch (e: Exception) {
-        Log.d("Unknown File", message)
     }
 }

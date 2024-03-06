@@ -29,7 +29,6 @@ fun UserModel?.toLocalUser(token: String?): LocalUser {
         userId = this?.userId ?: "",
         roleId = this?.roleId ?: "",
         nric = this?.nric ?: "",
-        token = token ?: "",
-        isPasswordExpired = true
+        token = token ?: ""
     )
 }

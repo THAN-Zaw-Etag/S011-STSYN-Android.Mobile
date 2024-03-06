@@ -1,13 +1,10 @@
 package com.etag.stsyn.ui.screen.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
-import com.etag.stsyn.util.log.Logger
-import com.etag.stsyn.util.log.printLog
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
@@ -23,6 +20,7 @@ import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdRespons
 import com.tzh.retrofit_module.domain.model.user.UserModel
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.log.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -95,7 +93,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 localDataStore.getUser.collect {
-                    Logger.i("isLoggedIn: ${it.isLoggedIn}")
+                    Logger.d("localUser: ${it.isLoggedIn}")
                     _savedUser.value = it
                     if (it.isLoggedIn) getUserMenuAccessRightsById()
                 }
@@ -162,7 +160,7 @@ class LoginViewModel @Inject constructor(
 
     private fun saveUserToLocalStorage(localUser: LocalUser) {
         viewModelScope.launch {
-            if (!localUser.isPasswordExpired) localDataStore.saveUser(localUser)
+            localDataStore.saveUser(localUser)
         }
     }
 
@@ -209,7 +207,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleLoginResponse(){
+    private suspend fun handleLoginResponse() {
         when (loginResponse.value) {
             is ApiResponse.Success -> {
                 updateLoginStatus(true)
@@ -221,7 +219,8 @@ class LoginViewModel @Inject constructor(
                 _userMenuAccessRights.value = data?.rolePermission!!.handheldMenuAccessRight
 
                 val checkStatus = data.checkStatus!!
-                val isSodInitiate = (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
+                val isSodInitiate =
+                    (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
                 updateShiftType(if (checkStatus.isStart) Shift.START else Shift.ADHOC)
                 localDataStore.saveCheckStatusId(checkStatus.id.toString())
                 updateSODInitiateStatus(isSodInitiate)
@@ -258,9 +257,6 @@ class LoginViewModel @Inject constructor(
                         userId = it.userId
                     )
                 )
-
-                // show authorization error dialog if error is authorization failed error
-                //shouldShowAuthorizationFailedDialog(_updatePasswordResponse.value is ApiResponse.AuthorizationError)
             }
         }
         oldPasswordCharArr.fill('0')
@@ -293,7 +289,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun lockUser(nric:String){
+    fun lockUser(nric: String) {
         viewModelScope.launch {
             _lockUserState.value = ApiResponse.Loading
             delay(1000)
@@ -306,7 +302,6 @@ class LoginViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
-        Log.d("TAG", "onReceivedTagId: $id")
         _loginState.update { it.copy(rfidId = id) }
         getUserByRfidId(id)
     }

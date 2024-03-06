@@ -56,7 +56,7 @@ abstract class BaseViewModel(
         _detailUiState.update { it.copy(showSuccessDialog = visible) }
     }
 
-    protected fun toggleLoadingVisibility(visible: Boolean) {
+    private fun toggleLoadingVisibility(visible: Boolean) {
         _detailUiState.update {
             it.copy(showLoadingDialog = visible)
         }
