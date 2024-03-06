@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 import com.etag.stsyn.util.toLines
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
+import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
@@ -56,6 +58,7 @@ fun LoginContentScreen(
     loginResponse: ApiResponse<LoginResponse>,
     modifier: Modifier = Modifier,
     onLogInClick: (String) -> Unit,
+    lockUserState: ApiResponse<NormalResponse>
 ) {
     var error by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -63,15 +66,10 @@ fun LoginContentScreen(
     var showLoginSuccessToast by remember { mutableStateOf(false) }
     val dialogState = rememberMutableDialogState(data = "")
 
-    LaunchedEffect(loginAttemptCount) {
-        if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) dialogState.showDialog("You've tried multiple times with wrong password")
-    }
-
     LoadingDialog(title = "Signing In...",
         showDialog = showLoadingDialog,
         onDismiss = { }
     )
-
     LaunchedEffect(loginResponse) {
         when (loginResponse) {
             is ApiResponse.Loading -> {
@@ -98,6 +96,34 @@ fun LoginContentScreen(
         }
     }
 
+
+    LaunchedEffect(key1 = lockUserState) {
+        when (lockUserState) {
+            is ApiResponse.ApiError -> {
+                showLoadingDialog = false
+                error = lockUserState.message
+            }
+
+            is ApiResponse.AuthorizationError -> {
+                showLoadingDialog = false
+            }
+
+            ApiResponse.Default -> {
+                showLoadingDialog = false
+            }
+
+            ApiResponse.Loading -> {
+                showLoadingDialog = true
+            }
+
+            is ApiResponse.Success -> {
+                showLoadingDialog = false
+                dialogState.showDialog("You've tried multiple times with wrong password.\n Your account has been lock!.")
+
+            }
+        }
+
+    }
     WarningDialog(
         icon = CustomIcon.Vector(Icons.Default.Warning),
         dialogState = dialogState,
@@ -114,7 +140,8 @@ fun LoginContentScreen(
         LoginSection(
             onLogInClick = onLogInClick,
             errorMessage = error,
-            userName = userName
+            userName = userName,
+            loginAttemptCount = loginAttemptCount
         )
         Spacer(modifier = Modifier.weight(1f))
         LoginLowerSection()
@@ -143,12 +170,14 @@ private fun LoginLowerSection(modifier: Modifier = Modifier) {
 private fun LoginSection(
     errorMessage: String,
     userName: String,
+    loginAttemptCount: Int,
     onLogInClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val errorMessages = remember { mutableStateListOf<String>() }
     var showError by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf(errorMessage) }
+
 
     LaunchedEffect(errorMessages.size) {
         showError = errorMessages.isNotEmpty()
@@ -185,19 +214,38 @@ private fun LoginSection(
                 errorMessages.clear()
             }, onSubmit = {
                 errorMessages.clear() // clear old error messages
-                if (it.trim().isNotEmpty()) onLogInClick(it) else errorMessages.add("Password must not empty!") // if there is no error, allow to login
+                if (it.trim()
+                        .isNotEmpty()
+                ) onLogInClick(it) else errorMessages.add("Password must not empty!") // if there is no error, allow to login
             }
         )
         Spacer(modifier = Modifier.height(8.dp))
         AnimatedVisibility(visible = showError) {
-            Text(text = error, color = Color.Red)
+            Text(
+                text = if (error != "null") {
+                    if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS){
+                        "You've tried multiple times with wrong password."
+                    }else{
+                        error
+                    }
+                }  else {
+                    "Something went wrong! Please try again."
+                },
+                color = if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) {
+                    Color(0xFFFFA500)
+                } else {
+                    Color.Red
+                }
+            )
         }
         Spacer(modifier = Modifier.height(24.dp))
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomEnd) {
             Button(
                 onClick = {
                     errorMessages.clear()
-                    if (enteredPassword.trim().isNotEmpty()) onLogInClick(enteredPassword) else errorMessages.add("Password must not empty!")
+                    if (enteredPassword.trim()
+                            .isNotEmpty()
+                    ) onLogInClick(enteredPassword) else errorMessages.add("Password must not empty!")
                 }, colors = ButtonDefaults.buttonColors(containerColor = Purple80)
             ) {
                 Text(text = "Log in", modifier = Modifier.padding(horizontal = 16.dp))

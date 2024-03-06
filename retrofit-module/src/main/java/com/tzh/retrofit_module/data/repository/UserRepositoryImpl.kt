@@ -32,12 +32,13 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun refreshToken(): ApiResponse<RefreshTokenResponse> {
         val user = userFlow.first()
         val response = ApiResponseHandler.processResponse {
-            apiService.refreshToken( RefreshTokenRequest(user.token))
+            apiService.refreshToken(RefreshTokenRequest(user.token))
         }
         when (response) {
             is ApiResponse.Success -> {
                 localDataStore.saveToken(response.data!!.token)
             }
+
             else -> {}
         }
         return response
@@ -54,7 +55,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUserMenuAccessRightsById(): ApiResponse<UserMenuAccessRightsByIdResponse> {
         val user = userFlow.first()
         return ApiResponseHandler.processResponse {
-            apiService.getUserAccessRightsByRoleId( id = user.roleId)
+            apiService.getUserAccessRightsByRoleId(id = user.roleId)
         }
     }
 
@@ -74,6 +75,12 @@ class UserRepositoryImpl @Inject constructor(
         val user = userFlow.first()
         return ApiResponseHandler.processResponse {
             apiService.getIssuerByEPC(epc, user.userId)
+        }
+    }
+
+    override suspend fun lockUser(nric: String): ApiResponse<NormalResponse> {
+        return ApiResponseHandler.processResponse {
+            apiService.lockUSer(nric)
         }
     }
 }

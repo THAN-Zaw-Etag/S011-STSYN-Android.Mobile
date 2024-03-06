@@ -37,6 +37,7 @@ import com.tzh.retrofit_module.util.GET_ITEMS_COUNT_NOT_IN_BOX
 import com.tzh.retrofit_module.util.GET_ITEMS_FOR_ONSITE_ROUTE
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
+import com.tzh.retrofit_module.util.LOCK_USER
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
 import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
 import com.tzh.retrofit_module.util.SAVE_ACCOUNTABILITY_CHECK_ROUTE
@@ -175,5 +176,12 @@ interface ApiService {
     @POST(SAVE_ACCOUNTABILITY_CHECK_ROUTE)
     suspend fun saveAccountabilityCheck(
         @Body saveAccountabilityCheckRequest: SaveAccountabilityCheckRequest
+    ): Response<NormalResponse>
+
+
+
+    @POST(LOCK_USER)
+    suspend fun lockUSer(
+        @Query("nric") nric: String
     ): Response<NormalResponse>
 }

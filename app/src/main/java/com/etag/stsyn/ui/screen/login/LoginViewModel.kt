@@ -68,6 +68,8 @@ class LoginViewModel @Inject constructor(
     private val _epcModelUser = MutableStateFlow(UserModel())
     val epcModelUser: StateFlow<UserModel> = _epcModelUser.asStateFlow()
 
+
+
     val appConfig = appConfiguration.appConfig
 
     private val _shouldShowEmptyBaseUrlDialog = MutableLiveData(false)
@@ -75,6 +77,11 @@ class LoginViewModel @Inject constructor(
 
     private val _loading = MutableStateFlow(true)
     val loading = _loading.asStateFlow()
+
+    private val _lockUserState =
+        MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
+    val lockUserState: StateFlow<ApiResponse<NormalResponse>> =
+        _lockUserState.asStateFlow()
 
     init {
         updateScanType(ScanType.Single)
@@ -277,6 +284,13 @@ class LoginViewModel @Inject constructor(
     fun logOut() {
         viewModelScope.launch {
             localDataStore.updateLoggedInStatus(false)
+        }
+    }
+    fun lockUser(nric:String){
+        viewModelScope.launch {
+            _lockUserState.value = ApiResponse.Loading
+            delay(1000)
+            _lockUserState.value = userRepository.lockUser(nric)
         }
     }
 

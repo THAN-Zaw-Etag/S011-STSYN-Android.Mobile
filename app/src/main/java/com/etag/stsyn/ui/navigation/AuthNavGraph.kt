@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.navigation
 
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,6 +17,7 @@ import com.etag.stsyn.ui.screen.login.SODInitiateScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
+import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 
 
 fun NavGraphBuilder.authNavGraph(
@@ -71,6 +73,7 @@ fun NavGraphBuilder.authNavGraph(
             }
 
             val logInState by loginViewModel.loginState.collectAsStateWithLifecycle()
+            val lockUserState by loginViewModel.lockUserState.collectAsStateWithLifecycle()
             val loginResponse by loginViewModel.loginResponse.collectAsStateWithLifecycle()
             val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
             val epcModelUserName by loginViewModel.epcModelUser.collectAsStateWithLifecycle()
@@ -95,7 +98,15 @@ fun NavGraphBuilder.authNavGraph(
                 loginAttemptCount = logInState.attemptCount,
                 userName = epcModelUserName.userName,
                 loginResponse = loginResponse,
-                onLogInClick = { loginViewModel.login(it.toCharArray()) },
+                onLogInClick = {
+                    if (loginUiState.attemptCount >= MAXIMUM_LOGIN_ATTEMPTS) {
+                        loginViewModel.lockUser(epcModelUserName.nric)
+                    } else {
+                        loginViewModel.login(it.toCharArray())
+                    }
+                },
+
+                lockUserState = lockUserState
             )
             BackHandler {
                 navController.navigate(Routes.LoginScreen.name)
