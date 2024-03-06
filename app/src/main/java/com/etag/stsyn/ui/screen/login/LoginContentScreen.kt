@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.login
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -34,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
+import com.etag.stsyn.ui.components.ChangePasswordDialog
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.PasswordField
@@ -44,7 +44,6 @@ import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 import com.etag.stsyn.util.toLines
-import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -56,12 +55,15 @@ fun LoginContentScreen(
     loginResponse: ApiResponse<LoginResponse>,
     modifier: Modifier = Modifier,
     onLogInClick: (String) -> Unit,
+    onUpdatePassword: (String,String) -> Unit
 ) {
     var error by remember { mutableStateOf("") }
     val context = LocalContext.current
     var showLoadingDialog by remember { mutableStateOf(false) }
     var showLoginSuccessToast by remember { mutableStateOf(false) }
     val dialogState = rememberMutableDialogState(data = "")
+    var showChangePasswordDialog by remember { mutableStateOf(false) }
+    var userName by remember { mutableStateOf("") }
 
     LaunchedEffect(loginAttemptCount) {
         if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) dialogState.showDialog("You've tried multiple times with wrong password")
@@ -70,6 +72,13 @@ fun LoginContentScreen(
     LoadingDialog(title = "Signing In...",
         showDialog = showLoadingDialog,
         onDismiss = { }
+    )
+
+    ChangePasswordDialog(
+        userName = userName,
+        showDialog = showChangePasswordDialog,
+        onDismiss = { showChangePasswordDialog = false },
+        onChangePassword = onUpdatePassword
     )
 
     LaunchedEffect(loginResponse) {
@@ -82,7 +91,11 @@ fun LoginContentScreen(
             is ApiResponse.Success -> {
                 showLoadingDialog = false
                 showLoginSuccessToast = true
-                goToHome()
+                val user = loginResponse.data?.user
+                if (user?.isPasswordExpired == true) { //TODO Change false to true
+                    userName = user.userName
+                    showChangePasswordDialog = true
+                } else goToHome()
             }
 
             is ApiResponse.ApiError -> {

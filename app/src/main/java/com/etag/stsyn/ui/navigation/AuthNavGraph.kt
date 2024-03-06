@@ -2,7 +2,6 @@ package com.etag.stsyn.ui.navigation
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
@@ -15,8 +14,6 @@ import com.etag.stsyn.ui.screen.login.LoginScreen
 import com.etag.stsyn.ui.screen.login.LoginViewModel
 import com.etag.stsyn.ui.screen.login.SODInitiateScreen
 import com.etag.stsyn.ui.screen.main.SplashScreen
-import com.etag.stsyn.ui.theme.Purple80
-import com.etag.stsyn.ui.viewmodel.SharedUiViewModel
 
 
 fun NavGraphBuilder.authNavGraph(
@@ -96,6 +93,9 @@ fun NavGraphBuilder.authNavGraph(
                 userName = epcModelUserName.userName,
                 loginResponse = loginResponse,
                 onLogInClick = { loginViewModel.login(it.toCharArray()) },
+                onUpdatePassword = {old, new ->
+                    loginViewModel.updatePassword(old.toCharArray(), new.toCharArray())
+                }
             )
             BackHandler {
                 navController.navigate(Routes.LoginScreen.name)

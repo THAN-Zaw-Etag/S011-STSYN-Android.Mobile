@@ -149,7 +149,7 @@ class LoginViewModel @Inject constructor(
 
     private fun saveUserToLocalStorage(localUser: LocalUser) {
         viewModelScope.launch {
-            localDataStore.saveUser(localUser)
+            if (!localUser.isPasswordExpired) localDataStore.saveUser(localUser)
         }
     }
 

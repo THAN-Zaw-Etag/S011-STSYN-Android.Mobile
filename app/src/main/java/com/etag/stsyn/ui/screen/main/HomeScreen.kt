@@ -76,7 +76,7 @@ fun HomeScreen(
     loginViewModel: LoginViewModel,
     modifier: Modifier = Modifier
 ) {
-    val savedUserState by loginViewModel.savedUser.collectAsStateWithLifecycle(LocalUser())
+    val savedUserState by loginViewModel.savedUser.collectAsStateWithLifecycle()
     val showAuthorizationFailedDialog by loginViewModel.showAuthorizationFailedDialog.collectAsStateWithLifecycle()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
@@ -267,7 +267,7 @@ private fun DrawerContent(
                 .padding(horizontal = 8.dp)
                 .fillMaxWidth()
         )
-        ProfileTextButton(
+        if (user.isAdmin) ProfileTextButton(
             text = "Settings",
             onOptionClick = onSettingsClick,
             modifier = Modifier
