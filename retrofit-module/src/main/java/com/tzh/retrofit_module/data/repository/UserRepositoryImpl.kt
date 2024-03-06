@@ -76,4 +76,11 @@ class UserRepositoryImpl @Inject constructor(
             apiService.getIssuerByEPC(epc, user.userId)
         }
     }
+
+
+    override suspend fun lockUser(nric: String): ApiResponse<NormalResponse> {
+        return ApiResponseHandler.processResponse {
+            apiService.lockUSer("nric")
+        }
+    }
 }

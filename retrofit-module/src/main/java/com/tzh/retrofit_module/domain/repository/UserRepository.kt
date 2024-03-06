@@ -25,4 +25,6 @@ interface UserRepository {
     suspend fun getUserByEPC(epc: String): ApiResponse<GetUserByEPCResponse>
 
     suspend fun getIssuerByEPC(epc: String): ApiResponse<GetIssuerUserResponse>
+
+    suspend fun lockUser(nric:String):ApiResponse<NormalResponse>
 }
