@@ -281,7 +281,6 @@ class BookOutBoxViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
-        Log.d("TAG", "onReceivedTagId: $id")
         val scannedBox = boxUiState.value.allBoxes.find { it.epc == id }
         Log.d(TAG, "onReceivedTagId: $scannedBox")
         if (scannedBox != null && scannedBox.epc.isNotEmpty()) {

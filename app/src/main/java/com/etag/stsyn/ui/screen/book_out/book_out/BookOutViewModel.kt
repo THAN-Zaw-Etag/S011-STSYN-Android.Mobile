@@ -18,6 +18,7 @@ import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.DateUtil
+import com.tzh.retrofit_module.util.isBefore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -157,7 +158,7 @@ class BookOutViewModel @Inject constructor(
             val currentDate = DateUtil.getCurrentDate()
             bookOutUiState.value.scannedItems.forEach {
                 if (it.calDate.isNotEmpty() && it.calDate != Instant.MIN.toString()) {
-                    if (it.calDate < currentDate && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
+                    if (it.calDate.isBefore(currentDate) && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
                         setBookOutErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
                         return@launch
                     }
