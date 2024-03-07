@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -69,12 +70,11 @@ fun DetailScreen(
     navigateToHomeScreen: () -> Unit,
 ) {
 
-
     var showTabBar by remember { mutableStateOf(false) }
     var options = TabUtil.getTabDetails(optionType)
     var tabTitle by remember { mutableStateOf(options.get(0).title) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
-    var oldSelectedIndex by remember { mutableStateOf(0) }
+    var oldSelectedIndex by remember { mutableIntStateOf(0) }
     var canBeSelected by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState { options.size }
     val scope = rememberCoroutineScope()
@@ -125,7 +125,8 @@ fun DetailScreen(
     LoadingDialog(
         title = "Loading...",
         showDialog = detailUiState.showLoadingDialog,
-        onDismiss = { })
+        onDismiss = { }
+    )
 
     // show error when error message is not empty
     WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
