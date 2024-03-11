@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -22,7 +23,8 @@ import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
 fun BookInBoxSaveScreen(
-    bookInBoxViewModel: BookInBoxViewModel, modifier: Modifier = Modifier
+    bookInBoxViewModel: BookInBoxViewModel,
+    modifier: Modifier = Modifier
 ) {
     val bookInBoxUiState by bookInBoxViewModel.boxUiState.collectAsStateWithLifecycle()
     val scannedItemList by bookInBoxViewModel.scannedItemsList.collectAsStateWithLifecycle()
@@ -37,7 +39,7 @@ fun BookInBoxSaveScreen(
         mutableStateOf("")
     }
 
-    var attemptCount by remember { mutableStateOf(0) }
+    var attemptCount by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(bookInBoxUiState.issuerUser) {
         shouldShowRefreshIcon = bookInBoxUiState.issuerUser != null
@@ -85,7 +87,9 @@ fun BookInBoxSaveScreen(
             onProcess = {
                 attemptCount++
                 bookInBoxViewModel.saveBookInBox()
-            }, onDismiss = { attemptCount = 0 })
+            },
+            onDismiss = { attemptCount = 0 }
+        )
     }
     BaseSaveScreen(
         isError = scannedItemList.isEmpty(),

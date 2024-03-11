@@ -145,7 +145,7 @@ class BookInBoxViewModel @Inject constructor(
                 _boxUiState.value.allItemsOfBox.filter { it.epc in _scannedItemsList.value }
             val outStandingItems =
                 _boxUiState.value.allItemsOfBox.filter { it.epc !in _scannedItemsList.value }
-
+    
             val itemMovementLogs = mutableListOf<ItemMovementLog>()
             val scannedBox = boxUiState.value.scannedBox
             if (!scannedItems.map { it.epc }.contains(scannedBox.epc)) {
@@ -305,7 +305,6 @@ class BookInBoxViewModel @Inject constructor(
                         val boxes =
                             (_boxItemsForBookInResponse.value as ApiResponse.Success<SelectBoxForBookInResponse>).data?.items
                                 ?: emptyList()
-                        Log.d(TAG, "getAllBoxesForBookInItem: ${boxes.size}")
                         _boxUiState.update { it.copy(allBoxes = boxes) }
                     }
 

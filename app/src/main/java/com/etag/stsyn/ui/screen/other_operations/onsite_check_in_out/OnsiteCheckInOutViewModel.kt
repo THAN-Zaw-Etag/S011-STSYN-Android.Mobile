@@ -137,7 +137,7 @@ class OnsiteCheckInOutViewModel @Inject constructor(
         }
     }
 
-    fun getAllItemsForOnsite() {
+    private fun getAllItemsForOnsite() {
         viewModelScope.launch {
             _getAllItemsForOnsiteResponse.value = ApiResponse.Loading
             delay(1000)
