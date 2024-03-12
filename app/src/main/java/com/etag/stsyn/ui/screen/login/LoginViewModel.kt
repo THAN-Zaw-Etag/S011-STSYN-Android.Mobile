@@ -110,7 +110,6 @@ class LoginViewModel @Inject constructor(
                 delay(1000)
                 _loading.value = false
             }
-
         }
     }
 
@@ -202,7 +201,6 @@ class LoginViewModel @Inject constructor(
             )
 
             handleLoginResponse()
-
             passwordCharArray.fill('0')
         }
     }

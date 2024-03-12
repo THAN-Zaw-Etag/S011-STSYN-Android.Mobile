@@ -65,9 +65,6 @@ class AccountCheckViewModel @Inject constructor(
         updateScanType(ScanType.Single)
         getAllAccountabilityCheckItems()
         getAllFilterOptions()
-        observeAccountabilityCheckResponse()
-        observeAccountabilityCheckSaveResponse()
-        handleClickEvent()
     }
 
     private fun observeAccountabilityCheckSaveResponse() {
@@ -78,15 +75,18 @@ class AccountCheckViewModel @Inject constructor(
         }
     }
 
-    private fun handleClickEvent() {
-        viewModelScope.launch {
-            clickEventFlow.collect {
-                when (it) {
-                    is ClickEvent.RetryClick -> getAllAccountabilityCheckItems()
-                    is ClickEvent.ClickAfterSave -> updateClickEvent(ClickEvent.ClickToNavigateHome)
-                    else -> {}
-                }
-            }
+    override fun handleApiResponse() {
+        super.handleApiResponse()
+        observeAccountabilityCheckResponse()
+        observeAccountabilityCheckSaveResponse()
+    }
+
+    override fun handleClickEvent(clickEvent: ClickEvent) {
+        super.handleClickEvent(clickEvent)
+        when (clickEvent) {
+            is ClickEvent.RetryClick -> getAllAccountabilityCheckItems()
+            is ClickEvent.ClickAfterSave -> updateClickEvent(ClickEvent.ClickToNavigateHome)
+            else -> {}
         }
     }
 

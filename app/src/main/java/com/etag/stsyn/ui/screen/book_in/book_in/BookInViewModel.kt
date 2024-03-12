@@ -37,8 +37,7 @@ class BookInViewModel @Inject constructor(
 ) : BaseViewModel(rfidHandler) {
     val TAG = "BookInViewModel"
 
-    private val _bookInItemsResponse =
-        MutableStateFlow<ApiResponse<BookInResponse>>(ApiResponse.Default)
+    private val _bookInItemsResponse = MutableStateFlow<ApiResponse<BookInResponse>>(ApiResponse.Default)
     val bookInItemsResponse: StateFlow<ApiResponse<BookInResponse>> = _bookInItemsResponse
 
     private val _savedBookInResponse =
@@ -56,31 +55,26 @@ class BookInViewModel @Inject constructor(
 
     init {
         getBookInItems()
-        observeBookInItemsResponse()
-        handleClickEvent()
     }
 
-    private fun observeBookInItemsResponse() {
+    override fun handleApiResponse() {
+        super.handleApiResponse()
         viewModelScope.launch {
             delay(500)
             bookInItemsResponse.collect { handleDialogStatesByResponse(it) }
         }
     }
 
-    private fun handleClickEvent() {
-        viewModelScope.launch {
-            clickEventFlow.collect {
-                when (it) {
-                    is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
-                    is ClickEvent.RetryClick -> getBookInItems()
-                    else -> {}
-                }
-            }
+    override fun handleClickEvent(clickEvent: ClickEvent) {
+        super.handleClickEvent(clickEvent)
+        when (clickEvent) {
+            is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
+            is ClickEvent.RetryClick -> getBookInItems()
+            else -> {}
         }
     }
 
     override fun onReceivedTagId(id: String) {
-        Log.d(TAG, "onReceivedTagId: $id")
         handleScannedItem(id)
     }
 

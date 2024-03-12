@@ -143,7 +143,8 @@ fun HomeScreen(
         onPositiveButtonClick = dialogState::hideDialog
     )
 
-    ModalNavigationDrawer(drawerState = drawerState,
+    ModalNavigationDrawer(
+        drawerState = drawerState,
         modifier = modifier,
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {

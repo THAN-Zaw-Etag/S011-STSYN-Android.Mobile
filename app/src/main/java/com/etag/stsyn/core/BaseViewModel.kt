@@ -6,6 +6,7 @@ import com.etag.stsyn.core.reader.RfidBatteryLevelListener
 import com.etag.stsyn.core.reader.RfidResponseHandlerInterface
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.log.Logger
 import com.zebra.rfid.api3.TagData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,17 +30,30 @@ abstract class BaseViewModel(
     val detailUiState: StateFlow<DetailUiState> = _detailUiState.asStateFlow()
 
     private val _showAuthorizationFailedDialog = MutableStateFlow(false)
-    val showAuthorizationFailedDialog: StateFlow<Boolean> =
-        _showAuthorizationFailedDialog.asStateFlow()
+    val showAuthorizationFailedDialog: StateFlow<Boolean> = _showAuthorizationFailedDialog.asStateFlow()
 
     private val _clickEventFlow = MutableSharedFlow<ClickEvent>()
     val clickEventFlow: SharedFlow<ClickEvent> = _clickEventFlow.asSharedFlow()
 
     private var reconnectingJob: Job? = null
 
+    /** Abstract functions */
+
+    open fun handleClickEvent(clickEvent: ClickEvent) {}
+    open fun handleApiResponse() {}
+    abstract fun onReceivedTagId(id: String)
+
     init {
         setRfidListener()
         updateScanType(ScanType.Multi)
+
+        viewModelScope.launch {
+            delay(300) // need to wait child viewmodel initialization
+            handleApiResponse()
+            clickEventFlow.collect {
+                handleClickEvent(it)
+            }
+        }
     }
 
     fun shouldShowAuthorizationFailedDialog(isVisible: Boolean) {
@@ -220,7 +234,6 @@ abstract class BaseViewModel(
         })
     }
 
-    abstract fun onReceivedTagId(id: String)
     override fun handleTagData(tagData: Array<TagData>) {
         if (_rfidUiState.value.scanType == ScanType.Single && tagData[0].tagID.isNotEmpty()) stopScan()
         onReceivedTagId(tagData[0].tagID)

@@ -22,6 +22,7 @@ import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.DateUtil
 import com.tzh.retrofit_module.util.isBefore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
+import kotlin.math.log
 
 @HiltViewModel
 class BookOutBoxViewModel @Inject constructor(
@@ -46,8 +48,7 @@ class BookOutBoxViewModel @Inject constructor(
 
     private val _getAllBookOutBoxesResponse =
         MutableStateFlow<ApiResponse<GetAllBookOutBoxesResponse>>(ApiResponse.Default)
-    val getAllBookOutBoxesResponse: StateFlow<ApiResponse<GetAllBookOutBoxesResponse>> =
-        _getAllBookOutBoxesResponse.asStateFlow()
+    val getAllBookOutBoxesResponse: StateFlow<ApiResponse<GetAllBookOutBoxesResponse>> = _getAllBookOutBoxesResponse.asStateFlow()
 
     private val _bookOutBoxUiState = MutableStateFlow(BookOutBoxUiState())
     val bookOutBoxUiState: StateFlow<BookOutBoxUiState> = _bookOutBoxUiState.asStateFlow()
@@ -69,29 +70,31 @@ class BookOutBoxViewModel @Inject constructor(
     init {
         getAllBookOutBoxes()
         observeLocation()
-        observeApiResponse()
-        handleClickEvent()
     }
 
-    private fun handleClickEvent() {
-        viewModelScope.launch {
-            clickEventFlow.collect {
-                when (it) {
-                    is ClickEvent.RetryClick -> getAllBookOutBoxes()
-                    is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
-                    else -> {}
-                }
-            }
+    override fun handleClickEvent(clickEvent: ClickEvent) {
+        when (clickEvent) {
+            is ClickEvent.RetryClick -> getAllBookOutBoxes()
+            is ClickEvent.ClickAfterSave -> doTasksAfterSavingItems()
+            else -> {}
         }
     }
 
-    private fun observeApiResponse() {
+    override fun handleApiResponse() {
         viewModelScope.launch {
             getAllBookOutBoxesResponse.collect {
                 handleDialogStatesByResponse(it)
             }
         }
     }
+
+    /*private fun observeApiResponse() {
+        viewModelScope.launch {
+            getAllBookOutBoxesResponse.collect {
+                handleDialogStatesByResponse(it)
+            }
+        }
+    }*/
 
     private fun observeLocation() {
         viewModelScope.launch {
@@ -112,11 +115,7 @@ class BookOutBoxViewModel @Inject constructor(
             delay(1000)
             when (getAllBookOutBoxesResponse.value) {
                 is ApiResponse.Success -> {
-                    val boxes =
-                        (getAllBookOutBoxesResponse.value as ApiResponse.Success<GetAllBookOutBoxesResponse>).data?.items
-                            ?: emptyList()
-                    Log.d(TAG, "getAllBookOutBoxes: ${boxes.size}")
-                    _boxUiState.update { it.copy(allBoxes = boxes) }
+                    val boxes = (getAllBookOutBoxesResponse.value as ApiResponse.Success<GetAllBookOutBoxesResponse>).data?.items ?: emptyList()
                 }
 
                 else -> {}
@@ -268,11 +267,14 @@ class BookOutBoxViewModel @Inject constructor(
         viewModelScope.launch {
             when (val response = bookOutRepository.getAllItemsInBookOutBox(box)) {
                 is ApiResponse.Success -> {
+                    val boxes = response.data?.items ?: emptyList()
                     _boxUiState.update {
                         it.copy(
-                            allItemsOfBox = response.data?.items ?: emptyList()
+                            allItemsOfBox = boxes
                         )
                     }
+
+                    _boxUiState.update { it.copy(allBoxes = boxes) }
                 }
 
                 else -> {}
@@ -282,7 +284,6 @@ class BookOutBoxViewModel @Inject constructor(
 
     override fun onReceivedTagId(id: String) {
         val scannedBox = boxUiState.value.allBoxes.find { it.epc == id }
-        Log.d(TAG, "onReceivedTagId: $scannedBox")
         if (scannedBox != null && scannedBox.epc.isNotEmpty()) {
             _boxUiState.update { it.copy(scannedBox = scannedBox) }
             getAllItemsInBox(scannedBox.box)
