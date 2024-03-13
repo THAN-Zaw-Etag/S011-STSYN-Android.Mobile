@@ -29,6 +29,7 @@ fun UserModel?.toLocalUser(token: String?): LocalUser {
         userId = this?.userId ?: "",
         roleId = this?.roleId ?: "",
         nric = this?.nric ?: "",
-        token = token ?: ""
+        token = token ?: "",
+        isAdmin = this?.isSysAdmin ?: false
     )
 }

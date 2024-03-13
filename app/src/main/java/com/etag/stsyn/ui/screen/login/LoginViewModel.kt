@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -43,6 +44,7 @@ class LoginViewModel @Inject constructor(
 
     companion object {
         const val TAG = "LoginViewModel"
+        const val TEST_EPC = "2343424324234234221"
     }
 
     private val _loginState = MutableStateFlow(LoginState())
@@ -146,7 +148,7 @@ class LoginViewModel @Inject constructor(
             _loginResponse.value = ApiResponse.Default
 
             _getUserResponse.emit(ApiResponse.Loading)
-            val response = userRepository.getUserByEPC(rfidId)
+            val response = userRepository.getUserByEPC(TEST_EPC)
             _getUserResponse.emit(response)
         }
     }
@@ -158,6 +160,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun saveUserToLocalStorage(localUser: LocalUser) {
+        Log.d(TAG, "saveUserToLocalStorage: $localUser")
         viewModelScope.launch {
             localDataStore.saveUser(localUser)
         }
@@ -194,7 +197,7 @@ class LoginViewModel @Inject constructor(
                 LoginRequest(
                     id = "",
                     nric = "",
-                    rfid = "455341303030303030303130", //TODO _loginUiState.value.rfid
+                    rfid = TEST_EPC, //TODO _loginUiState.value.rfid
                     password = passwordString,
                     isFromMobile = true
                 )
