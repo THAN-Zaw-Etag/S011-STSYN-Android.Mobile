@@ -120,7 +120,6 @@ fun LoginContentScreen(
             is ApiResponse.ApiError -> {
                 showLoadingDialog = false
                 error = lockUserState.message
-
             }
 
             is ApiResponse.AuthorizationError -> {
@@ -137,8 +136,7 @@ fun LoginContentScreen(
 
             is ApiResponse.Success -> {
                 showLoadingDialog = false
-                dialogState.showDialog("You've tried multiple times with wrong password.\n Your account has been lock!.")
-
+                dialogState.showDialog("Your account has been locked for 10 invalid attempts. Please contact system administrator.")
             }
         }
 
@@ -233,7 +231,7 @@ private fun LoginSection(
                 errorMessages.clear()
             }, onSubmit = {
                 errorMessages.clear() // clear old error messages
-                if (it.trim().isNotEmpty()) onLogInClick(it) else errorMessages.add("Password must not empty!") // if there is no error, allow to login
+                if (it.trim().isNotEmpty()) onLogInClick(it) else errorMessages.add("Password must not empty.") // if there is no error, allow to login
             }
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -241,7 +239,7 @@ private fun LoginSection(
             Text(
                 text = if (error != "null") {
                     if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) {
-                        "You've tried multiple times with wrong password."
+                        "Login fails. Invalid user ID or password."
                     } else {
                         error
                     }
@@ -260,7 +258,7 @@ private fun LoginSection(
             Button(
                 onClick = {
                     errorMessages.clear()
-                    if (enteredPassword.trim().isNotEmpty()) onLogInClick(enteredPassword) else errorMessages.add("Password must not empty!")
+                    if (enteredPassword.trim().isNotEmpty()) onLogInClick(enteredPassword) else errorMessages.add("Password must not empty.")
                 }, colors = ButtonDefaults.buttonColors(containerColor = Purple80)
             ) {
                 Text(text = "Log in", modifier = Modifier.padding(horizontal = 16.dp))

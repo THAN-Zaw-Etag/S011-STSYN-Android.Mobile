@@ -94,7 +94,7 @@ fun BookInBoxSaveScreen(
     BaseSaveScreen(
         isError = scannedItemList.isEmpty(),
         isUsCase = bookInBoxUiState.issuerUser == null,
-        errorMessage = if (bookInBoxUiState.scannedBox.epc.isEmpty()) "Please read a box first" else "Please read an item first",
+        errorMessage = if (bookInBoxUiState.scannedBox.epc.isEmpty()) "Please read a ctk box tag first. " else "Please read an item first.",
         modifier = modifier,
         onScan = {
             bookInBoxViewModel.apply {

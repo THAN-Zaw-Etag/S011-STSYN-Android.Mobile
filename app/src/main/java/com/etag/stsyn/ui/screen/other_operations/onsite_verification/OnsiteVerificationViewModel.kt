@@ -134,7 +134,7 @@ class OnsiteVerificationViewModel @Inject constructor(
                 }
 
             } else {
-                _filterStatusMessage.value = "Item not found in the booked list. \n $epc"
+                _filterStatusMessage.value = "Item cannot be found in the book in list. \n $epc"
             }
         }
     }

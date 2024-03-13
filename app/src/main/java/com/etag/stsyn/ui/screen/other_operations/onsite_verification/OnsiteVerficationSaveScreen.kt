@@ -73,7 +73,7 @@ fun OnsiteVerificationSaveScreen(
     BaseSaveScreen(
         modifier = modifier,
         isError = scannedItems.isEmpty(),
-        errorMessage = if (scannedItems.isEmpty()) "Please read a box first" else "Please read an item first",
+        errorMessage = if (scannedItems.isEmpty()) "Please read a ctk box tag first. " else "Please read an item first.",
         onSave = {
             onsiteVerificationViewModel.saveOnSiteVerification()
         }) {

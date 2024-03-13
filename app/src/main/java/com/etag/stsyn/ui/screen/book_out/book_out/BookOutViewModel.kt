@@ -159,7 +159,7 @@ class BookOutViewModel @Inject constructor(
             bookOutUiState.value.scannedItems.forEach {
                 if (it.calDate.isNotEmpty() && it.calDate != Instant.MIN.toString()) {
                     if (it.calDate.isBefore(currentDate) && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
-                        setBookOutErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
+                        setBookOutErrorMessage("Include overdue calibration item. Can only book out for calibration.")
                         return@launch
                     }
                 } else if (it.calDate.isEmpty()) {

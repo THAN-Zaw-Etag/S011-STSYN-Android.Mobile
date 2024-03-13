@@ -111,7 +111,7 @@ fun NavGraphBuilder.authNavGraph(
                 onUpdatePassword = {old, new ->
                     loginViewModel.updatePassword(old.toCharArray(), new.toCharArray())
                 },
-                lockUserState =lockUserState
+                lockUserState = lockUserState
             )
             BackHandler {
                 navController.navigate(Routes.LoginScreen.name)

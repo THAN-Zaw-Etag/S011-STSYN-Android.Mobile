@@ -147,7 +147,7 @@ class BookOutBoxViewModel @Inject constructor(
 
             if (scannedBox.calDate.isNotEmpty() && scannedBox.calDate != Instant.MIN.toString()) {
                 if (scannedBox.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
-                    updateBookOutBoxErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
+                    updateBookOutBoxErrorMessage("Include overdue calibration item. Can only book out for calibration.")
                     return@launch
                 } else updateBookOutBoxErrorMessage(null)
             }
@@ -157,11 +157,11 @@ class BookOutBoxViewModel @Inject constructor(
             boxUiState.value.allItemsOfBox.forEach { box ->
                 if (box.calDate.isNotEmpty() && box.calDate != Instant.MIN.toString()) {
                     if (box.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
-                        updateBookOutBoxErrorMessage("Include Over Due Calibration Item, Only Can Book Out For Calibration!")
+                        updateBookOutBoxErrorMessage("Include overdue calibration item. Can only book out for calibration.")
                         return@launch
                     } else if ((box.itemType == "TOOL" || box.itemType == "PUB") && purpose == Purpose.CALIBRATION.name) {
                         updateBookOutBoxErrorMessage(
-                            "Include TOOLs or PUBs, can not book out as calibration."
+                            "Include TOOLs or PUBs, cannot book out as calibration."
                         )
                         return@launch
                     } else updateBookOutBoxErrorMessage(null)

@@ -61,7 +61,7 @@ fun CheckInOutSaveScreen(
 
     LaunchedEffect(scannedItemList) {
         if (scannedItemList.isEmpty()) onsiteCheckInOutViewModel.updateOnsiteCheckInOutErrorMessage(
-            "Please read an item first!"
+            "Please read an item first."
         )
         else onsiteCheckInOutViewModel.updateOnsiteCheckInOutErrorMessage(null)
     }

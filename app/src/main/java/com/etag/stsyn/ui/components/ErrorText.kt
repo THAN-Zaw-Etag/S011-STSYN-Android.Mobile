@@ -24,5 +24,5 @@ fun ErrorText(
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun ErrorTextPreview() {
-    ErrorText(text = "Please read an item first!")
+    ErrorText(text = "Please read an item first.")
 }
