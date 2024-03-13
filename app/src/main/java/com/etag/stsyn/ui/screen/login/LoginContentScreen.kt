@@ -42,6 +42,7 @@ import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.components.exitApp
 import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.ErrorMessages
 import com.etag.stsyn.util.MAXIMUM_LOGIN_ATTEMPTS
 import com.etag.stsyn.util.toLines
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
@@ -136,10 +137,9 @@ fun LoginContentScreen(
 
             is ApiResponse.Success -> {
                 showLoadingDialog = false
-                dialogState.showDialog("Your account has been locked for 10 invalid attempts. Please contact system administrator.")
+                dialogState.showDialog(ErrorMessages.ACCOUNT_HAS_BEEN_LOCKED)
             }
         }
-
     }
 
     WarningDialog(
@@ -231,7 +231,7 @@ private fun LoginSection(
                 errorMessages.clear()
             }, onSubmit = {
                 errorMessages.clear() // clear old error messages
-                if (it.trim().isNotEmpty()) onLogInClick(it) else errorMessages.add("Password must not empty.") // if there is no error, allow to login
+                if (it.trim().isNotEmpty()) onLogInClick(it) else errorMessages.add(ErrorMessages.PASSWORD_MUST_NOT_BE_EMPTY) // if there is no error, allow to login
             }
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -239,12 +239,12 @@ private fun LoginSection(
             Text(
                 text = if (error != "null") {
                     if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) {
-                        "Login fails. Invalid user ID or password."
+                        ErrorMessages.LOGIN_FAILS
                     } else {
                         error
                     }
                 } else {
-                    "Something went wrong! Please try again."
+                    ErrorMessages.SOMETHING_WENT_WRONG
                 },
                 color = if (loginAttemptCount == MAXIMUM_LOGIN_ATTEMPTS) {
                     Color(0xFFFFA500)

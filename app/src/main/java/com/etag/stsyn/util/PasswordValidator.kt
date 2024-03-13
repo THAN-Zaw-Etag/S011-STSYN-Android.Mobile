@@ -13,12 +13,12 @@ object PasswordValidator {
     fun validatePassword(password: String): List<String> {
 
         var upperCaseCondition =
-            PasswordCondition(false, "Password must contain at least one uppercase letter.")
+            PasswordCondition(false, ErrorMessages.UPPER_CASE_CONDITION)
         var lowerCaseCondition =
-            PasswordCondition(false, "Password must contain at least one lowercase letter.")
-        var digitsCondition = PasswordCondition(false, "Password must contain at least one digit.")
+            PasswordCondition(false, ErrorMessages.LOWER_CASE_CONDITION)
+        var digitsCondition = PasswordCondition(false, ErrorMessages.DIGIT_CONDITION)
         var specialCharactersCondition =
-            PasswordCondition(false, "Password must contain at least one special character.")
+            PasswordCondition(false, ErrorMessages.SPECIAL_CHARACTER_CONDITION)
 
         password.forEach { char ->
             when {

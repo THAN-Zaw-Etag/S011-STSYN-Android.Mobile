@@ -13,6 +13,7 @@ import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.ui.states.rememberMutableDialogState
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -40,7 +41,7 @@ fun AcctCheckSaveScreen(
 
     BaseSaveScreen(
         isError = scannedItemIdList.isEmpty(),
-        errorMessage = if (scannedItemIdList.isEmpty()) "Please read an item first." else "",
+        errorMessage = if (scannedItemIdList.isEmpty()) ErrorMessages.READ_AN_ITEM_FIRST else "",
         onSave = accountCheckViewModel::saveAccountabilityCheck,
         modifier = modifier
     ) {

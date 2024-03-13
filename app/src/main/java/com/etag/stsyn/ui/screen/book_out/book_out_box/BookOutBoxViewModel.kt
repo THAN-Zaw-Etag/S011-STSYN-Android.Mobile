@@ -7,6 +7,7 @@ import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.screen.book_in.book_in_box.BoxUiState
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.mapper.toItemMovementLog
 import com.tzh.retrofit_module.data.model.book_in.ItemMovementLog
@@ -147,7 +148,7 @@ class BookOutBoxViewModel @Inject constructor(
 
             if (scannedBox.calDate.isNotEmpty() && scannedBox.calDate != Instant.MIN.toString()) {
                 if (scannedBox.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
-                    updateBookOutBoxErrorMessage("Include overdue calibration item. Can only book out for calibration.")
+                    updateBookOutBoxErrorMessage(ErrorMessages.INCLUDE_OVER_DUE_ITEM)
                     return@launch
                 } else updateBookOutBoxErrorMessage(null)
             }
@@ -157,11 +158,11 @@ class BookOutBoxViewModel @Inject constructor(
             boxUiState.value.allItemsOfBox.forEach { box ->
                 if (box.calDate.isNotEmpty() && box.calDate != Instant.MIN.toString()) {
                     if (box.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
-                        updateBookOutBoxErrorMessage("Include overdue calibration item. Can only book out for calibration.")
+                        updateBookOutBoxErrorMessage(ErrorMessages.INCLUDE_OVER_DUE_ITEM)
                         return@launch
                     } else if ((box.itemType == "TOOL" || box.itemType == "PUB") && purpose == Purpose.CALIBRATION.name) {
                         updateBookOutBoxErrorMessage(
-                            "Include TOOLs or PUBs, cannot book out as calibration."
+                            ErrorMessages.INCLUDE_TOOLS_OR_PUBS
                         )
                         return@launch
                     } else updateBookOutBoxErrorMessage(null)
@@ -229,7 +230,7 @@ class BookOutBoxViewModel @Inject constructor(
 
     private fun validateLocationAndPurpose(location: String, purpose: String) {
         if (location.isEmpty() && purpose.isEmpty()) {
-            updateBookOutBoxErrorMessage("Please Key In Location!")
+            updateBookOutBoxErrorMessage(ErrorMessages.KEY_IN_LOCATION)
             return
         } else updateBookOutBoxErrorMessage(null)
     }

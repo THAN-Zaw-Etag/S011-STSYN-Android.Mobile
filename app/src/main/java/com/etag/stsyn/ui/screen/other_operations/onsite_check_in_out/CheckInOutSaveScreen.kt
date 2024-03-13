@@ -14,6 +14,7 @@ import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.SAVING_MESSAGE
@@ -61,7 +62,7 @@ fun CheckInOutSaveScreen(
 
     LaunchedEffect(scannedItemList) {
         if (scannedItemList.isEmpty()) onsiteCheckInOutViewModel.updateOnsiteCheckInOutErrorMessage(
-            "Please read an item first."
+            ErrorMessages.READ_AN_ITEM_FIRST
         )
         else onsiteCheckInOutViewModel.updateOnsiteCheckInOutErrorMessage(null)
     }

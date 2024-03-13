@@ -15,6 +15,7 @@ import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
@@ -73,7 +74,7 @@ fun OnsiteVerificationSaveScreen(
     BaseSaveScreen(
         modifier = modifier,
         isError = scannedItems.isEmpty(),
-        errorMessage = if (scannedItems.isEmpty()) "Please read a ctk box tag first. " else "Please read an item first.",
+        errorMessage = if (scannedItems.isEmpty()) ErrorMessages.READ_A_BOX_FIRST else ErrorMessages.READ_AN_ITEM_FIRST,
         onSave = {
             onsiteVerificationViewModel.saveOnSiteVerification()
         }) {

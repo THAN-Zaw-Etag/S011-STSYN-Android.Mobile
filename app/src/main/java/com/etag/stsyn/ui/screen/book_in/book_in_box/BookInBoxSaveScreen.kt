@@ -18,6 +18,7 @@ import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -94,7 +95,7 @@ fun BookInBoxSaveScreen(
     BaseSaveScreen(
         isError = scannedItemList.isEmpty(),
         isUsCase = bookInBoxUiState.issuerUser == null,
-        errorMessage = if (bookInBoxUiState.scannedBox.epc.isEmpty()) "Please read a ctk box tag first. " else "Please read an item first.",
+        errorMessage = if (bookInBoxUiState.scannedBox.epc.isEmpty()) ErrorMessages.READ_A_BOX_FIRST else ErrorMessages.READ_AN_ITEM_FIRST,
         modifier = modifier,
         onScan = {
             bookInBoxViewModel.apply {

@@ -14,6 +14,7 @@ import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.ui.states.rememberMutableDialogState
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.SAVING_MESSAGE
@@ -51,7 +52,7 @@ fun BookInSaveScreen(
 
     BaseSaveScreen(
         isError = scannedItemIdList.isEmpty(),
-        errorMessage = "Please read an item first.",
+        errorMessage = ErrorMessages.READ_AN_ITEM_FIRST,
         modifier = modifier,
         onSave = viewModel::saveBookIn
     ) {

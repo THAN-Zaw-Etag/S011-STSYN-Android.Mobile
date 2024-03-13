@@ -154,16 +154,5 @@ object DataSource {
         TabOption(title = "EXIT", icon = CustomIcon.Vector(Icons.AutoMirrored.Filled.ExitToApp)),
     )
 
-    val filters = listOf(
-        FilterItem("Store Type", "-"),
-        FilterItem("CS Number", "-"),
-        FilterItem("Unit/SQN", "-"),
-        FilterItem("Flight", "-"),
-        FilterItem("Item Type", "-"),
-        FilterItem("Location", "-"),
-        FilterItem("Box", "-"),
-        FilterItem("Remarks", "-"),
-    )
-
     val dummyDataList = listOf("One", "Two", "Three", "Four", "Five")
 }

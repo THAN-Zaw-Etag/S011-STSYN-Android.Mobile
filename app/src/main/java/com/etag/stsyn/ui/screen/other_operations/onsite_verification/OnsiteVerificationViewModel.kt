@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.onsiteverification.SaveOnSiteVerificationRq
 import com.tzh.retrofit_module.data.model.onsiteverification.StockTake
@@ -134,7 +135,7 @@ class OnsiteVerificationViewModel @Inject constructor(
                 }
 
             } else {
-                _filterStatusMessage.value = "Item cannot be found in the book in list. \n $epc"
+                _filterStatusMessage.value = "${ErrorMessages.ITEM_CANNOT_BE_FOUND_IN_THE_LIST} \n $epc"
             }
         }
     }

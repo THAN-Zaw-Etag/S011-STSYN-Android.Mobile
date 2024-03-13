@@ -6,6 +6,7 @@ import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.core.reader.ZebraRfidHandler
 import com.etag.stsyn.enums.Purpose
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.mapper.toItemMovementLog
 import com.tzh.retrofit_module.data.model.book_in.PrintJob
@@ -159,17 +160,17 @@ class BookOutViewModel @Inject constructor(
             bookOutUiState.value.scannedItems.forEach {
                 if (it.calDate.isNotEmpty() && it.calDate != Instant.MIN.toString()) {
                     if (it.calDate.isBefore(currentDate) && bookOutUiState.value.purpose != Purpose.CALIBRATION.name) {
-                        setBookOutErrorMessage("Include overdue calibration item. Can only book out for calibration.")
+                        setBookOutErrorMessage(ErrorMessages.INCLUDE_OVER_DUE_ITEM)
                         return@launch
                     }
                 } else if (it.calDate.isEmpty()) {
-                    setBookOutErrorMessage("Include invalid calibration date!")
+                    setBookOutErrorMessage(ErrorMessages.INCLUDE_INVALID_CALIBRATION)
                     return@launch
                 }
             }
 
             if (settings.first().needLocation && bookOutUiState.value.location.isEmpty() && bookOutUiState.value.purpose.isEmpty()) {
-                setBookOutErrorMessage("Please Key In Location")
+                setBookOutErrorMessage(ErrorMessages.KEY_IN_LOCATION)
                 return@launch
             }
 

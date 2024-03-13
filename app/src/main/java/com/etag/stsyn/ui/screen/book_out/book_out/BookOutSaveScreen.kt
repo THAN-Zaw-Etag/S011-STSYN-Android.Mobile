@@ -30,6 +30,7 @@ import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.util.ApiResponse
@@ -94,7 +95,7 @@ fun BookOutSaveScreen(
 
     LaunchedEffect(bookOutUiState.scannedItems, bookOutUiState.location) {
         if (bookOutUiState.location.isNotEmpty()) bookOutViewModel.setBookOutErrorMessage(null)
-        if (bookOutUiState.scannedItems.isEmpty()) bookOutViewModel.setBookOutErrorMessage("Please read an item first.")
+        if (bookOutUiState.scannedItems.isEmpty()) bookOutViewModel.setBookOutErrorMessage(ErrorMessages.READ_AN_ITEM_FIRST)
         else bookOutViewModel.setBookOutErrorMessage(null)
     }
 
