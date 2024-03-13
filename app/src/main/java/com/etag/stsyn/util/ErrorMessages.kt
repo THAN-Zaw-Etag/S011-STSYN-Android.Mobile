@@ -1,6 +1,7 @@
 package com.etag.stsyn.util
 
 object ErrorMessages {
+    const val CHOOSE_PURPOSE = "Choose a purpose to book out"
     const val SPECIAL_CHARACTER_CONDITION = "Password must contain at least one special character."
     const val DIGIT_CONDITION = "Password must contain at least one digit."
     const val LOWER_CASE_CONDITION = "Password must contain at least one lowercase letter."

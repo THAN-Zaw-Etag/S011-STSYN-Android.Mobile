@@ -2,6 +2,7 @@ package com.tzh.retrofit_module.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.util.Log
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -63,6 +64,7 @@ object DateUtil {
 
 fun String.isBefore(date: String): Boolean {
     val comparison = this.compareTo(date)
+    Log.d("TAG", "isBefore: $this - $date")
     return comparison < 0
 }
 

@@ -16,12 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.enums.Purpose
 import com.etag.stsyn.ui.components.DropDown
 import com.etag.stsyn.ui.components.LoadingDialog
@@ -40,14 +42,14 @@ fun BookOutSaveScreen(
     bookOutViewModel: BookOutViewModel, modifier: Modifier = Modifier
 ) {
     var location by remember { mutableStateOf("") }
-    val settings by bookOutViewModel.settings.collectAsState(initial = AppConfigModel())
-    val bookOutUiState by bookOutViewModel.bookOutUiState.collectAsState()
-    val user by bookOutViewModel.user.collectAsState(initial = LocalUser())
-    val saveBookOutBoxesResponse by bookOutViewModel.saveBookOutBoxesResponse.collectAsState()
+    val settings by bookOutViewModel.settings.collectAsStateWithLifecycle(AppConfigModel())
+    val bookOutUiState by bookOutViewModel.bookOutUiState.collectAsStateWithLifecycle()
+    val user by bookOutViewModel.user.collectAsStateWithLifecycle(LocalUser())
+    val saveBookOutBoxesResponse by bookOutViewModel.saveBookOutBoxesResponse.collectAsStateWithLifecycle()
     var isError by remember { mutableStateOf(false) }
     var shouldShowWarningDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-    var attemptCount by remember { mutableStateOf(0) }
+    var attemptCount by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(bookOutUiState.errorMessage) {
         isError = bookOutUiState.errorMessage != null && bookOutUiState.errorMessage!!.isNotEmpty()
@@ -93,10 +95,23 @@ fun BookOutSaveScreen(
             }, onDismiss = { attemptCount = 0 })
     }
 
-    LaunchedEffect(bookOutUiState.scannedItems, bookOutUiState.location) {
-        if (bookOutUiState.location.isNotEmpty()) bookOutViewModel.setBookOutErrorMessage(null)
-        if (bookOutUiState.scannedItems.isEmpty()) bookOutViewModel.setBookOutErrorMessage(ErrorMessages.READ_AN_ITEM_FIRST)
-        else bookOutViewModel.setBookOutErrorMessage(null)
+    LaunchedEffect(bookOutUiState) {
+        if (bookOutUiState.purpose.isEmpty()) {
+            bookOutViewModel.setBookOutErrorMessage(ErrorMessages.CHOOSE_PURPOSE)
+            return@LaunchedEffect
+        }
+
+        if (bookOutUiState.location.isEmpty()) {
+            bookOutViewModel.setBookOutErrorMessage(ErrorMessages.KEY_IN_LOCATION)
+            return@LaunchedEffect
+        }
+
+        if (bookOutUiState.scannedItems.isEmpty()) {
+            bookOutViewModel.setBookOutErrorMessage(ErrorMessages.READ_AN_ITEM_FIRST)
+            return@LaunchedEffect
+        }
+
+        bookOutViewModel.setBookOutErrorMessage(null)
     }
 
     BaseSaveScreen(
@@ -110,7 +125,7 @@ fun BookOutSaveScreen(
         ) {
             SaveItemLayout(
                 icon = Icons.Default.Person, itemTitle = "User"
-            ) { Text(text = "${user.name}-${user.userId}") }
+            ) { Text(text = "${user.name}-${user.nric}") }
 
             SaveItemLayout(icon = Icons.Outlined.TrackChanges, itemTitle = "Purpose") {
                 DropDown(items = Purpose.entries.map { it.toString() },

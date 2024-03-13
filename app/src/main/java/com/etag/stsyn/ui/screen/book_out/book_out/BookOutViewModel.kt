@@ -13,6 +13,7 @@ import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
+import com.tzh.retrofit_module.domain.model.bookIn.safeCopy
 import com.tzh.retrofit_module.domain.model.bookOut.BookOutResponse
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
@@ -68,6 +69,21 @@ class BookOutViewModel @Inject constructor(
         getAllBookOutItems()
         handleClickEvent()
         observeBookOutItemsResponse()
+
+        // initially set error message because purpose is empty
+        setBookOutErrorMessage(ErrorMessages.CHOOSE_PURPOSE)
+
+        // For testing, remove later
+        viewModelScope.launch {
+            getAllBookOutItemResponse.collect {
+                when (it) {
+                    is ApiResponse.Success -> _bookOutUiState.update { uiState ->
+                        uiState.copy(scannedItems = listOf(it.data?.items?.first()?.safeCopy(calDate = "2024-04-05T16:10:38.21") ?: BoxItem().safeCopy()))
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
     private fun handleClickEvent() {

@@ -30,7 +30,7 @@ fun BookInCountScreen(
     var bookInAllItems by remember { mutableStateOf(bookInState.allBookInItems) }
     var controlType by remember { mutableStateOf(ControlType.All) }
 
-    LaunchedEffect(controlType) {
+    LaunchedEffect(controlType, bookInState.allBookInItems) {
         val items = bookInState.allBookInItems
         bookInAllItems = when (controlType) {
             ControlType.All -> items

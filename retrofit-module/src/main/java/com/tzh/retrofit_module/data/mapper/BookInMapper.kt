@@ -100,6 +100,6 @@ fun BoxItem.toExpandedScannedItems(): ExpandedScannedItemModel {
         code = this.unit,
         location = this.itemLocation,
         storeLocation = this.storeLocation,
-        status = ItemStatus.BookIn.title
+        status = this.itemStatus
     )
 }
