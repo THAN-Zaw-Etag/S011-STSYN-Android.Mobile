@@ -3,6 +3,8 @@ package com.tzh.retrofit_module.util
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.util.Log
+import com.tzh.retrofit_module.enum.ItemStatus
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -63,8 +65,25 @@ object DateUtil {
 }
 
 fun String.isBefore(date: String): Boolean {
-    val comparison = this.compareTo(date)
+    val date1 =  Instant.parse(this+"Z")
+    val date2 = Instant.parse(date+"Z")
+     val comparison = this.compareTo(date)
     Log.d("TAG", "isBefore: $this - $date")
     return comparison < 0
+    //return date1.isBefore(date2)
 }
 
+
+/*
+fun main() {
+    val date1 = Instant.parse("2024-02-05T16:10:00.000Z")
+    val date2 = Instant.parse("2024-03-13T16:18:09.453Z")
+
+    if (date1.isBefore(date2)) {
+        println("Date 1 is before Date 2.")
+    } else if (date2.isBefore(date1)) {
+        println("Date 2 is before Date 1.")
+    } else {
+        println("Both dates are equal.")
+    }
+}*/

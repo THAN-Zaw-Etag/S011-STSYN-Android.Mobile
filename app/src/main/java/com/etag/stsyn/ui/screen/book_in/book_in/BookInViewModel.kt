@@ -57,14 +57,14 @@ class BookInViewModel @Inject constructor(
         getBookInItems()
 
         //For testing remove later
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             bookInItemsResponse.collect {response ->
                 when (response) {
                     is ApiResponse.Success -> _scannedItemIdList.update { listOf(response.data?.items?.map { it.epc }?.first() ?: "") }
                     else -> {}
                 }
             }
-        }
+        }*/
     }
 
     override fun handleApiResponse() {
@@ -159,12 +159,6 @@ class BookInViewModel @Inject constructor(
 
                 else -> {}
             }
-        }
-    }
-
-    fun getBoxItemsForBookIn() {
-        viewModelScope.launch {
-
         }
     }
 

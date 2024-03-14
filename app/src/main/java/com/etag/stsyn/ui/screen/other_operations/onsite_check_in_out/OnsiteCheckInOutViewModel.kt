@@ -59,6 +59,35 @@ class OnsiteCheckInOutViewModel @Inject constructor(
         getAllItemsForOnsite()
         handleClickEvent()
         observeCheckInOutItemsResponse()
+        observeSaveCheckInOutResponse()
+
+        /*//TODO For testing
+        viewModelScope.launch {
+            getAllItemsForOnsiteResponse.collect {
+                when (it) {
+                    is ApiResponse.Success -> {
+                        val items = it.data?.items ?: emptyList()
+                        if (items.isNotEmpty()) _scannedItemList.update { listOf(items[0].epc) }
+                        _onSiteCheckInOutUiState.update {
+                            it.copy(receiver = UserModel(userName = "Zaw Gyi"))
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }*/
+    }
+
+
+    private fun observeSaveCheckInOutResponse() {
+        viewModelScope.launch {
+            saveOnSiteCheckInOutResponse.collect {
+                when (it) {
+                    is ApiResponse.Success -> updateSuccessDialogVisibility(true)
+                    else -> {}
+                }
+            }
+        }
     }
 
     private fun handleClickEvent() {
@@ -91,6 +120,7 @@ class OnsiteCheckInOutViewModel @Inject constructor(
      * 3.delay 1 second to reload data again.*/
     private suspend fun doTasksAfterSaved() {
         _scannedItemList.value = emptyList()
+        updateSuccessDialogVisibility(false)
         _onSiteCheckInOutUiState.update {
             it.copy(
                 allItemsForOnsite = emptyList(),

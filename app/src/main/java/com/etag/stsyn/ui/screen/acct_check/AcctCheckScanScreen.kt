@@ -1,5 +1,6 @@
 package com.etag.stsyn.ui.screen.acct_check
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,16 +52,13 @@ fun AcctCheckScanScreen(
     accountCheckViewModel: AccountCheckViewModel,
     modifier: Modifier = Modifier
 ) {
-
-    var filterCount by remember { mutableStateOf(0) }
-    var filters by remember { mutableStateOf<List<FilterItem>>(emptyList()) }
     var showFilterDialog by remember { mutableStateOf(false) }
     val rfidUiState by accountCheckViewModel.rfidUiState.collectAsStateWithLifecycle()
     val acctCheckUiState by accountCheckViewModel.acctCheckUiState.collectAsStateWithLifecycle()
     val scannedItemIdList by accountCheckViewModel.scannedItemIdList.collectAsStateWithLifecycle()
-    var total by remember { mutableStateOf(0) }
-    var done by remember { mutableStateOf(0) }
-    var outstanding by remember { mutableStateOf(0) }
+    var total by remember { mutableIntStateOf(0) }
+    var done by remember { mutableIntStateOf(0) }
+    var outstanding by remember { mutableIntStateOf(0) }
     val dialogState = rememberMutableDialogState(data = "")
 
     LaunchedEffect(Unit) {
@@ -91,12 +90,6 @@ fun AcctCheckScanScreen(
         }
     )
 
-    LaunchedEffect(acctCheckUiState.filterOptions) {
-        filters = acctCheckUiState.filterOptions
-        filterCount =
-            acctCheckUiState.filterOptions.filter { it.selectedOption.trim().isNotEmpty() }.size
-    }
-
     Column(
         modifier = modifier.animateContentSize()
     ) {
@@ -109,7 +102,7 @@ fun AcctCheckScanScreen(
         ) {
             FilterDialog(
                 show = showFilterDialog,
-                filters = filters,
+                filters = acctCheckUiState.filterOptions,
                 onDismiss = { showFilterDialog = false },
                 onClear = accountCheckViewModel::clearFilters,
                 onDone = accountCheckViewModel::updateFilterOptions
@@ -120,7 +113,6 @@ fun AcctCheckScanScreen(
                 total = total,
                 done = done,
                 outstanding = outstanding,
-                filterCount = filterCount,
                 boxItem = acctCheckUiState.scannedItem,
                 onReset = accountCheckViewModel::resetScannedItems
             )
@@ -137,7 +129,6 @@ fun AcctCheckScanScreen(
 
 @Composable
 private fun AcctCheckContent(
-    filterCount: Int,
     total: Int,
     done: Int,
     boxItem: BoxItem,
@@ -146,7 +137,7 @@ private fun AcctCheckContent(
     onReset: () -> Unit,
     selectedFilters: List<FilterItem>
 ) {
-    FilterButton(filterCount, onClick = onFilterButtonClick)
+    FilterButton(selectedFilters.filter { it.selectedOption.trim().isNotEmpty() }.size, onClick = onFilterButtonClick)
     Spacer(modifier = Modifier.height(16.dp))
     selectedFilters.forEach {
         DetailItem(

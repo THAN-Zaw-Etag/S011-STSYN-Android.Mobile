@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.etag.stsyn.ui.components.STSYNTExtField
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.theme.Purple80
 
@@ -38,22 +39,24 @@ fun OtherDetPLoanOutSaveScreen(
             Text(text = "Admin - 123S")
         }
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "Receiver (Key in)") {
-            TextField(
+            STSYNTExtField(
                 value = value,
-                onValueChange = { value = it },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                ),
+                label = {},
+                onValueChange = {
+                    value = it
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .border(
-                        1.dp,
-                        Purple80,
-                        RoundedCornerShape(5.dp)
-                    )
+                        width = 1.dp, color = Purple80, shape = RoundedCornerShape(5.dp)
+                    ),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                ),
             )
         }
         SaveItemLayout(

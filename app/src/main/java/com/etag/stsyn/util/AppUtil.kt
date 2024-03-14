@@ -7,6 +7,9 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
 import com.etag.stsyn.enums.DeviceSize
 import com.etag.stsyn.ui.navigation.Graph
+import com.tzh.retrofit_module.enum.ItemStatus
+
+
 
 object AppUtil {
     fun getVersionCode(context: Context): String {

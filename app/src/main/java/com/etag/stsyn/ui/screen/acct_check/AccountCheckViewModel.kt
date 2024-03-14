@@ -1,5 +1,7 @@
 package com.etag.stsyn.ui.screen.acct_check
 
+import android.util.Log
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.ClickEvent
@@ -65,6 +67,20 @@ class AccountCheckViewModel @Inject constructor(
         updateScanType(ScanType.Single)
         getAllAccountabilityCheckItems()
         getAllFilterOptions()
+
+        /*//TODO Only for testing
+        viewModelScope.launch {
+            accountabilityCheckItemsResponse.collect {response ->
+                when (response) {
+                    is ApiResponse.Success -> {
+                        val items = response.data?.items ?: emptyList()
+                        _scannedItemIdList.update { listOf(items[0].epc) }
+                        if (items.isNotEmpty()) _acctCheckUiState.update { it.copy(scannedItem = items.get(0)) }
+                    }
+                    else -> {}
+                }
+            }
+        }*/
     }
 
     private fun observeAccountabilityCheckSaveResponse() {
@@ -175,7 +191,8 @@ class AccountCheckViewModel @Inject constructor(
                         shift = shift,
                         checkStatusId = checkStatusId.toString()
                     )
-                })
+                }
+            )
         }
     }
 
@@ -214,6 +231,7 @@ class AccountCheckViewModel @Inject constructor(
         _acctCheckUiState.update { it.copy(shiftType = shiftType) }
     }
 
+    @Stable
     data class AcctCheckUiState(
         val shiftType: Shift = Shift.START,
         val allItems: List<BoxItem> = emptyList(),

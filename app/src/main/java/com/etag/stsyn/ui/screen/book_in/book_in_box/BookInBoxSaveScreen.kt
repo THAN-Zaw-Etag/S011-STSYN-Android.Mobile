@@ -49,7 +49,8 @@ fun BookInBoxSaveScreen(
     when (saveBookInBoxResponse) {
         is ApiResponse.Loading -> {
             shouldShowWarningDialog = false
-            LoadingDialog(title = "Please wait while SMS is processing your request...",
+            LoadingDialog(
+                title = "Please wait while SMS is processing your request...",
                 showDialog = true,
                 onDismiss = { })
         }
@@ -58,7 +59,6 @@ fun BookInBoxSaveScreen(
             shouldShowWarningDialog = false
             bookInBoxViewModel.apply {
                 updateIsSavedStatus(true)
-                updateSuccessDialogVisibility(true)
             }
         }
 
@@ -94,7 +94,7 @@ fun BookInBoxSaveScreen(
     }
     BaseSaveScreen(
         isError = scannedItemList.isEmpty(),
-        isUsCase = bookInBoxUiState.issuerUser == null,
+        isUsCase = bookInBoxUiState.isUsCase,
         errorMessage = if (bookInBoxUiState.scannedBox.epc.isEmpty()) ErrorMessages.READ_A_BOX_FIRST else ErrorMessages.READ_AN_ITEM_FIRST,
         modifier = modifier,
         onScan = {
@@ -111,21 +111,17 @@ fun BookInBoxSaveScreen(
             icon = Icons.Default.Person,
             itemTitle = "User",
         ) {
-            Text(text = "${user.name}-${user.userId}")
+            Text(text = "${user.name}-${user.nric}")
         }
 
         if (bookInBoxUiState.isUsCase) { //TODO replace true with bookInBoxUiState.isUsCase
-            SaveItemLayout(icon = Icons.Default.People,
+            SaveItemLayout(
+                icon = Icons.Default.People,
                 itemTitle = "Buddy",
                 showRefreshIcon = shouldShowRefreshIcon,
-                onRefresh = {
-                    /*bookInBoxViewModel.apply {
-                        enableScan()
-                        updateScanType(BaseViewModel.ScanType.Single)
-                        toggle()
-                    }*/
-                }) {
-                Text(text = "${bookInBoxUiState.issuerUser?.userName ?: ""} - ${bookInBoxUiState.issuerUser?.userId ?: ""}")
+                onRefresh = bookInBoxViewModel::refreshBuddy
+            ) {
+                Text(text = "${bookInBoxUiState.issuerUser?.userName} - ${bookInBoxUiState.issuerUser?.nric}")
             }
         }
     }

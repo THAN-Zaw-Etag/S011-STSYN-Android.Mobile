@@ -11,11 +11,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.util.ErrorMessages
+import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
@@ -25,6 +27,7 @@ fun OnsiteVerificationSaveScreen(
 ) {
     val saveOnSiteVerification by onsiteVerificationViewModel.saveOnSiteVerification.collectAsState()
     val scannedItems by onsiteVerificationViewModel.totalScannedItems.collectAsState()
+    val user by onsiteVerificationViewModel.userFlow.collectAsStateWithLifecycle(initialValue = LocalUser())
     var shouldShowWarningDialog by remember {
         mutableStateOf(false)
     }
@@ -44,7 +47,6 @@ fun OnsiteVerificationSaveScreen(
 
         is ApiResponse.Success -> {
             shouldShowWarningDialog = false
-            onsiteVerificationViewModel.updateSuccessDialogVisibility(true)
         }
 
         is ApiResponse.ApiError -> {
@@ -79,7 +81,7 @@ fun OnsiteVerificationSaveScreen(
             onsiteVerificationViewModel.saveOnSiteVerification()
         }) {
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User") {
-            Text(text = "Admin - 123S")
+            Text(text = "${user.name} - ${user.nric}")
         }
     }
 }

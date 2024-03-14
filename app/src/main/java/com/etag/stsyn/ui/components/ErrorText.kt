@@ -12,13 +12,14 @@ import com.etag.stsyn.util.ErrorMessages
 @Composable
 fun ErrorText(
     text: String,
+    textAlign: TextAlign = TextAlign.Center,
     modifier: Modifier = Modifier
 ) {
     Text(
         text = text,
         color = errorColor,
         modifier = modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center
+        textAlign = textAlign
     )
 }
 

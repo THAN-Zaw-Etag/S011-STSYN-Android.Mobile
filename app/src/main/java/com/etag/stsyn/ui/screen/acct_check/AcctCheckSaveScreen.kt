@@ -46,7 +46,7 @@ fun AcctCheckSaveScreen(
         modifier = modifier
     ) {
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "User") {
-            Text(text = "${user.name} - ${user.userId}")
+            Text(text = "${user.name} - ${user.nric}")
         }
     }
 }

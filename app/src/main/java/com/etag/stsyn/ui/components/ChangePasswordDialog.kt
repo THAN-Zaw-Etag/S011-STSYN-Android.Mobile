@@ -2,6 +2,7 @@
 
 package com.etag.stsyn.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,12 +33,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.etag.stsyn.util.PasswordValidator
 import com.etag.stsyn.util.doesNotEquals
 
 const val TAG = "ChangePasswordDialog"
+
+fun List<String>.toMessage(title: String): String {
+    var result = ""
+    this.forEach { result += "$it in $title \n" }
+    return result
+}
 
 @Composable
 fun ChangePasswordDialog(
@@ -52,6 +60,17 @@ fun ChangePasswordDialog(
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var isWrongPassword by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    /*LaunchedEffect(oldPassword,newPassword,confirmPassword) {
+        if(oldPassword.isEmpty()) errorMessage = "Old password must not be empty"
+        if (newPassword.isNotEmpty() && confirmPassword.isNotEmpty()) {
+            val newPasswordValidation = PasswordValidator.validatePassword(newPassword)
+            val confirmPasswordValidation = PasswordValidator.validatePassword(confirmPassword)
+            errorMessage = newPasswordValidation.toMessage("new password")
+            errorMessage = confirmPasswordValidation.toMessage("confirm password")
+        }
+    }*/
 
     LaunchedEffect(showDialog) {
         show = showDialog
@@ -117,6 +136,9 @@ fun ChangePasswordDialog(
                         onValueChange = { confirmPassword = it },
                         showVisibilityIcon = false
                     )
+                    /*AnimatedVisibility(visible = errorMessage.isNotEmpty()) {
+                        ErrorText(text = errorMessage, textAlign = TextAlign.Left)
+                    }*/
                     FilledTonalButton(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),

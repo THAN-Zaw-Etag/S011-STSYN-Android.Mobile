@@ -41,7 +41,7 @@ fun BookOutBoxCountScreen(
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(controlType) {
+    LaunchedEffect(controlType, boxUiState) {
         boxes = when (controlType) {
             ControlType.All -> boxUiState.allBoxes
             ControlType.Done -> boxUiState.allBoxes.filter { it.epc in scannedItemList }

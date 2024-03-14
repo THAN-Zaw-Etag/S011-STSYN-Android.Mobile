@@ -74,7 +74,7 @@ class BookOutViewModel @Inject constructor(
         setBookOutErrorMessage(ErrorMessages.CHOOSE_PURPOSE)
 
         // For testing, remove later
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             getAllBookOutItemResponse.collect {
                 when (it) {
                     is ApiResponse.Success -> _bookOutUiState.update { uiState ->
@@ -83,7 +83,7 @@ class BookOutViewModel @Inject constructor(
                     else -> {}
                 }
             }
-        }
+        }*/
     }
 
     private fun handleClickEvent() {

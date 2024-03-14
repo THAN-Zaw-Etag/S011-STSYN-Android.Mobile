@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -20,7 +21,7 @@ class AppConfiguration @Inject constructor(private val context: Context) {
         val READER_ID = stringPreferencesKey("reader_id")
         val READER_SERIAL_NO = stringPreferencesKey("reader_serial_no")
         val API_URL = stringPreferencesKey("api_url")
-        val POWER = longPreferencesKey("reader_power")
+        val POWER = intPreferencesKey("reader_power")
         val STORE_TYPE = stringPreferencesKey("store_type")
         val CS_NO = stringPreferencesKey("cs_no")
         val NEED_LOCATION = booleanPreferencesKey("need_location")
@@ -42,7 +43,7 @@ class AppConfiguration @Inject constructor(private val context: Context) {
         val readerId = it[READER_ID] ?: "1"
         val serialNo = it[READER_SERIAL_NO] ?: "1"
         val apiUrl = it[API_URL] ?: ""
-        val power = it[POWER] ?: 0L
+        val power = it[POWER] ?: 100
         val storeType = StoreType.valueOf(it[STORE_TYPE] ?: StoreType.DCS.toString())
         val csNo = it[CS_NO] ?: "1"
         val needLocation = it[NEED_LOCATION] ?: false

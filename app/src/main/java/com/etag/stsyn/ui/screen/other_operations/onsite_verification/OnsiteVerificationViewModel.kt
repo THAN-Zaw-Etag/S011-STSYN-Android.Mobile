@@ -67,9 +67,27 @@ class OnsiteVerificationViewModel @Inject constructor(
 
     private val _hasScanned = MutableStateFlow(false)
     val hasScanned: StateFlow<Boolean> = _hasScanned.asStateFlow()
+
+    val userFlow = localDataStore.getUser
+
     override fun onReceivedTagId(id: String) {
         addScannedItemAndMoveToTop(id)
         _hasScanned.value = true
+    }
+
+    init {
+        viewModelScope.launch {
+            getOnSiteVerifyItems.collect {
+                when (it) {
+                    is ApiResponse.Success -> {
+                        val items = it.data?.items ?: emptyList()
+
+                        if (items.isNotEmpty()) _totalScannedItems.update { listOf(items[0]) }
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
     fun onReceivedTagIdTest() {

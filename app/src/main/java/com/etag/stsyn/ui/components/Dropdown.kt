@@ -2,7 +2,9 @@
 
 package com.etag.stsyn.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -46,7 +48,8 @@ fun DropDown(
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = {
-                expanded = !expanded
+                Log.d(TAG, "DropDown: $it")
+                //expanded = it
             }
         ) {
 
@@ -60,6 +63,9 @@ fun DropDown(
                         color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(5.dp)
                     )
+                    .clickable {
+                        expanded = !expanded
+                    }
                     .padding(vertical = 8.dp, horizontal = 16.dp)
             ) {
                 Text(

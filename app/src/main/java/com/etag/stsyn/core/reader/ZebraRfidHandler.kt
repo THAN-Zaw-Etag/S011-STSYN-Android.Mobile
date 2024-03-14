@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import com.etag.m003ams.common.reader.core.DWInterface
+import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.zebra.rfid.api3.Antennas
 import com.zebra.rfid.api3.BATCH_MODE
 import com.zebra.rfid.api3.ENUM_TRANSPORT
@@ -39,6 +40,7 @@ import javax.inject.Inject
 
 class ZebraRfidHandler @Inject constructor(
     @ApplicationContext val application: Application,
+    val appConfiguration: AppConfiguration
 ) : RfidEventsListener, Readers.RFIDReaderEventHandler {
 
     companion object {
@@ -54,7 +56,7 @@ class ZebraRfidHandler @Inject constructor(
     private var availableRFIDReaderList: MutableList<ReaderDevice> = mutableListOf()
     private var mConnectedReader: RFIDReader? = null
     private var readerDevice: ReaderDevice? = null
-    var antennaRfConfig: Antennas.AntennaRfConfig? = null
+    private var antennaRfConfig: Antennas.AntennaRfConfig? = null
 
     private var onBatteryLevelListener: RfidBatteryLevelListener? = null
     var readers: Readers? = null
@@ -302,7 +304,12 @@ class ZebraRfidHandler @Inject constructor(
         antennaRfConfig = mConnectedReader.Config.Antennas.getAntennaRfConfig(1).apply {
             setrfModeTableIndex(0)
             tari = 0
-            transmitPowerIndex = 100
+
+            CoroutineScope(Dispatchers.IO).launch {
+                appConfiguration.appConfig.collect {
+                    transmitPowerIndex = it.power
+                }
+            }
             //transmitPowerIndex = sharePreferenceHelper.readerPower ?: DEFAULT_POWER
         }
         mConnectedReader.Config.Antennas.setAntennaRfConfig(1, antennaRfConfig)

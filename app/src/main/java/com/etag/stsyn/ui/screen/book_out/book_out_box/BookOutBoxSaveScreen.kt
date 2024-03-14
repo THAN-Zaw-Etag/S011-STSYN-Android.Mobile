@@ -32,6 +32,7 @@ import com.etag.stsyn.ui.components.WarningDialog
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
+import com.etag.stsyn.util.ErrorMessages
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.util.ApiResponse
 
@@ -48,10 +49,28 @@ fun BookOutBoxSaveScreen(
     var location by remember { mutableStateOf("") }
     val dialogState = rememberMutableDialogState(data = "")
 
-    LaunchedEffect(boxUiState.scannedBox, scannedItemList, Unit) {
-        if (boxUiState.scannedBox.epc.isEmpty()) bookOutBoxViewModel.updateBookOutBoxErrorMessage("Please scan a box tag first!")
-        else if (scannedItemList.isEmpty()) bookOutBoxViewModel.updateBookOutBoxErrorMessage("Pleas read an item first!")
-        else bookOutBoxViewModel.updateBookOutBoxErrorMessage(null)
+    LaunchedEffect(boxUiState.scannedBox, bookOutBoxUiState, scannedItemList, Unit) {
+        val scannedBox = boxUiState.scannedBox
+        val isEmptyBoxEpc = scannedBox.epc.isEmpty()
+        val isItemListEmpty = scannedItemList.isEmpty()
+        val isPurposeEmpty = bookOutBoxUiState.purpose.isEmpty()
+
+        // Update error message based on conditions
+        if (isEmptyBoxEpc) {
+            bookOutBoxViewModel.updateBookOutBoxErrorMessage(ErrorMessages.READ_A_BOX_FIRST)
+            return@LaunchedEffect
+        }
+        if (isItemListEmpty) {
+            bookOutBoxViewModel.updateBookOutBoxErrorMessage(ErrorMessages.READ_AN_ITEM_FIRST)
+            return@LaunchedEffect
+        }
+
+        if (isPurposeEmpty) {
+            bookOutBoxViewModel.updateBookOutBoxErrorMessage(ErrorMessages.CHOOSE_PURPOSE)
+            return@LaunchedEffect
+        }
+        // No error, clear the error message
+        bookOutBoxViewModel.updateBookOutBoxErrorMessage(null)
     }
 
     when (saveBookOutBoxesResponse) {
@@ -65,7 +84,6 @@ fun BookOutBoxSaveScreen(
 
         is ApiResponse.Success -> {
             bookOutBoxViewModel.updateIsSavedStatus(true)
-            bookOutBoxViewModel.updateSuccessDialogVisibility(true)
         }
 
         is ApiResponse.ApiError -> dialogState.showDialog((saveBookOutBoxesResponse as ApiResponse.ApiError).message)
@@ -97,7 +115,7 @@ fun BookOutBoxSaveScreen(
             }
             SaveItemLayout(icon = Icons.Default.TrackChanges, itemTitle = "Purpose") {
                 DropDown(items = Purpose.entries.map { it.toString() },
-                    defaultValue = "Choose a purpose",
+                    defaultValue = if (bookOutBoxUiState.purpose.isEmpty()) "Choose a purpose" else bookOutBoxUiState.purpose,
                     onSelected = { item ->
                         bookOutBoxViewModel.updatePurpose(item)
                     })

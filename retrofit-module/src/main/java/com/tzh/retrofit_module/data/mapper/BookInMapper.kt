@@ -1,5 +1,6 @@
 package com.tzh.retrofit_module.data.mapper
 
+import android.util.Log
 import com.tzh.retrofit_module.data.model.book_in.ItemMovementLog
 import com.tzh.retrofit_module.domain.model.ExpandedScannedItemModel
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
@@ -42,6 +43,7 @@ fun BoxItem.toItemMovementLog(
     buddyId: String = "0",
     visualChecked: Boolean = false,
 ): ItemMovementLog {
+    Log.d("TAG", "toItemMovementLog: $itemStatus")
     return ItemMovementLog(
             itemId = this.id.toInt(),
             description = this.description,
@@ -94,6 +96,7 @@ fun List<BoxItem>.toItemMovementLogs(
 }
 
 fun BoxItem.toExpandedScannedItems(): ExpandedScannedItemModel {
+    Log.d("TAG", "toExpandedScannedItems: ${this.itemStatus}")
     return ExpandedScannedItemModel(
         serialNo = "${this.serialNo} - ${this.partNo}",
         description = this.description,

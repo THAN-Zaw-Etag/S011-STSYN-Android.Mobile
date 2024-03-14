@@ -22,7 +22,8 @@ fun <T> LazyListScope.listItems(
     }
 }
 else {
-    items(count = items.size,
+    items(
+        count = items.size,
         key = if (key != null) { index: Int -> key(items[index]) } else null,
         contentType = { index: Int -> contentType(items[index]) }) {
         itemContent(items[it])

@@ -38,7 +38,7 @@ fun CheckInOutSaveScreen(
         )
 
         is ApiResponse.Success -> {
-            onsiteCheckInOutViewModel.updateSuccessDialogVisibility(true)
+
         }
 
         is ApiResponse.ApiError -> {
@@ -85,7 +85,7 @@ fun CheckInOutSaveScreen(
             icon = Icons.Default.Person,
             itemTitle = "Issuer",
         ) {
-            Text(text = "${user.name}-${user.userId}")
+            Text(text = "${user.name}-${user.nric}")
         }
         SaveItemLayout(
             icon = Icons.Default.Person, itemTitle = "Receiver", showRefreshIcon = hasScannedItems

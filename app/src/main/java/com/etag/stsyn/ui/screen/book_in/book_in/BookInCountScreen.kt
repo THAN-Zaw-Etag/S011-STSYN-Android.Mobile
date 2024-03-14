@@ -1,5 +1,10 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.etag.stsyn.ui.screen.book_in.book_in
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,10 +54,10 @@ fun BookInCountScreen(
             contentPadding = PaddingValues(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            listItems(bookInAllItems) {
-                key(it.epc) {
+            listItems(bookInAllItems.map { it.toExpandedScannedItems() }) {
+                key(it.code) {
                     ExpandedScannedItem(
-                        bookInItem = it.toExpandedScannedItems()
+                        bookInItem = it
                     )
                 }
             }

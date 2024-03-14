@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.book_out.book_out_box
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.ClickEvent
@@ -15,6 +14,7 @@ import com.tzh.retrofit_module.data.model.book_in.PrintJob
 import com.tzh.retrofit_module.data.model.book_in.SaveBookInRequest
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
+import com.tzh.retrofit_module.domain.model.bookIn.safeCopy
 import com.tzh.retrofit_module.domain.model.bookOut.GetAllBookOutBoxesResponse
 import com.tzh.retrofit_module.domain.model.login.NormalResponse
 import com.tzh.retrofit_module.domain.repository.BookOutRepository
@@ -23,7 +23,6 @@ import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.DateUtil
 import com.tzh.retrofit_module.util.isBefore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +32,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
 import javax.inject.Inject
-import kotlin.math.log
 
 @HiltViewModel
 class BookOutBoxViewModel @Inject constructor(
@@ -71,6 +69,34 @@ class BookOutBoxViewModel @Inject constructor(
     init {
         getAllBookOutBoxes()
         observeLocation()
+        observeSaveBookOutBoxResponse()
+
+        //Only for testing, remove later
+        viewModelScope.launch {
+            getAllBookOutBoxesResponse.collect { response ->
+                when (response) {
+                    is ApiResponse.Success -> {
+                        try {
+                            val box = response.data?.items?.get(0) ?: BoxItem()
+                            _boxUiState.update { it.copy(scannedBox = box.safeCopy(calDate = "2024-04-05T16:10:38.21")) }
+                            getAllItemsInBox(box.box)
+                        } catch (e: Exception) {e.printStackTrace()}
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    private fun observeSaveBookOutBoxResponse() {
+        viewModelScope.launch {
+            saveBookOutBoxResponse.collect {
+                when (it) {
+                    is ApiResponse.Success -> updateSuccessDialogVisibility(true)
+                    else -> {}
+                }
+            }
+        }
     }
 
     override fun handleClickEvent(clickEvent: ClickEvent) {
@@ -89,13 +115,6 @@ class BookOutBoxViewModel @Inject constructor(
         }
     }
 
-    /*private fun observeApiResponse() {
-        viewModelScope.launch {
-            getAllBookOutBoxesResponse.collect {
-                handleDialogStatesByResponse(it)
-            }
-        }
-    }*/
 
     private fun observeLocation() {
         viewModelScope.launch {
@@ -132,7 +151,7 @@ class BookOutBoxViewModel @Inject constructor(
         viewModelScope.launch {
             updateSuccessDialogVisibility(false)
             getAllBookOutBoxes()
-            _boxUiState.update { it.copy(scannedBox = BoxItem(), allItemsOfBox = emptyList()) }
+            _boxUiState.update { it.copy(scannedBox = BoxItem(), allItemsOfBox = emptyList(), allBoxes = emptyList()) }
             // clear all scanned items
             _scannedItemList.value = emptyList()
         }
@@ -146,9 +165,9 @@ class BookOutBoxViewModel @Inject constructor(
             val location = bookOutBoxUiState.value.location
             val currentDate = DateUtil.getCurrentDate()
 
-            if (scannedBox.calDate.isNotEmpty() && scannedBox.calDate != Instant.MIN.toString()) {
+            if (scannedBox.safeCopy().calDate.isNotEmpty() && scannedBox.calDate != Instant.MIN.toString()) {
                 if (scannedBox.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
-                    updateBookOutBoxErrorMessage(ErrorMessages.INCLUDE_OVER_DUE_ITEM)
+                    updateBookOutBoxErrorMessage("Box: ${ErrorMessages.INCLUDE_OVER_DUE_ITEM}")
                     return@launch
                 } else updateBookOutBoxErrorMessage(null)
             }
@@ -156,13 +175,13 @@ class BookOutBoxViewModel @Inject constructor(
             if (needLocation) validateLocationAndPurpose(location, purpose)
 
             boxUiState.value.allItemsOfBox.forEach { box ->
-                if (box.calDate.isNotEmpty() && box.calDate != Instant.MIN.toString()) {
+                if (box.safeCopy().calDate.isNotEmpty() && box.calDate != Instant.MIN.toString()) {
                     if (box.calDate.isBefore(currentDate) && purpose != Purpose.CALIBRATION.name) {
-                        updateBookOutBoxErrorMessage(ErrorMessages.INCLUDE_OVER_DUE_ITEM)
+                        updateBookOutBoxErrorMessage("Item: ${ErrorMessages.INCLUDE_OVER_DUE_ITEM}")
                         return@launch
                     } else if ((box.itemType == "TOOL" || box.itemType == "PUB") && purpose == Purpose.CALIBRATION.name) {
                         updateBookOutBoxErrorMessage(
-                            ErrorMessages.INCLUDE_TOOLS_OR_PUBS
+                            "${box.itemType}: ${ErrorMessages.INCLUDE_TOOLS_OR_PUBS}"
                         )
                         return@launch
                     } else updateBookOutBoxErrorMessage(null)
@@ -198,7 +217,7 @@ class BookOutBoxViewModel @Inject constructor(
                         date = currentDate,
                         issuerId = user.first().userId,
                         workLocation = location,
-                        itemStatus = ItemStatus.OUTSTANDING.name,
+                        itemStatus = ItemStatus.OUTSTANDING.title,
                         visualChecked = boxUiState.value.isChecked
                     )
                 })
@@ -271,9 +290,13 @@ class BookOutBoxViewModel @Inject constructor(
                     val boxes = response.data?.items ?: emptyList()
                     _boxUiState.update {
                         it.copy(
-                            allItemsOfBox = boxes
+                            //TODO set only boxes
+                            allItemsOfBox = boxes.map { it.safeCopy(itemType = "B", calDate = "2024-04-05T16:10:38.21") }
                         )
                     }
+
+                    //TODO Testing
+                    _scannedItemList.update { listOf(boxes.get(1).epc) }
 
                     _boxUiState.update { it.copy(allBoxes = boxes) }
                 }

@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.screen.other_operations.t_loan_out_box
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.etag.stsyn.ui.components.STSYNTExtField
 import com.etag.stsyn.ui.components.SaveItemLayout
 import com.etag.stsyn.ui.screen.base.BaseSaveScreen
 import com.etag.stsyn.ui.theme.Purple80
@@ -34,20 +36,24 @@ fun OtherTLoanOutBoxSaveScreen(
             Text(text = "Admin - 123S")
         }
         SaveItemLayout(icon = Icons.Default.Person, itemTitle = "Receiver (Key in)") {
-            TextField(
+            STSYNTExtField(
                 value = inputValue,
-                onValueChange = { inputValue = it },
-                modifier = Modifier.border(
-                    1.dp,
-                    Purple80,
-                    RoundedCornerShape(5.dp)
-                ),
+                label = {},
+                onValueChange = {
+                    inputValue = it
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(
+                        width = 1.dp, color = Purple80, shape = RoundedCornerShape(5.dp)
+                    ),
                 colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent
-                )
+                    disabledIndicatorColor = Color.Transparent,
+                ),
             )
         }
 

@@ -20,10 +20,11 @@ import com.tzh.retrofit_module.domain.model.ExpandedScannedItemModel
 
 @Composable
 fun ExpandedScannedItem(
-    bookInItem: ExpandedScannedItemModel? = null
+    bookInItem: ExpandedScannedItemModel? = null,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .border(
                 1.dp, Color.LightGray, RoundedCornerShape(8.dp)

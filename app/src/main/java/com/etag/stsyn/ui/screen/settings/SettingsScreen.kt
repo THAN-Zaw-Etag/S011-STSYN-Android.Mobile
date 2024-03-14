@@ -118,7 +118,7 @@ fun SettingsScreen(
             title = "Power",
             value = appConfiguration.power.toString(),
             description = appConfiguration.power.toString(),
-            onUpdateClick = { viewModel.updateAppConfig(appConfiguration.copy(power = it.toLong())) }
+            onUpdateClick = { viewModel.updateAppConfig(appConfiguration.copy(power = it.toInt())) }
         )
 
         SettingItem(

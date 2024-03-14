@@ -101,7 +101,7 @@ fun BookOutSaveScreen(
             return@LaunchedEffect
         }
 
-        if (bookOutUiState.location.isEmpty()) {
+        if (bookOutUiState.location.isEmpty() && settings.needLocation) {
             bookOutViewModel.setBookOutErrorMessage(ErrorMessages.KEY_IN_LOCATION)
             return@LaunchedEffect
         }
@@ -128,7 +128,8 @@ fun BookOutSaveScreen(
             ) { Text(text = "${user.name}-${user.nric}") }
 
             SaveItemLayout(icon = Icons.Outlined.TrackChanges, itemTitle = "Purpose") {
-                DropDown(items = Purpose.entries.map { it.toString() },
+                DropDown(
+                    items = Purpose.entries.map { it.toString() },
                     defaultValue = "Choose a purpose",
                     onSelected = { item ->
                         bookOutViewModel.setPurpose(item)

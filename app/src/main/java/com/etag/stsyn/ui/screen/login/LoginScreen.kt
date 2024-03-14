@@ -169,7 +169,7 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.weight(1f))
         MainLowerContent(onScan = {
-            loginViewModel.getUserByRfidId("455341303030303030303130")
+            loginViewModel.getUserByRfidId("")
         })
     }
 }
