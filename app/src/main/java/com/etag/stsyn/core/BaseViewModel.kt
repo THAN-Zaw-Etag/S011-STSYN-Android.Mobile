@@ -80,12 +80,12 @@ abstract class BaseViewModel(
      * Handle api response state and update loading , error dialogs states.
      * @see delay not to show loading dialog immediately
      * @see disableScan disable scan while loading*/
-    protected fun <T> handleDialogStatesByResponse(
+    protected suspend fun <T> handleDialogStatesByResponse(
         response: ApiResponse<T>, shouldShowSuccessDialog: Boolean = false
     ) {
         when (response) {
             is ApiResponse.Loading -> {
-                //delay(400)
+                delay(300)
                 updateErrorMessage("")
                 toggleLoadingVisibility(true)
                 disableScan()

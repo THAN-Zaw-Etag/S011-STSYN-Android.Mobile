@@ -28,6 +28,7 @@ fun RootNavigationGraph(
 ) {
     val context = LocalContext.current
     val loginState by loginViewModel.loginState.collectAsStateWithLifecycle()
+    val isSodInitiate by loginViewModel.isSodInitiate.collectAsStateWithLifecycle()
 
     NavHost(
         navController = navController,
@@ -43,13 +44,13 @@ fun RootNavigationGraph(
             // disable scan
             loginViewModel.disableScan()
 
-            val isSodInitiate = it.arguments?.getString("isSodInitiate").toBoolean()
+            val isInitiate = it.arguments?.getString("isSodInitiate").toBoolean()
 
             HomeScreen(
                 loginViewModel = loginViewModel,
                 onChangePassword = loginViewModel::updatePassword,
                 sharedUiViewModel = sharedUiViewModel,
-                isSodInitiate = isSodInitiate,
+                isSodInitiate = isInitiate,
                 onLogOutClick = {
                     loginViewModel.logOut()
                     navController.navigate(Graph.AUTHENTICATION) {
@@ -62,9 +63,9 @@ fun RootNavigationGraph(
         }
     }
     LaunchedEffect(isLoggedIn) {
-        Log.d(TAG, "RootNavigationGraph: $isLoggedIn")
+        Log.d(TAG, "RootNavigationGraph: $isSodInitiate")
         if (isLoggedIn) {
-            val route = if (!loginState.isSodInitiate) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
+            val route = if (isSodInitiate == false) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
             delay(300)
             navController.navigateToSingleTop(route)
         }

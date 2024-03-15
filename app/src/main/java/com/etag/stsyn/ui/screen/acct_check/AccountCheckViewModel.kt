@@ -1,6 +1,5 @@
 package com.etag.stsyn.ui.screen.acct_check
 
-import android.util.Log
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
@@ -68,7 +67,7 @@ class AccountCheckViewModel @Inject constructor(
         getAllAccountabilityCheckItems()
         getAllFilterOptions()
 
-        /*//TODO Only for testing
+        //TODO Only for testing
         viewModelScope.launch {
             accountabilityCheckItemsResponse.collect {response ->
                 when (response) {
@@ -80,13 +79,17 @@ class AccountCheckViewModel @Inject constructor(
                     else -> {}
                 }
             }
-        }*/
+        }
     }
 
     private fun observeAccountabilityCheckSaveResponse() {
         viewModelScope.launch {
             saveAcctCheckResponse.collect {
                 handleDialogStatesByResponse(it, true)
+                when (it) {
+                    is ApiResponse.Success -> localDataStore.updateIsSodInitiateStatus(false)
+                    else -> {}
+                }
             }
         }
     }
@@ -180,9 +183,8 @@ class AccountCheckViewModel @Inject constructor(
             val checkStatusId = checkUserIdFlow.first() ?: 0
 
             _saveAcctCheckResponse.value = ApiResponse.Loading
-            delay(500)
-            _saveAcctCheckResponse.value = ApiResponse.Success(NormalResponse(null, true))
-            SaveAccountabilityCheckRequest(acctCheckUiState.value.allItems.filter { it.epc in scannedItemIdList.value }
+            delay(400)
+            val saveAccountabilityCheckRequest = SaveAccountabilityCheckRequest(acctCheckUiState.value.allItems.filter { it.epc in scannedItemIdList.value }
                 .map {
                     it.toStockTake(
                         readerId = readerId,
@@ -193,6 +195,8 @@ class AccountCheckViewModel @Inject constructor(
                     )
                 }
             )
+
+            _saveAcctCheckResponse.value = accountCheckRepository.saveAccountabilityCheck(saveAccountabilityCheckRequest)
         }
     }
 

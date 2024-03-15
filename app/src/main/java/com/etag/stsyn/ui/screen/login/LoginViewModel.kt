@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -88,6 +89,9 @@ class LoginViewModel @Inject constructor(
     val lockUserState: StateFlow<ApiResponse<NormalResponse>> =
         _lockUserState.asStateFlow()
 
+    private val _isSodInitiate = MutableStateFlow(false)
+    val isSodInitiate = _isSodInitiate.asStateFlow()
+
     init {
         updateScanType(ScanType.Single)
 
@@ -98,6 +102,13 @@ class LoginViewModel @Inject constructor(
                     Logger.d("localUser: ${it.isLoggedIn}")
                     _savedUser.value = it
                     if (it.isLoggedIn) getUserMenuAccessRightsById()
+                }
+            }
+            
+            launch { 
+                localDataStore.isSodInitiate.collect {
+                    Log.d(TAG, "isSodInitiate: $it")
+                    _isSodInitiate.value = it!!
                 }
             }
 
@@ -167,6 +178,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun updateSODInitiateStatus(isSodInitiate: Boolean) {
+        Log.d(TAG, "updateSODInitiateStatus: $isSodInitiate")
         _loginState.update { it.copy(isSodInitiate = isSodInitiate) }
     }
 
@@ -208,35 +220,48 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun handleLoginResponse() {
-        when (loginResponse.value) {
-            is ApiResponse.Success -> {
-                updateLoginStatus(true)
+    private fun handleLoginResponse() {
+        viewModelScope.launch {
+            loginResponse.collect {
+                when (it) {
+                    is ApiResponse.Success -> {
+                        updateLoginStatus(true)
 
-                val data = (loginResponse.value as ApiResponse.Success<LoginResponse>).data
-                saveUserToLocalStorage(data?.user.toLocalUser(data?.token))
+                        val data = it.data
+                        saveUserToLocalStorage(data?.user.toLocalUser(data?.token))
 
-                // update menu access rights
-                _userMenuAccessRights.value = data?.rolePermission!!.handheldMenuAccessRight
+                        // update menu access rights
+                        _userMenuAccessRights.value = data?.rolePermission!!.handheldMenuAccessRight
 
-                val checkStatus = data.checkStatus!!
-                val isSodInitiate =
-                    (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
-                updateShiftType(if (checkStatus.isStart) Shift.START else Shift.ADHOC)
-                localDataStore.saveCheckStatusId(checkStatus.id.toString())
-                updateSODInitiateStatus(isSodInitiate)
+                        val checkStatus = data.checkStatus!!
+                        val isSodInitiate = (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
+                        Log.d(TAG, "handleLoginResponse: $checkStatus $isSodInitiate")
+                        updateShiftType(if (checkStatus.isStart) Shift.START else Shift.ADHOC)
+                        updateSODInitiateStatus(isSodInitiate)
+
+                        localDataStore.updateIsSodInitiateStatus(isSodInitiate)
+                        localDataStore.saveCheckStatusId(checkStatus.id.toString())
+                        localDataStore.saveLoggedInStatus(!isSodInitiate)
+
+                        /*localDataStore.apply {
+                            updateIsSodInitiateStatus(isSodInitiate)
+                            saveCheckStatusId(checkStatus.id.toString())
+                            saveLoggedInStatus(!isSodInitiate)
+                        }*/
+                    }
+
+                    is ApiResponse.ApiError -> {
+                        increaseLoginAttempt()
+                        updateLoginStatus(false)
+                    }
+
+                    is ApiResponse.AuthorizationError -> {
+                        shouldShowAuthorizationFailedDialog(true)
+                    }
+
+                    else -> {}
+                }
             }
-
-            is ApiResponse.ApiError -> {
-                increaseLoginAttempt()
-                updateLoginStatus(false)
-            }
-
-            is ApiResponse.AuthorizationError -> {
-                shouldShowAuthorizationFailedDialog(true)
-            }
-
-            else -> {}
         }
     }
 

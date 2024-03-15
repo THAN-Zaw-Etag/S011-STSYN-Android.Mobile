@@ -1,6 +1,7 @@
 package com.etag.stsyn.ui.navigation
 
 import android.content.Context
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,10 +31,11 @@ fun NavGraphBuilder.authNavGraph(
         startDestination = Routes.LoginScreen.name
     ) {
         composable(route = Routes.SplashScreen.name) {
+            val loginState by loginViewModel.loginState.collectAsStateWithLifecycle()
             SplashScreen(
                 onTimeOut = {
                     navController.navigate(
-                        if (loginViewModel.savedUser.value.isLoggedIn) Routes.HomeContentScreen.name
+                        if (loginViewModel.savedUser.value.isLoggedIn && !loginState.isSodInitiate) Routes.HomeContentScreen.name
                         else Routes.LoginScreen.name
                     ) {
                         popUpTo(Routes.SplashScreen.name) {
@@ -76,9 +78,14 @@ fun NavGraphBuilder.authNavGraph(
             val lockUserState by loginViewModel.lockUserState.collectAsStateWithLifecycle()
             val epcModelUserName by loginViewModel.epcModelUser.collectAsStateWithLifecycle()
             val savedUser by loginViewModel.savedUser.collectAsStateWithLifecycle()
+            val isSodInitiate by loginViewModel.isSodInitiate.collectAsStateWithLifecycle(false)
 
             LaunchedEffect(savedUser.isLoggedIn) {
-                Logger.d("authNavGraph: ${savedUser.isLoggedIn  }")
+                Logger.d("authNavGraph: ${savedUser.isLoggedIn }")
+            }
+
+            LaunchedEffect(loginUiState) {
+                Log.d("TAG", "authNavGraph: ${loginUiState.isSodInitiate}")
             }
             
             LoginContentScreen(
@@ -90,7 +97,7 @@ fun NavGraphBuilder.authNavGraph(
 //                        }
 //                    }
 
-                    navController.navigate(if (loginUiState.isSodInitiate) Routes.SODInitiateScreen.name else "${Graph.HOME}/${loginUiState.isSodInitiate}") {
+                    navController.navigate(if (isSodInitiate == true) Routes.SODInitiateScreen.name else "${Graph.HOME}/${isSodInitiate}") {
                         popUpTo(0) {
                             inclusive = true
                         }

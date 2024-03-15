@@ -38,6 +38,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
         val EPC_FLIGHT_ID = stringPreferencesKey("epc_flight_id")
         val EPC_IS_DELETED = booleanPreferencesKey("epc_is_deleted")
         val IS_ADMIN = booleanPreferencesKey("is_admin")
+        val IS_SOD_INITIATE = booleanPreferencesKey("is_sod_initiate")
         val EPC_NRIC = stringPreferencesKey("epc_nric")
         val EPC_PASSWORD = stringPreferencesKey("epc_password")
         val EPC_REMARK = stringPreferencesKey("epc_remark")
@@ -60,6 +61,18 @@ class LocalDataStore @Inject constructor(private val context: Context) {
             preferences[TOKEN] = user.token
             preferences[IS_LOGGED_IN] = true
             preferences[IS_ADMIN] = user.isAdmin
+        }
+    }
+
+    suspend fun saveLoggedInStatus(isLoggedIn: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_LOGGED_IN] = true
+        }
+    }
+
+    suspend fun updateIsSodInitiateStatus(isSodInitiate: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_SOD_INITIATE] = isSodInitiate
         }
     }
 
@@ -99,6 +112,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
     }
 
     val checkStatusId = context.dataStore.data.map { it[CHECK_STATUS_ID] }
+    val isSodInitiate = context.dataStore.data.map { it[IS_SOD_INITIATE] }
 
     val getEpcUser: Flow<UserModel> = context.dataStore.data.map { preferences ->
         val airbase = preferences[EPC_AIRBASE] ?: "airbase"
@@ -152,6 +166,7 @@ class LocalDataStore @Inject constructor(private val context: Context) {
                 preferences[ROLE_ID] = ""
                 preferences[USER_NRIC] = ""
                 preferences[TOKEN] = ""
+                preferences[IS_SOD_INITIATE] = false
             }
         }
     }
