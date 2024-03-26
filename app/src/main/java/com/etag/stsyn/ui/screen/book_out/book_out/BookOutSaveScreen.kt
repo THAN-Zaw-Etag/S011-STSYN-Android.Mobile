@@ -80,7 +80,6 @@ fun BookOutSaveScreen(
 
         else -> {
             shouldShowWarningDialog = false
-            Log.d("BookOutSaveScreen", "Default")
         }
     }
 

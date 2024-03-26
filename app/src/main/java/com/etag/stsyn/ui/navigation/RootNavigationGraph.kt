@@ -63,7 +63,6 @@ fun RootNavigationGraph(
         }
     }
     LaunchedEffect(isLoggedIn) {
-        Log.d(TAG, "RootNavigationGraph: $isSodInitiate")
         if (isLoggedIn) {
             val route = if (isSodInitiate == false) "${Graph.HOME}/${false}" else Routes.SODInitiateScreen.name
             delay(300)

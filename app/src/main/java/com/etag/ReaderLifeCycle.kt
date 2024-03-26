@@ -18,12 +18,10 @@ fun ReaderLifeCycle(
         val lifecycleEventObserver = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    Log.d("TAG", "ReaderLifeCycle: ON_CREATE")
                     viewModel.setRfidListener()
                 }
 
                 Lifecycle.Event.ON_PAUSE -> {
-                    Log.d("TAG", "ReaderLifeCycle: ON_PAUSE")
                     viewModel.removeListener()
                 }
 

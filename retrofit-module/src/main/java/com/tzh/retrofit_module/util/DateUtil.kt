@@ -68,7 +68,6 @@ fun String.isBefore(date: String): Boolean {
     val date1 =  Instant.parse(this+"Z")
     val date2 = Instant.parse(date+"Z")
      val comparison = this.compareTo(date)
-    Log.d("TAG", "isBefore: $this - $date")
     return comparison < 0
     //return date1.isBefore(date2)
 }

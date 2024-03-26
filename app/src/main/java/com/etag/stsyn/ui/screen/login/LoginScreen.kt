@@ -64,24 +64,16 @@ fun LoginScreen(
     val rfidUiState by loginViewModel.rfidUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    var showLoadingDialog by remember {
-        mutableStateOf(false)
-    }
-    var showErrorDialog by remember {
-        mutableStateOf(false)
-    }
-    var errorMessage by remember {
-        mutableStateOf("")
-    }
+    var showLoadingDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
 
-    var showInvalidUserDialog by remember {
-        mutableStateOf(false)
-    }
+    var showInvalidUserDialog by remember { mutableStateOf(false) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     val appConfiguration by loginViewModel.appConfig.collectAsStateWithLifecycle(initialValue = AppConfigModel())
-    val emptyBaseUrlStatus = loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
-    if (emptyBaseUrlStatus.value) {
+    val emptyBaseUrlStatus by loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
+    if (emptyBaseUrlStatus) {
         ShowBaseUrlAlertDialog(
             onConfirm = {
                 loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = "https://18.139.63.32/SMS-STSYN-Dev/api/"))   //TODO change this when app release
@@ -95,17 +87,14 @@ fun LoginScreen(
                 is ApiResponse.Loading -> {
                     showLoadingDialog = true
                     showErrorDialog = false
-                    Log.d("TAGUser", "LoginScreen: Loading")
                 }
 
                 is ApiResponse.Success -> {
-                    Log.d("TAGUser", "LoginScreen: Success")
                     showLoadingDialog = false
                     showErrorDialog = false
                     val userModel = response.data?.userModel
 
                     if (userModel != null) {
-                        Log.d("TAG", "LoginScreen: validId")
                         navigateToLoginContentScreen()
                         loginViewModel.saveUserByEpcResponseToLocal(userModel)
                     } else {
@@ -115,21 +104,19 @@ fun LoginScreen(
                 }
 
                 is ApiResponse.ApiError -> {
-                    val error = response.message
                     showErrorDialog = true
-                    errorMessage = error
-                    Log.d("TAGUser", "LoginScreen: ApiError")
                     showLoadingDialog = false
+                    errorMessage = response.message
                 }
 
                 else -> {
-                    Log.d("TAGUser", "LoginScreen: else")
                     showLoadingDialog = false
                     showErrorDialog = false
                 }
             }
         }
     }
+
     Surface {
         ErrorDialog(
             showDialog = showErrorDialog,
@@ -139,7 +126,8 @@ fun LoginScreen(
         )
     }
 
-    LoadingDialog(title = "ID verifying...",
+    LoadingDialog(
+        title = "ID verifying...",
         showDialog = showLoadingDialog,
         onDismiss = { }
     )
@@ -182,8 +170,8 @@ private fun MainLowerContent(
     var quickLoginTextFontSize = 16.sp
     when (getDeviceSize()) {
         DeviceSize.SMALL -> quickLoginTextFontSize = MaterialTheme.typography.titleSmall.fontSize
-        DeviceSize.MEDIUM -> Log.d("TAG", "LoginScreen: MEDIUM")
-        DeviceSize.TABLET -> Log.d("TAG", "LoginScreen: TABLET")
+        DeviceSize.MEDIUM -> {}
+        DeviceSize.TABLET -> {}
     }
     Box(modifier = modifier) {
         Image(

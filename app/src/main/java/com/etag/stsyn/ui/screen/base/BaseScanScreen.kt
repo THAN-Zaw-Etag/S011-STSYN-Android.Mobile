@@ -37,7 +37,7 @@ fun BaseScanScreen(
 ) {
 
     LaunchedEffect(isScanning) {
-        Log.d(TAG, "BaseScanScreen: $isScanning")
+
     }
 
     Column(modifier = modifier) {

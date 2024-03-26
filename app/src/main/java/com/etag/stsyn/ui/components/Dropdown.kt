@@ -48,7 +48,6 @@ fun DropDown(
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = {
-                Log.d(TAG, "DropDown: $it")
                 //expanded = it
             }
         ) {

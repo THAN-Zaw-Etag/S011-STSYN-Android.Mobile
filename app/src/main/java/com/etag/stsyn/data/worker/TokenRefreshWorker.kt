@@ -45,19 +45,16 @@ class TokenRefreshWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
-        Log.d("TAG", "doWork: working...${DateUtil.currentTime()}")
 
         return try {
             when (val response = userRepository.refreshToken()) {
                 is ApiResponse.Success -> {
-                    Log.d("TAG", "doWork: success")
 
                     val outputData = workDataOf("api_token" to response.data!!.token)
                     Result.success(outputData)
                 }
 
                 else -> {
-                    Log.d("TAG", "doWork: failed...")
                     Result.failure()
                 }
             }

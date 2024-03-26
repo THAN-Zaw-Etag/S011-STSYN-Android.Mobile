@@ -14,7 +14,7 @@ class TLoanBoxViewModel @Inject constructor(
         const val TAG = "TLoanBoxViewModel"
     }
     override fun onReceivedTagId(id: String) {
-        Log.d(TAG, "onReceivedTagId: $id")
+
     }
 
 }

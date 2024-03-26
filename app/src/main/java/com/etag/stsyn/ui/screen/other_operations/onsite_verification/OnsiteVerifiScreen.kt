@@ -186,7 +186,6 @@ fun OnsiteVerificationScreen(
                     ScanIconButton(
                         isScanning = rfidUiState.isScanning,
                         onScan = {
-                            Log.d("TAG", "OnsiteVerifyScreen: Clicked ${boxItemsFromApi.size}")
                             if (boxItemsFromApi.isNotEmpty()) {
                                 //onsiteVerificationViewModel.toggle()
                                 onsiteVerificationViewModel.onReceivedTagIdTest()

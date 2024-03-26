@@ -47,7 +47,7 @@ class AccountCheckViewModel @Inject constructor(
 
     private val _accountabilityCheckItemsResponse =
         MutableStateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>>(ApiResponse.Default)
-    val accountabilityCheckItemsResponse: StateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>> =
+    private val accountabilityCheckItemsResponse: StateFlow<ApiResponse<GetAllAccountabilityCheckItemsResponse>> =
         _accountabilityCheckItemsResponse.asStateFlow()
 
     private val _saveAcctCheckResponse =
@@ -66,20 +66,6 @@ class AccountCheckViewModel @Inject constructor(
         updateScanType(ScanType.Single)
         getAllAccountabilityCheckItems()
         getAllFilterOptions()
-
-        //TODO Only for testing
-        viewModelScope.launch {
-            accountabilityCheckItemsResponse.collect {response ->
-                when (response) {
-                    is ApiResponse.Success -> {
-                        val items = response.data?.items ?: emptyList()
-                        _scannedItemIdList.update { listOf(items[0].epc) }
-                        if (items.isNotEmpty()) _acctCheckUiState.update { it.copy(scannedItem = items.get(0)) }
-                    }
-                    else -> {}
-                }
-            }
-        }
     }
 
     private fun observeAccountabilityCheckSaveResponse() {

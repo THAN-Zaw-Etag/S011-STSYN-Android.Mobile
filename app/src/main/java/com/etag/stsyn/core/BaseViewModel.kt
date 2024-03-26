@@ -1,5 +1,6 @@
 package com.etag.stsyn.core
 
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.reader.RfidBatteryLevelListener
@@ -81,7 +82,8 @@ abstract class BaseViewModel(
      * @see delay not to show loading dialog immediately
      * @see disableScan disable scan while loading*/
     protected suspend fun <T> handleDialogStatesByResponse(
-        response: ApiResponse<T>, shouldShowSuccessDialog: Boolean = false
+        response: ApiResponse<T>,
+        shouldShowSuccessDialog: Boolean = false
     ) {
         when (response) {
             is ApiResponse.Loading -> {
@@ -258,7 +260,7 @@ abstract class BaseViewModel(
     }
 
     override fun handleTriggerPress(pressed: Boolean) {
-        if (pressed && _rfidUiState.value.isScannable) startScan() else stopScan()
+        if (pressed && rfidUiState.value.isScannable) startScan() else stopScan()
     }
 
     data class DetailUiState(
@@ -268,6 +270,7 @@ abstract class BaseViewModel(
         val message: String = ""
     )
 
+    @Stable
     data class RfidUiState(
         val isScanning: Boolean = false,
         val isScannable: Boolean = true,

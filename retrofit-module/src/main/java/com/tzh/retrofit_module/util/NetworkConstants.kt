@@ -24,8 +24,7 @@ const val GET_ALL_FILTER_OPTIONS_ROUTE = "AccountabilityCheck/GetFilterOptions"
 const val UPDATE_PASSWORD_ROUTE = "User/ChangePassword"
 const val GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH = "User/GetUserAccessRightByRoleId"
 
-const val AUTHORIZATION_FAILED_MESSAGE =
-    "Your authorization token has been expired. Try login again!"
+const val AUTHORIZATION_FAILED_MESSAGE = "Your authorization token has been expired. Try login again!"
 
 const val UNKNOWN_ERROR = "Unknown Error"
 

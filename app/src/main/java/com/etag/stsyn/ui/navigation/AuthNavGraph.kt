@@ -83,10 +83,6 @@ fun NavGraphBuilder.authNavGraph(
             LaunchedEffect(savedUser.isLoggedIn) {
                 Logger.d("authNavGraph: ${savedUser.isLoggedIn }")
             }
-
-            LaunchedEffect(loginUiState) {
-                Log.d("TAG", "authNavGraph: ${loginUiState.isSodInitiate}")
-            }
             
             LoginContentScreen(
                 goToHome = {

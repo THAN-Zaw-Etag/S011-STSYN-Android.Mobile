@@ -15,7 +15,7 @@ class TLoanViewModel @Inject constructor(
     }
 
     override fun onReceivedTagId(id: String) {
-        Log.d(TAG, "onReceivedTagId: $id")
+
     }
 
 }

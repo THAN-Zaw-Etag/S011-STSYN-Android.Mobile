@@ -15,18 +15,18 @@ class OtherDetPLoanBoxViewModel @Inject constructor(
         const val TAG = "OtherDetPLoanBoxViewModel"
     }
     override fun handleTagData(tagData: Array<TagData>) {
-        Log.d(TAG, "handleTagData")
+
     }
 
     override fun onReceivedTagId(id: String) {
-        Log.d(TAG, "onReceivedTagId")
+
     }
 
     override fun handleTriggerPress(pressed: Boolean) {
-        Log.d(TAG, "handleTriggerPress")
+
     }
 
     override fun handleReaderConnected(isConnected: Boolean) {
-        Log.d(TAG, "handleReaderConnected")
+
     }
 }

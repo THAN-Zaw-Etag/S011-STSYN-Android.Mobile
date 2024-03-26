@@ -89,7 +89,6 @@ fun FilterDialog(
                 filters = filters,
                 onClear = onClear,
                 onDone = { items ->
-                    Log.d(TAG, "FilterDialog: ${items.map { it.selectedOption }}")
                     val showWarningDialog = items.filter {
                         it.selectedOption.trim().isEmpty() || it.selectedOption == "All"
                     }.size != items.size

@@ -49,7 +49,7 @@ import com.etag.stsyn.R
 import com.etag.stsyn.ui.components.AnimatedAppBar
 import com.etag.stsyn.ui.components.AuthorizationTokenExpiredDialog
 import com.etag.stsyn.ui.components.BottomNavigationBar
-import com.etag.stsyn.ui.components.ChangePasswordDialog
+import com.etag.stsyn.ui.components.UpdatePasswordDialog
 import com.etag.stsyn.ui.components.ConfirmationDialog
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.LoadingDialog
@@ -125,7 +125,7 @@ fun HomeScreen(
         message = AUTHORIZATION_FAILED_MESSAGE, onLogOut = onLogOutClick
     )
 
-    ChangePasswordDialog(
+    UpdatePasswordDialog(
         userName = savedUserState.name,
         onChangePassword = { old, new ->
             onChangePassword(old.toCharArray(), new.toCharArray())

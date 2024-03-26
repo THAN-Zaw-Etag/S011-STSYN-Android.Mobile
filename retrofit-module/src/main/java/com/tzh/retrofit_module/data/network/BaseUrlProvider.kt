@@ -17,7 +17,7 @@ class BaseUrlProvider @Inject constructor(
     init {
         CoroutineScope(Dispatchers.IO).launch {
             appConfig.appConfig.collect { appConfigModel ->
-                Log.d("BaseUrlProvider", "From Class appConfigModel: ${appConfigModel.apiUrl}")
+
                 baseUrl = appConfigModel.apiUrl
             }
         }
@@ -34,7 +34,6 @@ class BaseUrlProvider @Inject constructor(
     }
 
     fun updateBaseUrl(newBaseUrl: String) {
-        Log.d("BaseUrlProvider", "From Class newBaseUrl: $newBaseUrl")
         if (!newBaseUrl.startsWith("http://") && !newBaseUrl.startsWith("https://")) {
             throw IllegalArgumentException("Base URL must start with in update 'http://' or 'https://'. Provided URL: $newBaseUrl")
         }

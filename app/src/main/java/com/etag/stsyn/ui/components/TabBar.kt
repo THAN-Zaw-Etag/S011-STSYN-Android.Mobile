@@ -29,22 +29,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun TabBarLayout(
     pagerState: PagerState,
-    oldSelectedIndex: Int,
     options: List<TabScreen>,
-    selected: Boolean, onTabSelected: (String, Int) -> Unit
+    onTabSelected: (String, Int) -> Unit
 ) {
-    var currentSelectIndex by remember { mutableStateOf(0) }
-    var canBeSelected by remember { mutableStateOf(true) }
-    var oldIndex by remember { mutableStateOf(0) }
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(selected) {
-        canBeSelected = selected
-    }
-
-    LaunchedEffect(oldSelectedIndex) {
-        oldIndex = oldSelectedIndex
-    }
 
     TabRow(selectedTabIndex = pagerState.currentPage) {
         options.forEachIndexed { index, tabOption ->
@@ -65,8 +53,9 @@ fun TabBarLayout(
                 },
                 onClick = {
                     scope.launch { pagerState.scrollToPage(index) }
-                    onTabSelected(tabOption.title, currentSelectIndex)
-                })
+                    onTabSelected(tabOption.title, index)
+                }
+            )
         }
     }
 }
@@ -79,17 +68,5 @@ private fun TabItemIcon(
         icon = icon,
         color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
         modifier = modifier,
-    )
-}
-
-@Composable
-private fun TabItemIcon(
-    @DrawableRes icon: Int, selected: Boolean, modifier: Modifier = Modifier
-) {
-    Icon(
-        painter = painterResource(id = icon),
-        modifier = modifier,
-        tint = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
-        contentDescription = null
     )
 }

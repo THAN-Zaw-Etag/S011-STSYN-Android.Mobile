@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.core.ClickEvent
 import com.etag.stsyn.enums.OptionType
@@ -71,33 +72,33 @@ fun DetailScreen(
 ) {
 
     var showTabBar by remember { mutableStateOf(false) }
-    var options = TabUtil.getTabDetails(optionType)
-    var tabTitle by remember { mutableStateOf(options.get(0).title) }
+    val options = TabUtil.getTabDetails(optionType)
+    var tabTitle by remember { mutableStateOf(options[0].title) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
-    var oldSelectedIndex by remember { mutableIntStateOf(0) }
-    var canBeSelected by remember { mutableStateOf(false) }
     val pagerState = rememberPagerState { options.size }
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModelByOptionType(optionType = optionType)
 
-    if (viewModel is AccountCheckViewModel) viewModel.setShiftType(shiftType)
-
-    // share reader connection status to other viewmodels
-    viewModel.updateIsConnectedStatus(isConnected)
-
     val screens = getScreensByOptionType(optionType = optionType, viewModel = viewModel)
     var isSaved by remember { mutableStateOf(false) }
-    val detailUiState by viewModel.detailUiState.collectAsState()
+    val detailUiState by viewModel.detailUiState.collectAsStateWithLifecycle()
 
-    val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsState()
-    val clickEventFlow by viewModel.clickEventFlow.collectAsState(initial = ClickEvent.Default)
+    val showAuthorizationFailedDialog by viewModel.showAuthorizationFailedDialog.collectAsStateWithLifecycle()
+    val clickEventFlow by viewModel.clickEventFlow.collectAsStateWithLifecycle(ClickEvent.Default)
 
     val errorDialogState = rememberMutableDialogState(data = "")
     val successDialogState = rememberMutableDialogState(data = "")
+    var previousIndex by remember { mutableIntStateOf(0) }
 
     ReaderLifeCycle(viewModel = viewModel)
     DisableBackPress()
+
+    LaunchedEffect(Unit) {
+        // share reader connection status to other viewmodel
+        viewModel.updateIsConnectedStatus(isConnected)
+        if (viewModel is AccountCheckViewModel) viewModel.setShiftType(shiftType)
+    }
 
     if (showAuthorizationFailedDialog) AuthorizationTokenExpiredDialog(
         message = AUTHORIZATION_FAILED_MESSAGE, onLogOut = logOut
@@ -106,7 +107,6 @@ fun DetailScreen(
     LaunchedEffect(detailUiState) {
         isSaved = detailUiState.isSaved
         if (detailUiState.showSuccessDialog) successDialogState.showDialog("SUCCESS!")
-        Log.d(TAG, "DetailScreen: ${detailUiState.message}")
         errorDialogState.showDialog(detailUiState.message)
     }
 
@@ -115,7 +115,6 @@ fun DetailScreen(
             is ClickEvent.ClickAfterSave -> {
                 scope.launch { pagerState.animateScrollToPage(0) }
             }
-
             is ClickEvent.ClickToNavigateHome -> navigateToMainMenu()
             else -> { return@LaunchedEffect }
         }
@@ -129,13 +128,15 @@ fun DetailScreen(
     )
 
     // show error when error message is not empty
-    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Error),
+    WarningDialog(
+        icon = CustomIcon.Vector(Icons.Default.Error),
         dialogState = errorDialogState,
         positiveButtonTitle = "Try again",
         negativeButtonTitle = "Cancel",
         onPositiveButtonClick = {
             viewModel.updateClickEvent(ClickEvent.RetryClick)
-        })
+        }
+    )
 
     // show success dialog when saving items is done
     SuccessDialog(
@@ -174,26 +175,25 @@ fun DetailScreen(
                 confirmTitle = "Exit",
                 onCancelClick = {
                     showConfirmationDialog = false
-                    scope.launch { pagerState.animateScrollToPage(options.size - 2) }
-                    canBeSelected = false
+                    scope.launch { pagerState.animateScrollToPage(previousIndex) }
                 },
                 onConfirmClick = {
                     showConfirmationDialog = false
-                    canBeSelected = true
                     navigateToHomeScreen()
-                })
+                }
+            )
 
             Column {
-                TabBarLayout(options = screens,
-                    selected = canBeSelected,
+                TabBarLayout(
+                    options = screens,
                     pagerState = pagerState,
-                    oldSelectedIndex = oldSelectedIndex,
                     onTabSelected = { title, index ->
                         tabTitle = title
 
-                        if (canBeSelected) oldSelectedIndex = index
+                        // click index is not exit button, set selected index as previous index
+                        if (index != screens.size - 1) previousIndex = index
                         // check whether current tab item is exit tab
-                        if (title == options.get(options.size - 1).title) {
+                        if (title == options[options.size - 1].title) {
                             showConfirmationDialog = true
                         }
                     })

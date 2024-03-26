@@ -14,6 +14,6 @@ class DetPLoanViewModel @Inject constructor(
         const val TAG = "DetPLoanViewModel"
     }
     override fun onReceivedTagId(id: String) {
-        Log.d(TAG, "onReceivedTagId: $id")
+
     }
 }

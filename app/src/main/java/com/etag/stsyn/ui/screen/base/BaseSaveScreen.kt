@@ -34,7 +34,7 @@ fun BaseSaveScreen(
     var error by remember { mutableStateOf(false) }
 
     LaunchedEffect(isError) {
-        Log.d(TAG, "BaseSaveScreen: $isError")
+
         error = isError
     }
 

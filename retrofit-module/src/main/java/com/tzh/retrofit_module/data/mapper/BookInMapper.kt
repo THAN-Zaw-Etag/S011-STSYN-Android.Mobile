@@ -43,7 +43,6 @@ fun BoxItem.toItemMovementLog(
     buddyId: String = "0",
     visualChecked: Boolean = false,
 ): ItemMovementLog {
-    Log.d("TAG", "toItemMovementLog: $itemStatus")
     return ItemMovementLog(
             itemId = this.id.toInt(),
             description = this.description,
@@ -96,7 +95,7 @@ fun List<BoxItem>.toItemMovementLogs(
 }
 
 fun BoxItem.toExpandedScannedItems(): ExpandedScannedItemModel {
-    Log.d("TAG", "toExpandedScannedItems: ${this.itemStatus}")
+
     return ExpandedScannedItemModel(
         serialNo = "${this.serialNo} - ${this.partNo}",
         description = this.description,

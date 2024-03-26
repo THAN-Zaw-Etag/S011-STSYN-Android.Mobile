@@ -26,7 +26,6 @@ class SharedUiViewModel @Inject constructor(
     val uiState: StateFlow<SharedUiState> = _uiState.asStateFlow()
 
     override fun onReceivedTagId(id: String) {
-        Log.d(TAG, "onReceivedTagId: $id")
     }
 
     fun updateTopAppBarStatus(show: Boolean) {

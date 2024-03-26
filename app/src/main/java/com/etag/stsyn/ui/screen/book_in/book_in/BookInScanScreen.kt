@@ -30,7 +30,7 @@ fun BookInScanScreen(
     val scannedItemIdList by bookInViewModel.scannedItemIdList.collectAsStateWithLifecycle()
 
     LaunchedEffect(scannedItemIdList) {
-        Log.d(TAG, "BookInScanScreen: $scannedItemIdList")
+
     }
 
     BaseScanScreen(

@@ -14,6 +14,5 @@ class BookInCalViewModel @Inject constructor(
         const val TAG = "BookInCalViewModel"
     }
     override fun onReceivedTagId(id: String) {
-        Log.d(TAG, "onReceivedTagId: $id")
     }
 }

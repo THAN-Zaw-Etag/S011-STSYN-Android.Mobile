@@ -33,7 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.R
-import com.etag.stsyn.ui.components.ChangePasswordDialog
+import com.etag.stsyn.ui.components.UpdatePasswordDialog
 import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.PasswordField
@@ -78,7 +78,7 @@ fun LoginContentScreen(
         onDismiss = { }
     )
 
-    ChangePasswordDialog(
+    UpdatePasswordDialog(
         userName = userName,
         showDialog = showChangePasswordDialog,
         onDismiss = { showChangePasswordDialog = false },

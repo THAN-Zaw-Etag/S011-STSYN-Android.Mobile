@@ -26,6 +26,7 @@ import com.etag.stsyn.ui.components.listItems
 import com.etag.stsyn.ui.screen.base.BaseCountScreen
 import com.etag.stsyn.ui.screen.bottomsheet.BoxDetailScreen
 import com.tzh.retrofit_module.domain.model.bookIn.BoxItem
+import com.tzh.retrofit_module.domain.model.bookIn.safeCopy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,7 +61,7 @@ fun AcctCheckCountScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
-                listItems(items) {
+                listItems(items.map { it.safeCopy() }) {
                     key(it.epc) {
                         ScannedItem(
                             id = "${it.serialNo}-${it.itemLocation}",

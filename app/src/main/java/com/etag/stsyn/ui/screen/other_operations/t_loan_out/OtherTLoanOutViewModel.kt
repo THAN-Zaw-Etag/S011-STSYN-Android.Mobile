@@ -14,6 +14,5 @@ class OtherTLoanOutViewModel @Inject constructor(
         const val TAG = "OtherTLoanOutViewModel"
     }
     override fun onReceivedTagId(id: String) {
-        Log.d(TAG, "onReceivedTagId: $id")
     }
 }

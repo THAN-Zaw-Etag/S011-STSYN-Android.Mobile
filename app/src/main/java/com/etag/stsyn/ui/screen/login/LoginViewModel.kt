@@ -107,8 +107,7 @@ class LoginViewModel @Inject constructor(
             
             launch { 
                 localDataStore.isSodInitiate.collect {
-                    Log.d(TAG, "isSodInitiate: $it")
-                    _isSodInitiate.value = it!!
+                    _isSodInitiate.value = it ?: false
                 }
             }
 
@@ -171,14 +170,12 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun saveUserToLocalStorage(localUser: LocalUser) {
-        Log.d(TAG, "saveUserToLocalStorage: $localUser")
         viewModelScope.launch {
             localDataStore.saveUser(localUser)
         }
     }
 
     private fun updateSODInitiateStatus(isSodInitiate: Boolean) {
-        Log.d(TAG, "updateSODInitiateStatus: $isSodInitiate")
         _loginState.update { it.copy(isSodInitiate = isSodInitiate) }
     }
 
@@ -235,19 +232,12 @@ class LoginViewModel @Inject constructor(
 
                         val checkStatus = data.checkStatus!!
                         val isSodInitiate = (checkStatus.isStart || checkStatus.isAdhoc) && checkStatus.isProgress
-                        Log.d(TAG, "handleLoginResponse: $checkStatus $isSodInitiate")
                         updateShiftType(if (checkStatus.isStart) Shift.START else Shift.ADHOC)
                         updateSODInitiateStatus(isSodInitiate)
 
                         localDataStore.updateIsSodInitiateStatus(isSodInitiate)
                         localDataStore.saveCheckStatusId(checkStatus.id.toString())
                         localDataStore.saveLoggedInStatus(!isSodInitiate)
-
-                        /*localDataStore.apply {
-                            updateIsSodInitiateStatus(isSodInitiate)
-                            saveCheckStatusId(checkStatus.id.toString())
-                            saveLoggedInStatus(!isSodInitiate)
-                        }*/
                     }
 
                     is ApiResponse.ApiError -> {
