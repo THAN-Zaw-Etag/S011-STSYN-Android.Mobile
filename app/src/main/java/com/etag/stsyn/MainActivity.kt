@@ -32,6 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var workManager: WorkManager
 
     companion object {
         const val TAG = "MainActivity"
@@ -43,8 +44,7 @@ class MainActivity : ComponentActivity() {
 
         // lock screen rotation
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
-        val workManager = WorkManager.getInstance(this)
+        workManager = WorkManager.getInstance(this)
         TokenRefreshWorker.refresh(workManager)
 
         setContent {
@@ -105,5 +105,12 @@ class MainActivity : ComponentActivity() {
 
             else -> {}
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            TokenRefreshWorker.cancel(workManager)
+        }catch (_: Exception){}
     }
 }

@@ -172,14 +172,13 @@ fun NavGraphBuilder.detailsNavGraph(
             val rfidUiState by loginViewModel.rfidUiState.collectAsStateWithLifecycle()
             val loginUiState by loginViewModel.loginState.collectAsStateWithLifecycle()
 
-            LaunchedEffect(Unit) {
-                sharedUiViewModel.apply {
-                    updateTopBarTitle(Routes.OtherOperationsScreen.title)
-                    updateTopAppBarStatus(false)
-                    updateAppBarNavigationIcon(Icons.Default.Menu)
-                    updateBottomNavigationBarStatus(false)
-                }
+            sharedUiViewModel.apply {
+                updateTopBarTitle(Routes.OtherOperationsScreen.title)
+                updateTopAppBarStatus(false)
+                updateAppBarNavigationIcon(Icons.Default.Menu)
+                updateBottomNavigationBarStatus(false)
             }
+
             DetailScreen(
                 isConnected = rfidUiState.isConnected,
                 optionType = optionType,

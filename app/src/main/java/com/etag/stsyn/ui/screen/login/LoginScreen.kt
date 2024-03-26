@@ -76,7 +76,7 @@ fun LoginScreen(
     if (emptyBaseUrlStatus) {
         ShowBaseUrlAlertDialog(
             onConfirm = {
-                loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = "https://18.139.63.32/SMS-STSYN-Dev/api/"))   //TODO change this when app release
+                loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = it))   //TODO change this when app release
             }
         )
     }
