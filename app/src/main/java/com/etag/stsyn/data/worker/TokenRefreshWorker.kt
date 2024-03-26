@@ -54,9 +54,7 @@ class TokenRefreshWorker @AssistedInject constructor(
         return try {
             when (val response = userRepository.refreshToken()) {
                 is ApiResponse.Success -> {
-
-                    val outputData = workDataOf("api_token" to response.data!!.token)
-                    Result.success(outputData)
+                    Result.success()
                 }
 
                 else -> {
