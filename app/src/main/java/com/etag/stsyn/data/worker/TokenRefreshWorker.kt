@@ -20,13 +20,14 @@ import java.util.concurrent.TimeUnit
 
 @HiltWorker
 class TokenRefreshWorker @AssistedInject constructor(
-    @Assisted context: Context,
+    @Assisted private val context: Context,
     @Assisted params: WorkerParameters,
     private val userRepository: UserRepository
 ) : CoroutineWorker(context, params) {
 
     companion object {
-        fun refresh(context: Context) {
+        private const val WORKER_NAME = "api_token_refresh_worker"
+        fun refresh(workManager: WorkManager) {
             val workConstraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
@@ -36,11 +37,15 @@ class TokenRefreshWorker @AssistedInject constructor(
                     .setConstraints(workConstraints)
                     .build()
 
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                "api_token_refresh_worker",
+            workManager.enqueueUniquePeriodicWork(
+                WORKER_NAME,
                 ExistingPeriodicWorkPolicy.UPDATE,
                 periodicWork
             )
+        }
+
+        fun cancel(workManager: WorkManager) {
+            workManager.cancelUniqueWork(WORKER_NAME)
         }
     }
 

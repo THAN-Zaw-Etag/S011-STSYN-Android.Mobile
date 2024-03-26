@@ -17,6 +17,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import androidx.work.WorkManager
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.receiver.BluetoothReceiverViewModel
 import com.etag.stsyn.core.receiver.BluetoothState
@@ -43,7 +44,8 @@ class MainActivity : ComponentActivity() {
         // lock screen rotation
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        TokenRefreshWorker.refresh(this)
+        val workManager = WorkManager.getInstance(this)
+        TokenRefreshWorker.refresh(workManager)
 
         setContent {
             val navController = rememberNavController()
@@ -59,6 +61,11 @@ class MainActivity : ComponentActivity() {
 
             installSplashScreen().setKeepOnScreenCondition {
                 loginViewModel.loading.value
+            }
+
+            // cancel token refresher worker when user is logged out
+            LaunchedEffect(savedUser) {
+                if (!savedUser.isLoggedIn) TokenRefreshWorker.cancel(workManager)
             }
 
             // connect reader only when the app starts
