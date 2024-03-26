@@ -17,7 +17,6 @@ class BaseUrlProvider @Inject constructor(
     init {
         CoroutineScope(Dispatchers.IO).launch {
             appConfig.appConfig.collect { appConfigModel ->
-
                 baseUrl = appConfigModel.apiUrl
             }
         }

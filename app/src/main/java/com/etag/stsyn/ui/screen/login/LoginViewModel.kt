@@ -10,6 +10,7 @@ import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.LocalUser
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.UpdatePasswordRequest
+import com.tzh.retrofit_module.data.network.BaseUrlValidator
 import com.tzh.retrofit_module.data.settings.AppConfigModel
 import com.tzh.retrofit_module.data.settings.AppConfiguration
 import com.tzh.retrofit_module.domain.model.login.LoginResponse
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,6 +52,9 @@ class LoginViewModel @Inject constructor(
 
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
+
+    private val _validationErrorMessage = MutableStateFlow(" ")
+    val validationErrorMessage = _validationErrorMessage.asStateFlow()
 
     private val _getUserResponse = MutableSharedFlow<ApiResponse<GetUserByEPCResponse>>()
     val getUserByEPCResponse: SharedFlow<ApiResponse<GetUserByEPCResponse>> =
@@ -123,6 +128,23 @@ class LoginViewModel @Inject constructor(
             launch {
                 delay(1000)
                 _loading.value = false
+            }
+        }
+    }
+
+    fun validateBaseUrl(url: String) {
+        _validationErrorMessage.value = BaseUrlValidator.validate(url) {
+            viewModelScope.launch {
+                when (val response = userRepository.validateUrl(url)) {
+                    is ApiResponse.Success -> {
+                        if (response.data?.isSuccess == true) {
+                            _validationErrorMessage.value = ""
+                            updateAppConfig(appConfig.last().copy(apiUrl = url))
+                        } else _validationErrorMessage.value = "Invalid Error"
+                    }
+                    is ApiResponse.ApiError -> {_validationErrorMessage.value = "Invalid Error"}
+                    else -> {}
+                }
             }
         }
     }

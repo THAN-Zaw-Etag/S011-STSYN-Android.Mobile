@@ -37,6 +37,7 @@ import com.tzh.retrofit_module.util.GET_ITEMS_COUNT_NOT_IN_BOX
 import com.tzh.retrofit_module.util.GET_ITEMS_FOR_ONSITE_ROUTE
 import com.tzh.retrofit_module.util.GET_USER_ACCESS_RIGHTS_BY_ROLE_ID_PATH
 import com.tzh.retrofit_module.util.GET_USER_BY_EPC_ROUTE
+import com.tzh.retrofit_module.util.HEALTH_CHECK
 import com.tzh.retrofit_module.util.LOCK_USER
 import com.tzh.retrofit_module.util.LOGIN_ROUTE
 import com.tzh.retrofit_module.util.REFRESH_TOKEN_ROUTE
@@ -187,5 +188,5 @@ interface ApiService {
     @GET
     suspend fun validateUrl(
         @Url url: String
-    ): Response<Any>
+    ): Response<NormalResponse>
 }

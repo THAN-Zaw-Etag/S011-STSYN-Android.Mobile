@@ -14,6 +14,7 @@ import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
+import com.tzh.retrofit_module.util.HEALTH_CHECK
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -27,6 +28,10 @@ class UserRepositoryImpl @Inject constructor(
         return ApiResponseHandler.processResponse {
             apiService.login(loginRequest)
         }
+    }
+
+    override suspend fun validateUrl(baseUrl: String): ApiResponse<NormalResponse> {
+        return ApiResponseHandler.processResponse { apiService.validateUrl(baseUrl+ HEALTH_CHECK) }
     }
 
     override suspend fun refreshToken(): ApiResponse<RefreshTokenResponse> {

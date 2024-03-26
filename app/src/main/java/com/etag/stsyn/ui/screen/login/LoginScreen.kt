@@ -69,15 +69,15 @@ fun LoginScreen(
     var errorMessage by remember { mutableStateOf("") }
 
     var showInvalidUserDialog by remember { mutableStateOf(false) }
+    val validationErrorMessage by loginViewModel.validationErrorMessage.collectAsStateWithLifecycle()
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    val appConfiguration by loginViewModel.appConfig.collectAsStateWithLifecycle(initialValue = AppConfigModel())
     val emptyBaseUrlStatus by loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
     if (emptyBaseUrlStatus) {
         ShowBaseUrlAlertDialog(
-            onConfirm = {
-                loginViewModel.updateAppConfig(appConfiguration.copy(apiUrl = it))   //TODO change this when app release
-            }
+            showAlertDialog = validationErrorMessage.isNotEmpty(),
+            validationErrorMessage = validationErrorMessage,
+            onConfirm = loginViewModel::validateBaseUrl
         )
     }
 
