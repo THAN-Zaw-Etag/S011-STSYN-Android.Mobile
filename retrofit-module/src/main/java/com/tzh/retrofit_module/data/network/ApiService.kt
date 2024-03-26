@@ -52,6 +52,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface ApiService {
     @POST(LOGIN_ROUTE)
@@ -182,4 +183,9 @@ interface ApiService {
     suspend fun lockUSer(
         @Query("nric") nric: String
     ): Response<NormalResponse>
+
+    @GET
+    suspend fun validateUrl(
+        @Url url: String
+    ): Response<Any>
 }

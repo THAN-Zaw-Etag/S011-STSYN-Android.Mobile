@@ -1,21 +1,16 @@
 package com.etag.stsyn.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.etag.stsyn.ui.theme.Purple80
-import com.etag.stsyn.util.URLValidator
+import com.tzh.retrofit_module.data.network.BaseUrlValidator
 
 
 @Composable
@@ -44,6 +39,7 @@ fun ShowBaseUrlAlertDialog(
                 Column {
                     TextField(
                         value = baseUrl,
+                        singleLine = true,
                         placeholder = { Text(text = "Enter base url") },
                         onValueChange = { baseUrl = it }
                     )
@@ -54,11 +50,12 @@ fun ShowBaseUrlAlertDialog(
             confirmButton = {
                 Button(
                     onClick = {
-                        validationErrorMessage = URLValidator.validate(baseUrl)
-
-                        if (validationErrorMessage.isEmpty()) {
-                            onConfirm(baseUrl)
-                            showAlertDialog = false
+                        BaseUrlValidator.validate(baseUrl) {
+                            validationErrorMessage = it
+                            if (it.isEmpty()) {
+                                onConfirm(baseUrl)
+                                showAlertDialog = false
+                            }
                         }
 
                     }, modifier = Modifier

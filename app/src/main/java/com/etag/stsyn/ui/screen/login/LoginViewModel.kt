@@ -98,10 +98,12 @@ class LoginViewModel @Inject constructor(
         // if user is already logged in, fetch menu access rights from api
         viewModelScope.launch {
             launch {
+                if (savedUser.value.isLoggedIn) getUserMenuAccessRightsById()
+            }
+            launch {
                 localDataStore.getUser.collect {
                     Logger.d("localUser: ${it.isLoggedIn}")
                     _savedUser.value = it
-                    if (it.isLoggedIn) getUserMenuAccessRightsById()
                 }
             }
             

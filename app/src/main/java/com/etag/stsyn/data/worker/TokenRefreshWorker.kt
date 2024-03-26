@@ -52,7 +52,7 @@ class TokenRefreshWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
 
         return try {
-            when (val response = userRepository.refreshToken()) {
+            when (userRepository.refreshToken()) {
                 is ApiResponse.Success -> {
                     Result.success()
                 }
