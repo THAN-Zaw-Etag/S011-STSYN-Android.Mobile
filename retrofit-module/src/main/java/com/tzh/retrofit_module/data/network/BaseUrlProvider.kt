@@ -18,17 +18,18 @@ class BaseUrlProvider @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             appConfig.appConfig.collect { appConfigModel ->
                 baseUrl = appConfigModel.apiUrl
+                Log.d("BaseUrlProvider.kt", "apiUrl: $baseUrl");
             }
         }
     }
 
     fun getBaseUrl(): String {
-        if (baseUrl.isEmpty()) {
+        /*if (baseUrl.isEmpty()) {
             updateBaseUrl(BASE_URL)
         }
-        if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+        if (baseUrl.isNotEmpty() && !baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
             throw IllegalStateException("Base URL must start with in get 'http://' or 'https://'. Current base URL: $baseUrl")
-        }
+        }*/
         return baseUrl
     }
 

@@ -1,6 +1,7 @@
 package com.tzh.retrofit_module.di
 
 import android.content.Context
+import com.google.gson.GsonBuilder
 import com.tzh.retrofit_module.data.network.ApiService
 import com.tzh.retrofit_module.data.network.BaseUrlProvider
 import com.tzh.retrofit_module.data.network.NetworkClientBuilder
@@ -43,6 +44,10 @@ object ApiModule {
         networkClientBuilder: NetworkClientBuilder,
         baseUrlProvider: BaseUrlProvider
     ): ApiService {
+        val gson = GsonBuilder()
+            .setLenient()
+            .create()
+
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrlProvider.getBaseUrl())
             .client(networkClientBuilder.build())

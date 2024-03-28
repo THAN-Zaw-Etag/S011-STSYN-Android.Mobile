@@ -185,8 +185,6 @@ interface ApiService {
         @Query("nric") nric: String
     ): Response<NormalResponse>
 
-    @GET
-    suspend fun validateUrl(
-        @Url url: String
-    ): Response<NormalResponse>
+    @GET (HEALTH_CHECK)
+    suspend fun validateUrl(): Response<NormalResponse>
 }

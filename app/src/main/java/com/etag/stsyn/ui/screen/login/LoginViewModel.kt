@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -53,12 +54,11 @@ class LoginViewModel @Inject constructor(
     private val _loginState = MutableStateFlow(LoginState())
     val loginState: StateFlow<LoginState> = _loginState.asStateFlow()
 
-    private val _validationErrorMessage = MutableStateFlow(" ")
+    private val _validationErrorMessage = MutableStateFlow("")
     val validationErrorMessage = _validationErrorMessage.asStateFlow()
 
-    private val _getUserResponse = MutableSharedFlow<ApiResponse<GetUserByEPCResponse>>()
-    val getUserByEPCResponse: SharedFlow<ApiResponse<GetUserByEPCResponse>> =
-        _getUserResponse.asSharedFlow()
+    private val _getUserResponse = MutableStateFlow<ApiResponse<GetUserByEPCResponse>>(ApiResponse.Default)
+    val getUserByEPCResponse: StateFlow<ApiResponse<GetUserByEPCResponse>> = _getUserResponse.asStateFlow()
 
     private val _loginResponse = MutableStateFlow<ApiResponse<LoginResponse>>(ApiResponse.Default)
     val loginResponse: StateFlow<ApiResponse<LoginResponse>> = _loginResponse.asStateFlow()
@@ -82,8 +82,8 @@ class LoginViewModel @Inject constructor(
 
     val appConfig = appConfiguration.appConfig
 
-    private val _shouldShowEmptyBaseUrlDialog = MutableLiveData(false)
-    val shouldShowEmptyBaseUrlDialog: LiveData<Boolean> = _shouldShowEmptyBaseUrlDialog
+    private val _shouldShowEmptyBaseUrlDialog = MutableStateFlow(true)
+    val shouldShowEmptyBaseUrlDialog: StateFlow<Boolean> = _shouldShowEmptyBaseUrlDialog.asStateFlow()
 
     private val _loading = MutableStateFlow(true)
     val loading = _loading.asStateFlow()
@@ -135,21 +135,30 @@ class LoginViewModel @Inject constructor(
     fun validateBaseUrl(url: String) {
         _validationErrorMessage.value = BaseUrlValidator.validate(url) {
             viewModelScope.launch {
-                when (val response = userRepository.validateUrl(url)) {
+                updateAppConfig(appConfig.first().copy(apiUrl = url))
+                delay(1000)
+                val response = userRepository.validateUrl()
+
+                when (response) {
+                    is ApiResponse.Loading -> _validationErrorMessage.value = "Validating..."
                     is ApiResponse.Success -> {
-                        if (response.data?.isSuccess == true) {
-                            _validationErrorMessage.value = ""
-                            updateAppConfig(appConfig.last().copy(apiUrl = url))
-                        } else _validationErrorMessage.value = "Invalid Error"
+                        _validationErrorMessage.value = ""
+                        appConfig.collect {
+                            updateAppConfig(it.copy(apiUrl = url))
+                        }
                     }
-                    is ApiResponse.ApiError -> {_validationErrorMessage.value = "Invalid Error"}
+                    is ApiResponse.ApiError -> {
+                        _validationErrorMessage.value = "Invalid Error"
+                        updateAppConfig(appConfig.last().copy(apiUrl = ""))
+                    }
+                    is ApiResponse.Default -> _validationErrorMessage.value = ""
                     else -> {}
                 }
             }
         }
     }
 
-    fun updateAppConfig(appConfigModel: AppConfigModel) {
+    private fun updateAppConfig(appConfigModel: AppConfigModel) {
         viewModelScope.launch {
             appConfiguration.updateAppConfig(appConfigModel)
             baseUrlStatus()
@@ -159,11 +168,10 @@ class LoginViewModel @Inject constructor(
     private fun baseUrlStatus() {
         viewModelScope.launch {
             appConfiguration.appConfig.collect { appConfigModel ->
-                val baseUrl = appConfigModel.apiUrl
-                if (baseUrl.isEmpty()) {
-                    _shouldShowEmptyBaseUrlDialog.postValue(true)
+                if (appConfigModel.apiUrl.isEmpty()) {
+                    _shouldShowEmptyBaseUrlDialog.value = true
                 } else {
-                    _shouldShowEmptyBaseUrlDialog.postValue(false)
+                    _shouldShowEmptyBaseUrlDialog.value = false
                 }
             }
         }
@@ -174,16 +182,16 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    fun getUserByRfidId(rfidId: String) {
+    fun getUserByRfidId(rfidId: String = "") {
         viewModelScope.launch {
 
             // reset attempt count and errorMessage when user changes
             _loginState.update { it.copy(attemptCount = 0) }
             _loginResponse.value = ApiResponse.Default
 
-            _getUserResponse.emit(ApiResponse.Loading)
+            _getUserResponse.value = ApiResponse.Loading
             val response = userRepository.getUserByEPC(TEST_EPC)
-            _getUserResponse.emit(response)
+            _getUserResponse.value = response
         }
     }
 

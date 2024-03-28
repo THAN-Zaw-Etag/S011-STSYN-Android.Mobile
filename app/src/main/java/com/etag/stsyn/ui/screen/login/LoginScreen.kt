@@ -2,7 +2,6 @@
 
 package com.etag.stsyn.ui.screen.login
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -15,14 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -44,13 +43,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.etag.ReaderLifeCycle
 import com.etag.stsyn.R
 import com.etag.stsyn.enums.DeviceSize
+import com.etag.stsyn.ui.components.CustomIcon
 import com.etag.stsyn.ui.components.ErrorDialog
 import com.etag.stsyn.ui.components.LoadingDialog
 import com.etag.stsyn.ui.components.ShowBaseUrlAlertDialog
 import com.etag.stsyn.ui.components.VersionText
+import com.etag.stsyn.ui.components.WarningDialog
+import com.etag.stsyn.ui.states.rememberMutableDialogState
 import com.etag.stsyn.ui.theme.Purple80
 import com.etag.stsyn.util.AppUtil.getDeviceSize
-import com.tzh.retrofit_module.data.settings.AppConfigModel
+import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.util.ApiResponse
 
 @Composable
@@ -70,61 +72,61 @@ fun LoginScreen(
 
     var showInvalidUserDialog by remember { mutableStateOf(false) }
     val validationErrorMessage by loginViewModel.validationErrorMessage.collectAsStateWithLifecycle()
+    val getUserByEPCResponse by loginViewModel.getUserByEPCResponse.collectAsStateWithLifecycle()
+    val dialogState = rememberMutableDialogState(data = "")
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val emptyBaseUrlStatus by loginViewModel.shouldShowEmptyBaseUrlDialog.observeAsState(false)
-    if (emptyBaseUrlStatus) {
-        ShowBaseUrlAlertDialog(
-            showAlertDialog = validationErrorMessage.isNotEmpty(),
-            validationErrorMessage = validationErrorMessage,
-            onConfirm = loginViewModel::validateBaseUrl
-        )
-    }
+    val shouldShowEmptyBaseUrlDialog by loginViewModel.shouldShowEmptyBaseUrlDialog.collectAsStateWithLifecycle(true)
 
-    LaunchedEffect(lifecycleOwner) {
-        loginViewModel.getUserByEPCResponse.collect { response ->
-            when (response) {
-                is ApiResponse.Loading -> {
-                    showLoadingDialog = true
-                    showErrorDialog = false
+    ShowBaseUrlAlertDialog(
+        showAlertDialog = shouldShowEmptyBaseUrlDialog || validationErrorMessage.isNotEmpty(),
+        validationErrorMessage = validationErrorMessage,
+        onConfirm = loginViewModel::validateBaseUrl
+    )
+
+    LaunchedEffect(getUserByEPCResponse) {
+        when (getUserByEPCResponse) {
+            is ApiResponse.Loading -> {
+                showLoadingDialog = true
+                showErrorDialog = false
+                dialogState.hideDialog()
+            }
+
+            is ApiResponse.Success -> {
+                showLoadingDialog = false
+                dialogState.hideDialog()
+                val userModel = (getUserByEPCResponse as ApiResponse.Success<GetUserByEPCResponse>).data?.userModel
+
+                if (userModel != null) {
+                    navigateToLoginContentScreen()
+                    loginViewModel.saveUserByEpcResponseToLocal(userModel)
+                } else {
+                    showInvalidUserDialog = true
+                    Toast.makeText(context, "Invalid user Id", Toast.LENGTH_LONG).show()
                 }
+            }
 
-                is ApiResponse.Success -> {
-                    showLoadingDialog = false
-                    showErrorDialog = false
-                    val userModel = response.data?.userModel
+            is ApiResponse.ApiError -> {
+                dialogState.showDialog((getUserByEPCResponse as ApiResponse.ApiError).message)
+                showLoadingDialog = false
+                errorMessage = (getUserByEPCResponse as ApiResponse.ApiError).message
+            }
 
-                    if (userModel != null) {
-                        navigateToLoginContentScreen()
-                        loginViewModel.saveUserByEpcResponseToLocal(userModel)
-                    } else {
-                        showInvalidUserDialog = true
-                        Toast.makeText(context, "Invalid user Id", Toast.LENGTH_LONG).show()
-                    }
-                }
-
-                is ApiResponse.ApiError -> {
-                    showErrorDialog = true
-                    showLoadingDialog = false
-                    errorMessage = response.message
-                }
-
-                else -> {
-                    showLoadingDialog = false
-                    showErrorDialog = false
-                }
+            else -> {
+                dialogState.hideDialog()
+                showLoadingDialog = false
+                showErrorDialog = false
             }
         }
     }
 
-    Surface {
-        ErrorDialog(
-            showDialog = showErrorDialog,
-            errorTitle = "Error",
-            errorMessage = errorMessage,
-            onDismiss = { showErrorDialog = false }
-        )
-    }
+    WarningDialog(icon = CustomIcon.Vector(Icons.Default.Warning), dialogState = dialogState, positiveButtonTitle = "Ok")
+
+    ErrorDialog(
+        showDialog = showErrorDialog,
+        errorTitle = "Error",
+        errorMessage = errorMessage,
+        onDismiss = { showErrorDialog = false }
+    )
 
     LoadingDialog(
         title = "ID verifying...",
@@ -156,9 +158,7 @@ fun LoginScreen(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
-        MainLowerContent(onScan = {
-            loginViewModel.getUserByRfidId("")
-        })
+        MainLowerContent(onScan = loginViewModel::getUserByRfidId)
     }
 }
 

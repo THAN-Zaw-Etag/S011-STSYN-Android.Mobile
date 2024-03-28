@@ -1,9 +1,9 @@
 package com.tzh.retrofit_module.data.network
 
+import android.util.Log
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.Interceptor
-import okhttp3.Request
 import okhttp3.Response
 import javax.inject.Inject
 
@@ -12,22 +12,41 @@ class BaseUrlInterceptor @Inject constructor(private val baseUrlProvider: BaseUr
         val request = chain.request()
         val originalUrl = request.url
 
-        val baseUrl = baseUrlProvider.getBaseUrl()
-        val newBaseUrl = baseUrl.toHttpUrlOrNull()
+        val newBaseUrlString = baseUrlProvider.getBaseUrl()
+        val newBaseUrl = newBaseUrlString.toHttpUrlOrNull()
 
-        val newUrl: HttpUrl = originalUrl.newBuilder()
-            .scheme(newBaseUrl!!.scheme)
-            .host(newBaseUrl!!.host)
-            .port(newBaseUrl!!.port)
-            // Add any additional path segments or query parameters as needed
-            .build()
+        if (newBaseUrl != null) {
+            // Remove the trailing slash from the base URL's path if it exists
+            Log.d("BaseUrlInterceptor", "InitialUrl: $newBaseUrl")
+            val baseWithPath = if (newBaseUrl.encodedPath.endsWith("/")) {
+                newBaseUrl.encodedPath.removeSuffix("/")
+            } else {
+                newBaseUrl.encodedPath
+            }
 
-        // Create a new request with the modified URL
-        val newRequest: Request = request.newBuilder()
-            .url(newUrl)
-            .build()
+            // Remove the leading slash from the original request's path if it exists
+            val originalWithPath = if (originalUrl.encodedPath.startsWith("/")) {
+                originalUrl.encodedPath.removePrefix("/")
+            } else {
+                originalUrl.encodedPath
+            }
 
-        // Proceed with the modified request
-        return chain.proceed(newRequest)
+            // Construct the new URL by combining the base URL with the original request's path and query parameters
+            val newUrl = newBaseUrl.newBuilder()
+                .encodedPath("$baseWithPath/$originalWithPath") // Combine paths with a single slash
+                .query(originalUrl.query) // Preserve original query parameters
+                .build()
+
+            // Log the final URL for debugging
+            Log.d("BaseUrlInterceptor", "Final URL: $newUrl")
+
+            // Create a new request with the updated URL
+            val newRequest = request.newBuilder().url(newUrl).build()
+
+            return chain.proceed(newRequest)
+        } else {
+            Log.e("BaseUrlInterceptor", "Invalid base URL: $newBaseUrlString")
+            return chain.proceed(request) // Proceed with the original request if the base URL is invalid
+        }
     }
 }

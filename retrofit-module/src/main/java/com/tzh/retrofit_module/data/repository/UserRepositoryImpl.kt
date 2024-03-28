@@ -1,5 +1,6 @@
 package com.tzh.retrofit_module.data.repository
 
+import android.util.Log
 import com.tzh.retrofit_module.data.local_storage.LocalDataStore
 import com.tzh.retrofit_module.data.model.login.LoginRequest
 import com.tzh.retrofit_module.data.model.login.RefreshTokenRequest
@@ -14,7 +15,6 @@ import com.tzh.retrofit_module.domain.model.user.GetUserByEPCResponse
 import com.tzh.retrofit_module.domain.model.user.UserMenuAccessRightsByIdResponse
 import com.tzh.retrofit_module.domain.repository.UserRepository
 import com.tzh.retrofit_module.util.ApiResponse
-import com.tzh.retrofit_module.util.HEALTH_CHECK
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -30,19 +30,29 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun validateUrl(baseUrl: String): ApiResponse<NormalResponse> {
-        return ApiResponseHandler.processResponse { apiService.validateUrl(baseUrl+ HEALTH_CHECK) }
+    override suspend fun validateUrl(): ApiResponse<NormalResponse> {
+
+        return try {
+            val response = apiService.validateUrl()
+            val data = response.body() as NormalResponse
+            if (response.isSuccessful && data.isSuccess) ApiResponse.Success(data)
+            else ApiResponse.ApiError("Something went wrong!")
+        } catch (e: Exception) {
+            Log.d("TAG", "validateUrl: ${e.message}")
+            ApiResponse.ApiError(e.message.toString())
+        }
     }
 
     override suspend fun refreshToken(): ApiResponse<RefreshTokenResponse> {
         val user = userFlow.first()
         val response = ApiResponseHandler.processResponse {
-            apiService.refreshToken( RefreshTokenRequest(user.token))
+            apiService.refreshToken(RefreshTokenRequest(user.token))
         }
         when (response) {
             is ApiResponse.Success -> {
                 localDataStore.saveToken(response.data!!.token)
             }
+
             else -> {}
         }
         return response
@@ -59,7 +69,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun getUserMenuAccessRightsById(): ApiResponse<UserMenuAccessRightsByIdResponse> {
         val user = userFlow.first()
         return ApiResponseHandler.processResponse {
-            apiService.getUserAccessRightsByRoleId( id = user.roleId)
+            apiService.getUserAccessRightsByRoleId(id = user.roleId)
         }
     }
 

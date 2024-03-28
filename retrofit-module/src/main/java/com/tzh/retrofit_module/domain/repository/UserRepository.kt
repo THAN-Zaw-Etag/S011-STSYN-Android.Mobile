@@ -28,5 +28,5 @@ interface UserRepository {
 
     suspend fun lockUser(nric:String):ApiResponse<NormalResponse>
 
-    suspend fun validateUrl(baseUrl: String): ApiResponse<NormalResponse>
+    suspend fun validateUrl(): ApiResponse<NormalResponse>
 }
