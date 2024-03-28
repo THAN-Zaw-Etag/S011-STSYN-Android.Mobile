@@ -24,6 +24,9 @@ class BaseUrlProvider @Inject constructor(
     }
 
     fun getBaseUrl(): String {
+        if (baseUrl.isEmpty()) {
+            updateBaseUrl(BASE_URL)
+        }
         /*if (baseUrl.isEmpty()) {
             updateBaseUrl(BASE_URL)
         }
@@ -34,9 +37,9 @@ class BaseUrlProvider @Inject constructor(
     }
 
     fun updateBaseUrl(newBaseUrl: String) {
-        if (!newBaseUrl.startsWith("http://") && !newBaseUrl.startsWith("https://")) {
+        /*if (!newBaseUrl.startsWith("http://") && !newBaseUrl.startsWith("https://")) {
             throw IllegalArgumentException("Base URL must start with in update 'http://' or 'https://'. Provided URL: $newBaseUrl")
-        }
+        }*/
         baseUrl = newBaseUrl
     }
 }

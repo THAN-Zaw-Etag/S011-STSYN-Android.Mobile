@@ -1,8 +1,7 @@
 package com.etag.stsyn.ui.screen.login
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.etag.stsyn.core.BaseViewModel
 import com.etag.stsyn.core.reader.ZebraRfidHandler
@@ -25,13 +24,9 @@ import com.tzh.retrofit_module.util.ApiResponse
 import com.tzh.retrofit_module.util.log.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.update
@@ -88,7 +83,6 @@ class LoginViewModel @Inject constructor(
     private val _loading = MutableStateFlow(true)
     val loading = _loading.asStateFlow()
 
-
     private val _lockUserState =
         MutableStateFlow<ApiResponse<NormalResponse>>(ApiResponse.Default)
     val lockUserState: StateFlow<ApiResponse<NormalResponse>> =
@@ -131,27 +125,24 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-
     fun validateBaseUrl(url: String) {
         _validationErrorMessage.value = BaseUrlValidator.validate(url) {
             viewModelScope.launch {
                 updateAppConfig(appConfig.first().copy(apiUrl = url))
-                delay(1000)
+                delay(500)
+                _validationErrorMessage.value = "Validating..."
+                delay(500)
                 val response = userRepository.validateUrl()
 
-                when (response) {
-                    is ApiResponse.Loading -> _validationErrorMessage.value = "Validating..."
+                when (response){
                     is ApiResponse.Success -> {
                         _validationErrorMessage.value = ""
-                        appConfig.collect {
-                            updateAppConfig(it.copy(apiUrl = url))
-                        }
+                        updateAppConfig(appConfig.last().copy(apiUrl = url))
                     }
                     is ApiResponse.ApiError -> {
                         _validationErrorMessage.value = "Invalid Error"
                         updateAppConfig(appConfig.last().copy(apiUrl = ""))
                     }
-                    is ApiResponse.Default -> _validationErrorMessage.value = ""
                     else -> {}
                 }
             }
@@ -190,12 +181,24 @@ class LoginViewModel @Inject constructor(
             _loginResponse.value = ApiResponse.Default
 
             _getUserResponse.value = ApiResponse.Loading
-            val response = userRepository.getUserByEPC(TEST_EPC)
+            val response = userRepository.getUserByEPC(TEST_EPC) //TODO change TEST_EPC to rfidId
             _getUserResponse.value = response
+            observeGetUserByEpcResponse()
         }
     }
 
-    fun saveUserByEpcResponseToLocal(userModel: UserModel) {
+    private suspend fun observeGetUserByEpcResponse() {
+        getUserByEPCResponse.collect {
+            when (it) {
+                is ApiResponse.Success -> {
+                    if (it.data?.userModel != null) saveUserByEpcResponseToLocal(it.data!!.userModel)
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private fun saveUserByEpcResponseToLocal(userModel: UserModel) {
         viewModelScope.launch {
             localDataStore.saveEpcUser(userModel)
         }

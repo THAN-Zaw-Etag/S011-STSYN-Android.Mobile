@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -94,11 +93,11 @@ fun LoginScreen(
             is ApiResponse.Success -> {
                 showLoadingDialog = false
                 dialogState.hideDialog()
+
                 val userModel = (getUserByEPCResponse as ApiResponse.Success<GetUserByEPCResponse>).data?.userModel
 
                 if (userModel != null) {
                     navigateToLoginContentScreen()
-                    loginViewModel.saveUserByEpcResponseToLocal(userModel)
                 } else {
                     showInvalidUserDialog = true
                     Toast.makeText(context, "Invalid user Id", Toast.LENGTH_LONG).show()
@@ -106,9 +105,10 @@ fun LoginScreen(
             }
 
             is ApiResponse.ApiError -> {
-                dialogState.showDialog((getUserByEPCResponse as ApiResponse.ApiError).message)
+                val message = (getUserByEPCResponse as ApiResponse.ApiError).message
+                dialogState.showDialog(message)
                 showLoadingDialog = false
-                errorMessage = (getUserByEPCResponse as ApiResponse.ApiError).message
+                errorMessage = message
             }
 
             else -> {
@@ -135,8 +135,7 @@ fun LoginScreen(
     )
 
     LaunchedEffect(rfidUiState.isConnected) {
-        if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT)
-            .show()
+        if (rfidUiState.isConnected) Toast.makeText(context, "Connected!", Toast.LENGTH_SHORT).show()
     }
 
     Column(modifier = modifier) {

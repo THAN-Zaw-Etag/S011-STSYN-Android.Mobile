@@ -33,6 +33,11 @@ fun ShowBaseUrlAlertDialog(
     onConfirm: (String) -> Unit
 ) {
     var baseUrl by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(validationErrorMessage) {
+        errorMessage = validationErrorMessage
+    }
 
     if (showAlertDialog) {
         AlertDialog(
@@ -49,7 +54,7 @@ fun ShowBaseUrlAlertDialog(
                         onValueChange = { baseUrl = it }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    if (validationErrorMessage.isNotEmpty()) ErrorText(text = validationErrorMessage)
+                    if (errorMessage.isNotEmpty()) ErrorText(text = errorMessage)
                 }
             },
             confirmButton = {
